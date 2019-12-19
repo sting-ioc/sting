@@ -1,0 +1,8 @@
+**/generated
+*.iml
+/*.ipr
+/*.iws
+/Gemfile.lock
+/reports
+/target
+/tmp
