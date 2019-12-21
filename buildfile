@@ -90,8 +90,7 @@ define 'sting' do
                  :arez_core,
                  :arez_processor,
                  :javapoet,
-                 :guava,
-                 :gwt_user
+                 :guava
 
     # The generators are configured to generate to here.
     iml.main_generated_source_directories << _('generated/processors/main/java')
