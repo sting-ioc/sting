@@ -44,8 +44,6 @@ define 'sting' do
               :truth,
               :junit,
               :hamcrest_core,
-              :arez_core,
-              :arez_processor,
               project('core').package(:jar),
               project('core').compile.dependencies
 
@@ -87,8 +85,6 @@ define 'sting' do
     compile.with project('core').package(:jar),
                  project('core').compile.dependencies,
                  project('processor').package(:jar),
-                 :arez_core,
-                 :arez_processor,
                  :javapoet,
                  :guava
 
