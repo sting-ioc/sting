@@ -81,17 +81,6 @@ define 'sting' do
     iml.test_source_directories << _('src/test/fixtures/bad_input')
   end
 
-  define 'example' do
-    compile.with project('core').package(:jar),
-                 project('core').compile.dependencies,
-                 project('processor').package(:jar),
-                 :javapoet,
-                 :guava
-
-    # The generators are configured to generate to here.
-    iml.main_generated_source_directories << _('generated/processors/main/java')
-  end
-
   doc.from(projects(%w(core))).
     using(:javadoc,
           :windowtitle => 'Sting API Documentation',
