@@ -4,7 +4,22 @@ This document is essentially a list of shorthand notes describing work yet to co
 Unfortunately it is not complete enough for other people to pick work off the list and
 complete as there is too much un-said.
 
+The significant differences from Dagger:
 
+* `Singleton` by default, `Dependent` by explicit configuration, no other scopes supported.
+* `Eager` and `Lazy` beans are supported with `Lazy` being the default. This really only applies to
+  `Singleton` scoped entities. This may ber merged into three values (`LazySingleton`, `EagerSingleton`, `Dependent`)
+* `Typed` is used to shape the possible edges in graph.
+* Add the ability for modules to define a hook method that is invoked post-Object-graph construction.
+  (i.e. to link into react runtime or to cache values in statics as in Rose)
+* Constructor injection the only form supported. No field or method injection.
+* No qualifiers (for now...) ... except for nullability annotations. @Nullable provider will only provider for @Nullable consumer
+* Components may have an optional factory that accepts any dependencies from outside the system but these are
+  incorporated into ObjectGraph
+* Can very easily extend an existing component and replace some beans in object with those used in testing.
+* Also supports runtime graph construction in jre to speed up tests and potentially development.
+* Package access components are supported by generating factory glue in the package (the equivalent of `@Provide`
+  annotated class in the same package) and it is assumed any consumers are also in the same package.
 
 ----
 
@@ -55,7 +70,7 @@ Dagger2 is not a great injection framework for our context. Some annoyances that
   component is created. Our applications end up adding accessors on the component just so that we can call them
   and create them after the component is instantiated.
 * Not only should objects be eagerly instantiated we should have the ability to run arbitrary code snippets
-  after eager components are created. (i.e. binding code in react4j codebase). 
+  after eager components are created. (i.e. binding code in react4j codebase).
 * It should be a code warning if `@Inject` occurs on a protected or public constructor
 * It should be easy to override module for test scenarios and override specific parts of module locally.
   We are often forced to use dagger for "production" cases and guice for unit testing.
