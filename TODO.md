@@ -4,6 +4,20 @@ This document is essentially a list of shorthand notes describing work yet to co
 Unfortunately it is not complete enough for other people to pick work off the list and
 complete as there is too much un-said.
 
+Perhaps we could do this in multiple phases. Phase 1 will generate the code so the annotations can
+be evaluated in the context of dagger. Phase 2 will use the `@Module` and `@Component` annotated types
+and generate the dagger equivalent. dagger. Phase 3 will replace dagger.
+
+## Phase 1:
+
+* Introduce the `Factory` annotation that allows the construction of components by supplying parameters.
+  Abstract methods return the type that is produced. Any parameters must match the parameter types and/or
+  names of parameters in components constructor. Components produced must have a single constructor. Any
+  parameter supplied is assumed to be from the object graph.
+* `Typed` can be added to types or factory methods that will restrict the types of values produced.
+
+## Differences from Dagger
+
 The significant differences from Dagger:
 
 * `Singleton` by default, `Dependent` by explicit configuration, no other scopes supported.
