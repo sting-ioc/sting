@@ -35,6 +35,7 @@ define 'sting' do
   desc 'The Annotation processor'
   define 'processor' do
     compile.with :autocommon,
+                 :proton_processor_pack,
                  :javapoet,
                  :guava,
                  :javax_annotation
@@ -54,6 +55,7 @@ define 'sting' do
     package(:jar).enhance do |jar|
       jar.merge(artifact(:javapoet))
       jar.merge(artifact(:guava))
+      jar.merge(artifact(:proton_processor_pack))
       jar.enhance do |f|
         shaded_jar = (f.to_s + '-shaded')
         Buildr.ant 'shade_jar' do |ant|
@@ -63,6 +65,7 @@ define 'sting' do
           ant.shade :jar => f.to_s, :uberJar => shaded_jar do
             ant.relocation :pattern => 'com.squareup.javapoet', :shadedPattern => 'sting.processor.vendor.javapoet'
             ant.relocation :pattern => 'com.google', :shadedPattern => 'sting.processor.vendor.google'
+            ant.relocation :pattern => 'org.realityforge.proton', :shadedPattern => 'arez.processor.vendor.proton'
           end
         end
         FileUtils.mv shaded_jar, f.to_s
