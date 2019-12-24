@@ -22,7 +22,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 /**
  * Annotates an interface or abstract class for which a fully-formed, dependency-injected
@@ -51,21 +50,45 @@ import javax.inject.Provider;
  * <a name="instantiation"></a>
  * <h2>Instantiation</h2>
  *
- * <p>If a nested {@link Factory @Component.Factory} type exists in the component, Sting will
- * generate an implementation of that type and expose it via a a static method named {@code factory()}
- * that returns a factory instance.</p>
+ * <p>If a nested {@link Factory @Factory} type exists in the component, an implementation of that type
+ * will generated and an instance will be returned via a static method named {@code factory()}.</p>
  *
  * <p>Example of using a factory:</p>
  *
- * <pre>{@code
- * public static void main(String[] args) {
- *     OtherComponent otherComponent = ...;
- *     MyComponent component = DaggerMyComponent.factory().create(otherComponent);
- *   }
- * }</pre>
+ * <pre><code>
+ * {@literal @}Component(modules = {BackendModule.class, FrontendModule.class})
+ * interface MyComponent {
+ *   MyWidget myWidget();
  *
- * <p>If a nested {@link Factory @Component.Factory} does not exist then it is assumed that the component
+ *   {@literal @}Factory
+ *   interface Factory {
+ *     MyComponent create(MyService myService);
+ *   }
+ * }
+ *
+ * public class Main {
+ *   public static void main(String[] args) {
+ *     MyService myService = ...;
+ *     MyComponent component = StingMyComponent.factory().create(myService);
+ *   }
+ * }</code></pre>
+ *
+ * <p>If a nested {@link Factory @Factory} does not exist then it is assumed that the component
  * is completed and the generated component will have a factory method {@code create()}.</p>
+ *
+ * <p>Example of using create:</p>
+ *
+ * <pre><code>
+ * {@literal @}Component(modules = {BackendModule.class, FrontendModule.class})
+ * interface MyComponent {
+ *   MyWidget myWidget();
+ * }
+ *
+ * public class Main {
+ *   public static void main(String[] args) {
+ *     MyComponent component = StingMyComponent.create();
+ *   }
+ * }</code></pre>
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
