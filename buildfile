@@ -65,7 +65,7 @@ define 'sting' do
           ant.shade :jar => f.to_s, :uberJar => shaded_jar do
             ant.relocation :pattern => 'com.squareup.javapoet', :shadedPattern => 'sting.processor.vendor.javapoet'
             ant.relocation :pattern => 'com.google', :shadedPattern => 'sting.processor.vendor.google'
-            ant.relocation :pattern => 'org.realityforge.proton', :shadedPattern => 'arez.processor.vendor.proton'
+            ant.relocation :pattern => 'org.realityforge.proton', :shadedPattern => 'sting.processor.vendor.proton'
           end
         end
         FileUtils.mv shaded_jar, f.to_s
