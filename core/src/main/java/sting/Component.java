@@ -101,32 +101,4 @@ public @interface Component
    * modules used to implement the component may include more modules that just those listed here.
    */
   Class<?>[] modules() default {};
-
-  /**
-   * An annotation applied to an interface responsible for creating a component.
-   * The interface must have a single abstract method that returns the component. The interface
-   * may take parameters and these are beans that are added to the object graph.
-   *
-   * For example, this could be a valid {@code Component} with a {@code Factory}:
-   *
-   * <pre><code>
-   * {@literal @}Component(modules = {BackendModule.class, FrontendModule.class})
-   * interface MyComponent {
-   *   MyWidget myWidget();
-   *
-   *   {@literal @}Component.Factory
-   *   interface Factory {
-   *     MyComponent create(MyService myService);
-   *   }
-   * }</code></pre>
-   *
-   * <p>If a {@code @Component.Factory} is defined, the generated component type will have a {@code static}
-   * method named {@code factory()} that returns an instance of that factory.
-   */
-  @Documented
-  @Retention( RetentionPolicy.RUNTIME )
-  @Target( ElementType.TYPE )
-  @interface Factory
-  {
-  }
 }
