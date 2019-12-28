@@ -44,6 +44,40 @@ public final class StingProcessorTest
     assertFailedCompile( classname, errorMessageFragment );
   }
 
+  @DataProvider( name = "compileWithWarnings" )
+  public Object[][] compileWithWarnings()
+  {
+    return new Object[][]
+      {
+        new Object[]{ "com.example.at_inject.ProtectedConstructorModel",
+                      "@Inject target should not be protected. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:ProtectedConstructor\" )" },
+        new Object[]{ "com.example.at_inject.PublicConstructorModel",
+                      "@Inject target should not be public. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:PublicConstructor\" )" }
+      };
+  }
+
+  @Test( dataProvider = "compileWithWarnings" )
+  public void processCompileWithWarnings( @Nonnull final String classname, @Nonnull final String messageFragment )
+  {
+    assertCompilesWithSingleWarning( classname, messageFragment );
+  }
+
+  @DataProvider( name = "compileWithoutWarnings" )
+  public Object[][] compileWithoutWarnings()
+  {
+    return new Object[][]
+      {
+        new Object[]{ "com.example.at_inject.SuppressedProtectedConstructorModel" },
+        new Object[]{ "com.example.at_inject.SuppressedPublicConstructorModel" }
+      };
+  }
+
+  @Test( dataProvider = "compileWithoutWarnings" )
+  public void processCompileWithoutWarnings( @Nonnull final String classname )
+  {
+    assertCompilesWithoutWarnings( classname );
+  }
+
   @Nonnull
   @Override
   protected Processor processor()
