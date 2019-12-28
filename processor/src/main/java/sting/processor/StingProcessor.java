@@ -16,7 +16,7 @@ import org.realityforge.proton.ProcessorException;
 /**
  * Annotation processor that analyzes sting annotated source and generates dependency injection container.
  */
-@SupportedAnnotationTypes( { "sting.*" } )
+@SupportedAnnotationTypes( Constants.INJECT_CLASSNAME )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
 @SupportedOptions( { "sting.defer.unresolved", "sting.defer.errors" } )
 public final class StingProcessor
