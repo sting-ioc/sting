@@ -38,7 +38,7 @@ public final class StingProcessor
 
   @Nonnull
   @Override
-  protected Collection<TypeElement> getTypeElementsToProcess( @Nonnull final RoundEnvironment roundEnvironment )
+  protected Collection<TypeElement> getTypeElementsToProcess( @Nonnull final RoundEnvironment env )
   {
     return Collections.emptyList();
   }
