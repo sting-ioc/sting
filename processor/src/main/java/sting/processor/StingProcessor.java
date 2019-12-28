@@ -2,13 +2,16 @@ package sting.processor;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import org.realityforge.proton.AbstractStandardProcessor;
 import org.realityforge.proton.ProcessorException;
@@ -40,11 +43,28 @@ public final class StingProcessor
   @Override
   protected Collection<TypeElement> getTypeElementsToProcess( @Nonnull final RoundEnvironment env )
   {
-    return Collections.emptyList();
+    final TypeElement annotation =
+      processingEnv.getElementUtils().getTypeElement( Constants.INJECT_CLASSNAME );
+    final Set<? extends Element> injectElements = env.getElementsAnnotatedWith( annotation );
+    final Set<TypeElement> typeElements = new HashSet<>();
+    for ( final Element element : injectElements )
+    {
+      if ( ElementKind.CONSTRUCTOR != element.getKind() )
+      {
+        reportError( env, "Sting does not support adding the @Inject annotation except on constructors", element );
+      }
+      else
+      {
+        typeElements.add( (TypeElement) element.getEnclosingElement() );
+      }
+    }
+    return typeElements;
   }
 
   protected void process( @Nonnull final TypeElement element )
     throws IOException, ProcessorException
   {
+    // Must be a class because we have already found a constructor by the time we get here
+    assert ElementKind.CLASS == element.getKind();
   }
 }
