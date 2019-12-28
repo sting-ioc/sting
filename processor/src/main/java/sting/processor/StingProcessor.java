@@ -14,13 +14,11 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import org.realityforge.proton.AbstractStandardProcessor;
 import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.MemberChecks;
 import org.realityforge.proton.ProcessorException;
-import static javax.tools.Diagnostic.Kind.*;
 
 /**
  * Annotation processor that analyzes sting annotated source and generates dependency injection container.
