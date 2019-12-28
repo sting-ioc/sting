@@ -18,7 +18,6 @@ artifacts:
 
   guiceyloops: org.realityforge.guiceyloops:guiceyloops:jar:0.102
 
-  autocommon: com.google.auto:auto-common:jar:0.10
   javapoet: com.squareup:javapoet:jar:1.11.1
   guava: com.google.guava:guava:jar:25.0-jre
 
