@@ -32,7 +32,9 @@ public final class StingProcessorTest
         new Object[]{ "com.example.at_inject.AnnotatedField",
                       "Sting does not support adding the @Inject annotation except on constructors" },
         new Object[]{ "com.example.at_inject.AnnotatedMethod",
-                      "Sting does not support adding the @Inject annotation except on constructors" }
+                      "Sting does not support adding the @Inject annotation except on constructors" },
+        new Object[]{ "com.example.at_inject.MultipleAnnotatedConstructors",
+                      "@Inject must not appear on a type that has multiple constructors" }
       };
   }
 

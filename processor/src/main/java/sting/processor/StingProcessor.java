@@ -3,6 +3,7 @@ package sting.processor;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.RoundEnvironment;
@@ -12,8 +13,10 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import org.realityforge.proton.AbstractStandardProcessor;
+import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.ProcessorException;
 
 /**
@@ -66,5 +69,15 @@ public final class StingProcessor
   {
     // Must be a class because we have already found a constructor by the time we get here
     assert ElementKind.CLASS == element.getKind();
+    final List<ExecutableElement> constructors = ElementsUtil.getConstructors( element );
+
+    // As can only have got here if we have at least one constructor with @Inject
+    assert !constructors.isEmpty();
+
+    if ( constructors.size() > 1 )
+    {
+      throw new ProcessorException( "@Inject must not appear on a type that has multiple constructors",
+                                    constructors.get( 0 ) );
+    }
   }
 }
