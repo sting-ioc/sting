@@ -1,6 +1,5 @@
 package sting.processor;
 
-import com.squareup.javapoet.TypeSpec;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,7 +11,6 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
 import org.realityforge.proton.AbstractStandardProcessor;
-import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.ProcessorException;
 
 /**
@@ -48,11 +46,5 @@ public final class StingProcessor
   protected void process( @Nonnull final TypeElement element )
     throws IOException, ProcessorException
   {
-  }
-
-  private void emitTypeSpec( @Nonnull final String packageName, @Nonnull final TypeSpec typeSpec )
-    throws IOException
-  {
-    GeneratorUtil.emitJavaType( packageName, typeSpec, processingEnv.getFiler() );
   }
 }
