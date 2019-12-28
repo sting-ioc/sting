@@ -74,10 +74,11 @@ public final class StingProcessor
     // As can only have got here if we have at least one constructor with @Inject
     assert !constructors.isEmpty();
 
+    final ExecutableElement constructor = constructors.get( 0 );
     if ( constructors.size() > 1 )
     {
-      throw new ProcessorException( "@Inject must not appear on a type that has multiple constructors",
-                                    constructors.get( 0 ) );
+      throw new ProcessorException( "@Inject must not appear on a type that contains multiple constructors",
+                                    constructor );
     }
   }
 }
