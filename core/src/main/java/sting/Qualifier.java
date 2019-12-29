@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Identifies qualifier annotations.
+ * Annotation used to mark a qualifier annotation.
  * A qualifier annotation is combined with the type of the dependency to restrict which values can satisfy the
  * dependency. A qualifier annotation is annotated with {@code @Qualifier} and
  * {@link Retention @Retention(RetentionPolicy.RUNTIME)}. The qualifier annotation is typically annotated with
