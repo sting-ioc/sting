@@ -1,11 +1,11 @@
 package com.example.at_inject;
 
-import javax.inject.Inject;
+import sting.Injectable;
 
+@Injectable
 public class SuppressedPublicConstructorModel
 {
   @SuppressWarnings( "Sting:PublicConstructor" )
-  @Inject
   public SuppressedPublicConstructorModel()
   {
   }

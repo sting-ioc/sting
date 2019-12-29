@@ -29,12 +29,9 @@ public final class StingProcessorTest
   {
     return new Object[][]
       {
-        new Object[]{ "com.example.at_inject.AnnotatedField",
-                      "Sting does not support adding the @Inject annotation except on constructors" },
-        new Object[]{ "com.example.at_inject.AnnotatedMethod",
-                      "Sting does not support adding the @Inject annotation except on constructors" },
-        new Object[]{ "com.example.at_inject.MultipleAnnotatedConstructors",
-                      "@Inject must not appear on a type that contains multiple constructors" }
+        new Object[]{ "com.example.at_inject.AbstractModel", "@Injectable target must not be abstract" },
+        new Object[]{ "com.example.at_inject.MultipleConstructorModel", "@Injectable target must not have multiple constructors" },
+        new Object[]{ "com.example.at_inject.NonStaticNestedModel", "@Injectable target must not be a non-static nested class" }
       };
   }
 
@@ -50,9 +47,9 @@ public final class StingProcessorTest
     return new Object[][]
       {
         new Object[]{ "com.example.at_inject.ProtectedConstructorModel",
-                      "@Inject target should not be protected. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:ProtectedConstructor\" )" },
+                      "@Injectable target should not have a protected constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:ProtectedConstructor\" )" },
         new Object[]{ "com.example.at_inject.PublicConstructorModel",
-                      "@Inject target should not be public. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:PublicConstructor\" )" }
+                      "@Injectable target should not have a public constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:PublicConstructor\" )" }
       };
   }
 

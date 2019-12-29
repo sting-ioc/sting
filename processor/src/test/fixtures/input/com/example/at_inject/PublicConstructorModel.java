@@ -1,10 +1,10 @@
 package com.example.at_inject;
 
-import javax.inject.Inject;
+import sting.Injectable;
 
+@Injectable
 public class PublicConstructorModel
 {
-  @Inject
   public PublicConstructorModel()
   {
   }
