@@ -21,8 +21,7 @@ import java.lang.annotation.Target;
  *   &#064;Retention(RetentionPolicy.RUNTIME)
  *   &#064;Qualifier
  *   public @interface Plugin {
- *     Phase phase() default Phase.IN;
- *     public enum Phase { PRE, IN, POST }
+ *     int priority() default 1000;
  *   }</pre>
  *
  * @see Named @Named
