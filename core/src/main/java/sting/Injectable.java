@@ -5,6 +5,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.function.Supplier;
 import javax.annotation.Nullable;
 
 /**
@@ -19,12 +20,12 @@ import javax.annotation.Nullable;
  * <h3>Circular Dependencies</h3>
  *
  * <p>Circular dependencies are disallowed by the injector and are rejected during the compilation phase.
- * The developer can break the circular dependency by injecting {@link Provider Provider&lt;OtherType>}
- * instead of {@code OtherType} and then calling {@link Provider#get() get()} on the provider when access
+ * The developer can break the circular dependency by injecting {@link Supplier Supplier&lt;OtherType>}
+ * instead of {@code OtherType} and then calling {@link Supplier#get() get()} on the supplier when access
  * to the dependency is needed.</p>
  *
  * @see Qualifier @Qualifier
- * @see Provider
+ * @see Supplier
  */
 @Target( ElementType.TYPE )
 @Retention( RetentionPolicy.RUNTIME )
