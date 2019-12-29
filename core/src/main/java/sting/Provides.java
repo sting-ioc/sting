@@ -24,7 +24,7 @@ import javax.annotation.Nonnull;
 
 /**
  * Annotates methods of a {@linkplain Module module} to create a provider method binding. The
- * method's return type is bound to its returned value. The {@linkplain Component component}
+ * method's return type is bound to its returned value. The {@linkplain Injector injector}
  * implementation will pass dependencies to the method as parameters.
  *
  * <h3>Nullability</h3>

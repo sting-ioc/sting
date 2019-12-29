@@ -8,12 +8,15 @@ import java.lang.annotation.Target;
 import javax.annotation.Nonnull;
 
 /**
- * Annotation applied to dependency parameters to restrict the values that can satisfy the dependency.
- * If a parameter is annotated with {@code @Qualifier} then the dependency is only satisfied by an
+ * Annotation applied to dependencies that restrict the values that can satisfy the dependency.
+ *
+ * <p>This annotation can appear on constructor parameters in a type annotated with {@link Injectable}
+ * or it can appear on methods on types annotated by {@link Injector}.
+ * If a dependency is annotated with {@code @Qualifier} then the dependency is only satisfied by an
  * {@link Injectable} annotated type or a {@link Provides} annotated method with matching qualifier
- * attribute and a dependency type.
+ * attribute and a matching dependency type.
  */
-@Target( ElementType.PARAMETER )
+@Target( { ElementType.PARAMETER, ElementType.METHOD } )
 @Retention( RetentionPolicy.RUNTIME )
 @Documented
 public @interface Qualifier
