@@ -17,12 +17,12 @@ artifacts:
   guiceyloops: org.realityforge.guiceyloops:guiceyloops:jar:0.102
 
   javapoet: com.squareup:javapoet:jar:1.11.1
-  guava: com.google.guava:guava:jar:25.0-jre
 
   proton_core: org.realityforge.proton:proton-core:jar:0.07
   proton_qa: org.realityforge.proton:proton-qa:jar:0.07
 
   compile_testing: com.google.testing.compile:compile-testing:jar:0.15
+  guava: com.google.guava:guava:jar:25.0-jre
   truth: com.google.truth:truth:jar:0.39
   junit: junit:junit:jar:4.12
   hamcrest_core: org.hamcrest:hamcrest-core:jar:1.3
