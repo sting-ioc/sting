@@ -53,4 +53,14 @@ public @interface Provides
    */
   @Nonnull
   String qualifier() default "";
+
+  /**
+   * The types of dependency that this binding can satisfy.
+   * By default the binding will match the return type of the annotated method.
+   * If specified, the binding will only match the types specified and
+   * every type must be assignable from the return type of the annotated method
+   *
+   * @return the types of dependency that this binding can satisfy.
+   */
+  Class<?>[] types() default void.class;
 }
