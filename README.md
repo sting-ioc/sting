@@ -14,6 +14,4 @@ java classes and generates source code to instantiate and wire together the comp
   that kick-started development.
 
 * [javax.inject](https://github.com/javax-inject/javax-inject) or the JSR-330 Dependency Injection standard for
-  Java defines the standard injection API. This is not used by Sting but directly influenced much of the API
-  or was directly copied into Sting (i.e. `sting.Qualifier` is a fork of the `javax.inject.Qualifier` class
-  and `sting.Injectable` is a spiritual successor of the `javax.inject.Inject` annotation).
+  Java defines the standard injection API. This is not used by Sting but directly influenced much of the API.

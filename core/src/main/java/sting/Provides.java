@@ -20,6 +20,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import javax.annotation.Nonnull;
 
 /**
  * Annotates methods of a {@linkplain Module module} to create a provider method binding. The
@@ -44,4 +45,12 @@ import java.lang.annotation.Target;
 @Retention( RetentionPolicy.RUNTIME )
 public @interface Provides
 {
+  /**
+   * An opaque string that qualifies this binding.
+   * This can be any arbitrary string and is used to restrict the dependencies that this binding can satisfy.
+   *
+   * @return an opaque qualifier string.
+   */
+  @Nonnull
+  String qualifier() default "";
 }
