@@ -19,8 +19,7 @@ define 'sting' do
 
   desc 'The core module'
   define 'core' do
-    compile.with :javax_annotation,
-                 :javax_inject
+    compile.with :javax_annotation
 
     test.options[:java_args] = ['-ea']
 
