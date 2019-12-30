@@ -46,6 +46,13 @@ import javax.annotation.Nonnull;
 public @interface Provides
 {
   /**
+   * A flag indicating whether the instance should be instantiated when the Injector is created.
+   *
+   * @return a flag indicating whether the instance should be instantiated when the Injector is created.
+   */
+  boolean eager() default false;
+
+  /**
    * An opaque string that qualifies this binding.
    * This can be any arbitrary string and is used to restrict the dependencies that this binding can satisfy.
    *

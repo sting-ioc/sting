@@ -42,6 +42,13 @@ import javax.annotation.Nullable;
 public @interface Injectable
 {
   /**
+   * A flag indicating whether the instance should be instantiated when the Injector is created.
+   *
+   * @return a flag indicating whether the instance should be instantiated when the Injector is created.
+   */
+  boolean eager() default false;
+
+  /**
    * An opaque string that qualifies this type.
    * This can be any arbitrary string and is used to restrict the dependencies that this type can satisfy.
    *
