@@ -16,8 +16,7 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.ExecutableType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import org.realityforge.proton.AbstractStandardProcessor;
@@ -81,14 +80,17 @@ public final class StingProcessor
     }
     final List<TypeMirror> types =
       AnnotationsUtil.getTypeMirrorsAnnotationParameter( element, Constants.INJECTABLE_CLASSNAME, "types" );
-    for ( final TypeMirror type : types )
+    if ( !isDefaultTypes( types ) )
     {
-      if ( !processingEnv.getTypeUtils().isAssignable( element.asType(), type ) )
+      for ( final TypeMirror type : types )
       {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                      " target has a type parameter containing the value " + type +
-                                      " that is not assignable to the declaring type",
-                                      element );
+        if ( !processingEnv.getTypeUtils().isAssignable( element.asType(), type ) )
+        {
+          throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                        " target has a type parameter containing the value " + type +
+                                        " that is not assignable to the declaring type",
+                                        element );
+        }
       }
     }
     final List<ExecutableElement> constructors = ElementsUtil.getConstructors( element );
@@ -101,6 +103,11 @@ public final class StingProcessor
     }
     constructorMustNotBeProtected( constructor );
     constructorMustNotBePublic( constructor );
+  }
+
+  private boolean isDefaultTypes( @Nonnull final List<TypeMirror> types )
+  {
+    return 1 == types.size() && TypeKind.VOID == types.get( 0 ).getKind();
   }
 
   private boolean isEnclosedInNonStaticClass( @Nonnull final TypeElement element )
