@@ -2,7 +2,6 @@ package sting.processor;
 
 import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.code.Symbol;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -62,7 +61,7 @@ public final class StingProcessor
   }
 
   private void process( @Nonnull final TypeElement element )
-    throws IOException, ProcessorException
+    throws Exception
   {
     if ( ElementKind.CLASS != element.getKind() )
     {
