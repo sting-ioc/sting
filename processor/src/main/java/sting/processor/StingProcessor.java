@@ -3,6 +3,7 @@ package sting.processor;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -44,15 +45,17 @@ public final class StingProcessor
   }
 
   @SuppressWarnings( "unchecked" )
-  @Nonnull
   @Override
-  protected Collection<TypeElement> getTypeElementsToProcess( @Nonnull final RoundEnvironment env )
+  public boolean process( @Nonnull final Set<? extends TypeElement> annotations, @Nonnull final RoundEnvironment env )
   {
     final TypeElement annotation = processingEnv.getElementUtils().getTypeElement( Constants.INJECTABLE_CLASSNAME );
-    return (Collection<TypeElement>) env.getElementsAnnotatedWith( annotation );
+    final Collection<TypeElement> elementsTo = (Collection<TypeElement>) env.getElementsAnnotatedWith( annotation );
+    processTypeElements( env, elementsTo, this::process );
+    errorIfProcessingOverAndInvalidTypesDetected( env );
+    return true;
   }
 
-  protected void process( @Nonnull final TypeElement element )
+  private void process( @Nonnull final TypeElement element )
     throws IOException, ProcessorException
   {
     if ( ElementKind.CLASS != element.getKind() )
