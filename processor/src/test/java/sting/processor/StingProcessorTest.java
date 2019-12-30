@@ -36,8 +36,10 @@ public final class StingProcessorTest
                       "@Injectable target has a type parameter containing the value java.util.concurrent.Callable that is not assignable to the declaring type" },
         new Object[]{ "com.example.at_inject.BadType3Model",
                       "@Injectable target has a type parameter containing the value com.example.at_inject.BadType3Model.MyOuterInterface that is not assignable to the declaring type" },
-        new Object[]{ "com.example.at_inject.MultipleConstructorModel", "@Injectable target must not have multiple constructors" },
-        new Object[]{ "com.example.at_inject.NonStaticNestedModel", "@Injectable target must not be a non-static nested class" }
+        new Object[]{ "com.example.at_inject.MultipleConstructorModel",
+                      "@Injectable target must not have multiple constructors" },
+        new Object[]{ "com.example.at_inject.NonStaticNestedModel",
+                      "@Injectable target must not be a non-static nested class" }
       };
   }
 
