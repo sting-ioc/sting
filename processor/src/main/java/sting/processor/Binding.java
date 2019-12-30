@@ -23,6 +23,11 @@ final class Binding
   @Nonnull
   private final TypeMirror[] _types;
   /**
+   * Is the binding eager or lazy. Eager bindings are instantiated after the injector is instantiated
+   * and before it is made accessible to user-code.
+   */
+  private final boolean _eager;
+  /**
    * The element that created this binding.
    * The field will be a {@link javax.lang.model.element.TypeElement} for an {@link Type#INJECTABLE} binding
    * otherwise it will be an {@link javax.lang.model.element.ExecutableElement} for a {@link Type#PROVIDES} binding
@@ -34,11 +39,13 @@ final class Binding
   Binding( @Nonnull final Type bindingType,
            @Nonnull final String qualifier,
            @Nonnull final TypeMirror[] types,
+           final boolean eager,
            @Nonnull final Element element )
   {
     _bindingType = Objects.requireNonNull( bindingType );
     _qualifier = Objects.requireNonNull( qualifier );
     _types = Objects.requireNonNull( types );
+    _eager = eager;
     _element = Objects.requireNonNull( element );
   }
 
@@ -58,6 +65,11 @@ final class Binding
   TypeMirror[] getTypes()
   {
     return _types;
+  }
+
+  boolean isEager()
+  {
+    return _eager;
   }
 
   @Nonnull
