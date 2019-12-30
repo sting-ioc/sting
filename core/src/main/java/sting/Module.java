@@ -7,7 +7,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotates a class that contributes to the object graph.
+ * Annotates an interface that contributes to the object graph.
+ * The method is expected to declare 1 or more {@link Provides} methods and/or
+ * include 1 or more types in the {@link #includes() includes} parameter.
+ * As this annotation is can only be applied to an interface, the methods must
+ * be <code>default</code> methods.
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
