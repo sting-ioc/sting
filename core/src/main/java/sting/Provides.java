@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 import javax.annotation.Nonnull;
 
 /**
- * Annotates methods of a {@linkplain Module module} to create a provider method binding. The
+ * Annotates instance methods of a {@linkplain Module module} to create a provider method binding. The
  * method's return type is bound to its returned value. The {@linkplain Injector injector}
  * implementation will pass dependencies to the method as parameters.
  *
