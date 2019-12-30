@@ -30,6 +30,12 @@ public final class StingProcessorTest
     return new Object[][]
       {
         new Object[]{ "com.example.at_inject.AbstractModel", "@Injectable target must not be abstract" },
+        new Object[]{ "com.example.at_inject.BadType1Model",
+                      "@Injectable target has a type parameter containing the value java.lang.Runnable that is not assignable to the declaring type" },
+        new Object[]{ "com.example.at_inject.BadType2Model",
+                      "@Injectable target has a type parameter containing the value java.util.concurrent.Callable that is not assignable to the declaring type" },
+        new Object[]{ "com.example.at_inject.BadType3Model",
+                      "@Injectable target has a type parameter containing the value com.example.at_inject.BadType3Model.MyOuterInterface that is not assignable to the declaring type" },
         new Object[]{ "com.example.at_inject.MultipleConstructorModel", "@Injectable target must not have multiple constructors" },
         new Object[]{ "com.example.at_inject.NonStaticNestedModel", "@Injectable target must not be a non-static nested class" }
       };
@@ -64,6 +70,7 @@ public final class StingProcessorTest
   {
     return new Object[][]
       {
+        new Object[]{ "com.example.at_inject.ExposeTypesModel" },
         new Object[]{ "com.example.at_inject.SuppressedProtectedConstructorModel" },
         new Object[]{ "com.example.at_inject.SuppressedPublicConstructorModel" }
       };
