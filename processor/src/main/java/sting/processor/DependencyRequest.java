@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.VariableElement;
 
-final class Dependency
+final class DependencyRequest
 {
   /**
    * The type of the request.
@@ -30,10 +30,10 @@ final class Dependency
   @Nonnull
   private final VariableElement _requestElement;
 
-  Dependency( @Nonnull final RequestType requestType,
-              @Nonnull final Coordinate coordinate,
-              final boolean optional,
-              @Nonnull final VariableElement requestElement )
+  DependencyRequest( @Nonnull final RequestType requestType,
+                     @Nonnull final Coordinate coordinate,
+                     final boolean optional,
+                     @Nonnull final VariableElement requestElement )
   {
     _requestType = Objects.requireNonNull( requestType );
     _coordinate = Objects.requireNonNull( coordinate );
