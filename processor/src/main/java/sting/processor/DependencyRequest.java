@@ -11,7 +11,7 @@ final class DependencyRequest
    * The type of the request.
    */
   @Nonnull
-  private final RequestType _requestType;
+  private final Type _type;
   /**
    * The coordinate of the dependency to match.
    */
@@ -30,21 +30,21 @@ final class DependencyRequest
   @Nonnull
   private final VariableElement _requestElement;
 
-  DependencyRequest( @Nonnull final RequestType requestType,
+  DependencyRequest( @Nonnull final Type type,
                      @Nonnull final Coordinate coordinate,
                      final boolean optional,
                      @Nonnull final VariableElement requestElement )
   {
-    _requestType = Objects.requireNonNull( requestType );
+    _type = Objects.requireNonNull( type );
     _coordinate = Objects.requireNonNull( coordinate );
     _optional = optional;
     _requestElement = Objects.requireNonNull( requestElement );
   }
 
   @Nonnull
-  public RequestType getRequestType()
+  public Type getType()
   {
-    return _requestType;
+    return _type;
   }
 
   @Nonnull
@@ -62,5 +62,13 @@ final class DependencyRequest
   public Element getRequestElement()
   {
     return _requestElement;
+  }
+
+  enum Type
+  {
+    /// A request for an instance of the dependency type T
+    INSTANCE,
+    /// A request for Supplier<T> of the dependency type T
+    SUPPLIER
   }
 }
