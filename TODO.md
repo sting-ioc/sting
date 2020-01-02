@@ -21,7 +21,6 @@ and generate the dagger equivalent. dagger. Phase 3 will replace dagger.
   Abstract methods return the type that is produced. Any parameters must match the parameter types and/or
   names of parameters in components constructor. Components produced must have a single constructor. Any
   parameter supplied is assumed to be from the object graph.
-* `Typed` can be added to types or factory methods that will restrict the types of values produced.
 
 ## Differences from Dagger
 
