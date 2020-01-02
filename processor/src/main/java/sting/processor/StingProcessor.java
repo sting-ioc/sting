@@ -103,6 +103,9 @@ public final class StingProcessor
     }
     constructorMustNotBeProtected( constructor );
     constructorMustNotBePublic( constructor );
+
+    final String qualifier =
+      (String) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTABLE_CLASSNAME, "qualifier" ).getValue();
   }
 
   private boolean isDefaultTypes( @Nonnull final List<TypeMirror> types )
