@@ -35,18 +35,25 @@ final class Binding
    */
   @Nonnull
   private final Element _element;
+  /**
+   * The dependencies that need to be supplied when creating the value.
+   */
+  @Nonnull
+  private final DependencyRequest[] _dependencies;
 
   Binding( @Nonnull final Type bindingType,
            @Nonnull final String qualifier,
            @Nonnull final TypeMirror[] types,
            final boolean eager,
-           @Nonnull final Element element )
+           @Nonnull final Element element,
+           @Nonnull final DependencyRequest[] dependencies )
   {
     _bindingType = Objects.requireNonNull( bindingType );
     _qualifier = Objects.requireNonNull( qualifier );
     _types = Objects.requireNonNull( types );
     _eager = eager;
     _element = Objects.requireNonNull( element );
+    _dependencies = Objects.requireNonNull( dependencies );
   }
 
   @Nonnull
@@ -76,6 +83,12 @@ final class Binding
   Element getElement()
   {
     return _element;
+  }
+
+  @Nonnull
+  DependencyRequest[] getDependencies()
+  {
+    return _dependencies;
   }
 
   enum Type
