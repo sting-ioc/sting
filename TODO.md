@@ -14,6 +14,7 @@ and generate the dagger equivalent. dagger. Phase 3 will replace dagger.
   for the type to see if it is `@Injectable`. If not then the framework will look for another type
   with the suffix `Factory` (or perhaps a static inner class named `Factory`) annotated with the `@Factory`
   annotation.
+* Consider renaming `@Qualifier` to `@Dependency`
 
 ## Phase 1:
 
