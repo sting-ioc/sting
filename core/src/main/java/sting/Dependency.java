@@ -12,14 +12,14 @@ import javax.annotation.Nonnull;
  *
  * <p>This annotation can appear on constructor parameters in a type annotated with {@link Injectable}
  * or it can appear on methods on types annotated by {@link Injector}.
- * If a dependency is annotated with {@code @Qualifier} then the dependency is only satisfied by an
+ * If a dependency is annotated with {@code @Dependency} then the dependency is only satisfied by an
  * {@link Injectable} annotated type or a {@link Provides} annotated method with matching qualifier
  * attribute and a matching dependency type.
  */
 @Target( { ElementType.PARAMETER, ElementType.METHOD } )
 @Retention( RetentionPolicy.RUNTIME )
 @Documented
-public @interface Qualifier
+public @interface Dependency
 {
   /**
    * An opaque string that qualifies the dependency.

@@ -14,7 +14,6 @@ and generate the dagger equivalent. dagger. Phase 3 will replace dagger.
   for the type to see if it is `@Injectable`. If not then the framework will look for another type
   with the suffix `Factory` (or perhaps a static inner class named `Factory`) annotated with the `@Factory`
   annotation.
-* Consider renaming `@Qualifier` to `@Dependency`
 * Annotation processor should generate binary json or binary file that represents Binding data. Then when
   we are processing `@Injector` we can read binary if present. If not present we can defer processing file
   until it is present and generate an error if any deferred bindings at end of round.
