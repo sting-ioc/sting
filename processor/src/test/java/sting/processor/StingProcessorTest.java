@@ -34,16 +34,16 @@ public final class StingProcessorTest
         new Object[]{ "com.example.dependency.WildcardSupplierDependencyModel",
                       "@Injectable target must not have a constructor parameter that is a java.util.function.Supplier type with a wildcard parameter" },
 
-        new Object[]{ "com.example.at_inject.AbstractModel", "@Injectable target must not be abstract" },
-        new Object[]{ "com.example.at_inject.BadType1Model",
+        new Object[]{ "com.example.injectable.AbstractModel", "@Injectable target must not be abstract" },
+        new Object[]{ "com.example.injectable.BadType1Model",
                       "@Injectable target has a type parameter containing the value java.lang.Runnable that is not assignable to the declaring type" },
-        new Object[]{ "com.example.at_inject.BadType2Model",
+        new Object[]{ "com.example.injectable.BadType2Model",
                       "@Injectable target has a type parameter containing the value java.util.concurrent.Callable that is not assignable to the declaring type" },
-        new Object[]{ "com.example.at_inject.BadType3Model",
-                      "@Injectable target has a type parameter containing the value com.example.at_inject.BadType3Model.MyOuterInterface that is not assignable to the declaring type" },
-        new Object[]{ "com.example.at_inject.MultipleConstructorModel",
+        new Object[]{ "com.example.injectable.BadType3Model",
+                      "@Injectable target has a type parameter containing the value com.example.injectable.BadType3Model.MyOuterInterface that is not assignable to the declaring type" },
+        new Object[]{ "com.example.injectable.MultipleConstructorModel",
                       "@Injectable target must not have multiple constructors" },
-        new Object[]{ "com.example.at_inject.NonStaticNestedModel",
+        new Object[]{ "com.example.injectable.NonStaticNestedModel",
                       "@Injectable target must not be a non-static nested class" }
       };
   }
@@ -59,9 +59,9 @@ public final class StingProcessorTest
   {
     return new Object[][]
       {
-        new Object[]{ "com.example.at_inject.ProtectedConstructorModel",
+        new Object[]{ "com.example.injectable.ProtectedConstructorModel",
                       "@Injectable target should not have a protected constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:ProtectedConstructor\" )" },
-        new Object[]{ "com.example.at_inject.PublicConstructorModel",
+        new Object[]{ "com.example.injectable.PublicConstructorModel",
                       "@Injectable target should not have a public constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:PublicConstructor\" )" }
       };
   }
@@ -77,9 +77,9 @@ public final class StingProcessorTest
   {
     return new Object[][]
       {
-        new Object[]{ "com.example.at_inject.ExposeTypesModel" },
-        new Object[]{ "com.example.at_inject.SuppressedProtectedConstructorModel" },
-        new Object[]{ "com.example.at_inject.SuppressedPublicConstructorModel" }
+        new Object[]{ "com.example.injectable.ExposeTypesModel" },
+        new Object[]{ "com.example.injectable.SuppressedProtectedConstructorModel" },
+        new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" }
       };
   }
 

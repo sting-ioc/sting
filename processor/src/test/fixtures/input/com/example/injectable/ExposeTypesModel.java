@@ -1,4 +1,4 @@
-package com.example.at_inject;
+package com.example.injectable;
 
 import java.io.Serializable;
 import sting.Injectable;
