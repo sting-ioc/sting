@@ -29,14 +29,15 @@ and generate the dagger equivalent. dagger. Phase 3 will replace dagger.
 
 The significant differences from Dagger:
 
-* `Singleton` by default, `Dependent` by explicit configuration, no other scopes supported.
-* `Eager` and `Lazy` beans are supported with `Lazy` being the default. This really only applies to
-  `Singleton` scoped entities. This may ber merged into three values (`LazySingleton`, `EagerSingleton`, `Dependent`)
+* No scopes supported, a single instance of each binding is in the `Injector`.
+* `Eager` and `Lazy` beans are supported with `Lazy` being the default.
 * `Typed` is used to shape the possible edges in graph.
 * Add the ability for modules to define a hook method that is invoked post-Object-graph construction.
   (i.e. to link into react runtime or to cache values in statics as in Rose)
 * Constructor injection the only form supported. No field or method injection.
-* No qualifiers (for now...) ... except for nullability annotations. @Nullable provider will only provider for @Nullable consumer
+* Qualifiers are represented as a single string which is empty.
+* `@Nullable` provider will provide for `@Nullable` dependency but a null will also be provided to dependency if it
+  is not declared in graph.
 * Components may have an optional factory that accepts any dependencies from outside the system but these are
   incorporated into ObjectGraph
 * Can very easily extend an existing component and replace some beans in object with those used in testing.
