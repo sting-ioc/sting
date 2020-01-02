@@ -106,6 +106,8 @@ public final class StingProcessor
 
     final String qualifier =
       (String) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTABLE_CLASSNAME, "qualifier" ).getValue();
+    final boolean eager =
+      (boolean) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTABLE_CLASSNAME, "eager" ).getValue();
   }
 
   private boolean isDefaultTypes( @Nonnull final List<TypeMirror> types )
