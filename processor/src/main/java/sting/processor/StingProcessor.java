@@ -126,6 +126,13 @@ public final class StingProcessor
     {
       dependencies.add( handleConstructorParameter( parameter, parameterTypes.get( index++ ) ) );
     }
+    final Binding binding =
+      new Binding( Binding.Type.INJECTABLE,
+                   qualifier,
+                   types.toArray( new TypeMirror[ 0 ] ),
+                   eager,
+                   element,
+                   dependencies.toArray( new DependencyRequest[ 0 ] ) );
   }
 
   @Nonnull
