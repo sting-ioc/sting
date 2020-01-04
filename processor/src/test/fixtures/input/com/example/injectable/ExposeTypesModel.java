@@ -1,6 +1,5 @@
 package com.example.injectable;
 
-import java.io.Serializable;
 import sting.Injectable;
 
 public class ExposeTypesModel
