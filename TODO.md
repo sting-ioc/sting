@@ -17,6 +17,7 @@ and generate the dagger equivalent. dagger. Phase 3 will replace dagger.
 * Annotation processor should generate binary json or binary file that represents Binding data. Then when
   we are processing `@Injector` we can read binary if present. If not present we can defer processing file
   until it is present and generate an error if any deferred bindings at end of round.
+* A binding that is lazy but does not publish any types should be an error.
 
 ## Phase 1:
 
