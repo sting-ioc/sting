@@ -44,6 +44,14 @@ import org.realityforge.proton.ProcessorException;
 public final class StingProcessor
   extends AbstractStandardProcessor
 {
+  /**
+   * A local cache of bindings that is cleared on error or when processing is complete.
+   * This will probably be loaded from json cache files in the future but now we require
+   * in memory processing.
+   */
+  @Nonnull
+  private final BindingRegistry _bindingRegistry = new BindingRegistry();
+
   @Nonnull
   @Override
   protected String getIssueTrackerURL()
@@ -66,6 +74,10 @@ public final class StingProcessor
     final Collection<TypeElement> elementsTo = (Collection<TypeElement>) env.getElementsAnnotatedWith( annotation );
     processTypeElements( env, elementsTo, this::process );
     errorIfProcessingOverAndInvalidTypesDetected( env );
+    if ( env.processingOver() || env.errorRaised() )
+    {
+      _bindingRegistry.clear();
+    }
     return true;
   }
 
@@ -133,6 +145,7 @@ public final class StingProcessor
                    eager,
                    element,
                    dependencies.toArray( new DependencyRequest[ 0 ] ) );
+    _bindingRegistry.registerBinding( binding );
   }
 
   @Nonnull
