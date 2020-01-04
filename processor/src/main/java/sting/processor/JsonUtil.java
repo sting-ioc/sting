@@ -65,14 +65,13 @@ final class JsonUtil
   {
     return
       input
-        .replaceAll( "(?m)^ {4}\\{", "  {" )
-        .replaceAll( "(?m)^ {4}}", "  }" )
-        .replaceAll( "(?m)^ {8}\"", "    \"" )
-        .replaceAll( "(?m)^ {8}]", "    ]" )
-        .replaceAll( "(?m)^ {12}\\{", "      {" )
-        .replaceAll( "(?m)^ {12}}", "      }" )
-        .replaceAll( "(?m)^ {16}\"", "        \"" )
-        .replaceAll( "(?m)^\n\\[\n", "[\n" ) +
+        .replaceAll( "(?m)^ {4}([^ ])", "  $1" )
+        .replaceAll( "(?m)^ {8}([^ ])", "    $1" )
+        .replaceAll( "(?m)^ {12}([^ ])", "      $1" )
+        .replaceAll( "(?m)^ {16}([^ ])", "        $1" )
+        .replaceAll( "(?m)^ {20}([^ ])", "          $1" )
+        .replaceAll( "(?m)^\n\\[\n", "[\n" )
+        .replaceAll( "(?m)^\n\\{\n", "{\n" ) +
       "\n";
   }
 }
