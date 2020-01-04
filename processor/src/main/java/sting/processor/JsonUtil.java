@@ -31,11 +31,7 @@ final class JsonUtil
 
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     final JsonGenerator g = generatorFactory.createGenerator( baos );
-    g.writeStartArray();
-
     action.accept( g );
-
-    g.writeEnd();
     g.close();
 
     writeResource( processingEnv, filename, formatJson( baos.toString() ), element );
