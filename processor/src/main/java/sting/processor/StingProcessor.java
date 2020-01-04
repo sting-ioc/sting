@@ -8,6 +8,7 @@ import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.code.Symbol;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -102,7 +103,12 @@ public final class StingProcessor
     }
     final List<TypeMirror> types =
       AnnotationsUtil.getTypeMirrorsAnnotationParameter( element, Constants.INJECTABLE_CLASSNAME, "types" );
-    if ( !isDefaultTypes( types ) )
+    final List<TypeMirror> publishedTypes;
+    if ( isDefaultTypes( types ) )
+    {
+      publishedTypes = Collections.singletonList( element.asType() );
+    }
+    else
     {
       for ( final TypeMirror type : types )
       {
@@ -114,6 +120,7 @@ public final class StingProcessor
                                         element );
         }
       }
+      publishedTypes = types;
     }
     final List<ExecutableElement> constructors = ElementsUtil.getConstructors( element );
     final ExecutableElement constructor = constructors.get( 0 );
@@ -141,7 +148,7 @@ public final class StingProcessor
     final Binding binding =
       new Binding( Binding.Type.INJECTABLE,
                    qualifier,
-                   types.toArray( new TypeMirror[ 0 ] ),
+                   publishedTypes.toArray( new TypeMirror[ 0 ] ),
                    eager,
                    element,
                    dependencies.toArray( new DependencyRequest[ 0 ] ) );
