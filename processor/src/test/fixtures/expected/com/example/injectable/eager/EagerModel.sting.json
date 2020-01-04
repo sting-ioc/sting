@@ -1,0 +1,8 @@
+{
+  "bindingType": "INJECTABLE",
+  "qualifier": "",
+  "types": [
+    "com.example.injectable.eager.EagerModel"
+  ],
+  "eager": true
+}

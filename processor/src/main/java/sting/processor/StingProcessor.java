@@ -146,6 +146,7 @@ public final class StingProcessor
                    element,
                    dependencies.toArray( new DependencyRequest[ 0 ] ) );
     _bindingRegistry.registerBinding( binding );
+    binding.write( processingEnv );
   }
 
   @Nonnull

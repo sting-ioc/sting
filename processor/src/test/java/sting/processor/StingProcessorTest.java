@@ -14,6 +14,18 @@ public final class StingProcessorTest
   {
     return new Object[][]
       {
+        new Object[]{ "com.example.injectable.BasicModel" },
+
+        new Object[]{ "com.example.injectable.eager.EagerModel" },
+        new Object[]{ "com.example.injectable.eager.LazyModel" },
+
+        new Object[]{ "com.example.injectable.types.BasicTypesModel" },
+        new Object[]{ "com.example.injectable.types.DefaultTypesModel" },
+        new Object[]{ "com.example.injectable.types.NoTypesModel" },
+
+        new Object[]{ "com.example.injectable.qualifier.BasicQualifierModel" },
+        new Object[]{ "com.example.injectable.qualifier.EmptyQualifierModel" },
+        new Object[]{ "com.example.injectable.qualifier.NonStandardQualifierModel" }
       };
   }
 
@@ -21,7 +33,13 @@ public final class StingProcessorTest
   public void processSuccessfulCompile( @Nonnull final String classname )
     throws Exception
   {
-    assertSuccessfulCompile( classname );
+    assertSuccessfulCompile( classname, deriveExpectedOutputs( classname ) );
+  }
+
+  @Nonnull
+  String[] deriveExpectedOutputs( @Nonnull final String classname )
+  {
+    return new String[]{ toFilename( "expected", classname, "", ".sting.json" ) };
   }
 
   @DataProvider( name = "failedCompiles" )

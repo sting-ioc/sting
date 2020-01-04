@@ -1,9 +1,13 @@
 package sting.processor;
 
+import java.io.IOException;
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
+import org.realityforge.proton.GeneratorUtil;
 
 final class Binding
 {
@@ -89,6 +93,31 @@ final class Binding
   DependencyRequest[] getDependencies()
   {
     return _dependencies;
+  }
+
+  void write( @Nonnull final ProcessingEnvironment processingEnv )
+    throws IOException
+  {
+    if ( _element instanceof TypeElement )
+    {
+      final TypeElement typeElement = (TypeElement) _element;
+
+      final String filename =
+        GeneratorUtil.getGeneratedClassName( typeElement, "", "" ).toString().replace( ".", "/" ) + ".sting.json";
+      JsonUtil.writeJsonResource( processingEnv, _element, filename, g -> {
+        g.writeStartObject();
+        g.write( "bindingType", _bindingType.name() );
+        g.write( "qualifier", _qualifier );
+        g.writeStartArray( "types" );
+        for ( final TypeMirror type : _types )
+        {
+          g.write( type.toString() );
+        }
+        g.writeEnd();
+        g.write( "eager", _eager );
+        g.writeEnd();
+      } );
+    }
   }
 
   enum Type

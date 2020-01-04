@@ -1,0 +1,11 @@
+{
+  "bindingType": "INJECTABLE",
+  "qualifier": "",
+  "types": [
+    "java.lang.Runnable",
+    "java.util.EventListener",
+    "java.lang.Object",
+    "java.util.Properties"
+  ],
+  "eager": false
+}

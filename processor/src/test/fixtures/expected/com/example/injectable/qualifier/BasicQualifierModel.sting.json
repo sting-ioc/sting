@@ -1,0 +1,8 @@
+{
+  "bindingType": "INJECTABLE",
+  "qualifier": "com.biz/SomeQualifier",
+  "types": [
+    "com.example.injectable.qualifier.BasicQualifierModel"
+  ],
+  "eager": false
+}
