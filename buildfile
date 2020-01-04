@@ -34,6 +34,7 @@ define 'sting' do
   desc 'The Annotation processor'
   define 'processor' do
     compile.with :proton_core,
+                 :javax_json,
                  :javapoet,
                  :javax_annotation
 
