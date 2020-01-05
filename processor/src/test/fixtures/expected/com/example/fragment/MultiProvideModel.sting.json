@@ -1,0 +1,23 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "providesMethod": "provideRunnable",
+      "types": [
+        "java.lang.Runnable"
+      ]
+    },
+    {
+      "providesMethod": "provideEventListener",
+      "types": [
+        "java.util.EventListener"
+      ]
+    },
+    {
+      "providesMethod": "provideSerializable",
+      "types": [
+        "java.io.Serializable"
+      ]
+    }
+  ]
+}

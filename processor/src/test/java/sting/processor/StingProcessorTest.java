@@ -18,6 +18,8 @@ public final class StingProcessorTest
     return new Object[][]
       {
         new Object[]{ "com.example.fragment.BasicModel" },
+        new Object[]{ "com.example.fragment.MultiProvideModel" },
+        new Object[]{ "com.example.fragment.NullableProvidesModel" },
 
         new Object[]{ "com.example.fragment.dependency.BasicDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.ComplexDependencyModel" },

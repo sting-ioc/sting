@@ -1,0 +1,12 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "providesMethod": "provideRunnable",
+      "nullable": true,
+      "types": [
+        "java.lang.Runnable"
+      ]
+    }
+  ]
+}
