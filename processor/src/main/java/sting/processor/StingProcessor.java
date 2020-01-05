@@ -209,7 +209,7 @@ public final class StingProcessor
           AnnotationsUtil.getTypeMirrorsAnnotationParameter( method, Constants.PROVIDES_CLASSNAME, "types" ) :
           Collections.emptyList();
         final List<TypeMirror> publishedTypes;
-        if ( isDefaultTypes( types ) )
+        if ( !providesPresent || isDefaultTypes( types ) )
         {
           publishedTypes = Collections.singletonList( method.getReturnType() );
         }
