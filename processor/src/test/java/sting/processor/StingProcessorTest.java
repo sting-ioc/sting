@@ -41,7 +41,7 @@ public final class StingProcessorTest
   public void processSuccessfulCompile( @Nonnull final String classname )
     throws Exception
   {
-    assertSuccessfulCompile( classname, deriveExpectedOutputs( classname ) );
+    assertSuccessfulCompile( classname, toFilename( "expected", classname, "", ".sting.json" ) );
   }
 
   @Test
