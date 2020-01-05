@@ -14,6 +14,8 @@ public final class StingProcessorTest
   {
     return new Object[][]
       {
+        new Object[]{ "com.example.fragment.BasicModel" },
+
         new Object[]{ "com.example.injectable.BasicModel" },
 
         new Object[]{ "com.example.injectable.dependency.BasicDependencyModel" },
@@ -60,10 +62,20 @@ public final class StingProcessorTest
                              "expected/com/example/injectable/NestedNestedModel_Middle_MyModel.sting.json" );
   }
 
-  @Nonnull
-  String[] deriveExpectedOutputs( @Nonnull final String classname )
+  @Test
+  public void nestedFragment()
+    throws Exception
   {
-    return new String[]{ toFilename( "expected", classname, "", ".sting.json" ) };
+    assertSuccessfulCompile( "com.example.fragment.NestedModel",
+                             "expected/com/example/fragment/NestedModel_MyModel.sting.json" );
+  }
+
+  @Test
+  public void nestedNestedFragment()
+    throws Exception
+  {
+    assertSuccessfulCompile( "com.example.fragment.NestedNestedModel",
+                             "expected/com/example/fragment/NestedNestedModel_Middle_MyModel.sting.json" );
   }
 
   @DataProvider( name = "failedCompiles" )
@@ -150,6 +162,8 @@ public final class StingProcessorTest
     return new Object[][]
       {
         new Object[]{ "NoPackageModel" },
+
+        new Object[]{ "com.example.fragment.PackageAccessModel" },
 
         new Object[]{ "com.example.injectable.ExposeTypesModel" },
         new Object[]{ "com.example.injectable.FinalModel" },

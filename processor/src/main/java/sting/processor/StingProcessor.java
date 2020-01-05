@@ -270,6 +270,33 @@ public final class StingProcessor
     {
       _bindingRegistry.registerBinding( binding );
     }
+    final String filename = toFilename( element ) + DESCRIPTOR_FILE_SUFFIX;
+    JsonUtil.writeJsonResource( processingEnv, element, filename, g -> {
+      g.writeStartObject();
+      g.write( "schema", "fragment/1" );
+      if ( !includes.isEmpty() )
+      {
+        g.writeStartArray( "bindings" );
+        for ( final TypeMirror include : includes )
+        {
+          g.write( include.toString() );
+        }
+        g.writeEnd();
+      }
+      if ( !bindings.isEmpty() )
+      {
+        g.writeStartArray( "bindings" );
+        for ( final Binding binding : bindings )
+        {
+          g.writeStartObject();
+          binding.emitBindingJson( g );
+          g.writeEnd();
+        }
+        g.writeEnd();
+      }
+      g.writeEnd();
+    } );
+
   }
 
   @Nonnull

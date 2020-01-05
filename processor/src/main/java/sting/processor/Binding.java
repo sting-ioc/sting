@@ -2,7 +2,6 @@ package sting.processor;
 
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
@@ -95,9 +94,17 @@ final class Binding
 
   void emitBindingJson( @Nonnull final JsonGenerator g )
   {
+    if ( Type.INJECTABLE != _bindingType )
+    {
+      g.write( "providesMethod", _element.getSimpleName().toString() );
+    }
     if ( !_qualifier.isEmpty() )
     {
       g.write( "qualifier", _qualifier );
+    }
+    if ( Type.NULLABLE_PROVIDES == _bindingType )
+    {
+      g.write( "nullable", true );
     }
     if ( _types.length > 0 )
     {
