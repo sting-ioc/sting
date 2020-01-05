@@ -166,6 +166,7 @@ public final class StingProcessorTest
                       "@Provides target must have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" },
 
         new Object[]{ "com.example.injectable.AbstractModel", "@Injectable target must not be abstract" },
+        new Object[]{ "com.example.injectable.InterfaceModel", "@Injectable target must be a class" },
         new Object[]{ "com.example.injectable.MultipleConstructorModel",
                       "@Injectable target must not have multiple constructors" },
         new Object[]{ "com.example.injectable.NonStaticNestedModel",
