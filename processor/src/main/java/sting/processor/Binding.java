@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
@@ -104,60 +105,63 @@ final class Binding
 
       final String filename =
         GeneratorUtil.getGeneratedClassName( typeElement, "", "" ).toString().replace( ".", "/" ) + ".sting.json";
-      JsonUtil.writeJsonResource( processingEnv, _element, filename, g -> {
-        g.writeStartObject();
-        g.write( "schema", "injectable/1" );
-        g.write( "bindingType", _bindingType.name() );
-        if ( !_qualifier.isEmpty() )
-        {
-          g.write( "qualifier", _qualifier );
-        }
-        if ( _types.length > 0 )
-        {
-          g.writeStartArray( "types" );
-          for ( final TypeMirror type : _types )
-          {
-            g.write( type.toString() );
-          }
-          g.writeEnd();
-        }
-        if ( _eager )
-        {
-          g.write( "eager", _eager );
-        }
-        if ( _dependencies.length > 0 )
-        {
-          g.writeStartArray( "dependencies" );
-          for ( final DependencyDescriptor dependency : _dependencies )
-          {
-            g.writeStartObject();
-            final DependencyDescriptor.Type type = dependency.getType();
-            if ( DependencyDescriptor.Type.INSTANCE != type )
-            {
-              g.write( "type", type.toString() );
-            }
+      JsonUtil.writeJsonResource( processingEnv, _element, filename, this::emitBindingJson );
+    }
+  }
 
-            g.writeStartObject( "coordinate" );
-            final Coordinate coordinate = dependency.getCoordinate();
-            final String qualifier = coordinate.getQualifier();
-            if ( !qualifier.isEmpty() )
-            {
-              g.write( "qualifier", qualifier );
-            }
-            g.write( "type", coordinate.getType().toString() );
-            g.writeEnd();
-            final boolean nullable = dependency.isOptional();
-            if ( nullable )
-            {
-              g.write( "nullable", nullable );
-            }
-            g.writeEnd();
-          }
-          g.writeEnd();
+  private void emitBindingJson( @Nonnull final JsonGenerator g )
+  {
+    g.writeStartObject();
+    g.write( "schema", "injectable/1" );
+    g.write( "bindingType", _bindingType.name() );
+    if ( !_qualifier.isEmpty() )
+    {
+      g.write( "qualifier", _qualifier );
+    }
+    if ( _types.length > 0 )
+    {
+      g.writeStartArray( "types" );
+      for ( final TypeMirror type : _types )
+      {
+        g.write( type.toString() );
+      }
+      g.writeEnd();
+    }
+    if ( _eager )
+    {
+      g.write( "eager", _eager );
+    }
+    if ( _dependencies.length > 0 )
+    {
+      g.writeStartArray( "dependencies" );
+      for ( final DependencyDescriptor dependency : _dependencies )
+      {
+        g.writeStartObject();
+        final DependencyDescriptor.Type type = dependency.getType();
+        if ( DependencyDescriptor.Type.INSTANCE != type )
+        {
+          g.write( "type", type.toString() );
+        }
+
+        g.writeStartObject( "coordinate" );
+        final Coordinate coordinate = dependency.getCoordinate();
+        final String qualifier = coordinate.getQualifier();
+        if ( !qualifier.isEmpty() )
+        {
+          g.write( "qualifier", qualifier );
+        }
+        g.write( "type", coordinate.getType().toString() );
+        g.writeEnd();
+        final boolean nullable = dependency.isOptional();
+        if ( nullable )
+        {
+          g.write( "nullable", nullable );
         }
         g.writeEnd();
-      } );
+      }
+      g.writeEnd();
     }
+    g.writeEnd();
   }
 
   enum Type
