@@ -95,7 +95,7 @@ public final class StingProcessor
       throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME, "be abstract" ),
                                     element );
     }
-    else if ( isEnclosedInNonStaticClass( element ) )
+    else if ( ElementsUtil.isEnclosedInNonStaticClass( element ) )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
                                                           "be a non-static nested class" ),
@@ -218,26 +218,6 @@ public final class StingProcessor
   private boolean isDefaultTypes( @Nonnull final List<TypeMirror> types )
   {
     return 1 == types.size() && TypeKind.VOID == types.get( 0 ).getKind();
-  }
-
-  private boolean isEnclosedInNonStaticClass( @Nonnull final TypeElement element )
-  {
-    final Element parent = element.getEnclosingElement();
-    if ( parent instanceof TypeElement )
-    {
-      if ( element.getModifiers().contains( Modifier.STATIC ) )
-      {
-        return isEnclosedInNonStaticClass( (TypeElement) parent );
-      }
-      else
-      {
-        return true;
-      }
-    }
-    else
-    {
-      return false;
-    }
   }
 
   private void constructorMustNotBePublic( @Nonnull final ExecutableElement constructor )
