@@ -106,6 +106,7 @@ final class Binding
         GeneratorUtil.getGeneratedClassName( typeElement, "", "" ).toString().replace( ".", "/" ) + ".sting.json";
       JsonUtil.writeJsonResource( processingEnv, _element, filename, g -> {
         g.writeStartObject();
+        g.write( "schema", "injectable/1" );
         g.write( "bindingType", _bindingType.name() );
         if ( !_qualifier.isEmpty() )
         {

@@ -6,7 +6,6 @@ complete as there is too much un-said.
 
 * Make the emitting of json files controllable by annotation configuration setting. By default it
   should be disabled.
-* Add a schema field to json files such as `schema=injectable/1` and `schema=fragment/1`
 * Add a separate annotation processor that provides [AssistedInject](https://github.com/square/AssistedInject)
   capabilities if it is desired. The reason for using a separate annotation processor is that it actually
   generates code used by users and thus has to be marked as a API-generating processor in Bazel which can reduce
