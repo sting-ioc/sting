@@ -108,6 +108,7 @@ public final class StingProcessorTest
       {
         new Object[]{ "com.example.injectable.ExposeTypesModel" },
         new Object[]{ "com.example.injectable.FinalModel" },
+        new Object[]{ "com.example.injectable.PackageAccessModel" },
         new Object[]{ "com.example.injectable.SuppressedProtectedConstructorModel" },
         new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" }
       };
