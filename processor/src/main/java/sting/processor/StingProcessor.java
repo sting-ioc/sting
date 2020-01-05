@@ -145,6 +145,12 @@ public final class StingProcessor
     {
       dependencies.add( handleConstructorParameter( parameter, parameterTypes.get( index++ ) ) );
     }
+    if ( publishedTypes.isEmpty() && !eager )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                          "have specified zero types to publish and not have specified eager = true as this type will never be created by the injector" ),
+                                    element );
+    }
     final Binding binding =
       new Binding( Binding.Type.INJECTABLE,
                    qualifier,

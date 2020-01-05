@@ -3,5 +3,5 @@
   "qualifier": "",
   "types": [
   ],
-  "eager": false
+  "eager": true
 }

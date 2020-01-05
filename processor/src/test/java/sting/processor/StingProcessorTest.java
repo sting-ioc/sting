@@ -62,7 +62,10 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.MultipleConstructorModel",
                       "@Injectable target must not have multiple constructors" },
         new Object[]{ "com.example.injectable.NonStaticNestedModel",
-                      "@Injectable target must not be a non-static nested class" }
+                      "@Injectable target must not be a non-static nested class" },
+
+        new Object[]{ "com.example.injectable.types.NoTypesAndLazyModel",
+                      "@Injectable target must not have specified zero types to publish and not have specified eager = true as this type will never be created by the injector" }
       };
   }
 
