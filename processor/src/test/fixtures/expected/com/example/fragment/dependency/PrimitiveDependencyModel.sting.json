@@ -1,0 +1,18 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "providesMethod": "provideRunnable",
+      "types": [
+        "java.lang.Runnable"
+      ],
+      "dependencies": [
+        {
+          "coordinate": {
+            "type": "int"
+          }
+        }
+      ]
+    }
+  ]
+}

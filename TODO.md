@@ -12,7 +12,6 @@ complete as there is too much un-said.
   the degree of parallelization that is possible. Moving it to a separate annotation processor means we can
   explicitly control whether we accept this cost.
 * Test `@Fragment.includes`
-* Test `@Provides` + `@Dependency`
 
 ## Old Notes
 
