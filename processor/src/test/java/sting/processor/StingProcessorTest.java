@@ -121,9 +121,9 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.provides.types.BadType1Model",
                       "@Provides target has a type parameter containing the value java.lang.Runnable that is not assignable to the return type of the method" },
         new Object[]{ "com.example.fragment.provides.types.BadType2Model",
-                      "@Provides target has a type parameter containing the value com.example.fragment.provides.types.BadType2Model.Foo that is not assignable to the return type of the method" },
+                      "@Provides target has a type parameter containing the value java.util.concurrent.Callable that is not assignable to the return type of the method" },
         new Object[]{ "com.example.fragment.provides.types.BadType3Model",
-                      "@Provides target has a type parameter containing the value com.example.fragment.provides.types.BadType3Model.MyBaseInterface that is not assignable to the return type of the method" },
+                      "@Provides target has a type parameter containing the value com.example.fragment.provides.types.BadType3Model.MyOuterInterface that is not assignable to the return type of the method" },
         new Object[]{ "com.example.fragment.provides.types.NoTypesAndLazyModel",
                       "@Provides target must have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" },
 
