@@ -103,7 +103,7 @@ public final class StingProcessor
           AnnotationsUtil.hasAnnotationOfType( executableElement.getEnclosingElement(),
                                                Constants.INJECTABLE_CLASSNAME );
         final boolean moduleType =
-          AnnotationsUtil.hasAnnotationOfType( executableElement.getEnclosingElement(), Constants.MODULE_CLASSNAME );
+          AnnotationsUtil.hasAnnotationOfType( executableElement.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME );
         final ElementKind executableKind = executableElement.getKind();
         if ( !injectableType && ElementKind.CONSTRUCTOR == executableKind )
         {
@@ -120,7 +120,7 @@ public final class StingProcessor
                        MemberChecks.must( Constants.DEPENDENCY_CLASSNAME,
                                           "only be present on a parameter of a method " +
                                           "if the enclosing type is annotated with " +
-                                          MemberChecks.toSimpleName( Constants.MODULE_CLASSNAME ) ),
+                                          MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
                        element );
         }
         else

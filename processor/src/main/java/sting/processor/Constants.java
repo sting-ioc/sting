@@ -7,7 +7,7 @@ final class Constants
   @Nonnull
   static final String INJECTABLE_CLASSNAME = "sting.Injectable";
   @Nonnull
-  static final String MODULE_CLASSNAME = "sting.Module";
+  static final String FRAGMENT_CLASSNAME = "sting.Fragment";
   @Nonnull
   static final String INJECTOR_CLASSNAME = "sting.Injector";
   @Nonnull
