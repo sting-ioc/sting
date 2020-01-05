@@ -11,6 +11,7 @@ complete as there is too much un-said.
   generates code used by users and thus has to be marked as a API-generating processor in Bazel which can reduce
   the degree of parallelization that is possible. Moving it to a separate annotation processor means we can
   explicitly control whether we accept this cost.
+* Fragments should be able to be static nested classes. Add test and verify
 
 ## Old Notes
 
