@@ -73,6 +73,8 @@ public @interface Injector
    * A list of classes annotated with {@link Fragment} that contribute to the injectors object graph. Note
    * that through the use of {@link Fragment#includes} the full set of fragments used to implement the injector
    * may include more fragments that just those listed here.
+   *
+   * @return a list of fragments that contribute to the injectors object graph.
    */
   Class<?>[] fragments() default {};
 }
