@@ -47,16 +47,16 @@ public final class StingProcessorTest
   {
     return new Object[][]
       {
-        new Object[]{ "com.example.dependency.RawSupplierDependencyModel",
-                      "@Injectable target must not have a constructor parameter that is a raw java.util.function.Supplier type" },
-        new Object[]{ "com.example.dependency.WildcardSupplierDependencyModel",
-                      "@Injectable target must not have a constructor parameter that is a java.util.function.Supplier type with a wildcard parameter" },
-
         new Object[]{ "com.example.injectable.AbstractModel", "@Injectable target must not be abstract" },
         new Object[]{ "com.example.injectable.MultipleConstructorModel",
                       "@Injectable target must not have multiple constructors" },
         new Object[]{ "com.example.injectable.NonStaticNestedModel",
                       "@Injectable target must not be a non-static nested class" },
+
+        new Object[]{ "com.example.injectable.dependency.RawSupplierDependencyModel",
+                      "@Injectable target must not have a constructor parameter that is a raw java.util.function.Supplier type" },
+        new Object[]{ "com.example.injectable.dependency.WildcardSupplierDependencyModel",
+                      "@Injectable target must not have a constructor parameter that is a java.util.function.Supplier type with a wildcard parameter" },
 
         new Object[]{ "com.example.injectable.types.BadType1Model",
                       "@Injectable target has a type parameter containing the value java.lang.Runnable that is not assignable to the declaring type" },

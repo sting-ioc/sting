@@ -1,4 +1,4 @@
-package com.example.dependency;
+package com.example.injectable.dependency;
 
 import java.util.function.Supplier;
 import sting.Injectable;
