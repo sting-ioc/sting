@@ -277,7 +277,7 @@ public final class StingProcessor
       g.write( "schema", "fragment/1" );
       if ( !includes.isEmpty() )
       {
-        g.writeStartArray( "bindings" );
+        g.writeStartArray( "includes" );
         for ( final TypeMirror include : includes )
         {
           g.write( include.toString() );
