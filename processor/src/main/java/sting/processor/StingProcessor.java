@@ -174,7 +174,8 @@ public final class StingProcessor
       AnnotationsUtil.getTypeMirrorsAnnotationParameter( element, Constants.FRAGMENT_CLASSNAME, "includes" );
     for ( final TypeMirror include : includes )
     {
-      if ( !AnnotationsUtil.hasAnnotationOfType( include, Constants.FRAGMENT_CLASSNAME ) )
+      final Element includeElement = processingEnv.getTypeUtils().asElement( include );
+      if ( !AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FRAGMENT_CLASSNAME ) )
       {
         throw new ProcessorException( MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " target has an " +
                                       "includes parameter containing the value " + include + " that is not a type " +
