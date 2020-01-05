@@ -6,7 +6,6 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.WildcardTypeName;
 import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.code.Symbol;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,6 +47,10 @@ import org.realityforge.proton.ProcessorException;
 public final class StingProcessor
   extends AbstractStandardProcessor
 {
+  /**
+   * Extension for json descriptors.
+   */
+  private static final String DESCRIPTOR_FILE_SUFFIX = ".sting.json";
   /**
    * A local cache of bindings that is cleared on error or when processing is complete.
    * This will probably be loaded from json cache files in the future but now we require
@@ -265,7 +268,7 @@ public final class StingProcessor
     }
     for ( final Binding binding : bindings )
     {
-      registerBinding( binding );
+      _bindingRegistry.registerBinding( binding );
     }
   }
 
@@ -403,14 +406,15 @@ public final class StingProcessor
                    eager,
                    element,
                    dependencies.toArray( new DependencyDescriptor[ 0 ] ) );
-    registerBinding( binding );
+    _bindingRegistry.registerBinding( binding );
+    final String filename = toFilename( element ) + DESCRIPTOR_FILE_SUFFIX;
+    JsonUtil.writeJsonResource( processingEnv, element, filename, g -> binding.emitBindingJson( g, "injectable/1" ) );
   }
 
-  private void registerBinding( @Nonnull final Binding binding )
-    throws IOException
+  @Nonnull
+  private String toFilename( @Nonnull final TypeElement typeElement )
   {
-    _bindingRegistry.registerBinding( binding );
-    binding.write( processingEnv );
+    return GeneratorUtil.getGeneratedClassName( typeElement, "", "" ).toString().replace( ".", "/" );
   }
 
   @Nonnull

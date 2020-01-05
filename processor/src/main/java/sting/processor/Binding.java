@@ -1,14 +1,11 @@
 package sting.processor;
 
-import java.io.IOException;
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import org.realityforge.proton.GeneratorUtil;
 
 final class Binding
 {
@@ -96,23 +93,13 @@ final class Binding
     return _dependencies;
   }
 
-  void write( @Nonnull final ProcessingEnvironment processingEnv )
-    throws IOException
-  {
-    if ( _element instanceof TypeElement )
-    {
-      final TypeElement typeElement = (TypeElement) _element;
-
-      final String filename =
-        GeneratorUtil.getGeneratedClassName( typeElement, "", "" ).toString().replace( ".", "/" ) + ".sting.json";
-      JsonUtil.writeJsonResource( processingEnv, _element, filename, this::emitBindingJson );
-    }
-  }
-
-  private void emitBindingJson( @Nonnull final JsonGenerator g )
+  void emitBindingJson( @Nonnull final JsonGenerator g, @Nullable final String schema )
   {
     g.writeStartObject();
-    g.write( "schema", "injectable/1" );
+    if ( null != schema )
+    {
+      g.write( "schema", schema );
+    }
     g.write( "bindingType", _bindingType.name() );
     if ( !_qualifier.isEmpty() )
     {
