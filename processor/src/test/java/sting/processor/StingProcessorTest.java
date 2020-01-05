@@ -104,12 +104,15 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.NoProvidesOrIncludesModel",
                       "@Fragment target must contain one or more methods or one or more includes" },
         new Object[]{ "com.example.fragment.ParameterizedModel", "@Fragment target must not have type parameters" },
+
         new Object[]{ "com.example.fragment.includes.BadTypesInIncludesModel",
                       "@Fragment target has an includes parameter containing the value java.util.EventListener that is not a type annotated by @Fragment" },
+
         new Object[]{ "com.example.fragment.provides.AbstractMethodProvidesModel",
                       "@Fragment target must only contain methods with the default modifier" },
         new Object[]{ "com.example.fragment.provides.BadReturnTypeProvidesModel",
                       "@Fragment target must only contain methods that return a value" },
+
         new Object[]{ "com.example.fragment.provides.types.BadType1Model",
                       "@Provides target has a type parameter containing the value java.lang.Runnable that is not assignable to the return type of the method" },
         new Object[]{ "com.example.fragment.provides.types.BadType2Model",
