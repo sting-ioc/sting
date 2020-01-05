@@ -113,6 +113,11 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.provides.BadReturnTypeProvidesModel",
                       "@Fragment target must only contain methods that return a value" },
 
+        new Object[]{ "com.example.fragment.provides.dependency.RawSupplierDependencyModel",
+                      "@Fragment target must not have a method parameter that is a raw java.util.function.Supplier type" },
+        new Object[]{ "com.example.fragment.provides.dependency.WildcardSupplierDependencyModel",
+                      "@Fragment target must not have a method parameter that is a java.util.function.Supplier type with a wildcard parameter" },
+
         new Object[]{ "com.example.fragment.provides.types.BadType1Model",
                       "@Provides target has a type parameter containing the value java.lang.Runnable that is not assignable to the return type of the method" },
         new Object[]{ "com.example.fragment.provides.types.BadType2Model",
