@@ -24,15 +24,6 @@ complete as there is too much un-said.
 
 ## Old Notes
 
-Perhaps we could do this in multiple phases. Phase 1 will generate the code so the annotations can
-be evaluated in the context of dagger. Phase 2 will use the `@Module` and `@Component` annotated types
-and generate the dagger equivalent. dagger. Phase 3 will replace dagger.
-
-* Allow the registration of types in `@Module`/`@Injector` directly. The framework will then look
-  for the type to see if it is `@Injectable`. If not then the framework will look for another type
-  with the suffix `Factory` (or perhaps a static inner class named `Factory`) annotated with the `@Factory`
-  annotation.
-
 ## Phase 1:
 
 * Introduce the `Factory` annotation that allows the construction of components by supplying parameters.
