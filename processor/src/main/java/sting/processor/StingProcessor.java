@@ -214,8 +214,8 @@ public final class StingProcessor
     }
     if ( publishedTypes.isEmpty() && !eager )
     {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                          "have specified zero types to publish and not have specified eager = true as this type will never be created by the injector" ),
+      throw new ProcessorException( MemberChecks.must( Constants.INJECTABLE_CLASSNAME,
+                                                       "have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" ),
                                     element );
     }
     final Binding binding =

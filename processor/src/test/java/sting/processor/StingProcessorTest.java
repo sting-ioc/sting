@@ -97,7 +97,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.types.BadType3Model",
                       "@Injectable target has a type parameter containing the value com.example.injectable.types.BadType3Model.MyOuterInterface that is not assignable to the declaring type" },
         new Object[]{ "com.example.injectable.types.NoTypesAndLazyModel",
-                      "@Injectable target must not have specified zero types to publish and not have specified eager = true as this type will never be created by the injector" }
+                      "@Injectable target must have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" }
       };
   }
 
