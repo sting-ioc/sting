@@ -16,6 +16,16 @@ public final class StingProcessorTest
       {
         new Object[]{ "com.example.fragment.BasicModel" },
 
+        new Object[]{ "com.example.fragment.eager.EagerModel" },
+        new Object[]{ "com.example.fragment.eager.LazyModel" },
+
+        new Object[]{ "com.example.fragment.qualifier.BasicQualifierModel" },
+        new Object[]{ "com.example.fragment.qualifier.EmptyQualifierModel" },
+        new Object[]{ "com.example.fragment.qualifier.NonStandardQualifierModel" },
+
+        new Object[]{ "com.example.fragment.types.BasicTypesModel" },
+        new Object[]{ "com.example.fragment.types.NoTypesModel" },
+
         new Object[]{ "com.example.injectable.BasicModel" },
 
         new Object[]{ "com.example.injectable.dependency.BasicDependencyModel" },

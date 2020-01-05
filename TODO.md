@@ -13,9 +13,6 @@ complete as there is too much un-said.
   explicitly control whether we accept this cost.
 * Fragments should be able to be static nested classes. Add test and verify
 * Test `@Fragment.includes`
-* Test `@Provides.types`
-* Test `@Provides.eager`
-* Test `@Provide.qualifier`
 
 ## Old Notes
 

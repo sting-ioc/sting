@@ -1,0 +1,14 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "providesMethod": "provideMyModel",
+      "types": [
+        "java.lang.Runnable",
+        "java.util.EventListener",
+        "java.lang.Object",
+        "java.util.Properties"
+      ]
+    }
+  ]
+}

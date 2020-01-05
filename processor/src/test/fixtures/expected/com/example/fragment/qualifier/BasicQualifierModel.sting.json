@@ -1,0 +1,12 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "providesMethod": "provideRunnable",
+      "qualifier": "com.bix/SomeQualifier",
+      "types": [
+        "java.lang.Runnable"
+      ]
+    }
+  ]
+}

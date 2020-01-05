@@ -1,0 +1,9 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "providesMethod": "provideMyModel",
+      "eager": true
+    }
+  ]
+}
