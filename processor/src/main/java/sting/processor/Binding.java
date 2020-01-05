@@ -100,7 +100,6 @@ final class Binding
     {
       g.write( "schema", schema );
     }
-    g.write( "bindingType", _bindingType.name() );
     if ( !_qualifier.isEmpty() )
     {
       g.write( "qualifier", _qualifier );

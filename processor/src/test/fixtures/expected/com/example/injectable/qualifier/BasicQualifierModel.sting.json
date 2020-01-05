@@ -1,6 +1,5 @@
 {
   "schema": "injectable/1",
-  "bindingType": "INJECTABLE",
   "qualifier": "com.biz/SomeQualifier",
   "types": [
     "com.example.injectable.qualifier.BasicQualifierModel"

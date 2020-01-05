@@ -1,6 +1,5 @@
 {
   "schema": "injectable/1",
-  "bindingType": "INJECTABLE",
   "types": [
     "com.example.injectable.BasicModel"
   ]

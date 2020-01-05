@@ -1,5 +1,4 @@
 {
   "schema": "injectable/1",
-  "bindingType": "INJECTABLE",
   "eager": true
 }

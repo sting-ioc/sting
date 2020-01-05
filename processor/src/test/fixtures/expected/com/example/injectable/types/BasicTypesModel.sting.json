@@ -1,6 +1,5 @@
 {
   "schema": "injectable/1",
-  "bindingType": "INJECTABLE",
   "types": [
     "java.lang.Runnable",
     "java.util.EventListener",
