@@ -101,6 +101,11 @@ public final class StingProcessor
                                                           "be a non-static nested class" ),
                                     element );
     }
+    else if ( !element.getTypeParameters().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME, "have type parameters" ),
+                                    element );
+    }
     final List<TypeMirror> types =
       AnnotationsUtil.getTypeMirrorsAnnotationParameter( element, Constants.INJECTABLE_CLASSNAME, "types" );
     final List<TypeMirror> publishedTypes;

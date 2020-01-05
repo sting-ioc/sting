@@ -76,6 +76,7 @@ public final class StingProcessorTest
                       "@Injectable target must not have multiple constructors" },
         new Object[]{ "com.example.injectable.NonStaticNestedModel",
                       "@Injectable target must not be a non-static nested class" },
+        new Object[]{ "com.example.injectable.ParameterizedModel", "@Injectable target must not have type parameters" },
 
         new Object[]{ "com.example.injectable.dependency.RawSupplierDependencyModel",
                       "@Injectable target must not have a constructor parameter that is a raw java.util.function.Supplier type" },
