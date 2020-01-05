@@ -29,13 +29,13 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.eager.EagerModel" },
         new Object[]{ "com.example.injectable.eager.LazyModel" },
 
-        new Object[]{ "com.example.injectable.types.BasicTypesModel" },
-        new Object[]{ "com.example.injectable.types.DefaultTypesModel" },
-        new Object[]{ "com.example.injectable.types.NoTypesModel" },
-
         new Object[]{ "com.example.injectable.qualifier.BasicQualifierModel" },
         new Object[]{ "com.example.injectable.qualifier.EmptyQualifierModel" },
-        new Object[]{ "com.example.injectable.qualifier.NonStandardQualifierModel" }
+        new Object[]{ "com.example.injectable.qualifier.NonStandardQualifierModel" },
+
+        new Object[]{ "com.example.injectable.types.BasicTypesModel" },
+        new Object[]{ "com.example.injectable.types.DefaultTypesModel" },
+        new Object[]{ "com.example.injectable.types.NoTypesModel" }
       };
   }
 
