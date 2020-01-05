@@ -11,7 +11,6 @@ complete as there is too much un-said.
   generates code used by users and thus has to be marked as a API-generating processor in Bazel which can reduce
   the degree of parallelization that is possible. Moving it to a separate annotation processor means we can
   explicitly control whether we accept this cost.
-* Test `@Fragment.includes`
 
 ## Old Notes
 

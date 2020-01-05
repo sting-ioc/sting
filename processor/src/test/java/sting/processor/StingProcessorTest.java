@@ -1,7 +1,10 @@
 package sting.processor;
 
+import java.util.Arrays;
+import java.util.Collections;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.Processor;
+import javax.tools.JavaFileObject;
 import org.realityforge.proton.qa.AbstractProcessorTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -94,6 +97,31 @@ public final class StingProcessorTest
   {
     assertSuccessfulCompile( "com.example.fragment.NestedNestedModel",
                              "expected/com/example/fragment/NestedNestedModel_Middle_MyModel.sting.json" );
+  }
+
+  @Test
+  public void basicIncludesFragment()
+    throws Exception
+  {
+    final JavaFileObject input1 = fixture( toFilename( "input", "com.example.fragment.includes.BasicIncludesModel" ) );
+    final JavaFileObject input2 = fixture( toFilename( "input", "com.example.fragment.includes.Included1Model" ) );
+    final String output1 =
+      toFilename( "expected", "com.example.fragment.includes.BasicIncludesModel", "", ".sting.json" );
+    assertSuccessfulCompile( Arrays.asList( input1, input2 ), Collections.singletonList( output1 ) );
+  }
+
+  @Test
+  public void multipleIncludesFragment()
+    throws Exception
+  {
+    final JavaFileObject input1 =
+      fixture( toFilename( "input", "com.example.fragment.includes.MultipleIncludesModel" ) );
+    final JavaFileObject input2 = fixture( toFilename( "input", "com.example.fragment.includes.Included1Model" ) );
+    final JavaFileObject input3 = fixture( toFilename( "input", "com.example.fragment.includes.Included2Model" ) );
+    final JavaFileObject input4 = fixture( toFilename( "input", "com.example.fragment.includes.Included3Model" ) );
+    final String output1 =
+      toFilename( "expected", "com.example.fragment.includes.MultipleIncludesModel", "", ".sting.json" );
+    assertSuccessfulCompile( Arrays.asList( input1, input2, input3, input4 ), Collections.singletonList( output1 ) );
   }
 
   @DataProvider( name = "failedCompiles" )
