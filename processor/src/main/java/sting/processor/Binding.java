@@ -43,14 +43,14 @@ final class Binding
    * The dependencies that need to be supplied when creating the value.
    */
   @Nonnull
-  private final DependencyRequest[] _dependencies;
+  private final DependencyDescriptor[] _dependencies;
 
   Binding( @Nonnull final Type bindingType,
            @Nonnull final String qualifier,
            @Nonnull final TypeMirror[] types,
            final boolean eager,
            @Nonnull final Element element,
-           @Nonnull final DependencyRequest[] dependencies )
+           @Nonnull final DependencyDescriptor[] dependencies )
   {
     _bindingType = Objects.requireNonNull( bindingType );
     _qualifier = Objects.requireNonNull( qualifier );
@@ -90,7 +90,7 @@ final class Binding
   }
 
   @Nonnull
-  DependencyRequest[] getDependencies()
+  DependencyDescriptor[] getDependencies()
   {
     return _dependencies;
   }

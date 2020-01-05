@@ -138,7 +138,7 @@ public final class StingProcessor
     final boolean eager =
       (boolean) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTABLE_CLASSNAME, "eager" ).getValue();
 
-    final List<DependencyRequest> dependencies = new ArrayList<>();
+    final List<DependencyDescriptor> dependencies = new ArrayList<>();
     int index = 0;
     final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) constructor.asType() ).getParameterTypes();
     for ( final VariableElement parameter : constructor.getParameters() )
@@ -157,14 +157,14 @@ public final class StingProcessor
                    publishedTypes.toArray( new TypeMirror[ 0 ] ),
                    eager,
                    element,
-                   dependencies.toArray( new DependencyRequest[ 0 ] ) );
+                   dependencies.toArray( new DependencyDescriptor[ 0 ] ) );
     _bindingRegistry.registerBinding( binding );
     binding.write( processingEnv );
   }
 
   @Nonnull
-  private DependencyRequest handleConstructorParameter( @Nonnull final VariableElement parameter,
-                                                        @Nonnull final TypeMirror parameterType )
+  private DependencyDescriptor handleConstructorParameter( @Nonnull final VariableElement parameter,
+                                                           @Nonnull final TypeMirror parameterType )
   {
     final boolean optional =
       AnnotationsUtil.hasAnnotationOfType( parameter, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
@@ -175,7 +175,7 @@ public final class StingProcessor
 
     final TypeName typeName = TypeName.get( parameterType );
     final boolean isParameterizedType = typeName instanceof ParameterizedTypeName;
-    final DependencyRequest.Type type;
+    final DependencyDescriptor.Type type;
     final TypeMirror dependencyValueType;
     if ( typeName instanceof ClassName )
     {
@@ -202,17 +202,17 @@ public final class StingProcessor
     }
     if ( isParameterizedType )
     {
-      type = DependencyRequest.Type.SUPPLIER;
+      type = DependencyDescriptor.Type.SUPPLIER;
       dependencyValueType = ( (DeclaredType) parameterType ).getTypeArguments().get( 0 );
     }
     else
     {
-      type = DependencyRequest.Type.INSTANCE;
+      type = DependencyDescriptor.Type.INSTANCE;
       dependencyValueType = parameterType;
     }
 
     final Coordinate coordinate = new Coordinate( qualifier, dependencyValueType );
-    return new DependencyRequest( type, coordinate, optional, parameter );
+    return new DependencyDescriptor( type, coordinate, optional, parameter );
   }
 
   private boolean isDefaultTypes( @Nonnull final List<TypeMirror> types )
