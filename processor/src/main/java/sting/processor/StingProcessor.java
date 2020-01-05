@@ -217,7 +217,7 @@ public final class StingProcessor
         {
           for ( final TypeMirror type : types )
           {
-            if ( !processingEnv.getTypeUtils().isAssignable( element.asType(), type ) )
+            if ( !processingEnv.getTypeUtils().isAssignable( method.getReturnType(), type ) )
             {
               throw new ProcessorException( MemberChecks.toSimpleName( Constants.PROVIDES_CLASSNAME ) +
                                             " target has a type parameter containing the value " + type +
