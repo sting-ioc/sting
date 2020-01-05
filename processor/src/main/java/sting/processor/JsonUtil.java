@@ -70,6 +70,9 @@ final class JsonUtil
         .replaceAll( "(?m)^ {12}([^ ])", "      $1" )
         .replaceAll( "(?m)^ {16}([^ ])", "        $1" )
         .replaceAll( "(?m)^ {20}([^ ])", "          $1" )
+        .replaceAll( "(?m)^ {24}([^ ])", "            $1" )
+        .replaceAll( "(?m)^ {28}([^ ])", "              $1" )
+        .replaceAll( "(?m)^ {32}([^ ])", "                $1" )
         .replaceAll( "(?m)^\n\\[\n", "[\n" )
         .replaceAll( "(?m)^\n\\{\n", "{\n" ) +
       "\n";
