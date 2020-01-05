@@ -4,8 +4,11 @@ This document is essentially a list of shorthand notes describing work yet to co
 Unfortunately it is not complete enough for other people to pick work off the list and
 complete as there is too much un-said.
 
-* Make the emitting of json files controllable by annotation configuration setting. By default it
-  should be disabled.
+* Emit descriptors as binary data. Make emitting descriptors as json optional and only enabled by an explicit
+  annotation parameter.
+* On processing an `@Injector` annotated class we load the binary descriptors. If the descriptors are not present
+  then we defer processing the `@Injector` annotated class until the descriptors are present or we generate an
+  error when the processor reaches the last round.
 * Add a separate annotation processor that provides [AssistedInject](https://github.com/square/AssistedInject)
   capabilities if it is desired. The reason for using a separate annotation processor is that it actually
   generates code used by users and thus has to be marked as a API-generating processor in Bazel which can reduce
@@ -29,9 +32,6 @@ and generate the dagger equivalent. dagger. Phase 3 will replace dagger.
   for the type to see if it is `@Injectable`. If not then the framework will look for another type
   with the suffix `Factory` (or perhaps a static inner class named `Factory`) annotated with the `@Factory`
   annotation.
-* Annotation processor should generate binary json or binary file that represents Binding data. Then when
-  we are processing `@Injector` we can read binary if present. If not present we can defer processing file
-  until it is present and generate an error if any deferred bindings at end of round.
 
 ## Phase 1:
 
