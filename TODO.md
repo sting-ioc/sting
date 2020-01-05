@@ -4,6 +4,8 @@ This document is essentially a list of shorthand notes describing work yet to co
 Unfortunately it is not complete enough for other people to pick work off the list and
 complete as there is too much un-said.
 
+* Consider renaming `@Module` to `@GraphFragment` or similar and renaming `com.example.mod` appropriately.
+
 ## Old Notes
 
 Perhaps we could do this in multiple phases. Phase 1 will generate the code so the annotations can
