@@ -1,4 +1,4 @@
-package com.example.injectable;
+package com.example.injectable.types;
 
 import java.util.concurrent.Callable;
 import sting.Injectable;

@@ -53,17 +53,17 @@ public final class StingProcessorTest
                       "@Injectable target must not have a constructor parameter that is a java.util.function.Supplier type with a wildcard parameter" },
 
         new Object[]{ "com.example.injectable.AbstractModel", "@Injectable target must not be abstract" },
-        new Object[]{ "com.example.injectable.BadType1Model",
-                      "@Injectable target has a type parameter containing the value java.lang.Runnable that is not assignable to the declaring type" },
-        new Object[]{ "com.example.injectable.BadType2Model",
-                      "@Injectable target has a type parameter containing the value java.util.concurrent.Callable that is not assignable to the declaring type" },
-        new Object[]{ "com.example.injectable.BadType3Model",
-                      "@Injectable target has a type parameter containing the value com.example.injectable.BadType3Model.MyOuterInterface that is not assignable to the declaring type" },
         new Object[]{ "com.example.injectable.MultipleConstructorModel",
                       "@Injectable target must not have multiple constructors" },
         new Object[]{ "com.example.injectable.NonStaticNestedModel",
                       "@Injectable target must not be a non-static nested class" },
 
+        new Object[]{ "com.example.injectable.types.BadType1Model",
+                      "@Injectable target has a type parameter containing the value java.lang.Runnable that is not assignable to the declaring type" },
+        new Object[]{ "com.example.injectable.types.BadType2Model",
+                      "@Injectable target has a type parameter containing the value java.util.concurrent.Callable that is not assignable to the declaring type" },
+        new Object[]{ "com.example.injectable.types.BadType3Model",
+                      "@Injectable target has a type parameter containing the value com.example.injectable.types.BadType3Model.MyOuterInterface that is not assignable to the declaring type" },
         new Object[]{ "com.example.injectable.types.NoTypesAndLazyModel",
                       "@Injectable target must not have specified zero types to publish and not have specified eager = true as this type will never be created by the injector" }
       };
