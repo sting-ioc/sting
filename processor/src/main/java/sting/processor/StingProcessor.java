@@ -6,6 +6,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.WildcardTypeName;
 import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.code.Symbol;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,7 +40,9 @@ import org.realityforge.proton.ProcessorException;
 /**
  * Annotation processor that analyzes sting annotated source and generates dependency injection container.
  */
-@SupportedAnnotationTypes( { Constants.INJECTABLE_CLASSNAME, Constants.DEPENDENCY_CLASSNAME } )
+@SupportedAnnotationTypes( { Constants.INJECTABLE_CLASSNAME,
+                             Constants.FRAGMENT_CLASSNAME,
+                             Constants.DEPENDENCY_CLASSNAME } )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
 @SupportedOptions( { "sting.defer.unresolved", "sting.defer.errors" } )
 public final class StingProcessor
@@ -77,6 +80,13 @@ public final class StingProcessor
       .ifPresent( a -> processTypeElements( env,
                                             (Collection<TypeElement>) env.getElementsAnnotatedWith( a ),
                                             this::processInjectable ) );
+
+    annotations.stream()
+      .filter( a -> a.getQualifiedName().toString().equals( Constants.FRAGMENT_CLASSNAME ) )
+      .findAny()
+      .ifPresent( a -> processTypeElements( env,
+                                            (Collection<TypeElement>) env.getElementsAnnotatedWith( a ),
+                                            this::processFragment ) );
 
     annotations.stream()
       .filter( a -> a.getQualifiedName().toString().equals( Constants.DEPENDENCY_CLASSNAME ) )
@@ -142,6 +152,174 @@ public final class StingProcessor
         }
       }
     }
+  }
+
+  private void processFragment( @Nonnull final TypeElement element )
+    throws Exception
+  {
+    if ( ElementKind.INTERFACE != element.getKind() )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.FRAGMENT_CLASSNAME, "be an interface" ),
+                                    element );
+    }
+    else if ( !element.getTypeParameters().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME, "have type parameters" ),
+                                    element );
+    }
+    final List<TypeMirror> includes =
+      AnnotationsUtil.getTypeMirrorsAnnotationParameter( element, Constants.FRAGMENT_CLASSNAME, "includes" );
+    for ( final TypeMirror include : includes )
+    {
+      if ( !AnnotationsUtil.hasAnnotationOfType( include, Constants.FRAGMENT_CLASSNAME ) )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " target has an " +
+                                      "includes parameter containing the value " + include + " that is not a type " +
+                                      "annotated by " + MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ),
+                                      element );
+      }
+    }
+    final List<Binding> bindings = new ArrayList<>();
+    final List<ExecutableElement> methods =
+      ElementsUtil.getMethods( element, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
+    for ( final ExecutableElement method : methods )
+    {
+      if ( !method.getModifiers().contains( Modifier.DEFAULT ) )
+      {
+        throw new ProcessorException( MemberChecks.must( Constants.FRAGMENT_CLASSNAME,
+                                                         "only contain methods with the default modifier" ),
+                                      method );
+      }
+      else if ( TypeKind.VOID == method.getReturnType().getKind() )
+      {
+        throw new ProcessorException( MemberChecks.must( Constants.FRAGMENT_CLASSNAME,
+                                                         "only contain methods that return a value" ),
+                                      method );
+      }
+      else
+      {
+        final boolean providesPresent = AnnotationsUtil.hasAnnotationOfType( method, Constants.PROVIDES_CLASSNAME );
+        final boolean nullablePresent =
+          AnnotationsUtil.hasAnnotationOfType( method, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
+        final List<TypeMirror> types =
+          providesPresent ?
+          AnnotationsUtil.getTypeMirrorsAnnotationParameter( method, Constants.PROVIDES_CLASSNAME, "types" ) :
+          Collections.emptyList();
+        final List<TypeMirror> publishedTypes;
+        if ( isDefaultTypes( types ) )
+        {
+          publishedTypes = Collections.singletonList( element.asType() );
+        }
+        else
+        {
+          for ( final TypeMirror type : types )
+          {
+            if ( !processingEnv.getTypeUtils().isAssignable( element.asType(), type ) )
+            {
+              throw new ProcessorException( MemberChecks.toSimpleName( Constants.PROVIDES_CLASSNAME ) +
+                                            " target has a type parameter containing the value " + type +
+                                            " that is not assignable to the return type of the method",
+                                            method );
+            }
+          }
+          publishedTypes = types;
+        }
+        final String qualifier =
+          providesPresent ?
+          (String) AnnotationsUtil.getAnnotationValue( method, Constants.PROVIDES_CLASSNAME, "qualifier" )
+            .getValue() :
+          "";
+        final boolean eager =
+          providesPresent &&
+          (boolean) AnnotationsUtil.getAnnotationValue( method, Constants.PROVIDES_CLASSNAME, "eager" ).getValue();
+
+        final List<DependencyDescriptor> dependencies = new ArrayList<>();
+        int index = 0;
+        final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) method.asType() ).getParameterTypes();
+        for ( final VariableElement parameter : method.getParameters() )
+        {
+          dependencies.add( handleProvidesParameter( parameter, parameterTypes.get( index++ ) ) );
+        }
+        if ( publishedTypes.isEmpty() && !eager )
+        {
+          throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME,
+                                                           "have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" ),
+                                        element );
+        }
+
+        final Binding binding =
+          new Binding( nullablePresent ? Binding.Type.NULLABLE_PROVIDES : Binding.Type.PROVIDES,
+                       qualifier,
+                       publishedTypes.toArray( new TypeMirror[ 0 ] ),
+                       eager,
+                       method,
+                       dependencies.toArray( new DependencyDescriptor[ 0 ] ) );
+        bindings.add( binding );
+      }
+    }
+    if ( bindings.isEmpty() && includes.isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.FRAGMENT_CLASSNAME,
+                                                       "contain one or more methods or one or more includes" ),
+                                    element );
+    }
+    for ( final Binding binding : bindings )
+    {
+      registerBinding( binding );
+    }
+  }
+
+  @Nonnull
+  private DependencyDescriptor handleProvidesParameter( @Nonnull final VariableElement parameter,
+                                                        @Nonnull final TypeMirror parameterType )
+  {
+    final boolean optional =
+      AnnotationsUtil.hasAnnotationOfType( parameter, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
+    final AnnotationMirror annotation =
+      AnnotationsUtil.findAnnotationByType( parameter, Constants.DEPENDENCY_CLASSNAME );
+    final String qualifier =
+      null == annotation ? "" : AnnotationsUtil.getAnnotationValue( annotation, "qualifier" );
+
+    final TypeName typeName = TypeName.get( parameterType );
+    final boolean isParameterizedType = typeName instanceof ParameterizedTypeName;
+    final DependencyDescriptor.Type type;
+    final TypeMirror dependencyValueType;
+    if ( typeName instanceof ClassName )
+    {
+      if ( StingTypeNames.SUPPLIER.equals( typeName ) )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                            "have a method parameter that is a raw " +
+                                                            StingTypeNames.SUPPLIER + " type" ),
+                                      parameter );
+      }
+    }
+    else if ( typeName instanceof ParameterizedTypeName )
+    {
+      final ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) typeName;
+      if ( StingTypeNames.SUPPLIER.equals( parameterizedTypeName.rawType ) &&
+           parameterizedTypeName.typeArguments.get( 0 ) instanceof WildcardTypeName )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                            "have a method parameter that is a " +
+                                                            StingTypeNames.SUPPLIER +
+                                                            " type with a wildcard parameter" ),
+                                      parameter );
+      }
+    }
+    if ( isParameterizedType )
+    {
+      type = DependencyDescriptor.Type.SUPPLIER;
+      dependencyValueType = ( (DeclaredType) parameterType ).getTypeArguments().get( 0 );
+    }
+    else
+    {
+      type = DependencyDescriptor.Type.INSTANCE;
+      dependencyValueType = parameterType;
+    }
+
+    final Coordinate coordinate = new Coordinate( qualifier, dependencyValueType );
+    return new DependencyDescriptor( type, coordinate, optional, parameter );
   }
 
   private void processInjectable( @Nonnull final TypeElement element )
