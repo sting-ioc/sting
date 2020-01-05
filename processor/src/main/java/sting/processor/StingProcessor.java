@@ -335,7 +335,7 @@ public final class StingProcessor
       throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME, "be abstract" ),
                                     element );
     }
-    else if ( ElementsUtil.isEnclosedInNonStaticClass( element ) )
+    else if ( ElementsUtil.isNonStaticNestedClass( element ) )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
                                                           "be a non-static nested class" ),
