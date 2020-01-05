@@ -1,7 +1,4 @@
 {
   "bindingType": "INJECTABLE",
-  "qualifier": "",
-  "types": [
-  ],
   "eager": true
 }

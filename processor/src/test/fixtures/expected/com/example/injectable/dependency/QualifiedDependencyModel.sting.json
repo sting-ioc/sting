@@ -1,18 +1,14 @@
 {
   "bindingType": "INJECTABLE",
-  "qualifier": "",
   "types": [
     "com.example.injectable.dependency.QualifiedDependencyModel"
   ],
-  "eager": false,
   "dependencies": [
     {
-      "type": "INSTANCE",
       "coordinate": {
         "qualifier": "lively",
         "type": "java.lang.Runnable"
-      },
-      "optional": false
+      }
     }
   ]
 }

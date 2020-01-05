@@ -3,6 +3,5 @@
   "qualifier": "‎🎉 Tada!",
   "types": [
     "com.example.injectable.qualifier.NonStandardQualifierModel"
-  ],
-  "eager": false
+  ]
 }

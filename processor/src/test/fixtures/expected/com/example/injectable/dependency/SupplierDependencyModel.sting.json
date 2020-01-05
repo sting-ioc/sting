@@ -1,18 +1,14 @@
 {
   "bindingType": "INJECTABLE",
-  "qualifier": "",
   "types": [
     "com.example.injectable.dependency.SupplierDependencyModel"
   ],
-  "eager": false,
   "dependencies": [
     {
       "type": "SUPPLIER",
       "coordinate": {
-        "qualifier": "",
         "type": "java.lang.Runnable"
-      },
-      "optional": false
+      }
     }
   ]
 }

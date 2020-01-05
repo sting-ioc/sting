@@ -107,27 +107,49 @@ final class Binding
       JsonUtil.writeJsonResource( processingEnv, _element, filename, g -> {
         g.writeStartObject();
         g.write( "bindingType", _bindingType.name() );
-        g.write( "qualifier", _qualifier );
-        g.writeStartArray( "types" );
-        for ( final TypeMirror type : _types )
+        if ( !_qualifier.isEmpty() )
         {
-          g.write( type.toString() );
+          g.write( "qualifier", _qualifier );
         }
-        g.writeEnd();
-        g.write( "eager", _eager );
+        if ( _types.length > 0 )
+        {
+          g.writeStartArray( "types" );
+          for ( final TypeMirror type : _types )
+          {
+            g.write( type.toString() );
+          }
+          g.writeEnd();
+        }
+        if ( _eager )
+        {
+          g.write( "eager", _eager );
+        }
         if ( _dependencies.length > 0 )
         {
           g.writeStartArray( "dependencies" );
           for ( final DependencyDescriptor dependency : _dependencies )
           {
             g.writeStartObject();
-            g.write( "type", dependency.getType().toString() );
+            final DependencyDescriptor.Type type = dependency.getType();
+            if ( DependencyDescriptor.Type.INSTANCE != type )
+            {
+              g.write( "type", type.toString() );
+            }
 
             g.writeStartObject( "coordinate" );
-            g.write( "qualifier", dependency.getCoordinate().getQualifier() );
-            g.write( "type", dependency.getCoordinate().getType().toString() );
+            final Coordinate coordinate = dependency.getCoordinate();
+            final String qualifier = coordinate.getQualifier();
+            if ( !qualifier.isEmpty() )
+            {
+              g.write( "qualifier", qualifier );
+            }
+            g.write( "type", coordinate.getType().toString() );
             g.writeEnd();
-            g.write( "optional", dependency.isOptional() );
+            final boolean nullable = dependency.isOptional();
+            if ( nullable )
+            {
+              g.write( "nullable", nullable );
+            }
             g.writeEnd();
           }
           g.writeEnd();

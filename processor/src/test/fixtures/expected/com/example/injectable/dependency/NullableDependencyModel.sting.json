@@ -1,18 +1,14 @@
 {
   "bindingType": "INJECTABLE",
-  "qualifier": "",
   "types": [
     "com.example.injectable.dependency.NullableDependencyModel"
   ],
-  "eager": false,
   "dependencies": [
     {
-      "type": "INSTANCE",
       "coordinate": {
-        "qualifier": "",
         "type": "java.lang.Runnable"
       },
-      "optional": true
+      "nullable": true
     }
   ]
 }

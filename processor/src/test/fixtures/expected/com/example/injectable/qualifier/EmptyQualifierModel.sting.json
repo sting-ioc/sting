@@ -1,8 +1,6 @@
 {
   "bindingType": "INJECTABLE",
-  "qualifier": "",
   "types": [
     "com.example.injectable.qualifier.EmptyQualifierModel"
-  ],
-  "eager": false
+  ]
 }

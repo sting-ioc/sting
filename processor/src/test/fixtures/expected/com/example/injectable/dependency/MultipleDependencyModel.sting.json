@@ -1,26 +1,18 @@
 {
   "bindingType": "INJECTABLE",
-  "qualifier": "",
   "types": [
     "com.example.injectable.dependency.MultipleDependencyModel"
   ],
-  "eager": false,
   "dependencies": [
     {
-      "type": "INSTANCE",
       "coordinate": {
-        "qualifier": "",
         "type": "java.lang.Runnable"
-      },
-      "optional": false
+      }
     },
     {
-      "type": "INSTANCE",
       "coordinate": {
-        "qualifier": "",
         "type": "java.util.EventListener"
-      },
-      "optional": false
+      }
     }
   ]
 }
