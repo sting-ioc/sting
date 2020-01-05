@@ -225,6 +225,12 @@ public final class StingProcessor
                    eager,
                    element,
                    dependencies.toArray( new DependencyDescriptor[ 0 ] ) );
+    registerBinding( binding );
+  }
+
+  private void registerBinding( @Nonnull final Binding binding )
+    throws IOException
+  {
     _bindingRegistry.registerBinding( binding );
     binding.write( processingEnv );
   }
