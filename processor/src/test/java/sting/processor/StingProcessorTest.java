@@ -44,6 +44,22 @@ public final class StingProcessorTest
     assertSuccessfulCompile( classname, deriveExpectedOutputs( classname ) );
   }
 
+  @Test
+  public void nestedInjectable()
+    throws Exception
+  {
+    assertSuccessfulCompile( "com.example.injectable.NestedModel",
+                             "expected/com/example/injectable/NestedModel_MyModel.sting.json" );
+  }
+
+  @Test
+  public void nestedNestedInjectable()
+    throws Exception
+  {
+    assertSuccessfulCompile( "com.example.injectable.NestedNestedModel",
+                             "expected/com/example/injectable/NestedNestedModel_Middle_MyModel.sting.json" );
+  }
+
   @Nonnull
   String[] deriveExpectedOutputs( @Nonnull final String classname )
   {
