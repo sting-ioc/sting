@@ -71,9 +71,12 @@ public final class StingProcessor
   @Override
   public boolean process( @Nonnull final Set<? extends TypeElement> annotations, @Nonnull final RoundEnvironment env )
   {
-    final TypeElement annotation = processingEnv.getElementUtils().getTypeElement( Constants.INJECTABLE_CLASSNAME );
-    final Collection<TypeElement> elementsTo = (Collection<TypeElement>) env.getElementsAnnotatedWith( annotation );
-    processTypeElements( env, elementsTo, this::processInjectable );
+    annotations.stream()
+      .filter( a -> a.getQualifiedName().toString().equals( Constants.INJECTABLE_CLASSNAME ) )
+      .findAny()
+      .ifPresent( a -> processTypeElements( env,
+                                            (Collection<TypeElement>) env.getElementsAnnotatedWith( a ),
+                                            this::processInjectable ) );
     errorIfProcessingOverAndInvalidTypesDetected( env );
     if ( env.processingOver() || env.errorRaised() )
     {
