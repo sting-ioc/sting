@@ -93,13 +93,8 @@ final class Binding
     return _dependencies;
   }
 
-  void emitBindingJson( @Nonnull final JsonGenerator g, @Nullable final String schema )
+  void emitBindingJson( @Nonnull final JsonGenerator g )
   {
-    g.writeStartObject();
-    if ( null != schema )
-    {
-      g.write( "schema", schema );
-    }
     if ( !_qualifier.isEmpty() )
     {
       g.write( "qualifier", _qualifier );
@@ -147,7 +142,6 @@ final class Binding
       }
       g.writeEnd();
     }
-    g.writeEnd();
   }
 
   enum Type
