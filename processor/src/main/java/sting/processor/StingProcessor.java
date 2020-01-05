@@ -73,7 +73,7 @@ public final class StingProcessor
   {
     final TypeElement annotation = processingEnv.getElementUtils().getTypeElement( Constants.INJECTABLE_CLASSNAME );
     final Collection<TypeElement> elementsTo = (Collection<TypeElement>) env.getElementsAnnotatedWith( annotation );
-    processTypeElements( env, elementsTo, this::process );
+    processTypeElements( env, elementsTo, this::processInjectable );
     errorIfProcessingOverAndInvalidTypesDetected( env );
     if ( env.processingOver() || env.errorRaised() )
     {
@@ -82,7 +82,7 @@ public final class StingProcessor
     return true;
   }
 
-  private void process( @Nonnull final TypeElement element )
+  private void processInjectable( @Nonnull final TypeElement element )
     throws Exception
   {
     if ( ElementKind.CLASS != element.getKind() )
