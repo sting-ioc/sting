@@ -211,7 +211,7 @@ public final class StingProcessor
         final List<TypeMirror> publishedTypes;
         if ( isDefaultTypes( types ) )
         {
-          publishedTypes = Collections.singletonList( element.asType() );
+          publishedTypes = Collections.singletonList( method.getReturnType() );
         }
         else
         {
