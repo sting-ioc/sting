@@ -1,0 +1,42 @@
+{
+  "bindingType": "INJECTABLE",
+  "qualifier": "",
+  "types": [
+    "com.example.injectable.dependency.ComplexDependencyModel"
+  ],
+  "eager": false,
+  "dependencies": [
+    {
+      "type": "INSTANCE",
+      "coordinate": {
+        "qualifier": "lively",
+        "type": "java.lang.Runnable"
+      },
+      "optional": false
+    },
+    {
+      "type": "INSTANCE",
+      "coordinate": {
+        "qualifier": "",
+        "type": "java.util.EventListener"
+      },
+      "optional": true
+    },
+    {
+      "type": "INSTANCE",
+      "coordinate": {
+        "qualifier": "",
+        "type": "java.io.Serializable"
+      },
+      "optional": false
+    },
+    {
+      "type": "INSTANCE",
+      "coordinate": {
+        "qualifier": "countDown",
+        "type": "int"
+      },
+      "optional": false
+    }
+  ]
+}

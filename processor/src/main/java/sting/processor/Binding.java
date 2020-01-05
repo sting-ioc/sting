@@ -115,6 +115,23 @@ final class Binding
         }
         g.writeEnd();
         g.write( "eager", _eager );
+        if ( _dependencies.length > 0 )
+        {
+          g.writeStartArray( "dependencies" );
+          for ( final DependencyDescriptor dependency : _dependencies )
+          {
+            g.writeStartObject();
+            g.write( "type", dependency.getType().toString() );
+
+            g.writeStartObject( "coordinate" );
+            g.write( "qualifier", dependency.getCoordinate().getQualifier() );
+            g.write( "type", dependency.getCoordinate().getType().toString() );
+            g.writeEnd();
+            g.write( "optional", dependency.isOptional() );
+            g.writeEnd();
+          }
+          g.writeEnd();
+        }
         g.writeEnd();
       } );
     }

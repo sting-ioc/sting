@@ -1,0 +1,18 @@
+{
+  "bindingType": "INJECTABLE",
+  "qualifier": "",
+  "types": [
+    "com.example.injectable.dependency.PrimitiveDependencyModel"
+  ],
+  "eager": false,
+  "dependencies": [
+    {
+      "type": "INSTANCE",
+      "coordinate": {
+        "qualifier": "",
+        "type": "int"
+      },
+      "optional": false
+    }
+  ]
+}

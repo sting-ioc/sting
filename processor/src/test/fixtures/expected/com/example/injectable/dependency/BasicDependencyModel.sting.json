@@ -1,0 +1,18 @@
+{
+  "bindingType": "INJECTABLE",
+  "qualifier": "",
+  "types": [
+    "com.example.injectable.dependency.BasicDependencyModel"
+  ],
+  "eager": false,
+  "dependencies": [
+    {
+      "type": "INSTANCE",
+      "coordinate": {
+        "qualifier": "",
+        "type": "java.lang.Runnable"
+      },
+      "optional": false
+    }
+  ]
+}
