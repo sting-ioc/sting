@@ -39,7 +39,7 @@ import org.realityforge.proton.ProcessorException;
 /**
  * Annotation processor that analyzes sting annotated source and generates dependency injection container.
  */
-@SupportedAnnotationTypes( Constants.INJECTABLE_CLASSNAME )
+@SupportedAnnotationTypes( { Constants.INJECTABLE_CLASSNAME, Constants.DEPENDENCY_CLASSNAME } )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
 @SupportedOptions( { "sting.defer.unresolved", "sting.defer.errors" } )
 public final class StingProcessor
@@ -77,12 +77,71 @@ public final class StingProcessor
       .ifPresent( a -> processTypeElements( env,
                                             (Collection<TypeElement>) env.getElementsAnnotatedWith( a ),
                                             this::processInjectable ) );
+
+    annotations.stream()
+      .filter( a -> a.getQualifiedName().toString().equals( Constants.DEPENDENCY_CLASSNAME ) )
+      .findAny()
+      .ifPresent( a -> verifyDependencyElements( env, env.getElementsAnnotatedWith( a ) ) );
+
     errorIfProcessingOverAndInvalidTypesDetected( env );
     if ( env.processingOver() || env.errorRaised() )
     {
       _bindingRegistry.clear();
     }
     return true;
+  }
+
+  private void verifyDependencyElements( @Nonnull final RoundEnvironment env,
+                                         @Nonnull final Set<? extends Element> elements )
+  {
+    for ( final Element element : elements )
+    {
+      if ( ElementKind.PARAMETER == element.getKind() )
+      {
+        final Element executableElement = element.getEnclosingElement();
+        final boolean injectableType =
+          AnnotationsUtil.hasAnnotationOfType( executableElement.getEnclosingElement(),
+                                               Constants.INJECTABLE_CLASSNAME );
+        final boolean moduleType =
+          AnnotationsUtil.hasAnnotationOfType( executableElement.getEnclosingElement(), Constants.MODULE_CLASSNAME );
+        final ElementKind executableKind = executableElement.getKind();
+        if ( !injectableType && ElementKind.CONSTRUCTOR == executableKind )
+        {
+          reportError( env,
+                       MemberChecks.must( Constants.DEPENDENCY_CLASSNAME,
+                                          "only be present on a parameter of a constructor " +
+                                          "if the enclosing type is annotated with " +
+                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) ),
+                       element );
+        }
+        else if ( !moduleType && ElementKind.METHOD == executableKind )
+        {
+          reportError( env,
+                       MemberChecks.must( Constants.DEPENDENCY_CLASSNAME,
+                                          "only be present on a parameter of a method " +
+                                          "if the enclosing type is annotated with " +
+                                          MemberChecks.toSimpleName( Constants.MODULE_CLASSNAME ) ),
+                       element );
+        }
+        else
+        {
+          assert ( injectableType && ElementKind.CONSTRUCTOR == executableKind ) ||
+                 ( moduleType && ElementKind.METHOD == executableKind );
+        }
+      }
+      else
+      {
+        assert ElementKind.METHOD == element.getKind();
+        if ( !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.INJECTOR_CLASSNAME ) )
+        {
+          reportError( env,
+                       MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                             "be a method unless present in a type annotated with " +
+                                             MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) ),
+                       element );
+        }
+      }
+    }
   }
 
   private void processInjectable( @Nonnull final TypeElement element )

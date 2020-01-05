@@ -71,6 +71,13 @@ public final class StingProcessorTest
   {
     return new Object[][]
       {
+        new Object[]{ "com.example.dependency.UnclaimedConstructorParameterDependencyModel",
+                      "@Dependency target must only be present on a parameter of a constructor if the enclosing type is annotated with @Injectable" },
+        new Object[]{ "com.example.dependency.UnclaimedMethodDependencyModel",
+                      "@Dependency target must not be a method unless present in a type annotated with @Injector" },
+        new Object[]{ "com.example.dependency.UnclaimedMethodParameterDependencyModel",
+                      "@Dependency target must only be present on a parameter of a method if the enclosing type is annotated with @Module" },
+
         new Object[]{ "com.example.injectable.AbstractModel", "@Injectable target must not be abstract" },
         new Object[]{ "com.example.injectable.MultipleConstructorModel",
                       "@Injectable target must not have multiple constructors" },
