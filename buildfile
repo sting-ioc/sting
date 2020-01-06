@@ -45,6 +45,7 @@ define 'sting' do
               :truth,
               :junit,
               :hamcrest_core,
+              :mockito,
               project('core').package(:jar),
               project('core').compile.dependencies
 
