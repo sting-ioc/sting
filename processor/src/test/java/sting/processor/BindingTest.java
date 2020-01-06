@@ -9,6 +9,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
@@ -22,44 +23,109 @@ public class BindingTest
   {
     return new Object[][]
       {
-        new Object[]{ Binding.Type.INJECTABLE,
+        new Object[]{ "A",
+                      Binding.Type.INJECTABLE,
                       "",
                       new TypeMirror[ 0 ],
                       true,
                       new DependencyDescriptor[ 0 ],
                       "{\"eager\":true}" },
-        new Object[]{ Binding.Type.INJECTABLE,
+        new Object[]{ "B",
+                      Binding.Type.INJECTABLE,
                       "",
                       new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
                       false,
                       new DependencyDescriptor[ 0 ],
                       "{\"types\":[\"com.biz.MyService\"]}" },
-        new Object[]{ Binding.Type.INJECTABLE,
+        new Object[]{ "C",
+                      Binding.Type.INJECTABLE,
                       "com.biz/MyQualifier",
                       new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
                       false,
                       new DependencyDescriptor[ 0 ],
                       "{\"qualifier\":\"com.biz/MyQualifier\",\"types\":[\"com.biz.MyService\"]}" },
-        new Object[]{ Binding.Type.INJECTABLE,
+        new Object[]{ "D",
+                      Binding.Type.INJECTABLE,
                       "",
                       new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ),
                                         mockTypeMirror( "com.biz.OtherService" ) },
                       false,
                       new DependencyDescriptor[ 0 ],
-                      "{\"types\":[\"com.biz.MyService\",\"com.biz.OtherService\"]}" }
+                      "{\"types\":[\"com.biz.MyService\",\"com.biz.OtherService\"]}" },
+        new Object[]{ "E",
+                      Binding.Type.INJECTABLE,
+                      "",
+                      new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
+                      false,
+                      new DependencyDescriptor[]{ dependency( DependencyDescriptor.Type.INSTANCE,
+                                                              "",
+                                                              "com.biz.MyDep",
+                                                              false ) },
+                      "{\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"}}]}" },
+        new Object[]{ "F",
+                      Binding.Type.INJECTABLE,
+                      "",
+                      new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
+                      false,
+                      new DependencyDescriptor[]{ dependency( DependencyDescriptor.Type.INSTANCE,
+                                                              "com.biz/MyQualification",
+                                                              "com.biz.MyDep",
+                                                              false ) },
+                      "{\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"qualifier\":\"com.biz/MyQualification\",\"type\":\"com.biz.MyDep\"}}]}" },
+        new Object[]{ "G",
+                      Binding.Type.INJECTABLE,
+                      "",
+                      new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
+                      false,
+                      new DependencyDescriptor[]{ dependency( DependencyDescriptor.Type.INSTANCE,
+                                                              "",
+                                                              "com.biz.MyDep",
+                                                              true ) },
+                      "{\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"},\"nullable\":true}]}" },
+        new Object[]{ "H",
+                      Binding.Type.INJECTABLE,
+                      "",
+                      new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
+                      false,
+                      new DependencyDescriptor[]{ dependency( DependencyDescriptor.Type.SUPPLIER,
+                                                              "",
+                                                              "com.biz.Plugin",
+                                                              false ) },
+                      "{\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"type\":\"SUPPLIER\",\"coordinate\":{\"type\":\"com.biz.Plugin\"}}]}" },
+        new Object[]{ "I",
+                      Binding.Type.INJECTABLE,
+                      "",
+                      new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
+                      false,
+                      new DependencyDescriptor[]{ dependency( DependencyDescriptor.Type.INSTANCE,
+                                                              "",
+                                                              "com.biz.MyDep",
+                                                              true ),
+                                                  dependency( DependencyDescriptor.Type.INSTANCE,
+                                                              "",
+                                                              "com.biz.OtherDep",
+                                                              false ) },
+                      "{\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"},\"nullable\":true},{\"coordinate\":{\"type\":\"com.biz.OtherDep\"}}]}" },
+        new Object[]{ "J",
+                      Binding.Type.INJECTABLE,
+                      "",
+                      new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
+                      false,
+                      new DependencyDescriptor[]{ dependency( DependencyDescriptor.Type.INSTANCE,
+                                                              "",
+                                                              "com.biz.MyDep",
+                                                              false ),
+                                                  dependency( DependencyDescriptor.Type.SUPPLIER,
+                                                              "Backend",
+                                                              "com.biz.Plugin",
+                                                              true ) },
+                      "{\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"}},{\"type\":\"SUPPLIER\",\"coordinate\":{\"qualifier\":\"Backend\",\"type\":\"com.biz.Plugin\"},\"nullable\":true}]}" }
       };
   }
 
-  @Nonnull
-  private TypeMirror mockTypeMirror( @Nonnull final String type )
-  {
-    final TypeMirror mirror = mock( TypeMirror.class );
-    when( mirror.toString() ).thenReturn( type );
-    return mirror;
-  }
-
   @Test( dataProvider = "binding" )
-  public void verifyBinding( @Nonnull final Binding.Type bindingType,
+  public void verifyBinding( @SuppressWarnings( "unused" ) @Nonnull final String labelForDebug,
+                             @Nonnull final Binding.Type bindingType,
                              @Nonnull final String qualifier,
                              @Nonnull final TypeMirror[] types,
                              final boolean eager,
@@ -74,6 +140,32 @@ public class BindingTest
     final Binding binding = createBinding( bindingType, qualifier, types, eager, element, dependencies );
 
     assertJsonEmitsJson( binding, expectedJson );
+  }
+
+  @Nonnull
+  private DependencyDescriptor dependency( @Nonnull final DependencyDescriptor.Type dependencyType,
+                                           @Nonnull final String qualifier,
+                                           @Nonnull final String type,
+                                           final boolean optional )
+  {
+    return new DependencyDescriptor( dependencyType,
+                                     coord( qualifier, type ),
+                                     optional,
+                                     mock( VariableElement.class ) );
+  }
+
+  @Nonnull
+  private Coordinate coord( @Nonnull final String qualifier, @Nonnull final String type )
+  {
+    return new Coordinate( qualifier, mockTypeMirror( type ) );
+  }
+
+  @Nonnull
+  private TypeMirror mockTypeMirror( @Nonnull final String type )
+  {
+    final TypeMirror mirror = mock( TypeMirror.class );
+    when( mirror.toString() ).thenReturn( type );
+    return mirror;
   }
 
   private Binding createBinding( @Nonnull final Binding.Type bindingType,
