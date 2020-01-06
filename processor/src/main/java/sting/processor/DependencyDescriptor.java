@@ -28,17 +28,17 @@ final class DependencyDescriptor
    * the @Factory annotated type.
    */
   @Nonnull
-  private final VariableElement _requestElement;
+  private final VariableElement _element;
 
   DependencyDescriptor( @Nonnull final Type type,
                         @Nonnull final Coordinate coordinate,
                         final boolean optional,
-                        @Nonnull final VariableElement requestElement )
+                        @Nonnull final VariableElement element )
   {
     _type = Objects.requireNonNull( type );
     _coordinate = Objects.requireNonNull( coordinate );
     _optional = optional;
-    _requestElement = Objects.requireNonNull( requestElement );
+    _element = Objects.requireNonNull( element );
   }
 
   @Nonnull
@@ -59,9 +59,9 @@ final class DependencyDescriptor
   }
 
   @Nonnull
-  public Element getRequestElement()
+  public Element getElement()
   {
-    return _requestElement;
+    return _element;
   }
 
   enum Type
