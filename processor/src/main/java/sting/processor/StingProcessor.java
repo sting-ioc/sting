@@ -190,14 +190,17 @@ public final class StingProcessor
     {
       if ( !method.getModifiers().contains( Modifier.DEFAULT ) )
       {
-        throw new ProcessorException( MemberChecks.must( Constants.FRAGMENT_CLASSNAME,
-                                                         "only contain methods with the default modifier" ),
+        throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME, "have a default modifier" ),
                                       method );
       }
       else if ( TypeKind.VOID == method.getReturnType().getKind() )
       {
-        throw new ProcessorException( MemberChecks.must( Constants.FRAGMENT_CLASSNAME,
-                                                         "only contain methods that return a value" ),
+        throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME, "return a value" ),
+                                      method );
+      }
+      else if ( !method.getTypeParameters().isEmpty() )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.PROVIDES_CLASSNAME, "have type parameters" ),
                                       method );
       }
       else

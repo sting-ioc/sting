@@ -147,9 +147,11 @@ public final class StingProcessorTest
                       "@Fragment target has an includes parameter containing the value java.util.EventListener that is not a type annotated by @Fragment" },
 
         new Object[]{ "com.example.fragment.provides.AbstractMethodProvidesModel",
-                      "@Fragment target must only contain methods with the default modifier" },
+                      "@Provides target must have a default modifier" },
         new Object[]{ "com.example.fragment.provides.BadReturnTypeProvidesModel",
-                      "@Fragment target must only contain methods that return a value" },
+                      "@Provides target must return a value" },
+        new Object[]{ "com.example.fragment.provides.ParameterizedProvidesModel",
+                      "@Provides target must not have type parameters" },
 
         new Object[]{ "com.example.fragment.provides.dependency.ParameterizedDependencyModel",
                       "@Injectable target must not have a method with a parameter that is a parameterized type. This is only permitted for specific types such as java.util.function.Supplier" },
