@@ -4,6 +4,7 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
 import javax.lang.model.type.TypeMirror;
 
 final class Binding
@@ -49,6 +50,8 @@ final class Binding
            @Nonnull final Element element,
            @Nonnull final DependencyDescriptor[] dependencies )
   {
+    assert ( Type.INJECTABLE == bindingType && ElementKind.CLASS == element.getKind() ) ||
+           ( Type.INJECTABLE != bindingType && ElementKind.METHOD == element.getKind() );
     _bindingType = Objects.requireNonNull( bindingType );
     _qualifier = Objects.requireNonNull( qualifier );
     _types = Objects.requireNonNull( types );
