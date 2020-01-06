@@ -24,7 +24,8 @@ complete as there is too much un-said.
 * Should every binding also have an id. It can be explicitly provided by user or implicitly derived from
   the qualified classname (for `@Injectable` and `@Factory` annotated types) or from the qualified
   classname + method name (for `@Provides` methods). In the future this will allow derived injectors to override
-  specific bindings.
+  specific bindings. It will also make it possible to support `java.util.Map` collections for dependencies
+  where the `id` is the key (Although it is unclear if this is of value).
 * No two provider methods in the same interface should have the same method so that we have a unique id.
 * Support collection dependency types. (So along with `INSTANCE` and `SUPPLIER` we should also support
   `COLLECTION_INSTANCE`, `COLLECTION_SUPPLIER`)
