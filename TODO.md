@@ -21,6 +21,11 @@ complete as there is too much un-said.
 * Consider generating warnings if `@Fragment` types will not resolve unless the user supplies an explicit
   `incomplete` parameter. By resolve it means that every component should have all of it's dependencies
   present.
+* Should every binding also have an id. It can be explicitly provided by user or implicitly derived from
+  the qualified classname (for `@Injectable` and `@Factory` annotated types) or from the qualified
+  classname + method name (for `@Provides` methods). In the future this will allow derived injectors to override
+  specific bindings.
+* No to provider methods in the same interface should have the same method so that we have a unique id.
 
 ## Old Notes
 
