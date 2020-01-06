@@ -61,7 +61,7 @@ final class JsonUtil
    * This is horribly inefficient but it is not called very often or with big files so ... meh.
    */
   @Nonnull
-  private static String formatJson( @Nonnull final String input )
+  static String formatJson( @Nonnull final String input )
   {
     return
       input
