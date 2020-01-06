@@ -151,10 +151,14 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.provides.BadReturnTypeProvidesModel",
                       "@Fragment target must only contain methods that return a value" },
 
+        new Object[]{ "com.example.fragment.provides.dependency.ParameterizedDependencyModel",
+                      "@Injectable target must not have a method with a parameter that is a parameterized type. This is only permitted for specific types such as java.util.function.Supplier" },
+        new Object[]{ "com.example.fragment.provides.dependency.RawParameterizedDependencyModel",
+                      "@Fragment target must not have a method with a parameter that is a raw parameterized type. Parameterized types are only permitted for specific types such as java.util.function.Supplier" },
         new Object[]{ "com.example.fragment.provides.dependency.RawSupplierDependencyModel",
-                      "@Fragment target must not have a method parameter that is a raw java.util.function.Supplier type" },
+                      "@Fragment target must not have a method with a parameter that is a raw java.util.function.Supplier type" },
         new Object[]{ "com.example.fragment.provides.dependency.WildcardSupplierDependencyModel",
-                      "@Fragment target must not have a method parameter that is a java.util.function.Supplier type with a wildcard parameter" },
+                      "@Fragment target must not have a method with a parameter that is a java.util.function.Supplier type with a wildcard parameter" },
 
         new Object[]{ "com.example.fragment.provides.types.BadType1Model",
                       "@Provides target has a type parameter containing the value java.lang.Runnable that is not assignable to the return type of the method" },
@@ -173,10 +177,14 @@ public final class StingProcessorTest
                       "@Injectable target must not be a non-static nested class" },
         new Object[]{ "com.example.injectable.ParameterizedModel", "@Injectable target must not have type parameters" },
 
+        new Object[]{ "com.example.injectable.dependency.ParameterizedDependencyModel",
+                      "@Injectable target must not have a constructor with a parameter that is a parameterized type. This is only permitted for specific types such as java.util.function.Supplier" },
+        new Object[]{ "com.example.injectable.dependency.RawParameterizedDependencyModel",
+                      "@Injectable target must not have a constructor with a parameter that is a raw parameterized type. Parameterized types are only permitted for specific types such as java.util.function.Supplier" },
         new Object[]{ "com.example.injectable.dependency.RawSupplierDependencyModel",
-                      "@Injectable target must not have a constructor parameter that is a raw java.util.function.Supplier type" },
+                      "@Injectable target must not have a constructor with a parameter that is a raw java.util.function.Supplier type" },
         new Object[]{ "com.example.injectable.dependency.WildcardSupplierDependencyModel",
-                      "@Injectable target must not have a constructor parameter that is a java.util.function.Supplier type with a wildcard parameter" },
+                      "@Injectable target must not have a constructor with a parameter that is a java.util.function.Supplier type with a wildcard parameter" },
 
         new Object[]{ "com.example.injectable.types.BadType1Model",
                       "@Injectable target has a type parameter containing the value java.lang.Runnable that is not assignable to the declaring type" },

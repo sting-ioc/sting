@@ -320,21 +320,40 @@ public final class StingProcessor
       if ( StingTypeNames.SUPPLIER.equals( typeName ) )
       {
         throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                            "have a method parameter that is a raw " +
+                                                            "have a method with a parameter that is a raw " +
                                                             StingTypeNames.SUPPLIER + " type" ),
+                                      parameter );
+      }
+      else if ( !( (TypeElement) ( (DeclaredType) parameterType ).asElement() ).getTypeParameters().isEmpty() )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                            "have a method with a parameter that is a " +
+                                                            "raw parameterized type. Parameterized types are only " +
+                                                            "permitted for specific types such as " +
+                                                            StingTypeNames.SUPPLIER ),
                                       parameter );
       }
     }
     else if ( typeName instanceof ParameterizedTypeName )
     {
       final ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) typeName;
-      if ( StingTypeNames.SUPPLIER.equals( parameterizedTypeName.rawType ) &&
-           parameterizedTypeName.typeArguments.get( 0 ) instanceof WildcardTypeName )
+      if ( StingTypeNames.SUPPLIER.equals( parameterizedTypeName.rawType ) )
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                            "have a method parameter that is a " +
-                                                            StingTypeNames.SUPPLIER +
-                                                            " type with a wildcard parameter" ),
+        if ( parameterizedTypeName.typeArguments.get( 0 ) instanceof WildcardTypeName )
+        {
+          throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                              "have a method with a parameter that is a " +
+                                                              StingTypeNames.SUPPLIER +
+                                                              " type with a wildcard parameter" ),
+                                        parameter );
+        }
+      }
+      else
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                            "have a method with a parameter that is a " +
+                                                            "parameterized type. This is only permitted for " +
+                                                            "specific types such as " + StingTypeNames.SUPPLIER ),
                                       parameter );
       }
     }
@@ -470,21 +489,40 @@ public final class StingProcessor
       if ( StingTypeNames.SUPPLIER.equals( typeName ) )
       {
         throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                            "have a constructor parameter that is a raw " +
-                                                            StingTypeNames.SUPPLIER + " type" ),
+                                                            "have a constructor with a parameter that is " +
+                                                            "a raw " + StingTypeNames.SUPPLIER + " type" ),
+                                      parameter );
+      }
+      else if ( !( (TypeElement) ( (DeclaredType) parameterType ).asElement() ).getTypeParameters().isEmpty() )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                            "have a constructor with a parameter that is a " +
+                                                            "raw parameterized type. Parameterized types are only " +
+                                                            "permitted for specific types such as " +
+                                                            StingTypeNames.SUPPLIER ),
                                       parameter );
       }
     }
     else if ( typeName instanceof ParameterizedTypeName )
     {
       final ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) typeName;
-      if ( StingTypeNames.SUPPLIER.equals( parameterizedTypeName.rawType ) &&
-           parameterizedTypeName.typeArguments.get( 0 ) instanceof WildcardTypeName )
+      if ( StingTypeNames.SUPPLIER.equals( parameterizedTypeName.rawType ) )
+      {
+        if ( parameterizedTypeName.typeArguments.get( 0 ) instanceof WildcardTypeName )
+        {
+          throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                              "have a constructor with a parameter " +
+                                                              "that is a " + StingTypeNames.SUPPLIER +
+                                                              " type with a wildcard parameter" ),
+                                        parameter );
+        }
+      }
+      else
       {
         throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                            "have a constructor parameter that is a " +
-                                                            StingTypeNames.SUPPLIER +
-                                                            " type with a wildcard parameter" ),
+                                                            "have a constructor with a parameter that is a " +
+                                                            "parameterized type. This is only permitted for " +
+                                                            "specific types such as " + StingTypeNames.SUPPLIER ),
                                       parameter );
       }
     }
