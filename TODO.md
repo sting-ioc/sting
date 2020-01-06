@@ -25,7 +25,7 @@ complete as there is too much un-said.
   the qualified classname (for `@Injectable` and `@Factory` annotated types) or from the qualified
   classname + method name (for `@Provides` methods). In the future this will allow derived injectors to override
   specific bindings.
-* No to provider methods in the same interface should have the same method so that we have a unique id.
+* No two provider methods in the same interface should have the same method so that we have a unique id.
 
 ## Old Notes
 
