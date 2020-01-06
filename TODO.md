@@ -26,6 +26,8 @@ complete as there is too much un-said.
   classname + method name (for `@Provides` methods). In the future this will allow derived injectors to override
   specific bindings.
 * No two provider methods in the same interface should have the same method so that we have a unique id.
+* Support collection dependency types. (So along with `INSTANCE` and `SUPPLIER` we should also support
+  `COLLECTION_INSTANCE`, `COLLECTION_SUPPLIER`)
 
 ## Old Notes
 
