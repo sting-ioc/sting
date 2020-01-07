@@ -193,87 +193,7 @@ public final class StingProcessor
       ElementsUtil.getMethods( element, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
     for ( final ExecutableElement method : methods )
     {
-      if ( !method.getModifiers().contains( Modifier.DEFAULT ) )
-      {
-        throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME, "have a default modifier" ),
-                                      method );
-      }
-      else if ( TypeKind.VOID == method.getReturnType().getKind() )
-      {
-        throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME, "return a value" ),
-                                      method );
-      }
-      else if ( !method.getTypeParameters().isEmpty() )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.PROVIDES_CLASSNAME, "have type parameters" ),
-                                      method );
-      }
-      else
-      {
-        final boolean providesPresent = AnnotationsUtil.hasAnnotationOfType( method, Constants.PROVIDES_CLASSNAME );
-        final boolean nullablePresent =
-          AnnotationsUtil.hasAnnotationOfType( method, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
-        final List<TypeMirror> types =
-          providesPresent ?
-          AnnotationsUtil.getTypeMirrorsAnnotationParameter( method, Constants.PROVIDES_CLASSNAME, "types" ) :
-          Collections.emptyList();
-        final List<TypeMirror> publishedTypes;
-        if ( !providesPresent || isDefaultTypes( types ) )
-        {
-          publishedTypes = Collections.singletonList( method.getReturnType() );
-        }
-        else
-        {
-          for ( final TypeMirror type : types )
-          {
-            if ( !processingEnv.getTypeUtils().isAssignable( method.getReturnType(), type ) )
-            {
-              throw new ProcessorException( MemberChecks.toSimpleName( Constants.PROVIDES_CLASSNAME ) +
-                                            " target has a type parameter containing the value " + type +
-                                            " that is not assignable to the return type of the method",
-                                            method );
-            }
-          }
-          publishedTypes = types;
-        }
-        final String qualifier =
-          providesPresent ?
-          (String) AnnotationsUtil.getAnnotationValue( method, Constants.PROVIDES_CLASSNAME, "qualifier" )
-            .getValue() :
-          "";
-        final boolean eager =
-          providesPresent &&
-          (boolean) AnnotationsUtil.getAnnotationValue( method, Constants.PROVIDES_CLASSNAME, "eager" ).getValue();
-        final String declaredId =
-          providesPresent ?
-          (String) AnnotationsUtil.getAnnotationValue( method, Constants.PROVIDES_CLASSNAME, "id" ).getValue() :
-          "";
-        final String id = declaredId.isEmpty() ? element.getQualifiedName() + "#" + method.getSimpleName() : declaredId;
-
-        final List<DependencyDescriptor> dependencies = new ArrayList<>();
-        int index = 0;
-        final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) method.asType() ).getParameterTypes();
-        for ( final VariableElement parameter : method.getParameters() )
-        {
-          dependencies.add( handleProvidesParameter( parameter, parameterTypes.get( index++ ) ) );
-        }
-        if ( publishedTypes.isEmpty() && !eager )
-        {
-          throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME,
-                                                           "have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" ),
-                                        element );
-        }
-
-        final Binding binding =
-          new Binding( nullablePresent ? Binding.Type.NULLABLE_PROVIDES : Binding.Type.PROVIDES,
-                       id,
-                       qualifier,
-                       publishedTypes.toArray( new TypeMirror[ 0 ] ),
-                       eager,
-                       method,
-                       dependencies.toArray( new DependencyDescriptor[ 0 ] ) );
-        bindings.add( binding );
-      }
+      processProvidesMethod( element, bindings, method );
     }
     if ( bindings.isEmpty() && includes.isEmpty() )
     {
@@ -312,6 +232,93 @@ public final class StingProcessor
       g.writeEnd();
     } );
 
+  }
+
+  private void processProvidesMethod( @Nonnull final TypeElement element,
+                                      @Nonnull final List<Binding> bindings,
+                                      @Nonnull final ExecutableElement method )
+  {
+    if ( !method.getModifiers().contains( Modifier.DEFAULT ) )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME, "have a default modifier" ),
+                                    method );
+    }
+    else if ( TypeKind.VOID == method.getReturnType().getKind() )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME, "return a value" ),
+                                    method );
+    }
+    else if ( !method.getTypeParameters().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.PROVIDES_CLASSNAME, "have type parameters" ),
+                                    method );
+    }
+    else
+    {
+      final boolean providesPresent = AnnotationsUtil.hasAnnotationOfType( method, Constants.PROVIDES_CLASSNAME );
+      final boolean nullablePresent =
+        AnnotationsUtil.hasAnnotationOfType( method, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
+      final List<TypeMirror> types =
+        providesPresent ?
+        AnnotationsUtil.getTypeMirrorsAnnotationParameter( method, Constants.PROVIDES_CLASSNAME, "types" ) :
+        Collections.emptyList();
+      final List<TypeMirror> publishedTypes;
+      if ( !providesPresent || isDefaultTypes( types ) )
+      {
+        publishedTypes = Collections.singletonList( method.getReturnType() );
+      }
+      else
+      {
+        for ( final TypeMirror type : types )
+        {
+          if ( !processingEnv.getTypeUtils().isAssignable( method.getReturnType(), type ) )
+          {
+            throw new ProcessorException( MemberChecks.toSimpleName( Constants.PROVIDES_CLASSNAME ) +
+                                          " target has a type parameter containing the value " + type +
+                                          " that is not assignable to the return type of the method",
+                                          method );
+          }
+        }
+        publishedTypes = types;
+      }
+      final String qualifier =
+        providesPresent ?
+        (String) AnnotationsUtil.getAnnotationValue( method, Constants.PROVIDES_CLASSNAME, "qualifier" )
+          .getValue() :
+        "";
+      final boolean eager =
+        providesPresent &&
+        (boolean) AnnotationsUtil.getAnnotationValue( method, Constants.PROVIDES_CLASSNAME, "eager" ).getValue();
+      final String declaredId =
+        providesPresent ?
+        (String) AnnotationsUtil.getAnnotationValue( method, Constants.PROVIDES_CLASSNAME, "id" ).getValue() :
+        "";
+      final String id = declaredId.isEmpty() ? element.getQualifiedName() + "#" + method.getSimpleName() : declaredId;
+
+      final List<DependencyDescriptor> dependencies = new ArrayList<>();
+      int index = 0;
+      final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) method.asType() ).getParameterTypes();
+      for ( final VariableElement parameter : method.getParameters() )
+      {
+        dependencies.add( handleProvidesParameter( parameter, parameterTypes.get( index++ ) ) );
+      }
+      if ( publishedTypes.isEmpty() && !eager )
+      {
+        throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME,
+                                                         "have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" ),
+                                      element );
+      }
+
+      final Binding binding =
+        new Binding( nullablePresent ? Binding.Type.NULLABLE_PROVIDES : Binding.Type.PROVIDES,
+                     id,
+                     qualifier,
+                     publishedTypes.toArray( new TypeMirror[ 0 ] ),
+                     eager,
+                     method,
+                     dependencies.toArray( new DependencyDescriptor[ 0 ] ) );
+      bindings.add( binding );
+    }
   }
 
   @Nonnull
