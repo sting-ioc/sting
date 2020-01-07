@@ -293,7 +293,7 @@ public final class StingProcessor
         for ( final Binding binding : bindings )
         {
           g.writeStartObject();
-          binding.emitBindingJson( g );
+          binding.write( g );
           g.writeEnd();
         }
         g.writeEnd();
@@ -461,7 +461,7 @@ public final class StingProcessor
     JsonUtil.writeJsonResource( processingEnv, element, filename, g -> {
       g.writeStartObject();
       g.write( "schema", "injectable/1" );
-      binding.emitBindingJson( g );
+      binding.write( g );
       g.writeEnd();
     } );
   }

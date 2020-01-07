@@ -95,7 +95,7 @@ final class Binding
     return _dependencies;
   }
 
-  void emitBindingJson( @Nonnull final JsonGenerator g )
+  void write( @Nonnull final JsonGenerator g )
   {
     if ( Type.INJECTABLE != _bindingType )
     {

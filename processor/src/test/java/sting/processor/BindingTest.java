@@ -222,7 +222,7 @@ public class BindingTest
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     final JsonGenerator g = Json.createGenerator( baos );
     g.writeStartObject();
-    binding.emitBindingJson( g );
+    binding.write( g );
     g.writeEnd();
     g.close();
 
