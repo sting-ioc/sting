@@ -1,11 +1,6 @@
 {
-  "schema": "fragment/1",
-  "bindings": [
-    {
-      "providesMethod": "provideRunnable",
-      "types": [
-        "java.lang.Runnable"
-      ]
-    }
+  "schema": "injectable/1",
+  "types": [
+    "com.example.fragment.includes.Included3Model"
   ]
 }

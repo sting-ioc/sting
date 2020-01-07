@@ -1,12 +1,8 @@
 package com.example.fragment.includes;
 
-import sting.Fragment;
+import sting.Injectable;
 
-@Fragment
-public interface Included3Model
+@Injectable
+public class Included3Model
 {
-  default Runnable provideRunnable()
-  {
-    return null;
-  }
 }

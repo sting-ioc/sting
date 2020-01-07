@@ -9,6 +9,8 @@ final class Constants
   @Nonnull
   static final String FRAGMENT_CLASSNAME = "sting.Fragment";
   @Nonnull
+  static final String FACTORY_CLASSNAME = "sting.Factory";
+  @Nonnull
   static final String INJECTOR_CLASSNAME = "sting.Injector";
   @Nonnull
   static final String DEPENDENCY_CLASSNAME = "sting.Dependency";

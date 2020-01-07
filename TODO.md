@@ -14,7 +14,6 @@ complete as there is too much un-said.
   generates code used by users and thus has to be marked as a API-generating processor in Bazel which can reduce
   the degree of parallelization that is possible. Moving it to a separate annotation processor means we can
   explicitly control whether we accept this cost.
-* Rework `@Fragment.includes` so that it can also reference `@Injectable` and `@Factory` annotated types.
 * Consider generating warnings if `@Fragment` types will not resolve unless the user supplies an explicit
   `incomplete` parameter. By resolve it means that every component should have all of it's dependencies
   present.

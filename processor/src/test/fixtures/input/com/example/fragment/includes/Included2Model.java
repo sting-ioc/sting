@@ -1,12 +1,9 @@
 package com.example.fragment.includes;
 
-import sting.Fragment;
+import sting.Factory;
 
-@Fragment
+@Factory
 public interface Included2Model
 {
-  default Runnable provideRunnable()
-  {
-    return null;
-  }
+  Runnable create();
 }
