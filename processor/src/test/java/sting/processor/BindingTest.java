@@ -8,6 +8,7 @@ import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
@@ -119,7 +120,21 @@ public class BindingTest
                                                               "Backend",
                                                               "com.biz.Plugin",
                                                               true ) },
-                      "{\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"}},{\"type\":\"SUPPLIER\",\"coordinate\":{\"qualifier\":\"Backend\",\"type\":\"com.biz.Plugin\"},\"optional\":true}]}" }
+                      "{\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"}},{\"type\":\"SUPPLIER\",\"coordinate\":{\"qualifier\":\"Backend\",\"type\":\"com.biz.Plugin\"},\"optional\":true}]}" },
+        new Object[]{ "K",
+                      Binding.Type.PROVIDES,
+                      "",
+                      new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
+                      false,
+                      new DependencyDescriptor[ 0 ],
+                      "{\"providesMethod\":\"myProviderMethod\",\"types\":[\"com.biz.MyService\"]}" },
+        new Object[]{ "L",
+                      Binding.Type.NULLABLE_PROVIDES,
+                      "",
+                      new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
+                      false,
+                      new DependencyDescriptor[ 0 ],
+                      "{\"providesMethod\":\"myProviderMethod\",\"nullable\":true,\"types\":[\"com.biz.MyService\"]}" }
       };
   }
 
@@ -132,8 +147,18 @@ public class BindingTest
                              @Nonnull final DependencyDescriptor[] dependencies,
                              @Nonnull final String expectedJson )
   {
-    final Element element =
-      Binding.Type.INJECTABLE == bindingType ? mock( TypeElement.class ) : mock( ExecutableElement.class );
+    final Element element;
+    if ( Binding.Type.INJECTABLE == bindingType )
+    {
+      element = mock( TypeElement.class );
+    }
+    else
+    {
+      element = mock( ExecutableElement.class );
+      final Name name = mock( Name.class );
+      when( name.toString() ).thenReturn( "myProviderMethod" );
+      when( element.getSimpleName() ).thenReturn( name );
+    }
     when( element.getKind() ).thenReturn( Binding.Type.INJECTABLE == bindingType ?
                                           ElementKind.CLASS :
                                           ElementKind.METHOD );
