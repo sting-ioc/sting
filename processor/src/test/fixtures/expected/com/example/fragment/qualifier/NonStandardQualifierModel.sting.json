@@ -2,6 +2,7 @@
   "schema": "fragment/1",
   "bindings": [
     {
+      "id": "com.example.fragment.qualifier.NonStandardQualifierModel#provideRunnable",
       "providesMethod": "provideRunnable",
       "qualifier": "‎🎉 Tada!",
       "types": [

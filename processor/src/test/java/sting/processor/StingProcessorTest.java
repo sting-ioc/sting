@@ -32,6 +32,8 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.eager.EagerModel" },
         new Object[]{ "com.example.fragment.eager.LazyModel" },
 
+        new Object[]{ "com.example.fragment.id.ExplicitIdModel" },
+
         new Object[]{ "com.example.fragment.qualifier.BasicQualifierModel" },
         new Object[]{ "com.example.fragment.qualifier.EmptyQualifierModel" },
         new Object[]{ "com.example.fragment.qualifier.NonStandardQualifierModel" },
@@ -51,6 +53,8 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injectable.eager.EagerModel" },
         new Object[]{ "com.example.injectable.eager.LazyModel" },
+
+        new Object[]{ "com.example.injectable.id.ExplicitIdModel" },
 
         new Object[]{ "com.example.injectable.qualifier.BasicQualifierModel" },
         new Object[]{ "com.example.injectable.qualifier.EmptyQualifierModel" },

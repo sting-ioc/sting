@@ -46,6 +46,16 @@ import javax.annotation.Nonnull;
 public @interface Provides
 {
   /**
+   * A unique identifier representing this binding.
+   * If not identified then this will be derived as "[Qualified Classname]#[Method Name]".
+   * This is primarily used so that inherited {@link Injector} annotated types can override specific bindings.
+   *
+   * @return a unique identifier representing this binding..
+   */
+  @Nonnull
+  String id() default "";
+
+  /**
    * A flag indicating whether the instance should be instantiated when the Injector is created.
    *
    * @return a flag indicating whether the instance should be instantiated when the Injector is created.

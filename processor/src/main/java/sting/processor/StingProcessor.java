@@ -244,6 +244,11 @@ public final class StingProcessor
         final boolean eager =
           providesPresent &&
           (boolean) AnnotationsUtil.getAnnotationValue( method, Constants.PROVIDES_CLASSNAME, "eager" ).getValue();
+        final String declaredId =
+          providesPresent ?
+          (String) AnnotationsUtil.getAnnotationValue( method, Constants.PROVIDES_CLASSNAME, "id" ).getValue() :
+          "";
+        final String id = declaredId.isEmpty() ? element.getQualifiedName() + "#" + method.getSimpleName() : declaredId;
 
         final List<DependencyDescriptor> dependencies = new ArrayList<>();
         int index = 0;
@@ -261,6 +266,7 @@ public final class StingProcessor
 
         final Binding binding =
           new Binding( nullablePresent ? Binding.Type.NULLABLE_PROVIDES : Binding.Type.PROVIDES,
+                       id,
                        qualifier,
                        publishedTypes.toArray( new TypeMirror[ 0 ] ),
                        eager,
@@ -436,6 +442,9 @@ public final class StingProcessor
     constructorMustNotBeProtected( constructor );
     constructorMustNotBePublic( constructor );
 
+    final String declaredId =
+      (String) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTABLE_CLASSNAME, "id" ).getValue();
+    final String id = declaredId.isEmpty() ? element.getQualifiedName().toString() : declaredId;
     final String qualifier =
       (String) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTABLE_CLASSNAME, "qualifier" ).getValue();
     final boolean eager =
@@ -456,6 +465,7 @@ public final class StingProcessor
     }
     final Binding binding =
       new Binding( Binding.Type.INJECTABLE,
+                   id,
                    qualifier,
                    publishedTypes.toArray( new TypeMirror[ 0 ] ),
                    eager,

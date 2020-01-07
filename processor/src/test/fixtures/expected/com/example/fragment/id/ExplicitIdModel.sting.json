@@ -2,9 +2,8 @@
   "schema": "fragment/1",
   "bindings": [
     {
-      "id": "com.example.fragment.qualifier.BasicQualifierModel#provideRunnable",
+      "id": "provideZeRunnable",
       "providesMethod": "provideRunnable",
-      "qualifier": "com.bix/SomeQualifier",
       "types": [
         "java.lang.Runnable"
       ]

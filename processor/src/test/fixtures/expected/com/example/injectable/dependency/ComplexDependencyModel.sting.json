@@ -1,5 +1,6 @@
 {
   "schema": "injectable/1",
+  "id": "com.example.injectable.dependency.ComplexDependencyModel",
   "types": [
     "com.example.injectable.dependency.ComplexDependencyModel"
   ],

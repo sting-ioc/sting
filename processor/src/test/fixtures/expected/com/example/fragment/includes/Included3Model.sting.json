@@ -1,5 +1,6 @@
 {
   "schema": "injectable/1",
+  "id": "com.example.fragment.includes.Included3Model",
   "types": [
     "com.example.fragment.includes.Included3Model"
   ]

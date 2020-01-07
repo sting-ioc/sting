@@ -2,18 +2,21 @@
   "schema": "fragment/1",
   "bindings": [
     {
+      "id": "com.example.fragment.MultiProvideModel#provideRunnable",
       "providesMethod": "provideRunnable",
       "types": [
         "java.lang.Runnable"
       ]
     },
     {
+      "id": "com.example.fragment.MultiProvideModel#provideEventListener",
       "providesMethod": "provideEventListener",
       "types": [
         "java.util.EventListener"
       ]
     },
     {
+      "id": "com.example.fragment.MultiProvideModel#provideSerializable",
       "providesMethod": "provideSerializable",
       "types": [
         "java.io.Serializable"

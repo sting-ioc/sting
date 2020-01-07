@@ -1,4 +1,5 @@
 {
   "schema": "injectable/1",
+  "id": "com.example.injectable.types.NoTypesModel",
   "eager": true
 }

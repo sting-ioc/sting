@@ -2,6 +2,7 @@
   "schema": "fragment/1",
   "bindings": [
     {
+      "id": "com.example.fragment.BasicModel#provideRunnable",
       "providesMethod": "provideRunnable",
       "types": [
         "java.lang.Runnable"

@@ -1,5 +1,6 @@
 {
   "schema": "injectable/1",
+  "id": "com.example.injectable.qualifier.EmptyQualifierModel",
   "types": [
     "com.example.injectable.qualifier.EmptyQualifierModel"
   ]

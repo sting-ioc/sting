@@ -15,6 +15,13 @@ final class Binding
   @Nonnull
   private final Type _bindingType;
   /**
+   * A unique identifier for the binding which can be specified by the developer or derived automatically.
+   * For an INJECTABLE binding this is the fully qualified name of the class. For other bindings it is
+   * the fully qualified name of the class combined with the name of the method.
+   */
+  @Nonnull
+  private final String _id;
+  /**
    * An opaque string used to restrict the requests that match this binding.
    */
   @Nonnull
@@ -44,6 +51,7 @@ final class Binding
   private final DependencyDescriptor[] _dependencies;
 
   Binding( @Nonnull final Type bindingType,
+           @Nonnull final String id,
            @Nonnull final String qualifier,
            @Nonnull final TypeMirror[] types,
            final boolean eager,
@@ -53,6 +61,7 @@ final class Binding
     assert ( Type.INJECTABLE == bindingType && ElementKind.CLASS == element.getKind() ) ||
            ( Type.INJECTABLE != bindingType && ElementKind.METHOD == element.getKind() );
     _bindingType = Objects.requireNonNull( bindingType );
+    _id = Objects.requireNonNull( id );
     _qualifier = Objects.requireNonNull( qualifier );
     _types = Objects.requireNonNull( types );
     _eager = eager;
@@ -64,6 +73,12 @@ final class Binding
   Type getBindingType()
   {
     return _bindingType;
+  }
+
+  @Nonnull
+  String getId()
+  {
+    return _id;
   }
 
   @Nonnull
@@ -97,6 +112,7 @@ final class Binding
 
   void write( @Nonnull final JsonGenerator g )
   {
+    g.write( "id", _id );
     if ( Type.INJECTABLE != _bindingType )
     {
       g.write( "providesMethod", _element.getSimpleName().toString() );
