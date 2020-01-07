@@ -6,6 +6,7 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.WildcardTypeName;
 import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.code.Symbol;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -205,6 +206,14 @@ public final class StingProcessor
     {
       _bindingRegistry.registerBinding( binding );
     }
+    emitFragmentDescriptor( element, includes, bindings );
+  }
+
+  private void emitFragmentDescriptor( @Nonnull final TypeElement element,
+                                       @Nonnull final List<TypeMirror> includes,
+                                       @Nonnull final List<Binding> bindings )
+    throws IOException
+  {
     final String filename = toFilename( element ) + DESCRIPTOR_FILE_SUFFIX;
     JsonUtil.writeJsonResource( processingEnv, element, filename, g -> {
       g.writeStartObject();
@@ -231,7 +240,6 @@ public final class StingProcessor
       }
       g.writeEnd();
     } );
-
   }
 
   private void processProvidesMethod( @Nonnull final TypeElement element,
