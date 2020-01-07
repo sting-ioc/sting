@@ -11,7 +11,7 @@
           "coordinate": {
             "type": "java.lang.String"
           },
-          "nullable": true
+          "optional": true
         }
       ]
     }

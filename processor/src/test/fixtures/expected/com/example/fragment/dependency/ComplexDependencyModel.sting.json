@@ -22,7 +22,7 @@
           "coordinate": {
             "type": "java.util.EventListener"
           },
-          "nullable": true
+          "optional": true
         }
       ]
     }

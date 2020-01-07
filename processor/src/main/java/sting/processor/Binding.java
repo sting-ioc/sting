@@ -146,7 +146,7 @@ final class Binding
         final boolean nullable = dependency.isOptional();
         if ( nullable )
         {
-          g.write( "nullable", nullable );
+          g.write( "optional", nullable );
         }
         g.writeEnd();
       }

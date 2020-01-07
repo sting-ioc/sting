@@ -81,7 +81,7 @@ public class BindingTest
                                                               "",
                                                               "com.biz.MyDep",
                                                               true ) },
-                      "{\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"},\"nullable\":true}]}" },
+                      "{\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"},\"optional\":true}]}" },
         new Object[]{ "H",
                       Binding.Type.INJECTABLE,
                       "",
@@ -105,7 +105,7 @@ public class BindingTest
                                                               "",
                                                               "com.biz.OtherDep",
                                                               false ) },
-                      "{\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"},\"nullable\":true},{\"coordinate\":{\"type\":\"com.biz.OtherDep\"}}]}" },
+                      "{\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"},\"optional\":true},{\"coordinate\":{\"type\":\"com.biz.OtherDep\"}}]}" },
         new Object[]{ "J",
                       Binding.Type.INJECTABLE,
                       "",
@@ -119,7 +119,7 @@ public class BindingTest
                                                               "Backend",
                                                               "com.biz.Plugin",
                                                               true ) },
-                      "{\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"}},{\"type\":\"SUPPLIER\",\"coordinate\":{\"qualifier\":\"Backend\",\"type\":\"com.biz.Plugin\"},\"nullable\":true}]}" }
+                      "{\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"}},{\"type\":\"SUPPLIER\",\"coordinate\":{\"qualifier\":\"Backend\",\"type\":\"com.biz.Plugin\"},\"optional\":true}]}" }
       };
   }
 
