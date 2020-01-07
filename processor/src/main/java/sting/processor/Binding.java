@@ -143,10 +143,9 @@ final class Binding
         }
         g.write( "type", coordinate.getType().toString() );
         g.writeEnd();
-        final boolean nullable = dependency.isOptional();
-        if ( nullable )
+        if ( dependency.isOptional() )
         {
-          g.write( "optional", nullable );
+          g.write( "optional", true );
         }
         g.writeEnd();
       }
