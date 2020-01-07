@@ -17,7 +17,6 @@ complete as there is too much un-said.
 * Consider generating warnings if `@Fragment` types will not resolve unless the user supplies an explicit
   `incomplete` parameter. By resolve it means that every component should have all of it's dependencies
   present.
-* No two provider methods in the same interface should have the same method so that we have a unique id.
 * Support collection dependency types. (So along with `INSTANCE` and `SUPPLIER` we should also support
   `COLLECTION_INSTANCE`, `COLLECTION_SUPPLIER`)
 

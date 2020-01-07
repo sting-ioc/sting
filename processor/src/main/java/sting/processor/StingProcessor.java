@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.RoundEnvironment;
@@ -189,7 +191,7 @@ public final class StingProcessor
                                       element );
       }
     }
-    final List<Binding> bindings = new ArrayList<>();
+    final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
     final List<ExecutableElement> methods =
       ElementsUtil.getMethods( element, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
     for ( final ExecutableElement method : methods )
@@ -202,11 +204,11 @@ public final class StingProcessor
                                                        "contain one or more methods or one or more includes" ),
                                     element );
     }
-    for ( final Binding binding : bindings )
+    for ( final Binding binding : bindings.values() )
     {
       _bindingRegistry.registerBinding( binding );
     }
-    emitFragmentDescriptor( element, includes, bindings );
+    emitFragmentDescriptor( element, includes, bindings.values() );
   }
 
   private void emitFragmentDescriptor( @Nonnull final TypeElement element,
@@ -243,7 +245,7 @@ public final class StingProcessor
   }
 
   private void processProvidesMethod( @Nonnull final TypeElement element,
-                                      @Nonnull final List<Binding> bindings,
+                                      @Nonnull final Map<ExecutableElement, Binding> bindings,
                                       @Nonnull final ExecutableElement method )
   {
     if ( !method.getModifiers().contains( Modifier.DEFAULT ) )
@@ -316,6 +318,18 @@ public final class StingProcessor
                                                          "have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" ),
                                       element );
       }
+      bindings.entrySet()
+        .stream()
+        .filter( e -> e.getValue().getId().equals( id ) )
+        .map( Map.Entry::getKey )
+        .findAny()
+        .ifPresent( matchingMethod -> {
+          throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME,
+                                                           "have a unique id but it has the same id as the method named " +
+                                                           matchingMethod.getSimpleName() ),
+                                        element );
+
+        } );
 
       final Binding binding =
         new Binding( nullablePresent ? Binding.Type.NULLABLE_PROVIDES : Binding.Type.PROVIDES,
@@ -325,7 +339,7 @@ public final class StingProcessor
                      eager,
                      method,
                      dependencies.toArray( new DependencyDescriptor[ 0 ] ) );
-      bindings.add( binding );
+      bindings.put( method, binding );
     }
   }
 

@@ -150,6 +150,9 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.includes.BadTypesInIncludesModel",
                       "@Fragment target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment, @Injectable or @Factory" },
 
+        new Object[]{ "com.example.fragment.id.DuplicateIdModel",
+                      "@Provides target must have a unique id but it has the same id as the method named runnable2" },
+
         new Object[]{ "com.example.fragment.provides.AbstractMethodProvidesModel",
                       "@Provides target must have a default modifier" },
         new Object[]{ "com.example.fragment.provides.BadReturnTypeProvidesModel",
