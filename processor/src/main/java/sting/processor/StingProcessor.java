@@ -210,8 +210,8 @@ public final class StingProcessor
   }
 
   private void emitFragmentDescriptor( @Nonnull final TypeElement element,
-                                       @Nonnull final List<TypeMirror> includes,
-                                       @Nonnull final List<Binding> bindings )
+                                       @Nonnull final Collection<TypeMirror> includes,
+                                       @Nonnull final Collection<Binding> bindings )
     throws IOException
   {
     final String filename = toFilename( element ) + DESCRIPTOR_FILE_SUFFIX;
