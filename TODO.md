@@ -19,6 +19,7 @@ complete as there is too much un-said.
   present.
 * Support collection dependency types. (So along with `INSTANCE` and `SUPPLIER` we should also support
   `COLLECTION_INSTANCE`, `COLLECTION_SUPPLIER`)
+* Add a `@PostConstruct` hook so that custom code can be run after eager beans are constructed.
 
 ## Old Notes
 
