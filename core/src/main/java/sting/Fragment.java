@@ -21,13 +21,13 @@ import java.lang.annotation.Target;
 public @interface Fragment
 {
   /**
-   * Additional types that contribute to the object graph.
+   * A list of types that contribute to the object graph.
    * These types can be {@code @Fragment}-annotated interfaces or {@link Injectable @Injectable}-annotated classes.
    * The de-duplicated contributions of the {@code @Fragment}-annotated interfaces in the
    * {@code includes}, and of their inclusions recursively, are all contributed
    * to the object graph.
    *
-   * @return additional types from which this fragment is composed.
+   * @return a list of fragments that contribute to the fragments object graph.
    */
   Class<?>[] includes() default {};
 }
