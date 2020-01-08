@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 
 /**
  * Annotates an interface or abstract class for which a fully-formed, dependency-injected
- * implementation is to be generated from a set of {@linkplain #fragments}. The generated class will
+ * implementation is to be generated from the {@link #includes() included} object graph fragments. The generated class will
  * have the name of the type annotated with {@code @Injector} prepended with {@code Sting_}. For
  * example, {@code @Injector interface MyInjector {...}} will produce an implementation named
  * {@code Sting_MyInjector}.
@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * <p>Example of using a factory:</p>
  *
  * <pre><code>
- * {@literal @}Injector(fragments = {BackendFragment.class, FrontendFragment.class})
+ * {@literal @}Injector(includes = {BackendFragment.class, FrontendFragment.class})
  * interface MyInjector {
  *   MyWidget myWidget();
  *
@@ -53,7 +53,7 @@ import java.lang.annotation.Target;
  * <p>Example of using create:</p>
  *
  * <pre><code>
- * {@literal @}Injector(fragments = {BackendFragment.class, FrontendFragment.class})
+ * {@literal @}Injector(includes = {BackendFragment.class, FrontendFragment.class})
  * interface MyInjector {
  *   MyWidget myWidget();
  * }
@@ -70,11 +70,14 @@ import java.lang.annotation.Target;
 public @interface Injector
 {
   /**
-   * A list of classes annotated with {@link Fragment} that contribute to the injectors object graph. Note
-   * that through the use of {@link Fragment#includes} the full set of fragments used to implement the injector
-   * may include more fragments that just those listed here.
+   * A list of types that contribute to the object graph.
+   * These types can be {@code @Fragment}-annotated interfaces or {@link Injectable @Injectable}-annotated classes.
+   * The de-duplicated contributions of the {@code @Fragment}-annotated interfaces in the
+   * {@code includes}, and of their inclusions recursively, are all contributed
+   * to the object graph.
    *
-   * @return a list of fragments that contribute to the injectors object graph.
+   * @return a list of types that contribute to the injectors object graph.
    */
-  Class<?>[] fragments() default {};
+  Class<?>[] includes() default {};
+
 }
