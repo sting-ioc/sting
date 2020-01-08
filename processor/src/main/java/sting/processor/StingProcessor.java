@@ -173,24 +173,7 @@ public final class StingProcessor
       throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME, "have type parameters" ),
                                     element );
     }
-    final List<TypeMirror> includes =
-      AnnotationsUtil.getTypeMirrorsAnnotationParameter( element, Constants.FRAGMENT_CLASSNAME, "includes" );
-    for ( final TypeMirror include : includes )
-    {
-      final Element includeElement = processingEnv.getTypeUtils().asElement( include );
-      if ( !AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FRAGMENT_CLASSNAME ) &&
-           !AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) &&
-           !AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FACTORY_CLASSNAME ) )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " target has an " +
-                                      "includes parameter containing the value " + include + " that is not a type " +
-                                      "annotated by either " +
-                                      MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + ", " +
-                                      MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) + " or " +
-                                      MemberChecks.toSimpleName( Constants.FACTORY_CLASSNAME ),
-                                      element );
-      }
-    }
+    final List<TypeMirror> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME );
     final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
     final List<ExecutableElement> methods =
       ElementsUtil.getMethods( element, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
@@ -209,6 +192,31 @@ public final class StingProcessor
       _bindingRegistry.registerBinding( binding );
     }
     emitFragmentDescriptor( element, includes, bindings.values() );
+  }
+
+  @Nonnull
+  private List<TypeMirror> extractIncludes( @Nonnull final TypeElement element,
+                                            @Nonnull final String annotationClassname )
+  {
+    final List<TypeMirror> includes =
+      AnnotationsUtil.getTypeMirrorsAnnotationParameter( element, annotationClassname, "includes" );
+    for ( final TypeMirror include : includes )
+    {
+      final Element includeElement = processingEnv.getTypeUtils().asElement( include );
+      if ( !AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FRAGMENT_CLASSNAME ) &&
+           !AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) &&
+           !AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FACTORY_CLASSNAME ) )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
+                                      "includes parameter containing the value " + include + " that is not a type " +
+                                      "annotated by either " +
+                                      MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + ", " +
+                                      MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) + " or " +
+                                      MemberChecks.toSimpleName( Constants.FACTORY_CLASSNAME ),
+                                      element );
+      }
+    }
+    return includes;
   }
 
   private void emitFragmentDescriptor( @Nonnull final TypeElement element,
