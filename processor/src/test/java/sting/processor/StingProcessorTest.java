@@ -161,7 +161,7 @@ public final class StingProcessorTest
                       "@Provides target must not have type parameters" },
 
         new Object[]{ "com.example.fragment.provides.dependency.ParameterizedDependencyModel",
-                      "@Injectable target must not have a method with a parameter that is a parameterized type. This is only permitted for specific types such as java.util.function.Supplier" },
+                      "@Fragment target must not have a method with a parameter that is a parameterized type. This is only permitted for specific types such as java.util.function.Supplier" },
         new Object[]{ "com.example.fragment.provides.dependency.RawParameterizedDependencyModel",
                       "@Fragment target must not have a method with a parameter that is a raw parameterized type. Parameterized types are only permitted for specific types such as java.util.function.Supplier" },
         new Object[]{ "com.example.fragment.provides.dependency.RawSupplierDependencyModel",
