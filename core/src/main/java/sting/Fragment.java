@@ -27,7 +27,7 @@ public @interface Fragment
    * {@code includes}, and of their inclusions recursively, are all contributed
    * to the object graph.
    *
-   * @return a list of fragments that contribute to the fragments object graph.
+   * @return a list of types that contribute to the fragments object graph.
    */
   Class<?>[] includes() default {};
 }
