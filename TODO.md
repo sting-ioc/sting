@@ -20,6 +20,10 @@ complete as there is too much un-said.
 * Support collection dependency types. (So along with `INSTANCE` and `SUPPLIER` we should also support
   `COLLECTION_INSTANCE`, `COLLECTION_SUPPLIER`)
 * Add a `@PostConstruct` hook so that custom code can be run after eager beans are constructed.
+* Consider removing `@Factory` support from `includes` parameters of `@Fragments` and `@Injector`
+  and just assume that they are detected if they are referenced from within the object graph. The
+  `@Injectable` types are also detected but can be manually added if you want them eagerly instantiated and
+  they are not a dependency of any other element.
 
 ## Old Notes
 
