@@ -257,14 +257,10 @@ public final class StingProcessor
                                       @Nonnull final ExecutableElement method )
   {
     MemberChecks.mustReturnAValue( Constants.PROVIDES_CLASSNAME, method );
+    MemberChecks.mustNotHaveAnyTypeParameters( Constants.PROVIDES_CLASSNAME, method );
     if ( !method.getModifiers().contains( Modifier.DEFAULT ) )
     {
       throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME, "have a default modifier" ),
-                                    method );
-    }
-    else if ( !method.getTypeParameters().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.PROVIDES_CLASSNAME, "have type parameters" ),
                                     method );
     }
     else

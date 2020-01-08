@@ -158,7 +158,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.provides.BadReturnTypeProvidesModel",
                       "@Provides target must return a value" },
         new Object[]{ "com.example.fragment.provides.ParameterizedProvidesModel",
-                      "@Provides target must not have type parameters" },
+                      "@Provides target must not have any type parameters" },
 
         new Object[]{ "com.example.fragment.provides.dependency.ParameterizedDependencyModel",
                       "@Fragment target must not have a method with a parameter that is a parameterized type. This is only permitted for specific types such as java.util.function.Supplier" },
