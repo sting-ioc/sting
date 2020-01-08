@@ -256,14 +256,10 @@ public final class StingProcessor
                                       @Nonnull final Map<ExecutableElement, Binding> bindings,
                                       @Nonnull final ExecutableElement method )
   {
+    MemberChecks.mustReturnAValue( Constants.PROVIDES_CLASSNAME, method );
     if ( !method.getModifiers().contains( Modifier.DEFAULT ) )
     {
       throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME, "have a default modifier" ),
-                                    method );
-    }
-    else if ( TypeKind.VOID == method.getReturnType().getKind() )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME, "return a value" ),
                                     method );
     }
     else if ( !method.getTypeParameters().isEmpty() )
