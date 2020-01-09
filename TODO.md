@@ -24,6 +24,8 @@ complete as there is too much un-said.
   and just assume that they are detected if they are referenced from within the object graph. The
   `@Injectable` types are also detected but can be manually added if you want them eagerly instantiated and
   they are not a dependency of any other element.
+* `@Injector` classes must have a single constructor. The constructor must have no parameters. The constructor
+  should not be public access. It should not be protected access unless the class is public.
 
 ## Old Notes
 
