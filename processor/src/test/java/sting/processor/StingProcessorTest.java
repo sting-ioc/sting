@@ -202,7 +202,30 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.types.BadType3Model",
                       "@Injectable target has a type parameter containing the value com.example.injectable.types.BadType3Model.MyOuterInterface that is not assignable to the declaring type" },
         new Object[]{ "com.example.injectable.types.NoTypesAndLazyModel",
-                      "@Injectable target must have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" }
+                      "@Injectable target must have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" },
+
+        new Object[]{ "com.example.injector.ConcreteClassInjector",
+                      "@Injector target must not must be abstract if the target is a class" },
+        new Object[]{ "com.example.injector.EnumInjector",
+                      "@Injector target must be an interface or an abstract class" },
+
+        new Object[]{ "com.example.injector.dependency.MethodReturningVoidDependencyModel",
+                      "@Dependency target must return a value" },
+        new Object[]{ "com.example.injector.dependency.MethodWithParametersDependencyModel",
+                      "@Dependency target must not have any parameters" },
+        new Object[]{ "com.example.injector.dependency.MethodWithTypeParametersDependencyModel",
+                      "@Dependency target must not have any type parameters" },
+        new Object[]{ "com.example.injector.dependency.ParameterizedDependencyModel",
+                      "@Dependency target must not return a value that is a parameterized type. This is only permitted for specific types such as java.util.function.Supplier" },
+        new Object[]{ "com.example.injector.dependency.RawParameterizedDependencyModel",
+                      "@Dependency target must not return a value that is a raw parameterized type. Parameterized types are only permitted for specific types such as java.util.function.Supplier" },
+        new Object[]{ "com.example.injector.dependency.RawSupplierDependencyModel",
+                      "@Dependency target must not return a value that is a raw java.util.function.Supplier type" },
+        new Object[]{ "com.example.injector.dependency.WildcardSupplierDependencyModel",
+                      "@Dependency target must not return a value that is a java.util.function.Supplier type with a wildcard parameter" },
+
+        new Object[]{ "com.example.injector.includes.BadTypesInIncludesModel",
+                      "@Injector target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment, @Injectable or @Factory" }
       };
   }
 

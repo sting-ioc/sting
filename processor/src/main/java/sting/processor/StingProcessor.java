@@ -42,7 +42,8 @@ import org.realityforge.proton.ProcessorException;
 /**
  * Annotation processor that analyzes sting annotated source and generates dependency injection container.
  */
-@SupportedAnnotationTypes( { Constants.INJECTABLE_CLASSNAME,
+@SupportedAnnotationTypes( { Constants.INJECTOR_CLASSNAME,
+                             Constants.INJECTABLE_CLASSNAME,
                              Constants.FRAGMENT_CLASSNAME,
                              Constants.DEPENDENCY_CLASSNAME } )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
@@ -99,12 +100,131 @@ public final class StingProcessor
       .findAny()
       .ifPresent( a -> verifyDependencyElements( env, env.getElementsAnnotatedWith( a ) ) );
 
+    annotations.stream()
+      .filter( a -> a.getQualifiedName().toString().equals( Constants.INJECTOR_CLASSNAME ) )
+      .findAny()
+      .ifPresent( a -> processTypeElements( env,
+                                            (Collection<TypeElement>) env.getElementsAnnotatedWith( a ),
+                                            this::processInjector ) );
+
     errorIfProcessingOverAndInvalidTypesDetected( env );
     if ( env.processingOver() || env.errorRaised() )
     {
       _bindingRegistry.clear();
     }
     return true;
+  }
+
+  private void processInjector( @Nonnull final TypeElement element )
+    throws Exception
+  {
+    final ElementKind kind = element.getKind();
+    if ( ElementKind.INTERFACE != kind && ElementKind.CLASS != kind )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.INJECTOR_CLASSNAME,
+                                                       "be an interface or an abstract class" ),
+                                    element );
+    }
+    else if ( ElementKind.CLASS == kind && !element.getModifiers().contains( Modifier.ABSTRACT ) )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                                          "must be abstract if the target is a class" ),
+                                    element );
+    }
+    final List<TypeMirror> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
+
+    final List<DependencyDescriptor> topLevelDependencies = new ArrayList<>();
+    final List<ExecutableElement> methods =
+      ElementsUtil.getMethods( element, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
+    for ( final ExecutableElement method : methods )
+    {
+      if ( method.getModifiers().contains( Modifier.ABSTRACT ) )
+      {
+        processInjectorDependencyMethod( element, topLevelDependencies, method );
+      }
+    }
+  }
+
+  private void processInjectorDependencyMethod( @Nonnull final TypeElement element,
+                                                @Nonnull final List<DependencyDescriptor> topLevelDependencies,
+                                                @Nonnull final ExecutableElement method )
+  {
+    assert method.getModifiers().contains( Modifier.ABSTRACT );
+    MemberChecks.mustReturnAValue( Constants.DEPENDENCY_CLASSNAME, method );
+    MemberChecks.mustNotHaveAnyParameters( Constants.DEPENDENCY_CLASSNAME, method );
+    MemberChecks.mustNotHaveAnyTypeParameters( Constants.DEPENDENCY_CLASSNAME, method );
+    topLevelDependencies.add( processDependencyMethod( method ) );
+  }
+
+  @Nonnull
+  private DependencyDescriptor processDependencyMethod( @Nonnull final ExecutableElement method )
+  {
+    final TypeMirror returnType = method.getReturnType();
+    final boolean optional =
+      AnnotationsUtil.hasAnnotationOfType( method, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
+    final AnnotationMirror annotation =
+      AnnotationsUtil.findAnnotationByType( method, Constants.DEPENDENCY_CLASSNAME );
+    final String qualifier =
+      null == annotation ? "" : AnnotationsUtil.getAnnotationValue( annotation, "qualifier" );
+
+    final TypeName typeName = TypeName.get( returnType );
+    final boolean isParameterizedType = typeName instanceof ParameterizedTypeName;
+    final DependencyDescriptor.Type type;
+    final TypeMirror dependencyValueType;
+    if ( typeName instanceof ClassName )
+    {
+      if ( StingTypeNames.SUPPLIER.equals( typeName ) )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                            "return a value that is a raw " +
+                                                            StingTypeNames.SUPPLIER + " type" ),
+                                      method );
+      }
+      else if ( !( (TypeElement) ( (DeclaredType) returnType ).asElement() ).getTypeParameters().isEmpty() )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                            "return a value that is a raw parameterized " +
+                                                            "type. Parameterized types are only permitted for " +
+                                                            "specific types such as " + StingTypeNames.SUPPLIER ),
+                                      method );
+      }
+    }
+    else if ( typeName instanceof ParameterizedTypeName )
+    {
+      final ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) typeName;
+      if ( StingTypeNames.SUPPLIER.equals( parameterizedTypeName.rawType ) )
+      {
+        if ( parameterizedTypeName.typeArguments.get( 0 ) instanceof WildcardTypeName )
+        {
+          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                              "return a value that is a " +
+                                                              StingTypeNames.SUPPLIER +
+                                                              " type with a wildcard parameter" ),
+                                        method );
+        }
+      }
+      else
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                            "return a value that is a parameterized type. " +
+                                                            "This is only permitted for specific types such as " +
+                                                            StingTypeNames.SUPPLIER ),
+                                      method );
+      }
+    }
+    if ( isParameterizedType )
+    {
+      type = DependencyDescriptor.Type.SUPPLIER;
+      dependencyValueType = ( (DeclaredType) returnType ).getTypeArguments().get( 0 );
+    }
+    else
+    {
+      type = DependencyDescriptor.Type.INSTANCE;
+      dependencyValueType = returnType;
+    }
+
+    final Coordinate coordinate = new Coordinate( qualifier, dependencyValueType );
+    return new DependencyDescriptor( type, coordinate, optional, method );
   }
 
   private void verifyDependencyElements( @Nonnull final RoundEnvironment env,
