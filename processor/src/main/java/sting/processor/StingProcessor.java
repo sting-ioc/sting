@@ -590,8 +590,8 @@ public final class StingProcessor
                                                           "have multiple constructors" ),
                                     element );
     }
-    constructorMustNotBeProtected( constructor );
-    constructorMustNotBePublic( constructor );
+    injectableConstructorMustNotBeProtected( constructor );
+    injectableConstructorMustNotBePublic( constructor );
 
     final String declaredId =
       (String) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTABLE_CLASSNAME, "id" ).getValue();
@@ -715,7 +715,7 @@ public final class StingProcessor
     return 1 == types.size() && TypeKind.VOID == types.get( 0 ).getKind();
   }
 
-  private void constructorMustNotBePublic( @Nonnull final ExecutableElement constructor )
+  private void injectableConstructorMustNotBePublic( @Nonnull final ExecutableElement constructor )
   {
     if ( !isSynthetic( constructor ) &&
          constructor.getModifiers().contains( Modifier.PUBLIC ) &&
@@ -729,7 +729,7 @@ public final class StingProcessor
     }
   }
 
-  private void constructorMustNotBeProtected( @Nonnull final ExecutableElement constructor )
+  private void injectableConstructorMustNotBeProtected( @Nonnull final ExecutableElement constructor )
   {
     if ( constructor.getModifiers().contains( Modifier.PROTECTED ) &&
          ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_PROTECTED_CONSTRUCTOR ) )
