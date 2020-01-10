@@ -131,6 +131,20 @@ public final class StingProcessor
                                                           "must be abstract if the target is a class" ),
                                     element );
     }
+    if ( ElementKind.CLASS == kind )
+    {
+      final List<ExecutableElement> constructors = ElementsUtil.getConstructors( element );
+      final ExecutableElement constructor = constructors.get( 0 );
+      if ( constructors.size() > 1 )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                                            "have multiple constructors" ),
+                                      element );
+      }
+      injectorConstructorMustNotBeProtected( constructor );
+      injectorConstructorMustNotBePublic( constructor );
+    }
+
     final List<TypeMirror> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
 
     final List<DependencyDescriptor> topLevelDependencies = new ArrayList<>();
@@ -142,6 +156,36 @@ public final class StingProcessor
       {
         processInjectorDependencyMethod( element, topLevelDependencies, method );
       }
+    }
+  }
+
+  private void injectorConstructorMustNotBePublic( @Nonnull final ExecutableElement constructor )
+  {
+    if ( !isSynthetic( constructor ) &&
+         constructor.getModifiers().contains( Modifier.PUBLIC ) &&
+         ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_PUBLIC_CONSTRUCTOR ) )
+    {
+      final String message =
+        MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " target should not have a public " +
+        "constructor. The type should not be directly instantiated and should have a protected or package-access " +
+        "constructor. " + MemberChecks.suppressedBy( Constants.WARNING_PUBLIC_CONSTRUCTOR );
+      processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, constructor );
+    }
+  }
+
+  private void injectorConstructorMustNotBeProtected( @Nonnull final ExecutableElement constructor )
+  {
+    if ( !constructor.getEnclosingElement().getModifiers().contains( Modifier.PUBLIC ) &&
+         constructor.getModifiers().contains( Modifier.PROTECTED ) &&
+         ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_PROTECTED_CONSTRUCTOR ) )
+    {
+      final String message =
+        MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) +
+        " target should not have a protected " +
+        "constructor when the type is not public. The constructor is only invoked from subclasses that must be " +
+        "package-access as the type is not public. " +
+        MemberChecks.suppressedBy( Constants.WARNING_PROTECTED_CONSTRUCTOR );
+      processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, constructor );
     }
   }
 

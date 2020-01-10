@@ -208,6 +208,8 @@ public final class StingProcessorTest
                       "@Injector target must not must be abstract if the target is a class" },
         new Object[]{ "com.example.injector.EnumInjector",
                       "@Injector target must be an interface or an abstract class" },
+        new Object[]{ "com.example.injector.MultipleConstructorClassInjector",
+                      "@Injector target must not have multiple constructors" },
 
         new Object[]{ "com.example.injector.dependency.MethodReturningVoidDependencyModel",
                       "@Dependency target must return a value" },
@@ -243,7 +245,12 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.ProtectedConstructorModel",
                       "@Injectable target should not have a protected constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:ProtectedConstructor\" )" },
         new Object[]{ "com.example.injectable.PublicConstructorModel",
-                      "@Injectable target should not have a public constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:PublicConstructor\" )" }
+                      "@Injectable target should not have a public constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:PublicConstructor\" )" },
+
+        new Object[]{ "com.example.injector.ProtectedConstructorInjector",
+                      "@Injector target should not have a protected constructor when the type is not public. The constructor is only invoked from subclasses that must be package-access as the type is not public. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:ProtectedConstructor\" )" },
+        new Object[]{ "com.example.injector.PublicConstructorInjector",
+                      "@Injector target should not have a public constructor. The type should not be directly instantiated and should have a protected or package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:PublicConstructor\" )" }
       };
   }
 
@@ -266,7 +273,10 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.FinalModel" },
         new Object[]{ "com.example.injectable.PackageAccessModel" },
         new Object[]{ "com.example.injectable.SuppressedProtectedConstructorModel" },
-        new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" }
+        new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" },
+
+        new Object[]{ "com.example.injector.SuppressedProtectedConstructorInjector" },
+        new Object[]{ "com.example.injector.SuppressedPublicConstructorInjector" }
       };
   }
 
