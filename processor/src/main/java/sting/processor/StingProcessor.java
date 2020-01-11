@@ -145,7 +145,7 @@ public final class StingProcessor
       injectorConstructorMustNotBePublic( constructor );
     }
 
-    final List<TypeMirror> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
+    final List<DeclaredType> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
 
     final List<DependencyDescriptor> topLevelDependencies = new ArrayList<>();
     final List<ExecutableElement> methods =
@@ -337,7 +337,7 @@ public final class StingProcessor
       throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME, "have type parameters" ),
                                     element );
     }
-    final List<TypeMirror> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME );
+    final List<DeclaredType> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME );
     final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
     final List<ExecutableElement> methods =
       ElementsUtil.getMethods( element, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
@@ -359,9 +359,10 @@ public final class StingProcessor
   }
 
   @Nonnull
-  private List<TypeMirror> extractIncludes( @Nonnull final TypeElement element,
-                                            @Nonnull final String annotationClassname )
+  private List<DeclaredType> extractIncludes( @Nonnull final TypeElement element,
+                                              @Nonnull final String annotationClassname )
   {
+    final List<DeclaredType> results = new ArrayList<>();
     final List<TypeMirror> includes =
       AnnotationsUtil.getTypeMirrorsAnnotationParameter( element, annotationClassname, "includes" );
     for ( final TypeMirror include : includes )
@@ -379,8 +380,12 @@ public final class StingProcessor
                                       MemberChecks.toSimpleName( Constants.FACTORY_CLASSNAME ),
                                       element );
       }
+      else
+      {
+        results.add( (DeclaredType) include );
+      }
     }
-    return includes;
+    return results;
   }
 
   private void emitFragmentDescriptor( @Nonnull final TypeElement element,
@@ -395,7 +400,7 @@ public final class StingProcessor
       if ( !includes.isEmpty() )
       {
         g.writeStartArray( "includes" );
-        for ( final TypeMirror include : includes )
+        for ( final DeclaredType include : includes )
         {
           g.write( include.toString() );
         }
