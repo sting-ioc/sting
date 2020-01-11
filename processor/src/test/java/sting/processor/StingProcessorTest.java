@@ -62,7 +62,9 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injectable.types.BasicTypesModel" },
         new Object[]{ "com.example.injectable.types.DefaultTypesModel" },
-        new Object[]{ "com.example.injectable.types.NoTypesModel" }
+        new Object[]{ "com.example.injectable.types.NoTypesModel" },
+
+        new Object[]{ "com.example.injector.BasicInjectorModel" }
       };
   }
 
