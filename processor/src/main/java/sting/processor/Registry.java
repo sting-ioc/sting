@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.lang.model.type.TypeMirror;
 
-final class BindingRegistry
+final class Registry
 {
   /**
    * The set of bindings registered.

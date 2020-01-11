@@ -61,7 +61,7 @@ public final class StingProcessor
    * in memory processing.
    */
   @Nonnull
-  private final BindingRegistry _bindingRegistry = new BindingRegistry();
+  private final Registry _registry = new Registry();
 
   @Nonnull
   @Override
@@ -110,7 +110,7 @@ public final class StingProcessor
     errorIfProcessingOverAndInvalidTypesDetected( env );
     if ( env.processingOver() || env.errorRaised() )
     {
-      _bindingRegistry.clear();
+      _registry.clear();
     }
     return true;
   }
@@ -352,7 +352,7 @@ public final class StingProcessor
                                     element );
     }
     final FragmentDescriptor fragment = new FragmentDescriptor( element, includes, bindings.values() );
-    _bindingRegistry.registerFragment( fragment );
+    _registry.registerFragment( fragment );
     emitFragmentDescriptor( fragment );
   }
 
@@ -670,7 +670,7 @@ public final class StingProcessor
                    eager,
                    element,
                    dependencies.toArray( new DependencyDescriptor[ 0 ] ) );
-    _bindingRegistry.registerBinding( binding );
+    _registry.registerBinding( binding );
     final String filename = toFilename( element ) + DESCRIPTOR_FILE_SUFFIX;
     JsonUtil.writeJsonResource( processingEnv, element, filename, g -> {
       g.writeStartObject();
