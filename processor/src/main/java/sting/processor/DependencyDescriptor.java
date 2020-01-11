@@ -41,24 +41,24 @@ final class DependencyDescriptor
   }
 
   @Nonnull
-  public Type getType()
+  Type getType()
   {
     return _type;
   }
 
   @Nonnull
-  public Coordinate getCoordinate()
+  Coordinate getCoordinate()
   {
     return _coordinate;
   }
 
-  public boolean isOptional()
+  boolean isOptional()
   {
     return _optional;
   }
 
   @Nonnull
-  public Element getElement()
+  Element getElement()
   {
     return _element;
   }
