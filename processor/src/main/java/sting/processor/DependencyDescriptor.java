@@ -2,6 +2,7 @@ package sting.processor;
 
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.Element;
 
 final class DependencyDescriptor
@@ -61,6 +62,31 @@ final class DependencyDescriptor
   Element getElement()
   {
     return _element;
+  }
+
+  void write( @Nonnull final JsonGenerator g )
+  {
+    g.writeStartObject();
+    final DependencyDescriptor.Type type = getType();
+    if ( DependencyDescriptor.Type.INSTANCE != type )
+    {
+      g.write( "type", type.toString() );
+    }
+
+    g.writeStartObject( "coordinate" );
+    final Coordinate coordinate = getCoordinate();
+    final String qualifier = coordinate.getQualifier();
+    if ( !qualifier.isEmpty() )
+    {
+      g.write( "qualifier", qualifier );
+    }
+    g.write( "type", coordinate.getType().toString() );
+    g.writeEnd();
+    if ( isOptional() )
+    {
+      g.write( "optional", true );
+    }
+    g.writeEnd();
   }
 
   enum Type

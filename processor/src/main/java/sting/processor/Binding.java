@@ -143,27 +143,7 @@ final class Binding
       g.writeStartArray( "dependencies" );
       for ( final DependencyDescriptor dependency : _dependencies )
       {
-        g.writeStartObject();
-        final DependencyDescriptor.Type type = dependency.getType();
-        if ( DependencyDescriptor.Type.INSTANCE != type )
-        {
-          g.write( "type", type.toString() );
-        }
-
-        g.writeStartObject( "coordinate" );
-        final Coordinate coordinate = dependency.getCoordinate();
-        final String qualifier = coordinate.getQualifier();
-        if ( !qualifier.isEmpty() )
-        {
-          g.write( "qualifier", qualifier );
-        }
-        g.write( "type", coordinate.getType().toString() );
-        g.writeEnd();
-        if ( dependency.isOptional() )
-        {
-          g.write( "optional", true );
-        }
-        g.writeEnd();
+        dependency.write( g );
       }
       g.writeEnd();
     }
