@@ -20,6 +20,11 @@ final class Registry
   @Nonnull
   private final List<FragmentDescriptor> _fragments = new ArrayList<>();
   /**
+   * The set of injectors registered.
+   */
+  @Nonnull
+  private final List<InjectorDescriptor> _injectors = new ArrayList<>();
+  /**
    * The published types of bindings that have been registered.
    */
   @Nonnull
@@ -54,10 +59,21 @@ final class Registry
     }
   }
 
+  /**
+   * Register the injector in the local cache.
+   *
+   * @param injector the injector.
+   */
+  void registerInjector( @Nonnull final InjectorDescriptor injector )
+  {
+    _injectors.add( injector );
+  }
+
   void clear()
   {
     _bindings.clear();
     _fragments.clear();
+    _injectors.clear();
     _publishedTypes.clear();
   }
 }

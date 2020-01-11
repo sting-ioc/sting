@@ -157,6 +157,8 @@ public final class StingProcessor
         processInjectorDependencyMethod( element, topLevelDependencies, method );
       }
     }
+    final InjectorDescriptor injector = new InjectorDescriptor( element, includes, topLevelDependencies );
+    _registry.registerInjector( injector );
   }
 
   private void injectorConstructorMustNotBePublic( @Nonnull final ExecutableElement constructor )
