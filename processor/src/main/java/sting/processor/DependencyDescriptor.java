@@ -73,15 +73,7 @@ final class DependencyDescriptor
       g.write( "type", type.toString() );
     }
 
-    g.writeStartObject( "coordinate" );
-    final Coordinate coordinate = getCoordinate();
-    final String qualifier = coordinate.getQualifier();
-    if ( !qualifier.isEmpty() )
-    {
-      g.write( "qualifier", qualifier );
-    }
-    g.write( "type", coordinate.getType().toString() );
-    g.writeEnd();
+    _coordinate.write( g );
     if ( isOptional() )
     {
       g.write( "optional", true );

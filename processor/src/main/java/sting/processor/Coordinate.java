@@ -2,6 +2,7 @@ package sting.processor;
 
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.json.stream.JsonGenerator;
 import javax.lang.model.type.TypeMirror;
 
 /**
@@ -36,6 +37,17 @@ final class Coordinate
   TypeMirror getType()
   {
     return _type;
+  }
+
+  void write( @Nonnull final JsonGenerator g )
+  {
+    g.writeStartObject( "coordinate" );
+    if ( !_qualifier.isEmpty() )
+    {
+      g.write( "qualifier", _qualifier );
+    }
+    g.write( "type", _type.toString() );
+    g.writeEnd();
   }
 
   @Override
