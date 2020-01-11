@@ -26,7 +26,7 @@ final class BindingRegistry
   private final Map<Coordinate, List<Binding>> _publishedTypes = new LinkedHashMap<>();
 
   /**
-   * Register binding in local cache.
+   * Register the binding in the local cache.
    *
    * @param binding the binding.
    */
