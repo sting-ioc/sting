@@ -67,14 +67,13 @@ final class DependencyDescriptor
   void write( @Nonnull final JsonGenerator g )
   {
     g.writeStartObject();
-    final DependencyDescriptor.Type type = getType();
-    if ( DependencyDescriptor.Type.INSTANCE != type )
+    if ( DependencyDescriptor.Type.INSTANCE != _type )
     {
-      g.write( "type", type.toString() );
+      g.write( "type", _type.name() );
     }
 
     _coordinate.write( g );
-    if ( isOptional() )
+    if ( _optional )
     {
       g.write( "optional", true );
     }
