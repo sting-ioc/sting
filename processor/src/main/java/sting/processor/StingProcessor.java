@@ -351,11 +351,9 @@ public final class StingProcessor
                                                        "contain one or more methods or one or more includes" ),
                                     element );
     }
-    for ( final Binding binding : bindings.values() )
-    {
-      _bindingRegistry.registerBinding( binding );
-    }
-    emitFragmentDescriptor( element, includes, bindings.values() );
+    final FragmentDescriptor fragment = new FragmentDescriptor( element, includes, bindings.values() );
+    _bindingRegistry.registerFragment( fragment );
+    emitFragmentDescriptor( fragment );
   }
 
   @Nonnull
@@ -388,15 +386,15 @@ public final class StingProcessor
     return results;
   }
 
-  private void emitFragmentDescriptor( @Nonnull final TypeElement element,
-                                       @Nonnull final Collection<TypeMirror> includes,
-                                       @Nonnull final Collection<Binding> bindings )
+  private void emitFragmentDescriptor( @Nonnull final FragmentDescriptor fragment )
     throws IOException
   {
+    final TypeElement element = fragment.getElement();
     final String filename = toFilename( element ) + DESCRIPTOR_FILE_SUFFIX;
     JsonUtil.writeJsonResource( processingEnv, element, filename, g -> {
       g.writeStartObject();
       g.write( "schema", "fragment/1" );
+      final Collection<DeclaredType> includes = fragment.getIncludes();
       if ( !includes.isEmpty() )
       {
         g.writeStartArray( "includes" );
@@ -406,6 +404,7 @@ public final class StingProcessor
         }
         g.writeEnd();
       }
+      final Collection<Binding> bindings = fragment.getBindings();
       if ( !bindings.isEmpty() )
       {
         g.writeStartArray( "bindings" );

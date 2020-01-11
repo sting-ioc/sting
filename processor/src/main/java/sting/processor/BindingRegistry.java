@@ -15,6 +15,11 @@ final class BindingRegistry
   @Nonnull
   private final List<Binding> _bindings = new ArrayList<>();
   /**
+   * The set of fragments registered.
+   */
+  @Nonnull
+  private final List<FragmentDescriptor> _fragments = new ArrayList<>();
+  /**
    * The published types of bindings that have been registered.
    */
   @Nonnull
@@ -35,9 +40,24 @@ final class BindingRegistry
     }
   }
 
+  /**
+   * Register the fragment in the local cache.
+   *
+   * @param fragment the fragment.
+   */
+  void registerFragment( @Nonnull final FragmentDescriptor fragment )
+  {
+    _fragments.add( fragment );
+    for ( final Binding binding : fragment.getBindings() )
+    {
+      registerBinding( binding );
+    }
+  }
+
   void clear()
   {
     _bindings.clear();
+    _fragments.clear();
     _publishedTypes.clear();
   }
 }
