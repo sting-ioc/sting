@@ -1,10 +1,12 @@
 package sting.processor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.lang.model.type.TypeMirror;
 
 final class Registry
@@ -18,7 +20,7 @@ final class Registry
    * The set of fragments registered.
    */
   @Nonnull
-  private final List<FragmentDescriptor> _fragments = new ArrayList<>();
+  private final Map<String, FragmentDescriptor> _fragments = new HashMap<>();
   /**
    * The set of injectors registered.
    */
@@ -52,11 +54,13 @@ final class Registry
    */
   void registerFragment( @Nonnull final FragmentDescriptor fragment )
   {
-    _fragments.add( fragment );
-    for ( final Binding binding : fragment.getBindings() )
-    {
-      registerBinding( binding );
-    }
+    _fragments.put( fragment.getElement().getQualifiedName().toString(), fragment );
+  }
+
+  @Nullable
+  FragmentDescriptor findFragmentByClassName( @Nonnull final String name )
+  {
+    return _fragments.get( name );
   }
 
   /**
