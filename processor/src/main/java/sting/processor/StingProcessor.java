@@ -221,31 +221,7 @@ public final class StingProcessor
   {
     final TypeElement element = injector.getElement();
     final String filename = toFilename( element ) + DESCRIPTOR_FILE_SUFFIX;
-    JsonUtil.writeJsonResource( processingEnv, element, filename, g -> {
-      g.writeStartObject();
-      g.write( "schema", "injector/1" );
-      final Collection<DeclaredType> includes = injector.getIncludes();
-      if ( !includes.isEmpty() )
-      {
-        g.writeStartArray( "includes" );
-        for ( final DeclaredType include : includes )
-        {
-          g.write( include.toString() );
-        }
-        g.writeEnd();
-      }
-      final List<DependencyDescriptor> dependencies = injector.getTopLevelDependencies();
-      if ( !dependencies.isEmpty() )
-      {
-        g.writeStartArray( "dependencies" );
-        for ( final DependencyDescriptor dependency : dependencies )
-        {
-          dependency.write( g );
-        }
-        g.writeEnd();
-      }
-      g.writeEnd();
-    } );
+    JsonUtil.writeJsonResource( processingEnv, element, filename, injector::write );
   }
 
   private void injectorConstructorMustNotBePublic( @Nonnull final ExecutableElement constructor )
