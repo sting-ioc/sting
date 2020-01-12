@@ -35,6 +35,12 @@ final class Registry
     _injectables.put( injectable.getElement().getQualifiedName().toString(), injectable );
   }
 
+  @Nullable
+  InjectableDescriptor findInjectableByClassName( @Nonnull final String name )
+  {
+    return _injectables.get( name );
+  }
+
   /**
    * Register the fragment in the local cache.
    *
