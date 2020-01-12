@@ -480,33 +480,7 @@ public final class StingProcessor
   {
     final TypeElement element = fragment.getElement();
     final String filename = toFilename( element ) + DESCRIPTOR_FILE_SUFFIX;
-    JsonUtil.writeJsonResource( processingEnv, element, filename, g -> {
-      g.writeStartObject();
-      g.write( "schema", "fragment/1" );
-      final Collection<DeclaredType> includes = fragment.getIncludes();
-      if ( !includes.isEmpty() )
-      {
-        g.writeStartArray( "includes" );
-        for ( final DeclaredType include : includes )
-        {
-          g.write( include.toString() );
-        }
-        g.writeEnd();
-      }
-      final Collection<Binding> bindings = fragment.getBindings();
-      if ( !bindings.isEmpty() )
-      {
-        g.writeStartArray( "bindings" );
-        for ( final Binding binding : bindings )
-        {
-          g.writeStartObject();
-          binding.write( g );
-          g.writeEnd();
-        }
-        g.writeEnd();
-      }
-      g.writeEnd();
-    } );
+    JsonUtil.writeJsonResource( processingEnv, element, filename, fragment::write );
   }
 
   private void processProvidesMethod( @Nonnull final TypeElement element,
