@@ -159,6 +159,7 @@ public final class StingProcessor
 
   private void emitInjectorCode( @Nonnull final InjectorDescriptor injector )
   {
+    //TODO: Generate and validate object grap and then emit generated code
   }
 
   private boolean isInjectorResolved( @Nonnull final InjectorDescriptor injector )
