@@ -2,5 +2,5 @@
 
 ### Unreleased
 
-* Upgrade the `org.realityforge.proton` artifacts to version `0.12`.
+* Upgrade the `org.realityforge.proton` artifacts to version `0.13`.
  ‎🎉	Initial super-alpha release ‎🎉.
