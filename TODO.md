@@ -26,6 +26,7 @@ complete as there is too much un-said.
   they are not a dependency of any other element.
 * Generate an error if an `@Injector` declares no dependencies and no `eager` bindings.
 * Add test suite for `Registry`
+* Injectors that are inherited by another injector can disable eager services? For usage in tests.
 
 ## Old Notes
 
