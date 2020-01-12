@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -41,6 +42,12 @@ final class Registry
     return _injectables.get( name );
   }
 
+  @Nonnull
+  InjectableDescriptor getInjectableByClassName( @Nonnull final String name )
+  {
+    return Objects.requireNonNull( findInjectableByClassName( name ) );
+  }
+
   /**
    * Register the fragment in the local cache.
    *
@@ -55,6 +62,12 @@ final class Registry
   FragmentDescriptor findFragmentByClassName( @Nonnull final String name )
   {
     return _fragments.get( name );
+  }
+
+  @Nonnull
+  FragmentDescriptor getFragmentByClassName( @Nonnull final String name )
+  {
+    return Objects.requireNonNull( findFragmentByClassName( name ) );
   }
 
   /**
