@@ -371,7 +371,7 @@ public final class StingProcessor
         final boolean injectableType =
           AnnotationsUtil.hasAnnotationOfType( executableElement.getEnclosingElement(),
                                                Constants.INJECTABLE_CLASSNAME );
-        final boolean moduleType =
+        final boolean isFragmentType =
           AnnotationsUtil.hasAnnotationOfType( executableElement.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME );
         final ElementKind executableKind = executableElement.getKind();
         if ( !injectableType && ElementKind.CONSTRUCTOR == executableKind )
@@ -383,7 +383,7 @@ public final class StingProcessor
                                           MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) ),
                        element );
         }
-        else if ( !moduleType && ElementKind.METHOD == executableKind )
+        else if ( !isFragmentType && ElementKind.METHOD == executableKind )
         {
           reportError( env,
                        MemberChecks.must( Constants.DEPENDENCY_CLASSNAME,
@@ -395,7 +395,7 @@ public final class StingProcessor
         else
         {
           assert ( injectableType && ElementKind.CONSTRUCTOR == executableKind ) ||
-                 ( moduleType && ElementKind.METHOD == executableKind );
+                 ( isFragmentType && ElementKind.METHOD == executableKind );
         }
       }
       else
