@@ -273,7 +273,7 @@ public final class StingProcessor
 
   private void injectorConstructorMustNotBePublic( @Nonnull final ExecutableElement constructor )
   {
-    if ( !isSynthetic( constructor ) &&
+    if ( isNotSynthetic( constructor ) &&
          constructor.getModifiers().contains( Modifier.PUBLIC ) &&
          ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_PUBLIC_CONSTRUCTOR ) )
     {
@@ -845,7 +845,7 @@ public final class StingProcessor
 
   private void injectableConstructorMustNotBePublic( @Nonnull final ExecutableElement constructor )
   {
-    if ( !isSynthetic( constructor ) &&
+    if ( isNotSynthetic( constructor ) &&
          constructor.getModifiers().contains( Modifier.PUBLIC ) &&
          ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_PUBLIC_CONSTRUCTOR ) )
     {
@@ -876,9 +876,9 @@ public final class StingProcessor
    * @param element to check
    * @return true if and only if the given element is synthetic, false otherwise
    */
-  private boolean isSynthetic( @Nonnull final Element element )
+  private boolean isNotSynthetic( @Nonnull final Element element )
   {
     final long flags = ( (Symbol) element ).flags();
-    return 0 != ( flags & Flags.SYNTHETIC ) || 0 != ( flags & Flags.GENERATEDCONSTR );
+    return 0 == ( flags & Flags.SYNTHETIC ) && 0 == ( flags & Flags.GENERATEDCONSTR );
   }
 }
