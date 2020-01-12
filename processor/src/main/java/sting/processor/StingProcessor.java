@@ -38,6 +38,7 @@ import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.MemberChecks;
 import org.realityforge.proton.ProcessorException;
+import org.realityforge.proton.SuperficialValidation;
 
 /**
  * Annotation processor that analyzes sting annotated source and generates dependency injection container.
@@ -107,12 +108,65 @@ public final class StingProcessor
                                             (Collection<TypeElement>) env.getElementsAnnotatedWith( a ),
                                             this::processInjector ) );
 
+    processResolvedInjectors( env );
+
     errorIfProcessingOverAndInvalidTypesDetected( env );
+    errorIfProcessingOverAndUnprocessedInjectorDetected( env );
     if ( env.processingOver() || env.errorRaised() )
     {
       _registry.clear();
     }
     return true;
+  }
+
+  private void errorIfProcessingOverAndUnprocessedInjectorDetected( @Nonnull final RoundEnvironment env )
+  {
+    if ( env.processingOver() && !env.errorRaised() )
+    {
+      final List<InjectorDescriptor> injectors = _registry.getInjectors();
+      if ( !injectors.isEmpty() )
+      {
+        processingEnv
+          .getMessager()
+          .printMessage( Diagnostic.Kind.ERROR,
+                         getClass().getSimpleName() + " failed to process " + injectors.size() + " injectors " +
+                         "as not all of their dependencies could be resolved. Check for compilation errors or a " +
+                         "circular dependency with generated code." );
+        for ( final InjectorDescriptor injector : injectors )
+        {
+          processingEnv
+            .getMessager()
+            .printMessage( Diagnostic.Kind.ERROR,
+                           "Failed to process " + injector.getElement().getQualifiedName() + " injector " +
+                           "as not all of the dependencies could be resolved." );
+
+        }
+      }
+    }
+  }
+
+  private void processResolvedInjectors( @Nonnull final RoundEnvironment env )
+  {
+    for ( final InjectorDescriptor injector : new ArrayList<>( _registry.getInjectors() ) )
+    {
+      if ( isInjectorResolved( injector ) )
+      {
+        emitInjectorCode( injector );
+        _registry.deregisterInjector( injector );
+      }
+    }
+  }
+
+  private void emitInjectorCode( @Nonnull final InjectorDescriptor injector )
+  {
+  }
+
+  private boolean isInjectorResolved( @Nonnull final InjectorDescriptor injector )
+  {
+    return SuperficialValidation.validateTypes( processingEnv, injector.getIncludes() ) &&
+           injector.getTopLevelDependencies()
+             .stream()
+             .allMatch( d -> SuperficialValidation.validateElement( processingEnv, d.getElement() ) );
   }
 
   private void processInjector( @Nonnull final TypeElement element )

@@ -69,6 +69,17 @@ final class Registry
     _injectors.add( injector );
   }
 
+  void deregisterInjector( @Nonnull final InjectorDescriptor injector )
+  {
+    _injectors.remove( injector );
+  }
+
+  @Nonnull
+  List<InjectorDescriptor> getInjectors()
+  {
+    return _injectors;
+  }
+
   void clear()
   {
     _bindings.clear();
