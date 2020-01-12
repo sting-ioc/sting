@@ -25,6 +25,7 @@ complete as there is too much un-said.
   `@Injectable` types are also detected but can be manually added if you want them eagerly instantiated and
   they are not a dependency of any other element.
 * Generate an error if an `@Injector` declares no dependencies and no `eager` bindings.
+* Add test suite for `Registry`
 
 ## Old Notes
 
