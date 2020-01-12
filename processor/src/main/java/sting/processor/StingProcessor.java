@@ -564,7 +564,7 @@ public final class StingProcessor
       for ( final VariableElement parameter : method.getParameters() )
       {
         final TypeMirror parameterType = parameterTypes.get( index++ );
-        dependencies.add( processDependencyParameter( parameter, parameterType ) );
+        dependencies.add( processFragmentDependencyParameter( parameter, parameterType ) );
       }
       if ( publishedTypes.isEmpty() && !eager )
       {
@@ -598,8 +598,8 @@ public final class StingProcessor
   }
 
   @Nonnull
-  private DependencyDescriptor processDependencyParameter( @Nonnull final VariableElement parameter,
-                                                           @Nonnull final TypeMirror parameterType )
+  private DependencyDescriptor processFragmentDependencyParameter( @Nonnull final VariableElement parameter,
+                                                                   @Nonnull final TypeMirror parameterType )
   {
     final boolean optional =
       AnnotationsUtil.hasAnnotationOfType( parameter, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
