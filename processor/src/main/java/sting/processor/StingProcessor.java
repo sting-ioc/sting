@@ -564,7 +564,7 @@ public final class StingProcessor
       for ( final VariableElement parameter : method.getParameters() )
       {
         final TypeMirror parameterType = parameterTypes.get( index++ );
-        dependencies.add( processDependencyParameter( Constants.FRAGMENT_CLASSNAME, parameter, parameterType ) );
+        dependencies.add( processDependencyParameter( parameter, parameterType ) );
       }
       if ( publishedTypes.isEmpty() && !eager )
       {
@@ -598,8 +598,7 @@ public final class StingProcessor
   }
 
   @Nonnull
-  private DependencyDescriptor processDependencyParameter( @Nonnull final String containerAnnotationClassname,
-                                                           @Nonnull final VariableElement parameter,
+  private DependencyDescriptor processDependencyParameter( @Nonnull final VariableElement parameter,
                                                            @Nonnull final TypeMirror parameterType )
   {
     final boolean optional =
@@ -617,14 +616,14 @@ public final class StingProcessor
     {
       if ( StingTypeNames.SUPPLIER.equals( typeName ) )
       {
-        throw new ProcessorException( MemberChecks.mustNot( containerAnnotationClassname,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                             "have a method with a parameter that is a raw " +
                                                             StingTypeNames.SUPPLIER + " type" ),
                                       parameter );
       }
       else if ( !( (TypeElement) ( (DeclaredType) parameterType ).asElement() ).getTypeParameters().isEmpty() )
       {
-        throw new ProcessorException( MemberChecks.mustNot( containerAnnotationClassname,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                             "have a method with a parameter that is a " +
                                                             "raw parameterized type. Parameterized types are only " +
                                                             "permitted for specific types such as " +
@@ -639,7 +638,7 @@ public final class StingProcessor
       {
         if ( parameterizedTypeName.typeArguments.get( 0 ) instanceof WildcardTypeName )
         {
-          throw new ProcessorException( MemberChecks.mustNot( containerAnnotationClassname,
+          throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                               "have a method with a parameter that is a " +
                                                               StingTypeNames.SUPPLIER +
                                                               " type with a wildcard parameter" ),
@@ -648,7 +647,7 @@ public final class StingProcessor
       }
       else
       {
-        throw new ProcessorException( MemberChecks.mustNot( containerAnnotationClassname,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                             "have a method with a parameter that is a " +
                                                             "parameterized type. This is only permitted for " +
                                                             "specific types such as " + StingTypeNames.SUPPLIER ),
