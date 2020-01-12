@@ -255,7 +255,7 @@ public final class StingProcessor
     {
       if ( method.getModifiers().contains( Modifier.ABSTRACT ) )
       {
-        processInjectorDependencyMethod( element, topLevelDependencies, method );
+        processInjectorDependencyMethod( topLevelDependencies, method );
       }
     }
     final InjectorDescriptor injector = new InjectorDescriptor( element, includes, topLevelDependencies );
@@ -301,8 +301,7 @@ public final class StingProcessor
     }
   }
 
-  private void processInjectorDependencyMethod( @Nonnull final TypeElement element,
-                                                @Nonnull final List<DependencyDescriptor> topLevelDependencies,
+  private void processInjectorDependencyMethod( @Nonnull final List<DependencyDescriptor> topLevelDependencies,
                                                 @Nonnull final ExecutableElement method )
   {
     assert method.getModifiers().contains( Modifier.ABSTRACT );
