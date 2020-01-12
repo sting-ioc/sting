@@ -712,7 +712,7 @@ public final class StingProcessor
     final InjectableDescriptor injectable = new InjectableDescriptor( binding );
     _registry.registerInjectable( injectable );
     final String filename = toFilename( element ) + DESCRIPTOR_FILE_SUFFIX;
-    JsonUtil.writeJsonResource( processingEnv, element, filename, g -> injectable.write( g ) );
+    JsonUtil.writeJsonResource( processingEnv, element, filename, injectable::write );
   }
 
   @Nonnull
