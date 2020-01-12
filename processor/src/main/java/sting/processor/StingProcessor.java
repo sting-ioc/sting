@@ -148,7 +148,7 @@ public final class StingProcessor
   {
     for ( final InjectorDescriptor injector : new ArrayList<>( _registry.getInjectors() ) )
     {
-      if ( isInjectorResolved( injector ) )
+      if ( isInjectorResolved( env, injector ) )
       {
         emitInjectorCode( injector );
         _registry.deregisterInjector( injector );
@@ -161,12 +161,59 @@ public final class StingProcessor
     //TODO: Generate and validate object grap and then emit generated code
   }
 
-  private boolean isInjectorResolved( @Nonnull final InjectorDescriptor injector )
+  private boolean isInjectorResolved( @Nonnull final RoundEnvironment env, @Nonnull final InjectorDescriptor injector )
   {
-    return SuperficialValidation.validateTypes( processingEnv, injector.getIncludes() ) &&
-           injector.getTopLevelDependencies()
-             .stream()
-             .allMatch( d -> SuperficialValidation.validateElement( processingEnv, d.getElement() ) );
+    for ( final DeclaredType include : injector.getIncludes() )
+    {
+      if ( !SuperficialValidation.validateType( processingEnv, include ) )
+      {
+        return false;
+      }
+      else
+      {
+        final TypeElement element = (TypeElement) include.asElement();
+        if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
+        {
+          final String classname = element.getQualifiedName().toString();
+          FragmentDescriptor fragment = _registry.findFragmentByClassName( classname );
+          if ( null == fragment )
+          {
+            // TODO: In the future we should attempt to load binary descriptor here
+            //  rather than analyzing element. If binary descriptor is missing then we
+            //  should just return false and assume it will be picked up in a future round
+            performAction( env, this::processFragment, element );
+            fragment = _registry.findFragmentByClassName( classname );
+            if ( null == fragment )
+            {
+              return false;
+            }
+          }
+        }
+        else if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+        {
+          final String classname = element.getQualifiedName().toString();
+          InjectableDescriptor injectable = _registry.findInjectableByClassName( classname );
+          if ( null == injectable )
+          {
+            // TODO: In the future we should attempt to load binary descriptor here
+            //  rather than analyzing element. If binary descriptor is missing then we
+            //  should just return false and assume it will be picked up in a future round
+            performAction( env, this::processFragment, element );
+            injectable = _registry.findInjectableByClassName( classname );
+            if ( null == injectable )
+            {
+              return false;
+            }
+          }
+        }
+        else
+        {
+          assert AnnotationsUtil.hasAnnotationOfType( element, Constants.FACTORY_CLASSNAME );
+          //TODO: Add support for factory
+        }
+      }
+    }
+    return true;
   }
 
   private void processInjector( @Nonnull final TypeElement element )
