@@ -159,6 +159,25 @@ public final class StingProcessor
 
   private void emitInjectorCode( @Nonnull final InjectorDescriptor injector )
   {
+    final ObjectGraph graph = new ObjectGraph( injector );
+    for ( final DeclaredType include : injector.getIncludes() )
+    {
+      final TypeElement element = (TypeElement) include.asElement();
+      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
+      {
+        graph.registerFragment( _registry.getFragmentByClassName( element.getQualifiedName().toString() ) );
+      }
+      else if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+      {
+        graph.registerInjectable( _registry.getInjectableByClassName( element.getQualifiedName().toString() ) );
+      }
+      else
+      {
+        assert AnnotationsUtil.hasAnnotationOfType( element, Constants.FACTORY_CLASSNAME );
+        //TODO: Add support for factory
+      }
+    }
+
     //TODO: Generate and validate object grap and then emit generated code
   }
 
