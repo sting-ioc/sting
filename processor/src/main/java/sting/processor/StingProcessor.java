@@ -139,7 +139,6 @@ public final class StingProcessor
             .printMessage( Diagnostic.Kind.ERROR,
                            "Failed to process " + injector.getElement().getQualifiedName() + " injector " +
                            "as not all of the dependencies could be resolved." );
-
         }
       }
     }
