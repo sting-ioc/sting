@@ -43,6 +43,7 @@ import org.realityforge.proton.SuperficialValidation;
 /**
  * Annotation processor that analyzes sting annotated source and generates dependency injection container.
  */
+@SuppressWarnings( "DuplicatedCode" )
 @SupportedAnnotationTypes( { Constants.INJECTOR_CLASSNAME,
                              Constants.INJECTABLE_CLASSNAME,
                              Constants.FRAGMENT_CLASSNAME,
