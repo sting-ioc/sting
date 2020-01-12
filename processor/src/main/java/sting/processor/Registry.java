@@ -10,10 +10,10 @@ import javax.annotation.Nullable;
 final class Registry
 {
   /**
-   * The set of bindings registered.
+   * The set of injectables registered.
    */
   @Nonnull
-  private final List<Binding> _bindings = new ArrayList<>();
+  private final Map<String, InjectableDescriptor> _injectables = new HashMap<>();
   /**
    * The set of fragments registered.
    */
@@ -26,13 +26,13 @@ final class Registry
   private final List<InjectorDescriptor> _injectors = new ArrayList<>();
 
   /**
-   * Register the binding in the local cache.
+   * Register the Injectable in the local cache.
    *
-   * @param binding the binding.
+   * @param injectable the injectable.
    */
-  void registerBinding( @Nonnull final Binding binding )
+  void registerInjectable( @Nonnull final InjectableDescriptor injectable )
   {
-    _bindings.add( binding );
+    _injectables.put( injectable.getElement().getQualifiedName().toString(), injectable );
   }
 
   /**
@@ -74,7 +74,7 @@ final class Registry
 
   void clear()
   {
-    _bindings.clear();
+    _injectables.clear();
     _fragments.clear();
     _injectors.clear();
   }

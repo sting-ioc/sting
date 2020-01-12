@@ -733,14 +733,10 @@ public final class StingProcessor
                    eager,
                    element,
                    dependencies.toArray( new DependencyDescriptor[ 0 ] ) );
-    _registry.registerBinding( binding );
+    final InjectableDescriptor injectable = new InjectableDescriptor( binding );
+    _registry.registerInjectable( injectable );
     final String filename = toFilename( element ) + DESCRIPTOR_FILE_SUFFIX;
-    JsonUtil.writeJsonResource( processingEnv, element, filename, g -> {
-      g.writeStartObject();
-      g.write( "schema", "injectable/1" );
-      binding.write( g );
-      g.writeEnd();
-    } );
+    JsonUtil.writeJsonResource( processingEnv, element, filename, g -> injectable.write( g ) );
   }
 
   @Nonnull
