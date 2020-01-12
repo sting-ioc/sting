@@ -1,0 +1,12 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue",
+      "providesMethod": "provideValue",
+      "types": [
+        "int"
+      ]
+    }
+  ]
+}

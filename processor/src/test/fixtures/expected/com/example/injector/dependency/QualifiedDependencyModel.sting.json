@@ -1,0 +1,11 @@
+{
+  "schema": "injector/1",
+  "dependencies": [
+    {
+      "coordinate": {
+        "qualifier": "Foo",
+        "type": "com.example.injector.dependency.QualifiedDependencyModel.MyModel"
+      }
+    }
+  ]
+}

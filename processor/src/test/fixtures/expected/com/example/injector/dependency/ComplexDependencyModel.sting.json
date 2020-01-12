@@ -1,0 +1,30 @@
+{
+  "schema": "injector/1",
+  "dependencies": [
+    {
+      "coordinate": {
+        "type": "com.example.injector.dependency.ComplexDependencyModel.MyModel1"
+      }
+    },
+    {
+      "type": "SUPPLIER",
+      "coordinate": {
+        "type": "com.example.injector.dependency.ComplexDependencyModel.MyModel2"
+      },
+      "optional": true
+    },
+    {
+      "type": "SUPPLIER",
+      "coordinate": {
+        "qualifier": "foo",
+        "type": "com.example.injector.dependency.ComplexDependencyModel.MyModel3"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "com.example.injector.dependency.ComplexDependencyModel.MyModel4"
+      },
+      "optional": true
+    }
+  ]
+}

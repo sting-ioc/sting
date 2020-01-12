@@ -1,0 +1,7 @@
+{
+  "schema": "injectable/1",
+  "id": "com.example.injector.dependency.OptionalDependencyModel.MyModel",
+  "types": [
+    "com.example.injector.dependency.OptionalDependencyModel.MyModel"
+  ]
+}

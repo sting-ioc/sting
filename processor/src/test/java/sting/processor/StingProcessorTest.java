@@ -64,7 +64,18 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.types.DefaultTypesModel" },
         new Object[]{ "com.example.injectable.types.NoTypesModel" },
 
-        new Object[]{ "com.example.injector.BasicInjectorModel" }
+        new Object[]{ "com.example.injector.BasicInjectorModel" },
+
+        new Object[]{ "com.example.injector.dependency.BasicDependencyModel" },
+        new Object[]{ "com.example.injector.dependency.ComplexDependencyModel" },
+        new Object[]{ "com.example.injector.dependency.MultipleDependencyModel" },
+        new Object[]{ "com.example.injector.dependency.OptionalDependencyModel" },
+        new Object[]{ "com.example.injector.dependency.PrimitiveDependencyModel" },
+        new Object[]{ "com.example.injector.dependency.QualifiedDependencyModel" },
+        new Object[]{ "com.example.injector.dependency.SupplierDependencyModel" },
+
+        new Object[]{ "com.example.injector.includes.MultipleIncludesModel" },
+        new Object[]{ "com.example.injector.includes.SingleIncludesModel" }
       };
   }
 

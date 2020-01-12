@@ -1,0 +1,12 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.injector.includes.SingleIncludesModel.MyFragment#provideRunnable",
+      "providesMethod": "provideRunnable",
+      "types": [
+        "java.lang.Runnable"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment"
+  ],
+  "dependencies": [
+    {
+      "coordinate": {
+        "type": "int"
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "schema": "injector/1",
+  "dependencies": [
+    {
+      "coordinate": {
+        "type": "com.example.injector.dependency.MultipleDependencyModel.MyModel1"
+      }
+    },
+    {
+      "type": "SUPPLIER",
+      "coordinate": {
+        "type": "com.example.injector.dependency.MultipleDependencyModel.MyModel2"
+      }
+    }
+  ]
+}

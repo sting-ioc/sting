@@ -1,0 +1,6 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.includes.SingleIncludesModel.MyFragment"
+  ]
+}
