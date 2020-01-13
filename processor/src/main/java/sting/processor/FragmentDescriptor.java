@@ -35,6 +35,7 @@ final class FragmentDescriptor
     _element = Objects.requireNonNull( element );
     _includes = Objects.requireNonNull( includes );
     _bindings = Objects.requireNonNull( bindings );
+    _bindings.forEach( b -> b.setOwner( this ) );
   }
 
   @Nonnull

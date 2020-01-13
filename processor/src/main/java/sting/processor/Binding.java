@@ -49,6 +49,10 @@ final class Binding
    */
   @Nonnull
   private final DependencyDescriptor[] _dependencies;
+  /**
+   * The descriptor that created the binding.
+   */
+  private Object _owner;
 
   Binding( @Nonnull final Type bindingType,
            @Nonnull final String id,
@@ -67,6 +71,13 @@ final class Binding
     _eager = eager;
     _element = Objects.requireNonNull( element );
     _dependencies = Objects.requireNonNull( dependencies );
+  }
+
+  @Nonnull
+  Object getOwner()
+  {
+    assert null != _owner;
+    return _owner;
   }
 
   @Nonnull
@@ -147,6 +158,12 @@ final class Binding
       }
       g.writeEnd();
     }
+  }
+
+  void setOwner( @Nonnull final Object owner )
+  {
+    assert null == _owner;
+    _owner = owner;
   }
 
   enum Type

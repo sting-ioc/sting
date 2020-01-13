@@ -13,6 +13,7 @@ final class InjectableDescriptor
   InjectableDescriptor( @Nonnull final Binding binding )
   {
     _binding = Objects.requireNonNull( binding );
+    _binding.setOwner( this );
   }
 
   @Nonnull
