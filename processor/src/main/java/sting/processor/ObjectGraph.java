@@ -18,11 +18,6 @@ final class ObjectGraph
   @Nonnull
   private final InjectorDescriptor _injector;
   /**
-   * The set of bindings explicitly included in the graph.
-   */
-  @Nonnull
-  private final List<Binding> _bindings = new ArrayList<>();
-  /**
    * The set of injectables explicitly included in the graph.
    */
   @Nonnull
@@ -32,6 +27,11 @@ final class ObjectGraph
    */
   @Nonnull
   private final Map<String, FragmentDescriptor> _fragments = new HashMap<>();
+  /**
+   * The set of bindings included in the graph derived from descriptors.
+   */
+  @Nonnull
+  private final List<Binding> _bindings = new ArrayList<>();
   /**
    * The types that are published in the object graph.
    */
