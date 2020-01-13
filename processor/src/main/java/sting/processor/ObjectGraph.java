@@ -42,16 +42,28 @@ final class ObjectGraph
    */
   @Nonnull
   private final Map<Binding, Node> _nodes = new HashMap<>();
+  /**
+   * The node that represents the Injector.
+   */
+  @Nonnull
+  private final Node _rootNode;
 
   ObjectGraph( @Nonnull final InjectorDescriptor injector )
   {
     _injector = Objects.requireNonNull( injector );
+    _rootNode = new Node( injector.getTopLevelDependencies().toArray( new DependencyDescriptor[ 0 ] ) );
   }
 
   @Nonnull
   InjectorDescriptor getInjector()
   {
     return _injector;
+  }
+
+  @Nonnull
+  Node getRootNode()
+  {
+    return _rootNode;
   }
 
   @Nonnull
