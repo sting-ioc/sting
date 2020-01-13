@@ -178,7 +178,7 @@ public final class StingProcessor
       }
     }
 
-    //TODO: Generate and validate object grap and then emit generated code
+    //TODO: Generate and validate object graph and then emit generated code
   }
 
   private boolean isInjectorResolved( @Nonnull final RoundEnvironment env, @Nonnull final InjectorDescriptor injector )
