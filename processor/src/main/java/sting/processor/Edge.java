@@ -52,11 +52,6 @@ final class Edge
     return _dependency;
   }
 
-  boolean isValid()
-  {
-    return isSatisfied() || _dependency.isOptional();
-  }
-
   boolean isSatisfied()
   {
     return null != _satisfiedBy;
