@@ -193,6 +193,7 @@ public class BindingTest
     return mirror;
   }
 
+  @Nonnull
   private Binding createBinding( @Nonnull final String id,
                                  @Nonnull final Binding.Type bindingType,
                                  @Nonnull final String qualifier,
