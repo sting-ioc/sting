@@ -1,6 +1,7 @@
 package sting.processor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -64,10 +65,10 @@ final class ObjectGraph
     }
   }
 
-  @Nullable
-  List<Binding> findBindingsByCoordinate( @Nonnull final Coordinate coordinate )
+  @Nonnull
+  List<Binding> findAllBindingsByCoordinate( @Nonnull final Coordinate coordinate )
   {
-    return _publishedTypes.get( coordinate );
+    return _publishedTypes.getOrDefault( coordinate, Collections.emptyList() );
   }
 
   /**
