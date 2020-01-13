@@ -51,6 +51,12 @@ final class Coordinate
   }
 
   @Override
+  public String toString()
+  {
+    return "[" + _type + ( _qualifier.isEmpty() ? "" : ";qualifier='" + _qualifier + "'" ) + "]";
+  }
+
+  @Override
   public boolean equals( final Object o )
   {
     if ( this == o )
