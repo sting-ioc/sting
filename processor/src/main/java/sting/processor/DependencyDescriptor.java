@@ -84,7 +84,11 @@ final class DependencyDescriptor
   {
     /// A request for an instance of the dependency type T
     INSTANCE,
-    /// A request for Supplier<T> of the dependency type T
-    SUPPLIER
+    /// A request for Supplier<T> that produces the dependency type T
+    SUPPLIER,
+    /// A request for a collection of instance of type T. i.e. Collection<T>
+    COLLECTION_INSTANCE,
+    /// A request for a collection of suppliers that produce the dependency of type T. i.e. Collection<Supplier<T>>
+    COLLECTION_SUPPLIER
   }
 }
