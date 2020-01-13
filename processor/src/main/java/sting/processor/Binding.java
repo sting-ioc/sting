@@ -163,6 +163,9 @@ final class Binding
   void setOwner( @Nonnull final Object owner )
   {
     assert null == _owner;
+    assert ( owner instanceof InjectableDescriptor && Type.INJECTABLE == _bindingType ) ||
+           ( owner instanceof FragmentDescriptor && Type.PROVIDES == _bindingType ) ||
+           ( owner instanceof FragmentDescriptor && Type.NULLABLE_PROVIDES == _bindingType );
     _owner = owner;
   }
 
