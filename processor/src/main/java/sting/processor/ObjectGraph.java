@@ -38,6 +38,11 @@ final class ObjectGraph
    */
   @Nonnull
   private final Map<Coordinate, List<Binding>> _publishedTypes = new LinkedHashMap<>();
+  /**
+   * The nodes contained in the object graph.
+   */
+  @Nonnull
+  private final Map<Binding, Node> _nodes = new HashMap<>();
 
   ObjectGraph( @Nonnull final InjectorDescriptor injector )
   {
@@ -48,6 +53,12 @@ final class ObjectGraph
   InjectorDescriptor getInjector()
   {
     return _injector;
+  }
+
+  @Nonnull
+  Node findOrCreateNode( @Nonnull final Binding binding )
+  {
+    return _nodes.computeIfAbsent( binding, Node::new );
   }
 
   /**
