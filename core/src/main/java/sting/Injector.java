@@ -79,5 +79,4 @@ public @interface Injector
    * @return a list of types that contribute to the injectors object graph.
    */
   Class<?>[] includes() default {};
-
 }
