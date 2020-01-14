@@ -26,6 +26,11 @@ final class Node
    */
   @Nonnull
   private final Set<Edge> _usedBy = new HashSet<>();
+  /**
+   * True if Node is explicitly from an eager binding or implicitly eager by being
+   * a (transitive) dependency of an eager binding.
+   */
+  private boolean _eager;
 
   /**
    * Constructor used to construct a Node for the Injector.
@@ -53,6 +58,30 @@ final class Node
     for ( final DependencyDescriptor dependency : dependencies )
     {
       _dependsOn.put( dependency, new Edge( this, dependency ) );
+    }
+  }
+
+  boolean isEager()
+  {
+    return _eager;
+  }
+
+  void markNodeAndUpstreamAsEager()
+  {
+    if ( !_eager )
+    {
+      _eager = true;
+      // Propagate eager flag to all nodes that uses this node unless
+      // the dependency is a Supplier style dependency. Those can be non-eager
+      // as they do not need to be created until they are accessed
+      for ( final Edge edge : _usedBy )
+      {
+        final Node upstream = edge.getNode();
+        if ( !edge.getDependency().getType().isSupplier() )
+        {
+          upstream.markNodeAndUpstreamAsEager();
+        }
+      }
     }
   }
 
