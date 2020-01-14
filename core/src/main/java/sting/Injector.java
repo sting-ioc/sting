@@ -76,6 +76,12 @@ public @interface Injector
    * {@code includes}, and of their inclusions recursively, are all contributed
    * to the object graph.
    *
+   * <p>If the annotation processor detects a dependency that is required but not explicitly included in the
+   * includes list then it will attempt to automatically add the type to the graph if it is annotated with
+   * {@link Injectable @Injectable} or {@link Factory @Factory}. The current implementation include types
+   * if they were compiled in the same invocation of the java compiler. In the future the annotation processor
+   * will load the descriptors from the filesystem.</p>
+   *
    * @return a list of types that contribute to the injectors object graph.
    */
   Class<?>[] includes() default {};
