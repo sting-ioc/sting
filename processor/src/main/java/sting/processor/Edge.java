@@ -52,7 +52,7 @@ final class Edge
     return _dependency;
   }
 
-  @Nullable
+  @Nonnull
   Collection<Node> getSatisfiedBy()
   {
     assert null != _satisfiedBy;
