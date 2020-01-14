@@ -32,6 +32,10 @@ final class Node
    * a (transitive) dependency of an eager binding.
    */
   private boolean _eager;
+  /**
+   * The shortest path from a top level dependency to this node.
+   */
+  private int _depth;
 
   /**
    * Constructor used to construct a Node for the Injector.
@@ -103,6 +107,16 @@ final class Node
   Set<Edge> getUsedBy()
   {
     return _usedBy;
+  }
+
+  int getDepth()
+  {
+    return _depth;
+  }
+
+  void setDepth( final int depth )
+  {
+    _depth = depth;
   }
 
   void usedBy( @Nonnull final Edge edge )
