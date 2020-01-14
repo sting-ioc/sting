@@ -1,8 +1,8 @@
 package sting.processor;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -20,7 +20,7 @@ final class Node
    * The edges to nodes that this node depends upon.
    */
   @Nonnull
-  private final Map<DependencyDescriptor, Edge> _dependsOn = new HashMap<>();
+  private final Map<DependencyDescriptor, Edge> _dependsOn = new LinkedHashMap<>();
   /**
    * The edges to nodes that use this node.
    */
