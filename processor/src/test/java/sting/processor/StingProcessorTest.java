@@ -109,7 +109,7 @@ public final class StingProcessorTest
     assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
   }
 
-  boolean emitInjectorGeneratedFile( @Nonnull final String classname, @Nonnull final JavaFileObject target )
+  private boolean emitInjectorGeneratedFile( @Nonnull final String classname, @Nonnull final JavaFileObject target )
   {
     final int index = classname.lastIndexOf( "." );
     final String simpleClassName = -1 == index ? classname : classname.substring( index + 1 );
