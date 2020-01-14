@@ -55,7 +55,8 @@ final class Edge
   @Nullable
   Collection<Node> getSatisfiedBy()
   {
-    assert null != _satisfiedBy && ( !_satisfiedBy.isEmpty() ) || _dependency.isOptional();
+    assert null != _satisfiedBy;
+    assert !_satisfiedBy.isEmpty() || _dependency.isOptional();
     return _satisfiedBy;
   }
 }
