@@ -1,10 +1,12 @@
 package sting.processor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -40,6 +42,15 @@ final class Registry
   InjectableDescriptor findInjectableByClassName( @Nonnull final String name )
   {
     return _injectables.get( name );
+  }
+
+  @Nonnull
+  Collection<InjectableDescriptor> findAllInjectablesByCoordinate( @Nonnull final Coordinate coordinate )
+  {
+    return _injectables.values()
+      .stream()
+      .filter( d -> d.getBinding().getCoordinates().contains( coordinate ) )
+      .collect( Collectors.toList() );
   }
 
   @Nonnull
