@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.json.stream.JsonGenerator;
 
 final class Node
 {
@@ -108,5 +109,36 @@ final class Node
   {
     assert !_usedBy.contains( edge );
     _usedBy.add( edge );
+  }
+
+  void write( @Nonnull final JsonGenerator g )
+  {
+    g.writeStartObject();
+    assert null != _binding;
+    g.write( "id", _binding.getId() );
+    final Binding.Type type = _binding.getBindingType();
+    g.write( "bindingType", type.name() );
+    if ( _eager )
+    {
+      g.write( "eager", true );
+    }
+    if ( !_dependsOn.isEmpty() )
+    {
+      g.writeStartArray( "dependencies" );
+      for ( final Edge edge : _dependsOn.values() )
+      {
+        g.writeStartObject();
+        edge.getDependency().getCoordinate().write( g );
+        g.writeStartArray( "supportedBy" );
+        for ( final Node node : edge.getSatisfiedBy() )
+        {
+          g.write( node.getBinding().getId() );
+        }
+        g.writeEnd();
+        g.writeEnd();
+      }
+      g.writeEnd();
+    }
+    g.writeEnd();
   }
 }
