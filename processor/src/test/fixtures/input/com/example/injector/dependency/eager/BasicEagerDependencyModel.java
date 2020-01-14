@@ -9,13 +9,19 @@ abstract class BasicEagerDependencyModel
 {
   abstract MyModel6 getMyModel();
 
+  // This will not be eager as only dependency from non-eager
+  @Injectable
+  static class MyModel0
+  {
+  }
+
   // This will be eager as dependency via Supplier dependency and instance from Model4 and Model5 respectively
   @Injectable
   static class MyModel1
   {
   }
 
-  // This will not be eager as only dependency from non-eager
+  // This will be eager as a dependency of both eager and non-eager
   @Injectable
   static class MyModel2
   {
@@ -25,7 +31,7 @@ abstract class BasicEagerDependencyModel
   @Injectable
   static class MyModel3
   {
-    MyModel3( MyModel2 model )
+    MyModel3( MyModel0 modelA, MyModel2 modelB )
     {
     }
   }

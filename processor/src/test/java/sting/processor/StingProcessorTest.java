@@ -4,14 +4,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
-import javax.annotation.processing.Processor;
 import javax.tools.JavaFileObject;
-import org.realityforge.proton.qa.AbstractProcessorTest;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public final class StingProcessorTest
-  extends AbstractProcessorTest
+  extends AbstractStingProcessorTest
 {
   @DataProvider( name = "successfulCompiles" )
   public Object[][] successfulCompiles()
@@ -90,8 +88,6 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.dependency.PrimitiveDependencyModel" },
         new Object[]{ "com.example.injector.dependency.QualifiedDependencyModel" },
         new Object[]{ "com.example.injector.dependency.SupplierDependencyModel" },
-
-        new Object[]{ "com.example.injector.dependency.eager.BasicEagerDependencyModel" },
 
         new Object[]{ "com.example.injector.includes.MultipleIncludesModel" },
         new Object[]{ "com.example.injector.includes.SingleIncludesModel" }
@@ -329,19 +325,5 @@ public final class StingProcessorTest
   public void processCompileWithoutWarnings( @Nonnull final String classname )
   {
     assertCompilesWithoutWarnings( classname );
-  }
-
-  @Nonnull
-  @Override
-  protected Processor processor()
-  {
-    return new StingProcessor();
-  }
-
-  @Nonnull
-  @Override
-  protected String getOptionPrefix()
-  {
-    return "sting";
   }
 }

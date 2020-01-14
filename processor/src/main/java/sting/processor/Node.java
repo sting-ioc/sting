@@ -76,15 +76,14 @@ final class Node
     if ( !_eager )
     {
       _eager = true;
-      // Propagate eager flag to all nodes that uses this node unless
+      // Propagate eager flag to all nodes that this node uses unless
       // the dependency is a Supplier style dependency. Those can be non-eager
       // as they do not need to be created until they are accessed
-      for ( final Edge edge : _usedBy )
+      for ( final Edge edge : _dependsOn.values() )
       {
-        final Node upstream = edge.getNode();
         if ( !edge.getDependency().getType().isSupplier() )
         {
-          upstream.markNodeAndUpstreamAsEager();
+          edge.getSatisfiedBy().forEach( Node::markNodeAndUpstreamAsEager );
         }
       }
     }

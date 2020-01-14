@@ -31,7 +31,6 @@ complete as there is too much un-said.
   unresolved dependency.
 * Detect cycles. This is probably when building up the graph. Each cycle is detected via a stack with different
   stacks each time a `Supplier` variant is reached.
-* Propagate eager flags along usedBy edges, halting if you get a `SUPPLIER` style provision.
 * Change the `Coordinate._type` to a fully qualified classname rather than a `TypeMirror`.
 
 ## Old Notes

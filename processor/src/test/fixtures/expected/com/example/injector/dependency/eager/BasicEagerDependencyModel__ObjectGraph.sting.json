@@ -2,17 +2,31 @@
   "schema": "graph/1",
   "values": [
     {
-      "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel1",
+      "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel0",
       "bindingType": "INJECTABLE"
     },
     {
+      "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel1",
+      "bindingType": "INJECTABLE",
+      "eager": true
+    },
+    {
       "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel2",
-      "bindingType": "INJECTABLE"
+      "bindingType": "INJECTABLE",
+      "eager": true
     },
     {
       "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel3",
       "bindingType": "INJECTABLE",
       "dependencies": [
+        {
+          "coordinate": {
+            "type": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel0"
+          },
+          "supportedBy": [
+            "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel0"
+          ]
+        },
         {
           "coordinate": {
             "type": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel2"
@@ -26,6 +40,7 @@
     {
       "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel4",
       "bindingType": "INJECTABLE",
+      "eager": true,
       "dependencies": [
         {
           "coordinate": {
@@ -56,6 +71,7 @@
     {
       "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel5",
       "bindingType": "INJECTABLE",
+      "eager": true,
       "dependencies": [
         {
           "coordinate": {
