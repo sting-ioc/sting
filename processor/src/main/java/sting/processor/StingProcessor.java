@@ -151,13 +151,13 @@ public final class StingProcessor
     {
       if ( isInjectorResolved( env, injector ) )
       {
-        emitInjectorCode( injector );
+        emitInjectorCode( env, injector );
         _registry.deregisterInjector( injector );
       }
     }
   }
 
-  private void emitInjectorCode( @Nonnull final InjectorDescriptor injector )
+  private void emitInjectorCode( @Nonnull final RoundEnvironment env, @Nonnull final InjectorDescriptor injector )
   {
     final ObjectGraph graph = new ObjectGraph( injector );
     for ( final DeclaredType include : injector.getIncludes() )
