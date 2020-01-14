@@ -83,12 +83,30 @@ final class DependencyDescriptor
   enum Type
   {
     /// A request for an instance of the dependency type T
-    INSTANCE,
+    INSTANCE( false, false ),
     /// A request for Supplier<T> that produces the dependency type T
-    SUPPLIER,
+    SUPPLIER( true, false ),
     /// A request for a collection of instance of type T. i.e. Collection<T>
-    COLLECTION_INSTANCE,
+    COLLECTION_INSTANCE( false, true ),
     /// A request for a collection of suppliers that produce the dependency of type T. i.e. Collection<Supplier<T>>
-    COLLECTION_SUPPLIER
+    COLLECTION_SUPPLIER( true, true );
+    private final boolean _supplier;
+    private final boolean _collection;
+
+    Type( final boolean supplier, final boolean collection )
+    {
+      _supplier = supplier;
+      _collection = collection;
+    }
+
+    boolean isSupplier()
+    {
+      return _supplier;
+    }
+
+    boolean isCollection()
+    {
+      return _collection;
+    }
   }
 }
