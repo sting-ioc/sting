@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import javax.lang.model.type.TypeMirror;
 
 final class ObjectGraph
 {
@@ -80,11 +79,8 @@ final class ObjectGraph
   private void registerBinding( @Nonnull final Binding binding )
   {
     _bindings.add( binding );
-    for ( final TypeMirror publishedType : binding.getTypes() )
-    {
-      final Coordinate key = new Coordinate( binding.getQualifier(), publishedType );
-      _publishedTypes.computeIfAbsent( key, c -> new ArrayList<>() ).add( binding );
-    }
+    binding.getCoordinates()
+      .forEach( coordinate -> _publishedTypes.computeIfAbsent( coordinate, c -> new ArrayList<>() ).add( binding ) );
   }
 
   @Nonnull

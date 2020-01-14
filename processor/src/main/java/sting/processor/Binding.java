@@ -1,6 +1,9 @@
 package sting.processor;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.Element;
@@ -31,6 +34,11 @@ final class Binding
    */
   @Nonnull
   private final TypeMirror[] _types;
+  /**
+   * The coordinates for binding.
+   */
+  @Nonnull
+  private final List<Coordinate> _coordinates;
   /**
    * Is the binding eager or lazy. Eager bindings are instantiated after the injector is instantiated
    * and before it is made accessible to user-code.
@@ -68,6 +76,7 @@ final class Binding
     _id = Objects.requireNonNull( id );
     _qualifier = Objects.requireNonNull( qualifier );
     _types = Objects.requireNonNull( types );
+    _coordinates = Stream.of( _types ).map( t -> new Coordinate( qualifier, t ) ).collect( Collectors.toList() );
     _eager = eager;
     _element = Objects.requireNonNull( element );
     _dependencies = Objects.requireNonNull( dependencies );
@@ -102,6 +111,12 @@ final class Binding
   TypeMirror[] getTypes()
   {
     return _types;
+  }
+
+  @Nonnull
+  List<Coordinate> getCoordinates()
+  {
+    return _coordinates;
   }
 
   boolean isEager()
