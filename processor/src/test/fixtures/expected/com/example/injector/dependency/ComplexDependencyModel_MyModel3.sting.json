@@ -1,8 +1,0 @@
-{
-  "schema": "injectable/1",
-  "id": "com.example.injector.dependency.ComplexDependencyModel.MyModel3",
-  "qualifier": "foo",
-  "types": [
-    "com.example.injector.dependency.ComplexDependencyModel.MyModel3"
-  ]
-}

@@ -1,7 +1,0 @@
-{
-  "schema": "injectable/1",
-  "id": "com.example.injector.BasicInjectorModel.MyModel",
-  "types": [
-    "com.example.injector.BasicInjectorModel.MyModel"
-  ]
-}

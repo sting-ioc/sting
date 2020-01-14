@@ -2,6 +2,7 @@ package sting.processor;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.Processor;
 import javax.tools.JavaFileObject;
@@ -62,8 +63,22 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injectable.types.BasicTypesModel" },
         new Object[]{ "com.example.injectable.types.DefaultTypesModel" },
-        new Object[]{ "com.example.injectable.types.NoTypesModel" },
+        new Object[]{ "com.example.injectable.types.NoTypesModel" }
+      };
+  }
 
+  @Test( dataProvider = "successfulCompiles" )
+  public void processSuccessfulCompile( @Nonnull final String classname )
+    throws Exception
+  {
+    assertSuccessfulCompile( classname, toFilename( "expected", classname, "", ".sting.json" ) );
+  }
+
+  @DataProvider( name = "successfulInjectorCompiles" )
+  public Object[][] successfulInjectorCompiles()
+  {
+    return new Object[][]
+      {
         new Object[]{ "com.example.injector.BasicInjectorModel" },
 
         new Object[]{ "com.example.injector.dependency.BasicDependencyModel" },
@@ -83,11 +98,24 @@ public final class StingProcessorTest
       };
   }
 
-  @Test( dataProvider = "successfulCompiles" )
-  public void processSuccessfulCompile( @Nonnull final String classname )
+  // These tests save less fixtures to the filesystem
+  @Test( dataProvider = "successfulInjectorCompiles" )
+  public void processSuccessfulInjectorCompile( @Nonnull final String classname )
     throws Exception
   {
-    assertSuccessfulCompile( classname, toFilename( "expected", classname, "", ".sting.json" ) );
+    final List<String> expectedOutputs =
+      Arrays.asList( toFilename( "expected", classname, "", ".sting.json" ),
+                     toFilename( "expected", classname, "", "__ObjectGraph.sting.json" ) );
+    assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
+  }
+
+  boolean emitInjectorGeneratedFile( @Nonnull final String classname, @Nonnull final JavaFileObject target )
+  {
+    final int index = classname.lastIndexOf( "." );
+    final String simpleClassName = -1 == index ? classname : classname.substring( index + 1 );
+    return JavaFileObject.Kind.SOURCE == target.getKind() ||
+           target.getName().endsWith( simpleClassName + ".sting.json" ) ||
+           target.getName().endsWith( simpleClassName + "__ObjectGraph.sting.json" );
   }
 
   @Test
