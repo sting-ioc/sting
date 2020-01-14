@@ -40,9 +40,10 @@ final class Edge
     }
   }
 
-  @Nullable
+  @Nonnull
   Node getNode()
   {
+    assert null != _node;
     return _node;
   }
 
