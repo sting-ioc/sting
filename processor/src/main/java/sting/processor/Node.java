@@ -56,9 +56,10 @@ final class Node
     }
   }
 
-  @Nullable
+  @Nonnull
   Binding getBinding()
   {
+    assert null != _binding;
     return _binding;
   }
 
