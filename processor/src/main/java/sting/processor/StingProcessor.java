@@ -191,6 +191,7 @@ public final class StingProcessor
       }
       else if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
       {
+        //TODO: Recursively process includes here
         graph.registerInjectable( _registry.getInjectableByClassName( element.getQualifiedName().toString() ) );
       }
       else
