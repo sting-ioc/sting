@@ -1,12 +1,15 @@
 package sting.processor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.json.stream.JsonGenerator;
 
@@ -126,6 +129,19 @@ final class ObjectGraph
   {
     g.writeStartObject();
     g.write( "schema", "graph/1" );
+
+    g.writeStartArray( "values" );
+
+    final Collection<Node> nodes = _nodes.values()
+      .stream()
+      .sorted( Comparator.comparing( Node::getDepth ).thenComparing( n -> n.getBinding().getId() ) )
+      .collect( Collectors.toList() );
+    for ( final Node node : nodes )
+    {
+      node.write( g );
+    }
+    g.writeEnd();
+
     g.writeEnd();
   }
 }
