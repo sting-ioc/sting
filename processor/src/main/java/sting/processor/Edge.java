@@ -52,11 +52,6 @@ final class Edge
     return _dependency;
   }
 
-  boolean isSatisfied()
-  {
-    return null != _satisfiedBy;
-  }
-
   @Nullable
   Collection<Node> getSatisfiedBy()
   {
