@@ -119,7 +119,7 @@ final class ObjectGraph
   void write( final JsonGenerator g )
   {
     g.writeStartObject();
-    g.write( "schema", "objectGraph/1" );
+    g.write( "schema", "graph/1" );
     g.writeEnd();
   }
 }
