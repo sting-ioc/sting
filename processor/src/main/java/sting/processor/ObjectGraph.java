@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.json.stream.JsonGenerator;
 
 final class ObjectGraph
 {
@@ -113,5 +114,12 @@ final class ObjectGraph
     {
       registerBinding( binding );
     }
+  }
+
+  void write( final JsonGenerator g )
+  {
+    g.writeStartObject();
+    g.write( "schema", "objectGraph/1" );
+    g.writeEnd();
   }
 }
