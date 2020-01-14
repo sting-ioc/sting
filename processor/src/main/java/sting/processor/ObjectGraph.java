@@ -72,6 +72,12 @@ final class ObjectGraph
     return _nodes.computeIfAbsent( binding, Node::new );
   }
 
+  @Nonnull
+  Collection<Node> getNodes()
+  {
+    return _nodes.values();
+  }
+
   /**
    * Register the binding in the object graph.
    *
