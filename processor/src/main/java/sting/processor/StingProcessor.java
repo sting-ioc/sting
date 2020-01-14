@@ -169,7 +169,7 @@ public final class StingProcessor
 
     buildObjectGraphNodes( graph );
 
-    graph.getNodes().stream().filter( n -> n.getBinding().isEager() ).forEach( Node::markNodeAndUpstreamAsEager );
+    propagateEagerFlagUpstream( graph );
 
     //TODO: Assign depth metric for each node which is distance from root dependencies
     //TODO: Make sure graph has no circular loops
@@ -177,6 +177,14 @@ public final class StingProcessor
     emitObjectGraphDescriptor( graph );
 
     //TODO: Generate and emit java code
+  }
+
+  private void propagateEagerFlagUpstream( @Nonnull final ObjectGraph graph )
+  {
+    // Propagate Eager flag to all dependencies of eager nodes breaking the propagation at Supplier nodes
+    // They may not be configured as eager but they are effectively eager given that they will be created
+    // at startup, they may as well be marked as eager objects as that results in smaller code-size.
+    graph.getNodes().stream().filter( n -> n.getBinding().isEager() ).forEach( Node::markNodeAndUpstreamAsEager );
   }
 
   private void registerIncludesComponents( @Nonnull final ObjectGraph graph )
