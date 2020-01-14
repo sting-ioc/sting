@@ -1,0 +1,14 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.dependency.OptionalProvidesDependencyModel.MyFragment"
+  ],
+  "dependencies": [
+    {
+      "coordinate": {
+        "type": "com.example.injector.dependency.OptionalProvidesDependencyModel.MyModel"
+      },
+      "optional": true
+    }
+  ]
+}

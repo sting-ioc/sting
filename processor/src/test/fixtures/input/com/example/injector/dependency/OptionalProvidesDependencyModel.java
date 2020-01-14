@@ -1,19 +1,26 @@
 package com.example.injector.dependency;
 
+import javax.annotation.Nullable;
 import sting.Fragment;
 import sting.Injector;
 
-@Injector( includes = PrimitiveDependencyModel.MyFragment.class )
-abstract class PrimitiveDependencyModel
+@Injector( includes = OptionalProvidesDependencyModel.MyFragment.class )
+abstract class OptionalProvidesDependencyModel
 {
-  abstract int getMyModel();
+  @Nullable
+  abstract MyModel getMyModel();
 
   @Fragment
   public interface MyFragment
   {
-    default int provideValue()
+    @Nullable
+    default MyModel provideValue()
     {
-      return 0;
+      return null;
     }
+  }
+
+  static class MyModel
+  {
   }
 }

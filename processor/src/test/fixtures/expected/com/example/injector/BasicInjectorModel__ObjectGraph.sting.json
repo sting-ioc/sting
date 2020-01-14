@@ -1,0 +1,9 @@
+{
+  "schema": "graph/1",
+  "values": [
+    {
+      "id": "com.example.injector.BasicInjectorModel.MyModel",
+      "bindingType": "INJECTABLE"
+    }
+  ]
+}

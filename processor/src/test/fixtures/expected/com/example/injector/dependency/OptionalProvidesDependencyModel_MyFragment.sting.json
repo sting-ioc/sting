@@ -1,0 +1,13 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.injector.dependency.OptionalProvidesDependencyModel.MyFragment#provideValue",
+      "providesMethod": "provideValue",
+      "nullable": true,
+      "types": [
+        "com.example.injector.dependency.OptionalProvidesDependencyModel.MyModel"
+      ]
+    }
+  ]
+}

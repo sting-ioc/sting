@@ -1,0 +1,11 @@
+{
+  "schema": "injector/1",
+  "dependencies": [
+    {
+      "coordinate": {
+        "type": "com.example.injector.dependency.OptionalMissingDependencyModel.MyModel"
+      },
+      "optional": true
+    }
+  ]
+}

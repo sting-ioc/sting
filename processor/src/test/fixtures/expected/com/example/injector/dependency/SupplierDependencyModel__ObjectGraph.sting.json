@@ -1,0 +1,9 @@
+{
+  "schema": "graph/1",
+  "values": [
+    {
+      "id": "com.example.injector.dependency.SupplierDependencyModel.MyModel",
+      "bindingType": "INJECTABLE"
+    }
+  ]
+}

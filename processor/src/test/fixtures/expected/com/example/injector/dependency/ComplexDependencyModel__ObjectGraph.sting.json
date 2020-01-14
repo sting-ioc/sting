@@ -1,0 +1,17 @@
+{
+  "schema": "graph/1",
+  "values": [
+    {
+      "id": "com.example.injector.dependency.ComplexDependencyModel.MyModel1",
+      "bindingType": "INJECTABLE"
+    },
+    {
+      "id": "com.example.injector.dependency.ComplexDependencyModel.MyModel2",
+      "bindingType": "INJECTABLE"
+    },
+    {
+      "id": "com.example.injector.dependency.ComplexDependencyModel.MyModel3",
+      "bindingType": "INJECTABLE"
+    }
+  ]
+}
