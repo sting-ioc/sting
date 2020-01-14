@@ -7,13 +7,17 @@ import com.squareup.javapoet.WildcardTypeName;
 import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.code.Symbol;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -151,15 +155,33 @@ public final class StingProcessor
     {
       if ( isInjectorResolved( env, injector ) )
       {
-        emitInjectorCode( env, injector );
+        performAction( env, e -> buildAndEmitObjectGraph( injector ), injector.getElement() );
         _registry.deregisterInjector( injector );
       }
     }
   }
 
-  private void emitInjectorCode( @Nonnull final RoundEnvironment env, @Nonnull final InjectorDescriptor injector )
+  private void buildAndEmitObjectGraph( @Nonnull final InjectorDescriptor injector )
+    throws Exception
   {
     final ObjectGraph graph = new ObjectGraph( injector );
+    registerIncludesComponents( graph );
+
+    buildObjectGraphNodes( graph );
+
+    graph.getNodes().stream().filter( n -> n.getBinding().isEager() ).forEach( Node::markNodeAndUpstreamAsEager );
+
+    //TODO: Assign depth metric for each node which is distance from root dependencies
+    //TODO: Make sure graph has no circular loops
+
+    emitObjectGraphDescriptor( graph );
+
+    //TODO: Generate and emit java code
+  }
+
+  private void registerIncludesComponents( @Nonnull final ObjectGraph graph )
+  {
+    final InjectorDescriptor injector = graph.getInjector();
     for ( final DeclaredType include : injector.getIncludes() )
     {
       final TypeElement element = (TypeElement) include.asElement();
@@ -177,8 +199,111 @@ public final class StingProcessor
         //TODO: Add support for factory
       }
     }
+  }
 
-    //TODO: Generate and validate object graph and then emit generated code
+  private void buildObjectGraphNodes( @Nonnull final ObjectGraph graph )
+  {
+    final InjectorDescriptor injector = graph.getInjector();
+    final Set<Node> completed = new HashSet<>();
+    final Stack<Edge> workList = new Stack<>();
+    workList.addAll( graph.getRootNode().getDependsOn() );
+    while ( !workList.isEmpty() )
+    {
+      final Edge edge = workList.pop();
+      final DependencyDescriptor dependency = edge.getDependency();
+      final Coordinate coordinate = dependency.getCoordinate();
+      final List<Binding> bindings = new ArrayList<>( graph.findAllBindingsByCoordinate( coordinate ) );
+
+      if ( bindings.isEmpty() )
+      {
+        //TODO: This means that only if the @Injectable was compiled in the same compilation. We really should
+        // instead try to look up injectable descriptor if not compiled already.
+        final InjectableDescriptor injectable = _registry.findInjectableByClassName( coordinate.getType().toString() );
+        if ( null != injectable && injectable.getBinding().getCoordinates().contains( coordinate ) )
+        {
+          bindings.add( injectable.getBinding() );
+        }
+      }
+
+      final List<Binding> nullableProviders = bindings.stream()
+        .filter( b -> Binding.Type.NULLABLE_PROVIDES == b.getBindingType() )
+        .collect( Collectors.toList() );
+      if ( !dependency.isOptional() && !nullableProviders.isEmpty() )
+      {
+        throw new ProcessorException( "@Nullable annotated provider method is attempting to satisfy non-optional " +
+                                      "dependency " + coordinate + " for injector defined by type " +
+                                      injector.getElement().getQualifiedName() + ".\n\nPath to dependency: " +
+                                      getPath( injector, edge ) + ".\n\n@Nullable annotated provider methods: " +
+                                      describeProviderMethods( nullableProviders ),
+                                      dependency.getElement() );
+      }
+      if ( bindings.isEmpty() )
+      {
+        if ( dependency.isOptional() )
+        {
+          edge.setSatisfiedBy( Collections.emptyList() );
+        }
+        else
+        {
+          throw new ProcessorException( "Unable to satisfy non-optional dependency " + coordinate +
+                                        " for injector defined by type " + injector.getElement().getQualifiedName() +
+                                        ". Path to dependency: " + getPath( injector, edge ),
+                                        dependency.getElement() );
+        }
+      }
+      else
+      {
+        final DependencyDescriptor.Type type = dependency.getType();
+        if ( 1 == bindings.size() || type.isCollection() )
+        {
+          final List<Node> nodes = bindings.stream().map( graph::findOrCreateNode ).collect( Collectors.toList() );
+          for ( final Node node : nodes )
+          {
+            if ( !completed.contains( node ) )
+            {
+              completed.add( node );
+              workList.addAll( node.getDependsOn() );
+            }
+          }
+          edge.setSatisfiedBy( nodes );
+        }
+        else
+        {
+          //noinspection ConstantConditions
+          assert bindings.size() > 1 && !type.isCollection();
+          throw new ProcessorException( "Dependency that expects a single value to satisfy dependency can be " +
+                                        "satisfied by multiple values in injector defined by type " +
+                                        injector.getElement().getQualifiedName() +
+                                        ". Path to dependency: " + getPath( injector, edge ) + ". Bindings:",
+                                        dependency.getElement() );
+        }
+      }
+    }
+  }
+
+  private void emitObjectGraphDescriptor( @Nonnull final ObjectGraph graph )
+    throws IOException
+  {
+    final TypeElement element = graph.getInjector().getElement();
+    final String filename = toFilename( element ) + "__ObjectGraph" + DESCRIPTOR_FILE_SUFFIX;
+    JsonUtil.writeJsonResource( processingEnv, element, filename, graph::write );
+  }
+
+  @Nonnull
+  private String describeProviderMethods( final List<Binding> providers )
+  {
+    return providers.stream().map( binding -> {
+      final Binding.Type bindingType = binding.getBindingType();
+      assert Binding.Type.PROVIDES == bindingType || Binding.Type.NULLABLE_PROVIDES == bindingType;
+      final StringWriter sw = new StringWriter();
+      processingEnv.getElementUtils().printElements( sw, binding.getElement() );
+      return sw.toString();
+    } ).collect( Collectors.joining( "\n---\n" ) );
+  }
+
+  private String getPath( @Nonnull final InjectorDescriptor injector, @Nonnull final Edge edge )
+  {
+    return "TODO";
   }
 
   private boolean isInjectorResolved( @Nonnull final RoundEnvironment env, @Nonnull final InjectorDescriptor injector )
