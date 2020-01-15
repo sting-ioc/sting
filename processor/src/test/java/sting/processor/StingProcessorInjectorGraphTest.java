@@ -54,7 +54,8 @@ public final class StingProcessorInjectorGraphTest
       .orElse( null );
   }
 
-  private JsonArray readInjectorGraph( final String filename )
+  @Nonnull
+  private JsonArray readInjectorGraph( @Nonnull final String filename )
     throws IOException
   {
     final JsonObject object = readJsonObject( fixtureDir().resolve( filename ) );
