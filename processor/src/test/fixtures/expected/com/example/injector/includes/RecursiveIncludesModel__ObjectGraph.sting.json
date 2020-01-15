@@ -1,0 +1,29 @@
+{
+  "schema": "graph/1",
+  "values": [
+    {
+      "id": "com.example.injector.includes.RecursiveIncludesModel.MyFragment1#provideRunnable",
+      "bindingType": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.includes.RecursiveIncludesModel.MyFragment2#provideRunnable",
+      "bindingType": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.includes.RecursiveIncludesModel.MyFragment3#provideRunnable",
+      "bindingType": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.includes.RecursiveIncludesModel.MyModel1",
+      "bindingType": "INJECTABLE"
+    },
+    {
+      "id": "com.example.injector.includes.RecursiveIncludesModel.MyModel2",
+      "bindingType": "INJECTABLE"
+    },
+    {
+      "id": "com.example.injector.includes.RecursiveIncludesModel.MyModel3",
+      "bindingType": "INJECTABLE"
+    }
+  ]
+}

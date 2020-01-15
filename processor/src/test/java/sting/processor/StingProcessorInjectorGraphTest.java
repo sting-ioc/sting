@@ -45,6 +45,35 @@ public final class StingProcessorInjectorGraphTest
     assertEquals( getValueById( values, classname, idSuffix ).getBoolean( "eager", false ), eager );
   }
 
+  @Test
+  public void recursiveIncludesAreAllIncluded()
+    throws Exception
+  {
+    final String classname = "com.example.injector.includes.RecursiveIncludesModel";
+    final String objectGraphFilename = toObjectGraphFilename( classname );
+    final List<String> expectedOutputs =
+      Arrays.asList( toFilename( "expected", classname, "", ".sting.json" ), objectGraphFilename );
+    assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
+    final JsonArray values = readInjectorGraph( objectGraphFilename );
+    assertValueWithIdPresent( values, classname, "MyFragment1#provideRunnable" );
+    assertValueWithIdPresent( values, classname, "MyFragment2#provideRunnable" );
+    assertValueWithIdPresent( values, classname, "MyFragment3#provideRunnable" );
+    //TODO: Enable once factories are implemented
+    //assertValueWithIdPresent( values, classname, "MyFactory1" );
+    //assertValueWithIdPresent( values, classname, "MyFactory2" );
+    //assertValueWithIdPresent( values, classname, "MyFactory3" );
+    assertValueWithIdPresent( values, classname, "MyModel1" );
+    assertValueWithIdPresent( values, classname, "MyModel2" );
+    assertValueWithIdPresent( values, classname, "MyModel3" );
+  }
+
+  private void assertValueWithIdPresent( @Nonnull final JsonArray values,
+                                         @Nonnull final String classname,
+                                         @Nonnull final String idSuffix )
+  {
+    getValueById( values, classname, idSuffix );
+  }
+
   @Nonnull
   private JsonObject getValueById( @Nonnull final JsonArray values,
                                    @Nonnull final String classname,
