@@ -2,37 +2,24 @@
   "schema": "graph/1",
   "values": [
     {
-      "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel0",
-      "bindingType": "INJECTABLE"
-    },
-    {
-      "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel1",
+      "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel6",
       "bindingType": "INJECTABLE",
-      "eager": true
-    },
-    {
-      "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel2",
-      "bindingType": "INJECTABLE",
-      "eager": true
-    },
-    {
-      "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel3",
-      "bindingType": "INJECTABLE",
+      "eager": true,
       "dependencies": [
         {
           "coordinate": {
-            "type": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel0"
+            "type": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel4"
           },
           "supportedBy": [
-            "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel0"
+            "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel4"
           ]
         },
         {
           "coordinate": {
-            "type": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel2"
+            "type": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel5"
           },
           "supportedBy": [
-            "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel2"
+            "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel5"
           ]
         }
       ]
@@ -100,27 +87,40 @@
       ]
     },
     {
-      "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel6",
+      "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel1",
       "bindingType": "INJECTABLE",
-      "eager": true,
+      "eager": true
+    },
+    {
+      "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel2",
+      "bindingType": "INJECTABLE",
+      "eager": true
+    },
+    {
+      "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel3",
+      "bindingType": "INJECTABLE",
       "dependencies": [
         {
           "coordinate": {
-            "type": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel4"
+            "type": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel0"
           },
           "supportedBy": [
-            "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel4"
+            "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel0"
           ]
         },
         {
           "coordinate": {
-            "type": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel5"
+            "type": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel2"
           },
           "supportedBy": [
-            "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel5"
+            "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel2"
           ]
         }
       ]
+    },
+    {
+      "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel0",
+      "bindingType": "INJECTABLE"
     }
   ]
 }

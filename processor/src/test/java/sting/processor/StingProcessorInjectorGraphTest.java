@@ -35,6 +35,15 @@ public final class StingProcessorInjectorGraphTest
     assertEager( values, classname, "MyModel4", true );
     assertEager( values, classname, "MyModel5", true );
     assertEager( values, classname, "MyModel6", true );
+
+    // Order is stable and based on depth of node from root dependencies
+    assertIndex( values, classname, "MyModel6", 0 );
+    assertIndex( values, classname, "MyModel4", 1 );
+    assertIndex( values, classname, "MyModel5", 2 );
+    assertIndex( values, classname, "MyModel1", 3 );
+    assertIndex( values, classname, "MyModel2", 4 );
+    assertIndex( values, classname, "MyModel3", 5 );
+    assertIndex( values, classname, "MyModel0", 6 );
   }
 
   @Test
@@ -50,6 +59,22 @@ public final class StingProcessorInjectorGraphTest
     assertEager( values, classname, "MyModel1", true );
     assertValueWithIdNotPresent( values, classname, "MyModel2" );
     assertEager( values, classname, "MyModel3", true );
+  }
+
+  private void assertIndex( @Nonnull final JsonArray values,
+                            @Nonnull final String classname,
+                            @Nonnull final String idSuffix,
+                            final int index )
+  {
+    final String expectedId = classname + "." + idSuffix;
+    assertTrue( values.size() > index,
+                "Attempting to lookup " + expectedId + " at index " + index + " but " +
+                "there is only " + values.size() + " values present." );
+    final String id = values.getJsonObject( index ).getString( "id" );
+    assertEquals( id,
+                  expectedId,
+                  "Attempting to lookup " + expectedId + " at index " + index + " but " +
+                  "found id " + id );
   }
 
   private void assertEager( @Nonnull final JsonArray values,

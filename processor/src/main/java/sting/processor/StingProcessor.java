@@ -176,12 +176,44 @@ public final class StingProcessor
 
     propagateEagerFlagUpstream( graph );
 
-    //TODO: Assign depth metric for each node which is distance from root dependencies
+    calculateDepthForNodes( graph );
     //TODO: Make sure graph has no circular loops
 
     emitObjectGraphDescriptor( graph );
 
     //TODO: Generate and emit java code
+  }
+
+  private void calculateDepthForNodes( @Nonnull final ObjectGraph graph )
+  {
+    final Set<Node> completed = new HashSet<>();
+    final Stack<Node> workQueue = new Stack<>();
+    workQueue.add( graph.getRootNode() );
+
+    graph.getNodes().stream().filter( n -> n.getUsedBy().isEmpty() ).forEach( n -> {
+      n.setDepth( 1 );
+      workQueue.add( n );
+    } );
+
+    while ( !workQueue.isEmpty() )
+    {
+      final Node node = workQueue.pop();
+      assert !completed.contains( node );
+      assert !workQueue.contains( node );
+      completed.add( node );
+
+      final int depth = node.getDepth() + 1;
+      node.getDependsOn()
+        .stream()
+        .flatMap( e -> e.getSatisfiedBy().stream() )
+        .filter( n -> !completed.contains( n ) )
+        .filter( n -> !workQueue.contains( n ) )
+        .forEach( n -> {
+          assert 0 == n.getDepth();
+          n.setDepth( depth );
+          workQueue.push( n );
+        } );
+    }
   }
 
   private void propagateEagerFlagUpstream( @Nonnull final ObjectGraph graph )
