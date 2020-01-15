@@ -37,6 +37,10 @@ final class Edge
     for ( final Node node : satisfiedBy )
     {
       node.usedBy( this );
+      if ( null != _node )
+      {
+        node.setDepth( _node.getDepth() + 1 );
+      }
     }
   }
 
