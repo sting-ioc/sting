@@ -40,6 +40,7 @@ import org.realityforge.proton.AbstractStandardProcessor;
 import org.realityforge.proton.AnnotationsUtil;
 import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
+import org.realityforge.proton.JsonUtil;
 import org.realityforge.proton.MemberChecks;
 import org.realityforge.proton.ProcessorException;
 import org.realityforge.proton.SuperficialValidation;
