@@ -25,7 +25,7 @@ public final class StingProcessorInjectorGraphTest
     final String classname = "com.example.injector.dependency.eager.BasicEagerDependencyModel";
     final String objectGraphFilename = toObjectGraphFilename( classname );
     final List<String> expectedOutputs =
-      Arrays.asList( toFilename( "expected", classname, "", ".sting.json" ), objectGraphFilename );
+      Arrays.asList( toFilename( "expected", classname, "", StingProcessor.DESCRIPTOR_SUFFIX ), objectGraphFilename );
     assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
     final JsonArray values = readInjectorGraph( objectGraphFilename );
     assertEager( values, classname, "MyModel0", false );
@@ -125,7 +125,7 @@ public final class StingProcessorInjectorGraphTest
   @Nonnull
   private String toObjectGraphFilename( @Nonnull final String classname )
   {
-    return toFilename( "expected", classname, "", "__ObjectGraph.sting.json" );
+    return toFilename( "expected", classname, "", StingProcessor.GRAPH_SUFFIX );
   }
 
   private boolean emitInjectorGeneratedFile( @Nonnull final String classname, @Nonnull final JavaFileObject target )
@@ -133,7 +133,7 @@ public final class StingProcessorInjectorGraphTest
     final int index = classname.lastIndexOf( "." );
     final String simpleClassName = -1 == index ? classname : classname.substring( index + 1 );
     return JavaFileObject.Kind.SOURCE == target.getKind() ||
-           target.getName().endsWith( simpleClassName + ".sting.json" ) ||
-           target.getName().endsWith( simpleClassName + "__ObjectGraph.sting.json" );
+           target.getName().endsWith( simpleClassName + StingProcessor.DESCRIPTOR_SUFFIX ) ||
+           target.getName().endsWith( simpleClassName + StingProcessor.GRAPH_SUFFIX );
   }
 }

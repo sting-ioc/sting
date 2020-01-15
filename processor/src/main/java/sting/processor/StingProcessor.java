@@ -61,7 +61,11 @@ public final class StingProcessor
   /**
    * Extension for json descriptors.
    */
-  private static final String DESCRIPTOR_FILE_SUFFIX = ".sting.json";
+  static final String DESCRIPTOR_SUFFIX = ".sting.json";
+  /**
+   * Extension for the computed graph descriptor.
+   */
+  static final String GRAPH_SUFFIX = "__ObjectGraph" + DESCRIPTOR_SUFFIX;
   /**
    * A local cache of bindings that is cleared on error or when processing is complete.
    * This will probably be loaded from json cache files in the future but now we require
@@ -301,7 +305,7 @@ public final class StingProcessor
     throws IOException
   {
     final TypeElement element = graph.getInjector().getElement();
-    final String filename = toFilename( element ) + "__ObjectGraph" + DESCRIPTOR_FILE_SUFFIX;
+    final String filename = toFilename( element ) + GRAPH_SUFFIX;
     JsonUtil.writeJsonResource( processingEnv, element, filename, graph::write );
   }
 
@@ -428,7 +432,7 @@ public final class StingProcessor
     throws IOException
   {
     final TypeElement element = injector.getElement();
-    final String filename = toFilename( element ) + DESCRIPTOR_FILE_SUFFIX;
+    final String filename = toFilename( element ) + DESCRIPTOR_SUFFIX;
     JsonUtil.writeJsonResource( processingEnv, element, filename, injector::write );
   }
 
@@ -662,7 +666,7 @@ public final class StingProcessor
     throws IOException
   {
     final TypeElement element = fragment.getElement();
-    final String filename = toFilename( element ) + DESCRIPTOR_FILE_SUFFIX;
+    final String filename = toFilename( element ) + DESCRIPTOR_SUFFIX;
     JsonUtil.writeJsonResource( processingEnv, element, filename, fragment::write );
   }
 
@@ -917,7 +921,7 @@ public final class StingProcessor
                    dependencies.toArray( new DependencyDescriptor[ 0 ] ) );
     final InjectableDescriptor injectable = new InjectableDescriptor( binding );
     _registry.registerInjectable( injectable );
-    final String filename = toFilename( element ) + DESCRIPTOR_FILE_SUFFIX;
+    final String filename = toFilename( element ) + DESCRIPTOR_SUFFIX;
     JsonUtil.writeJsonResource( processingEnv, element, filename, injectable::write );
   }
 
