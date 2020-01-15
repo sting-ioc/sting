@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -11,6 +12,11 @@ import javax.json.stream.JsonGenerator;
 
 final class Node
 {
+  /**
+   * The object graph that created this node.
+   */
+  @Nonnull
+  private final ObjectGraph _objectGraph;
   /**
    * The binding for the node.
    * May be null if it represents an Injector.
@@ -40,11 +46,13 @@ final class Node
   /**
    * Constructor used to construct a Node for the Injector.
    *
-   * @param dependencies the dependencies.
+   * @param objectGraph the object graph
    */
-  Node( @Nonnull final DependencyDescriptor[] dependencies )
+  Node( @Nonnull final ObjectGraph objectGraph )
   {
-    this( null, dependencies );
+    this( objectGraph,
+          null,
+          objectGraph.getInjector().getTopLevelDependencies().toArray( new DependencyDescriptor[ 0 ] ) );
   }
 
   /**
@@ -52,13 +60,16 @@ final class Node
    *
    * @param binding the binding.
    */
-  Node( @Nonnull final Binding binding )
+  Node( final ObjectGraph objectGraph, @Nonnull final Binding binding )
   {
-    this( binding, binding.getDependencies() );
+    this( objectGraph, binding, binding.getDependencies() );
   }
 
-  private Node( @Nullable final Binding binding, @Nonnull final DependencyDescriptor[] dependencies )
+  private Node( @Nonnull final ObjectGraph objectGraph,
+                @Nullable final Binding binding,
+                @Nonnull final DependencyDescriptor[] dependencies )
   {
+    _objectGraph = Objects.requireNonNull( objectGraph );
     _binding = binding;
     for ( final DependencyDescriptor dependency : dependencies )
     {

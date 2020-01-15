@@ -54,7 +54,7 @@ final class ObjectGraph
   ObjectGraph( @Nonnull final InjectorDescriptor injector )
   {
     _injector = Objects.requireNonNull( injector );
-    _rootNode = new Node( injector.getTopLevelDependencies().toArray( new DependencyDescriptor[ 0 ] ) );
+    _rootNode = new Node( this );
   }
 
   @Nonnull
@@ -72,7 +72,7 @@ final class ObjectGraph
   @Nonnull
   Node findOrCreateNode( @Nonnull final Binding binding )
   {
-    return _nodes.computeIfAbsent( binding, Node::new );
+    return _nodes.computeIfAbsent( binding, binding1 -> new Node( this, binding1 ) );
   }
 
   @Nonnull
