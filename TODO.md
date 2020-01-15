@@ -33,6 +33,16 @@ complete as there is too much un-said.
   stacks each time a `Supplier` variant is reached.
 * Change the `Coordinate._type` to a fully qualified classname rather than a `TypeMirror`.
 
+* Figure out terminology. Currently it is a mixed bag derived from various injector frameworks that it has
+  been inspired from. Terms that are misused and should be cleaned up. This would involved cleaning up lots
+  of code, tests and javadocs so should be done sooner rather than later.
+  * Binding = a source of a value that could contribute to the object graph
+  * Coordinate = the combination of type+qualifier used to address a Binding
+  * Dependency = The declaration by a binding of values that must be injected into Binding for it to be valid
+  * Value = very imprecise usage but often means the actual inclusion of a Binding in an object graph.
+  * Node = very similar to Value but a little more precise
+  * Edge = the actual between two nodes
+
 ## Old Notes
 
 ## Phase 1:
