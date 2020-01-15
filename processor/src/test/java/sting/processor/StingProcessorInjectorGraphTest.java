@@ -28,20 +28,37 @@ public final class StingProcessorInjectorGraphTest
       Arrays.asList( toFilename( "expected", classname, "", ".sting.json" ), objectGraphFilename );
     assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
     final JsonArray values = readInjectorGraph( objectGraphFilename );
-    assertEager( values, "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel0", false );
-    assertEager( values, "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel1", true );
-    assertEager( values, "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel2", true );
-    assertEager( values, "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel3", false );
-    assertEager( values, "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel4", true );
-    assertEager( values, "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel5", true );
-    assertEager( values, "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel6", true );
+    assertEager( values, classname, "MyModel0", false );
+    assertEager( values, classname, "MyModel1", true );
+    assertEager( values, classname, "MyModel2", true );
+    assertEager( values, classname, "MyModel3", false );
+    assertEager( values, classname, "MyModel4", true );
+    assertEager( values, classname, "MyModel5", true );
+    assertEager( values, classname, "MyModel6", true );
   }
 
-  private void assertEager( @Nonnull final JsonArray values, @Nonnull final String id, final boolean eager )
+  private void assertEager( @Nonnull final JsonArray values,
+                            @Nonnull final String classname,
+                            @Nonnull final String idSuffix,
+                            final boolean eager )
+  {
+    assertEquals( getValueById( values, classname, idSuffix ).getBoolean( "eager", false ), eager );
+  }
+
+  @Nonnull
+  private JsonObject getValueById( @Nonnull final JsonArray values,
+                                   @Nonnull final String classname,
+                                   @Nonnull final String idSuffix )
+  {
+    return getValueById( values, classname + "." + idSuffix );
+  }
+
+  @Nonnull
+  private JsonObject getValueById( @Nonnull final JsonArray values, @Nonnull final String id )
   {
     final JsonObject value = findValueById( values, id );
     assertNotNull( value );
-    assertEquals( value.getBoolean( "eager", false ), eager );
+    return value;
   }
 
   @Nullable
