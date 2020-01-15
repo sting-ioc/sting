@@ -190,13 +190,19 @@ public final class StingProcessor
 
   private void registerIncludesComponents( @Nonnull final ObjectGraph graph )
   {
-    final InjectorDescriptor injector = graph.getInjector();
-    for ( final DeclaredType include : injector.getIncludes() )
+    registerIncludes( graph, graph.getInjector().getIncludes() );
+  }
+
+  private void registerIncludes( @Nonnull final ObjectGraph graph,
+                                 @Nonnull final Collection<DeclaredType> includes )
+  {
+    for ( final DeclaredType include : includes )
     {
       final TypeElement element = (TypeElement) include.asElement();
       if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
       {
         final FragmentDescriptor fragment = _registry.getFragmentByClassName( element.getQualifiedName().toString() );
+        registerIncludes( graph, fragment.getIncludes() );
         graph.registerFragment( fragment );
       }
       else if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
