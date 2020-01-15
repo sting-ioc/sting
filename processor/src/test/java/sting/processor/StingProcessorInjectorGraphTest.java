@@ -74,6 +74,13 @@ public final class StingProcessorInjectorGraphTest
     getValueById( values, classname, idSuffix );
   }
 
+  private void assertValueWithIdNotPresent( @Nonnull final JsonArray values,
+                                            @Nonnull final String classname,
+                                            @Nonnull final String idSuffix )
+  {
+    assertNull( findValueById( values, classname, idSuffix ) );
+  }
+
   @Nonnull
   private JsonObject getValueById( @Nonnull final JsonArray values,
                                    @Nonnull final String classname,
