@@ -196,7 +196,8 @@ public final class StingProcessor
       final TypeElement element = (TypeElement) include.asElement();
       if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
       {
-        graph.registerFragment( _registry.getFragmentByClassName( element.getQualifiedName().toString() ) );
+        final FragmentDescriptor fragment = _registry.getFragmentByClassName( element.getQualifiedName().toString() );
+        graph.registerFragment( fragment );
       }
       else if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
       {
