@@ -91,6 +91,14 @@ public final class StingProcessorInjectorGraphTest
   }
 
   @Nullable
+  private JsonObject findValueById( @Nonnull final JsonArray values,
+                                    @Nonnull final String classname,
+                                    @Nonnull final String idSuffix )
+  {
+    return findValueById( values, classname + "." + idSuffix );
+  }
+
+  @Nullable
   private JsonObject findValueById( @Nonnull final JsonArray values, @Nonnull final String id )
   {
     return values.stream()
