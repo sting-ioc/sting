@@ -37,6 +37,21 @@ public final class StingProcessorInjectorGraphTest
     assertEager( values, classname, "MyModel6", true );
   }
 
+  @Test
+  public void eagerInjectablesAddedWhenAddedViaIncludes()
+    throws Exception
+  {
+    final String classname = "com.example.injector.dependency.eager.EagerInjectableViaIncludesModel";
+    final String objectGraphFilename = toObjectGraphFilename( classname );
+    final List<String> expectedOutputs =
+      Arrays.asList( toFilename( "expected", classname, "", StingProcessor.DESCRIPTOR_SUFFIX ), objectGraphFilename );
+    assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
+    final JsonArray values = readInjectorGraph( objectGraphFilename );
+    assertEager( values, classname, "MyModel1", true );
+    assertValueWithIdNotPresent( values, classname, "MyModel2" );
+    assertEager( values, classname, "MyModel3", true );
+  }
+
   private void assertEager( @Nonnull final JsonArray values,
                             @Nonnull final String classname,
                             @Nonnull final String idSuffix,

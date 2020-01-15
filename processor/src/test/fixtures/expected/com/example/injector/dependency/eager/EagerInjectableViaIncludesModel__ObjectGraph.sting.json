@@ -1,0 +1,15 @@
+{
+  "schema": "graph/1",
+  "values": [
+    {
+      "id": "com.example.injector.dependency.eager.EagerInjectableViaIncludesModel.MyModel1",
+      "bindingType": "INJECTABLE",
+      "eager": true
+    },
+    {
+      "id": "com.example.injector.dependency.eager.EagerInjectableViaIncludesModel.MyModel3",
+      "bindingType": "INJECTABLE",
+      "eager": true
+    }
+  ]
+}
