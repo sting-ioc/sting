@@ -12,6 +12,7 @@ import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
+import org.realityforge.proton.JsonUtil;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import static org.mockito.Mockito.*;
