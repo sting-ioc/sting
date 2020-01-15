@@ -23,7 +23,7 @@ public final class StingProcessorInjectorGraphTest
     throws Exception
   {
     final String classname = "com.example.injector.dependency.eager.BasicEagerDependencyModel";
-    final String objectGraphFilename = toFilename( "expected", classname, "", "__ObjectGraph.sting.json" );
+    final String objectGraphFilename = toObjectGraphFilename( classname );
     final List<String> expectedOutputs =
       Arrays.asList( toFilename( "expected", classname, "", ".sting.json" ), objectGraphFilename );
     assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
@@ -73,6 +73,12 @@ public final class StingProcessorInjectorGraphTest
         return parser.readObject();
       }
     }
+  }
+
+  @Nonnull
+  private String toObjectGraphFilename( @Nonnull final String classname )
+  {
+    return toFilename( "expected", classname, "", "__ObjectGraph.sting.json" );
   }
 
   private boolean emitInjectorGeneratedFile( @Nonnull final String classname, @Nonnull final JavaFileObject target )
