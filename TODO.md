@@ -33,6 +33,15 @@ complete as there is too much un-said.
   stacks each time a `Supplier` variant is reached.
 * Change the `Coordinate._type` to a fully qualified classname rather than a `TypeMirror`.
 
+* Convert the `@Factory` annotation into an `@Injectable` with another processor and just change the `includes`
+  such that they replace the type with the generated type.
+
+* Or ... add an annotation that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
+  or `Injector` will have their type annotations scanned for matching annotations of which there must be at most
+  1. This annotation gives the name pattern for the expected `@Injectable` or `@Fragment` annotated class that
+  provides the type. The `@Factory` type would just use this as implementation strategy ... if we are using a
+  separate annotation processor to generate the factory implementation.
+
 * Figure out terminology. Currently it is a mixed bag derived from various injector frameworks that it has
   been inspired from. Terms that are misused and should be cleaned up. This would involved cleaning up lots
   of code, tests and javadocs so should be done sooner rather than later.
