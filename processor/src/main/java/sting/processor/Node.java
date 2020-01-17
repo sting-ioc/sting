@@ -106,6 +106,11 @@ final class Node
     }
   }
 
+  boolean hasBinding()
+  {
+    return null != _binding;
+  }
+
   @Nonnull
   Binding getBinding()
   {
