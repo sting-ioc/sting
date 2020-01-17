@@ -77,6 +77,12 @@ final class Node
     }
   }
 
+  @Nonnull
+  ObjectGraph getObjectGraph()
+  {
+    return _objectGraph;
+  }
+
   boolean isEager()
   {
     return _eager;
