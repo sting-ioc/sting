@@ -106,9 +106,9 @@ final class Node
     }
   }
 
-  boolean hasBinding()
+  boolean hasNoBinding()
   {
-    return null != _binding;
+    return null == _binding;
   }
 
   @Nonnull
