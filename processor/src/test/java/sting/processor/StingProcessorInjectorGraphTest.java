@@ -3,7 +3,7 @@ package sting.processor;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,8 +24,7 @@ public final class StingProcessorInjectorGraphTest
   {
     final String classname = "com.example.injector.dependency.eager.BasicEagerDependencyModel";
     final String objectGraphFilename = toObjectGraphFilename( classname );
-    final List<String> expectedOutputs =
-      Arrays.asList( toFilename( "expected", classname, "", StingProcessor.DESCRIPTOR_SUFFIX ), objectGraphFilename );
+    final List<String> expectedOutputs = Collections.singletonList( objectGraphFilename );
     assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
     final JsonArray values = readInjectorGraph( objectGraphFilename );
     assertEager( values, classname, "MyModel0", false );
@@ -52,9 +51,9 @@ public final class StingProcessorInjectorGraphTest
   {
     final String classname = "com.example.injector.dependency.eager.EagerInjectableViaIncludesModel";
     final String objectGraphFilename = toObjectGraphFilename( classname );
-    final List<String> expectedOutputs =
-      Arrays.asList( toFilename( "expected", classname, "", StingProcessor.DESCRIPTOR_SUFFIX ), objectGraphFilename );
-    assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
+    assertSuccessfulCompile( inputs( classname ),
+                             Collections.singletonList( objectGraphFilename ),
+                             t -> emitInjectorGeneratedFile( classname, t ) );
     final JsonArray values = readInjectorGraph( objectGraphFilename );
     assertEager( values, classname, "MyModel1", true );
     assertValueWithIdNotPresent( values, classname, "MyModel2" );
@@ -91,9 +90,9 @@ public final class StingProcessorInjectorGraphTest
   {
     final String classname = "com.example.injector.includes.RecursiveIncludesModel";
     final String objectGraphFilename = toObjectGraphFilename( classname );
-    final List<String> expectedOutputs =
-      Arrays.asList( toFilename( "expected", classname, "", ".sting.json" ), objectGraphFilename );
-    assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
+    assertSuccessfulCompile( inputs( classname ),
+                             Collections.singletonList( objectGraphFilename ),
+                             t -> emitInjectorGeneratedFile( classname, t ) );
     final JsonArray values = readInjectorGraph( objectGraphFilename );
     assertValueWithIdPresent( values, classname, "MyFragment1#provideRunnable" );
     assertValueWithIdPresent( values, classname, "MyFragment2#provideRunnable" );
@@ -188,7 +187,6 @@ public final class StingProcessorInjectorGraphTest
     final int index = classname.lastIndexOf( "." );
     final String simpleClassName = -1 == index ? classname : classname.substring( index + 1 );
     return JavaFileObject.Kind.SOURCE == target.getKind() ||
-           target.getName().endsWith( simpleClassName + StingProcessor.DESCRIPTOR_SUFFIX ) ||
            target.getName().endsWith( simpleClassName + StingProcessor.GRAPH_SUFFIX );
   }
 }

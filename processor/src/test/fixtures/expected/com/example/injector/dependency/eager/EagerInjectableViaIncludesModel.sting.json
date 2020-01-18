@@ -1,7 +1,0 @@
-{
-  "schema": "injector/1",
-  "includes": [
-    "com.example.injector.dependency.eager.EagerInjectableViaIncludesModel.MyModel1",
-    "com.example.injector.dependency.eager.EagerInjectableViaIncludesModel.MyFragment1"
-  ]
-}
