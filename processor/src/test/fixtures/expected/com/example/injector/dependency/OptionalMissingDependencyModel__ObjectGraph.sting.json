@@ -1,5 +1,9 @@
 {
   "schema": "graph/1",
   "values": [
+    {
+      "id": "com.example.injector.dependency.OptionalMissingDependencyModel.MyModel2",
+      "bindingType": "INJECTABLE"
+    }
   ]
 }

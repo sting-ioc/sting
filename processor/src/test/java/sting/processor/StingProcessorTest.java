@@ -273,6 +273,8 @@ public final class StingProcessorTest
                       "@Injector target must be an interface or an abstract class" },
         new Object[]{ "com.example.injector.MultipleConstructorClassInjector",
                       "@Injector target must not have multiple constructors" },
+        new Object[]{ "com.example.injector.NoDirectDependenciesAndNoEagerInIncludesModel",
+                      "@Injector target produced an empty object graph. This means that there are no eager values in the includes and there are no dependencies or only unsatisfied optional dependencies defined by the injector" },
 
         new Object[]{ "com.example.injector.circular.ChainedCircularDependencyModel",
                       "Injector contains a circular dependency.\n" +

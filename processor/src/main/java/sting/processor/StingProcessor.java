@@ -174,6 +174,15 @@ public final class StingProcessor
 
     buildObjectGraphNodes( graph );
 
+    if ( graph.getNodes().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " target " +
+                                    "produced an empty object graph. This means that there are no eager values " +
+                                    "in the includes and there are no dependencies or only unsatisfied optional " +
+                                    "dependencies defined by the injector",
+                                    graph.getInjector().getElement() );
+    }
+
     propagateEagerFlagUpstream( graph );
 
     CircularDependencyChecker.verifyNoCircularDependencyLoops( graph );

@@ -1,5 +1,9 @@
 {
   "schema": "graph/1",
   "values": [
+    {
+      "id": "com.example.injector.includes.MultipleIncludesModel.MyFragment#provideRunnable",
+      "bindingType": "PROVIDES"
+    }
   ]
 }

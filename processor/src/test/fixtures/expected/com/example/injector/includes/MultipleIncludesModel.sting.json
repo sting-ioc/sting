@@ -4,5 +4,12 @@
     "com.example.injector.includes.MultipleIncludesModel.MyFragment",
     "com.example.injector.includes.MultipleIncludesModel.MyFactory",
     "com.example.injector.includes.MultipleIncludesModel.MyModel"
+  ],
+  "dependencies": [
+    {
+      "coordinate": {
+        "type": "java.lang.Runnable"
+      }
+    }
   ]
 }

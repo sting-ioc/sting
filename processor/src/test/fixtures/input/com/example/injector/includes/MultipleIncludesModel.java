@@ -10,6 +10,8 @@ import sting.Injector;
                         MultipleIncludesModel.MyModel.class } )
 abstract class MultipleIncludesModel
 {
+  abstract Runnable getRunnable();
+
   @Fragment
   public interface MyFragment
   {

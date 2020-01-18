@@ -24,7 +24,6 @@ complete as there is too much un-said.
   and just assume that they are detected if they are referenced from within the object graph. The
   `@Injectable` types are also detected but can be manually added if you want them eagerly instantiated and
   they are not a dependency of any other element.
-* Generate an error if an `@Injector` declares no dependencies and no `eager` bindings.
 * Add test suite for `Registry`
 * Injectors that are inherited by another injector can disable eager services? For usage in tests.
 * Add test for unresolved `@Injector`. Add a separate test for unresolved include and another for

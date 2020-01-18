@@ -3,9 +3,14 @@
   "dependencies": [
     {
       "coordinate": {
-        "type": "com.example.injector.dependency.OptionalMissingDependencyModel.MyModel"
+        "type": "com.example.injector.dependency.OptionalMissingDependencyModel.MyModel1"
       },
       "optional": true
+    },
+    {
+      "coordinate": {
+        "type": "com.example.injector.dependency.OptionalMissingDependencyModel.MyModel2"
+      }
     }
   ]
 }
