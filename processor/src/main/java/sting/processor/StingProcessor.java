@@ -1,9 +1,5 @@
 package sting.processor;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.WildcardTypeName;
 import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.code.Symbol;
 import java.io.IOException;
@@ -17,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.RoundEnvironment;
@@ -35,6 +32,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.WildcardType;
 import javax.tools.Diagnostic;
 import org.realityforge.proton.AbstractStandardProcessor;
 import org.realityforge.proton.AnnotationsUtil;
@@ -516,40 +514,81 @@ public final class StingProcessor
     final String qualifier =
       null == annotation ? "" : AnnotationsUtil.getAnnotationValue( annotation, "qualifier" );
 
-    final TypeName typeName = TypeName.get( returnType );
-    final boolean isParameterizedType = typeName instanceof ParameterizedTypeName;
+    final boolean isDeclaredType = TypeKind.DECLARED == returnType.getKind();
+    final DeclaredType declaredType = isDeclaredType ? (DeclaredType) returnType : null;
+    final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
     final DependencyDescriptor.Type type;
     final TypeMirror dependencyValueType;
-    if ( typeName instanceof ClassName )
+    if ( null == declaredType )
     {
-      if ( StingTypeNames.SUPPLIER.equals( typeName ) )
+      type = DependencyDescriptor.Type.INSTANCE;
+      dependencyValueType = returnType;
+    }
+    else if ( !isParameterizedType )
+    {
+      if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
         throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
                                                             "return a value that is a raw " +
-                                                            StingTypeNames.SUPPLIER + " type" ),
+                                                            Supplier.class.getCanonicalName() + " type" ),
                                       method );
       }
-      else if ( !( (TypeElement) ( (DeclaredType) returnType ).asElement() ).getTypeParameters().isEmpty() )
+      else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                            "return a value that is a raw " +
+                                                            Collection.class.getCanonicalName() + " type" ),
+                                      method );
+      }
+      else if ( !( (TypeElement) declaredType.asElement() ).getTypeParameters().isEmpty() )
       {
         throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
                                                             "return a value that is a raw parameterized " +
                                                             "type. Parameterized types are only permitted for " +
-                                                            "specific types such as " + StingTypeNames.SUPPLIER ),
+                                                            "specific types such as " +
+                                                            Supplier.class.getCanonicalName() + " and " +
+                                                            Collection.class.getCanonicalName() ),
                                       method );
       }
+      type = DependencyDescriptor.Type.INSTANCE;
+      dependencyValueType = returnType;
     }
-    else if ( typeName instanceof ParameterizedTypeName )
+    else
     {
-      final ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) typeName;
-      if ( StingTypeNames.SUPPLIER.equals( parameterizedTypeName.rawType ) )
+      if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
-        if ( parameterizedTypeName.typeArguments.get( 0 ) instanceof WildcardTypeName )
+        final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
+        if ( typeArgument instanceof WildcardType )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
                                                               "return a value that is a " +
-                                                              StingTypeNames.SUPPLIER +
+                                                              Supplier.class.getCanonicalName() +
                                                               " type with a wildcard parameter" ),
                                         method );
+        }
+        type = DependencyDescriptor.Type.SUPPLIER;
+        dependencyValueType = typeArgument;
+      }
+      else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
+      {
+        final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
+        if ( typeArgument instanceof WildcardType )
+        {
+          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                              "return a value that is a " +
+                                                              Collection.class.getCanonicalName() +
+                                                              " type with a wildcard parameter" ),
+                                        method );
+        }
+        else if ( typeArgument instanceof DeclaredType &&
+                  Supplier.class.getCanonicalName().equals( getClassname( (DeclaredType) typeArgument ) ) )
+        {
+          throw new IllegalStateException( "Not yet implemented" );
+        }
+        else
+        {
+          type = DependencyDescriptor.Type.COLLECTION_INSTANCE;
+          dependencyValueType = typeArgument;
         }
       }
       else
@@ -557,19 +596,10 @@ public final class StingProcessor
         throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
                                                             "return a value that is a parameterized type. " +
                                                             "This is only permitted for specific types such as " +
-                                                            StingTypeNames.SUPPLIER ),
+                                                            Supplier.class.getCanonicalName() + " and " +
+                                                            Collection.class.getCanonicalName() ),
                                       method );
       }
-    }
-    if ( isParameterizedType )
-    {
-      type = DependencyDescriptor.Type.SUPPLIER;
-      dependencyValueType = ( (DeclaredType) returnType ).getTypeArguments().get( 0 );
-    }
-    else
-    {
-      type = DependencyDescriptor.Type.INSTANCE;
-      dependencyValueType = returnType;
     }
 
     final Coordinate coordinate = new Coordinate( qualifier, dependencyValueType );
@@ -805,41 +835,81 @@ public final class StingProcessor
     final String qualifier =
       null == annotation ? "" : AnnotationsUtil.getAnnotationValue( annotation, "qualifier" );
 
-    final TypeName typeName = TypeName.get( parameterType );
-    final boolean isParameterizedType = typeName instanceof ParameterizedTypeName;
+    final boolean isDeclaredType = TypeKind.DECLARED == parameterType.getKind();
+    final DeclaredType declaredType = isDeclaredType ? (DeclaredType) parameterType : null;
+    final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
     final DependencyDescriptor.Type type;
     final TypeMirror dependencyValueType;
-    if ( typeName instanceof ClassName )
+    if ( null == declaredType )
     {
-      if ( StingTypeNames.SUPPLIER.equals( typeName ) )
+      type = DependencyDescriptor.Type.INSTANCE;
+      dependencyValueType = parameterType;
+    }
+    else if ( !isParameterizedType )
+    {
+      if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
         throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                             "have a method with a parameter that is a raw " +
-                                                            StingTypeNames.SUPPLIER + " type" ),
+                                                            Supplier.class.getCanonicalName() + " type" ),
                                       parameter );
       }
-      else if ( !( (TypeElement) ( (DeclaredType) parameterType ).asElement() ).getTypeParameters().isEmpty() )
+      else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                            "have a method with a parameter that is a raw " +
+                                                            Collection.class.getCanonicalName() + " type" ),
+                                      parameter );
+      }
+      else if ( !( (TypeElement) declaredType.asElement() ).getTypeParameters().isEmpty() )
       {
         throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                             "have a method with a parameter that is a " +
                                                             "raw parameterized type. Parameterized types are only " +
                                                             "permitted for specific types such as " +
-                                                            StingTypeNames.SUPPLIER ),
+                                                            Supplier.class.getCanonicalName() + " and " +
+                                                            Collection.class.getCanonicalName() ),
                                       parameter );
       }
+      type = DependencyDescriptor.Type.INSTANCE;
+      dependencyValueType = parameterType;
     }
-    else if ( typeName instanceof ParameterizedTypeName )
+    else
     {
-      final ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) typeName;
-      if ( StingTypeNames.SUPPLIER.equals( parameterizedTypeName.rawType ) )
+      if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
-        if ( parameterizedTypeName.typeArguments.get( 0 ) instanceof WildcardTypeName )
+        final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
+        if ( typeArgument instanceof WildcardType )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                               "have a method with a parameter that is a " +
-                                                              StingTypeNames.SUPPLIER +
+                                                              Supplier.class.getCanonicalName() +
                                                               " type with a wildcard parameter" ),
                                         parameter );
+        }
+        type = DependencyDescriptor.Type.SUPPLIER;
+        dependencyValueType = typeArgument;
+      }
+      else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
+      {
+        final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
+        if ( typeArgument instanceof WildcardType )
+        {
+          throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                              "have a method with a parameter that is a " +
+                                                              Collection.class.getCanonicalName() +
+                                                              " type with a wildcard parameter" ),
+                                        parameter );
+        }
+        else if ( typeArgument instanceof DeclaredType &&
+                  Supplier.class.getCanonicalName().equals( getClassname( (DeclaredType) typeArgument ) ) )
+        {
+          throw new IllegalStateException( "Not yet implemented" );
+        }
+        else
+        {
+          type = DependencyDescriptor.Type.COLLECTION_INSTANCE;
+          dependencyValueType = typeArgument;
         }
       }
       else
@@ -847,19 +917,11 @@ public final class StingProcessor
         throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                             "have a method with a parameter that is a " +
                                                             "parameterized type. This is only permitted for " +
-                                                            "specific types such as " + StingTypeNames.SUPPLIER ),
+                                                            "specific types such as " +
+                                                            Supplier.class.getCanonicalName() + " and " +
+                                                            Collection.class.getCanonicalName() ),
                                       parameter );
       }
-    }
-    if ( isParameterizedType )
-    {
-      type = DependencyDescriptor.Type.SUPPLIER;
-      dependencyValueType = ( (DeclaredType) parameterType ).getTypeArguments().get( 0 );
-    }
-    else
-    {
-      type = DependencyDescriptor.Type.INSTANCE;
-      dependencyValueType = parameterType;
     }
 
     final Coordinate coordinate = new Coordinate( qualifier, dependencyValueType );
@@ -985,61 +1047,93 @@ public final class StingProcessor
     final String qualifier =
       null == annotation ? "" : AnnotationsUtil.getAnnotationValue( annotation, "qualifier" );
 
-    final TypeName typeName = TypeName.get( parameterType );
-    final boolean isParameterizedType = typeName instanceof ParameterizedTypeName;
+    final boolean isDeclaredType = TypeKind.DECLARED == parameterType.getKind();
+    final DeclaredType declaredType = isDeclaredType ? (DeclaredType) parameterType : null;
+    final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
     final DependencyDescriptor.Type type;
     final TypeMirror dependencyValueType;
-    if ( typeName instanceof ClassName )
+    if ( null == declaredType )
     {
-      if ( StingTypeNames.SUPPLIER.equals( typeName ) )
+      type = DependencyDescriptor.Type.INSTANCE;
+      dependencyValueType = parameterType;
+    }
+    else if ( !isParameterizedType )
+    {
+      if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
         throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                            "have a constructor with a parameter that is " +
-                                                            "a raw " + StingTypeNames.SUPPLIER + " type" ),
+                                                            "have a constructor with a parameter that is a " +
+                                                            "raw " + Supplier.class.getCanonicalName() + " type" ),
                                       parameter );
       }
-      else if ( !( (TypeElement) ( (DeclaredType) parameterType ).asElement() ).getTypeParameters().isEmpty() )
+      else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                            "have a constructor with a parameter that is a " +
+                                                            "raw " + Collection.class.getCanonicalName() + " type" ),
+                                      parameter );
+      }
+      else if ( !( (TypeElement) declaredType.asElement() ).getTypeParameters().isEmpty() )
       {
         throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
                                                             "have a constructor with a parameter that is a " +
                                                             "raw parameterized type. Parameterized types are only " +
                                                             "permitted for specific types such as " +
-                                                            StingTypeNames.SUPPLIER ),
+                                                            Supplier.class.getCanonicalName() + " and " +
+                                                            Collection.class.getCanonicalName() ),
                                       parameter );
       }
+      type = DependencyDescriptor.Type.INSTANCE;
+      dependencyValueType = parameterType;
     }
-    else if ( typeName instanceof ParameterizedTypeName )
+    else
     {
-      final ParameterizedTypeName parameterizedTypeName = (ParameterizedTypeName) typeName;
-      if ( StingTypeNames.SUPPLIER.equals( parameterizedTypeName.rawType ) )
+      if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
-        if ( parameterizedTypeName.typeArguments.get( 0 ) instanceof WildcardTypeName )
+        final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
+        if ( typeArgument instanceof WildcardType )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                              "have a constructor with a parameter " +
-                                                              "that is a " + StingTypeNames.SUPPLIER +
+                                                              "have a constructor with a parameter that is " +
+                                                              "a " + Supplier.class.getCanonicalName() +
                                                               " type with a wildcard parameter" ),
                                         parameter );
+        }
+        type = DependencyDescriptor.Type.SUPPLIER;
+        dependencyValueType = typeArgument;
+      }
+      else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
+      {
+        final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
+        if ( typeArgument instanceof WildcardType )
+        {
+          throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                              "have a constructor with a parameter that " +
+                                                              "is a " + Collection.class.getCanonicalName() +
+                                                              " type with a wildcard parameter" ),
+                                        parameter );
+        }
+        else if ( typeArgument instanceof DeclaredType &&
+                  Supplier.class.getCanonicalName().equals( getClassname( (DeclaredType) typeArgument ) ) )
+        {
+          throw new IllegalStateException( "Not yet implemented" );
+        }
+        else
+        {
+          type = DependencyDescriptor.Type.COLLECTION_INSTANCE;
+          dependencyValueType = typeArgument;
         }
       }
       else
       {
         throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                            "have a constructor with a parameter that is a " +
-                                                            "parameterized type. This is only permitted for " +
-                                                            "specific types such as " + StingTypeNames.SUPPLIER ),
+                                                            "have a constructor with a parameter that is " +
+                                                            "a parameterized type. This is only permitted for " +
+                                                            "specific types such as " +
+                                                            Supplier.class.getCanonicalName() + " and " +
+                                                            Collection.class.getCanonicalName() ),
                                       parameter );
       }
-    }
-    if ( isParameterizedType )
-    {
-      type = DependencyDescriptor.Type.SUPPLIER;
-      dependencyValueType = ( (DeclaredType) parameterType ).getTypeArguments().get( 0 );
-    }
-    else
-    {
-      type = DependencyDescriptor.Type.INSTANCE;
-      dependencyValueType = parameterType;
     }
 
     final Coordinate coordinate = new Coordinate( qualifier, dependencyValueType );
@@ -1076,6 +1170,12 @@ public final class StingProcessor
         MemberChecks.suppressedBy( Constants.WARNING_PROTECTED_CONSTRUCTOR );
       processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, constructor );
     }
+  }
+
+  @Nonnull
+  private String getClassname( @Nonnull final DeclaredType declaredType )
+  {
+    return ( (TypeElement) declaredType.asElement() ).getQualifiedName().toString();
   }
 
   /**

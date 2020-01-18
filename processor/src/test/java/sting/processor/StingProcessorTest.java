@@ -22,6 +22,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.NullableProvidesModel" },
 
         new Object[]{ "com.example.fragment.dependency.BasicDependencyModel" },
+        new Object[]{ "com.example.fragment.dependency.CollectionDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.ComplexDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.MultipleDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.NullableDependencyModel" },
@@ -44,6 +45,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.BasicModel" },
 
         new Object[]{ "com.example.injectable.dependency.BasicDependencyModel" },
+        new Object[]{ "com.example.injectable.dependency.CollectionDependencyModel" },
         new Object[]{ "com.example.injectable.dependency.ComplexDependencyModel" },
         new Object[]{ "com.example.injectable.dependency.MultipleDependencyModel" },
         new Object[]{ "com.example.injectable.dependency.NullableDependencyModel" },
@@ -85,6 +87,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel" },
 
         new Object[]{ "com.example.injector.dependency.BasicDependencyModel" },
+        new Object[]{ "com.example.injector.dependency.CollectionDependencyModel" },
         new Object[]{ "com.example.injector.dependency.ComplexDependencyModel" },
         new Object[]{ "com.example.injector.dependency.MultipleDependencyModel" },
         new Object[]{ "com.example.injector.dependency.OptionalDependencyModel" },
@@ -225,11 +228,15 @@ public final class StingProcessorTest
                       "@Provides target must not have any type parameters" },
 
         new Object[]{ "com.example.fragment.provides.dependency.ParameterizedDependencyModel",
-                      "@Fragment target must not have a method with a parameter that is a parameterized type. This is only permitted for specific types such as java.util.function.Supplier" },
+                      "@Fragment target must not have a method with a parameter that is a parameterized type. This is only permitted for specific types such as java.util.function.Supplier and java.util.Collection" },
+        new Object[]{ "com.example.fragment.provides.dependency.RawCollectionDependencyModel",
+                      "@Fragment target must not have a method with a parameter that is a raw java.util.Collection type" },
         new Object[]{ "com.example.fragment.provides.dependency.RawParameterizedDependencyModel",
                       "@Fragment target must not have a method with a parameter that is a raw parameterized type. Parameterized types are only permitted for specific types such as java.util.function.Supplier" },
         new Object[]{ "com.example.fragment.provides.dependency.RawSupplierDependencyModel",
                       "@Fragment target must not have a method with a parameter that is a raw java.util.function.Supplier type" },
+        new Object[]{ "com.example.fragment.provides.dependency.WildcardCollectionDependencyModel",
+                      "@Fragment target must not have a method with a parameter that is a java.util.Collection type with a wildcard parameter" },
         new Object[]{ "com.example.fragment.provides.dependency.WildcardSupplierDependencyModel",
                       "@Fragment target must not have a method with a parameter that is a java.util.function.Supplier type with a wildcard parameter" },
 
@@ -252,10 +259,14 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injectable.dependency.ParameterizedDependencyModel",
                       "@Injectable target must not have a constructor with a parameter that is a parameterized type. This is only permitted for specific types such as java.util.function.Supplier" },
+        new Object[]{ "com.example.injectable.dependency.RawCollectionDependencyModel",
+                      "@Injectable target must not have a constructor with a parameter that is a raw java.util.Collection type" },
         new Object[]{ "com.example.injectable.dependency.RawParameterizedDependencyModel",
                       "@Injectable target must not have a constructor with a parameter that is a raw parameterized type. Parameterized types are only permitted for specific types such as java.util.function.Supplier" },
         new Object[]{ "com.example.injectable.dependency.RawSupplierDependencyModel",
                       "@Injectable target must not have a constructor with a parameter that is a raw java.util.function.Supplier type" },
+        new Object[]{ "com.example.injectable.dependency.WildcardCollectionDependencyModel",
+                      "@Injectable target must not have a constructor with a parameter that is a java.util.Collection type with a wildcard parameter" },
         new Object[]{ "com.example.injectable.dependency.WildcardSupplierDependencyModel",
                       "@Injectable target must not have a constructor with a parameter that is a java.util.function.Supplier type with a wildcard parameter" },
 
@@ -301,10 +312,14 @@ public final class StingProcessorTest
                       "@Dependency target must not have any type parameters" },
         new Object[]{ "com.example.injector.dependency.ParameterizedDependencyModel",
                       "@Dependency target must not return a value that is a parameterized type. This is only permitted for specific types such as java.util.function.Supplier" },
+        new Object[]{ "com.example.injector.dependency.RawCollectionDependencyModel",
+                      "@Dependency target must not return a value that is a raw java.util.Collection type" },
         new Object[]{ "com.example.injector.dependency.RawParameterizedDependencyModel",
                       "@Dependency target must not return a value that is a raw parameterized type. Parameterized types are only permitted for specific types such as java.util.function.Supplier" },
         new Object[]{ "com.example.injector.dependency.RawSupplierDependencyModel",
                       "@Dependency target must not return a value that is a raw java.util.function.Supplier type" },
+        new Object[]{ "com.example.injector.dependency.WildcardCollectionDependencyModel",
+                      "@Dependency target must not return a value that is a java.util.Collection type with a wildcard parameter" },
         new Object[]{ "com.example.injector.dependency.WildcardSupplierDependencyModel",
                       "@Dependency target must not return a value that is a java.util.function.Supplier type with a wildcard parameter" },
 
