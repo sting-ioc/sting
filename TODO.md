@@ -16,8 +16,7 @@ complete as there is too much un-said.
 * Consider generating warnings if `@Fragment` types will not resolve unless the user supplies an explicit
   `incomplete` parameter. By resolve it means that every component should have all of it's dependencies
   present.
-* Support collection dependency types. (So along with `INSTANCE` and `SUPPLIER` we should also support
-  `COLLECTION_INSTANCE`, `COLLECTION_SUPPLIER`). Partial support present but not yet parsed from code.
+* Support `SUPPLIER_COLLECTION` dependency type.
 * Add a `@PostConstruct` hook so that custom code can be run after eager beans are constructed.
 * Consider removing `@Factory` support from `includes` parameters of `@Fragments` and `@Injector`
   and just assume that they are detected if they are referenced from within the object graph. The
