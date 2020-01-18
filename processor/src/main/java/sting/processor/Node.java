@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
+import javax.lang.model.element.TypeElement;
 
 final class Node
 {
@@ -144,6 +145,26 @@ final class Node
   {
     assert !_usedBy.contains( edge );
     _usedBy.add( edge );
+  }
+
+  @Nonnull
+  String describeBinding()
+  {
+    if ( null == _binding )
+    {
+      return _objectGraph.getInjector().getElement().getQualifiedName().toString();
+    }
+    else if ( Binding.Type.INJECTABLE == _binding.getBindingType() )
+    {
+      return ( (TypeElement) _binding.getElement() ).getQualifiedName().toString();
+    }
+    else
+    {
+      //TODO: Add support for Factory
+      assert Binding.Type.PROVIDES == _binding.getBindingType() ||
+             Binding.Type.NULLABLE_PROVIDES == _binding.getBindingType();
+      return ( (TypeElement) _binding.getElement() ).getQualifiedName() + "." + _binding.getElement().getSimpleName();
+    }
   }
 
   void write( @Nonnull final JsonGenerator g )
