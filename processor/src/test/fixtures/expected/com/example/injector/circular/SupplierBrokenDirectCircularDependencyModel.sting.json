@@ -1,0 +1,15 @@
+{
+  "schema": "injector/1",
+  "dependencies": [
+    {
+      "coordinate": {
+        "type": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel1"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel2"
+      }
+    }
+  ]
+}

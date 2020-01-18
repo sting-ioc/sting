@@ -176,6 +176,7 @@ public final class StingProcessor
 
     propagateEagerFlagUpstream( graph );
 
+    CircularDependencyChecker.verifyNoCircularDependencyLoops( graph );
 
     emitObjectGraphDescriptor( graph );
 

@@ -80,6 +80,9 @@ public final class StingProcessorTest
       {
         new Object[]{ "com.example.injector.BasicInjectorModel" },
 
+        new Object[]{ "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel" },
+        new Object[]{ "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel" },
+
         new Object[]{ "com.example.injector.dependency.BasicDependencyModel" },
         new Object[]{ "com.example.injector.dependency.ComplexDependencyModel" },
         new Object[]{ "com.example.injector.dependency.MultipleDependencyModel" },
@@ -270,6 +273,22 @@ public final class StingProcessorTest
                       "@Injector target must be an interface or an abstract class" },
         new Object[]{ "com.example.injector.MultipleConstructorClassInjector",
                       "@Injector target must not have multiple constructors" },
+
+        new Object[]{ "com.example.injector.circular.ChainedCircularDependencyModel",
+                      "Injector contains a circular dependency.\n" +
+                      "  Path:\n" +
+                      "    [Injector]       com.example.injector.circular.ChainedCircularDependencyModel\n" +
+                      "    [Injectable] +-< com.example.injector.circular.ChainedCircularDependencyModel.MyModel1\n" +
+                      "    [Injectable] |   com.example.injector.circular.ChainedCircularDependencyModel.MyModel2\n" +
+                      "    [Injectable] |   com.example.injector.circular.ChainedCircularDependencyModel.MyModel3\n" +
+                      "    [Injectable] +-> com.example.injector.circular.ChainedCircularDependencyModel.MyModel1" },
+        new Object[]{ "com.example.injector.circular.DirectlyCircularDependencyModel",
+                      "Injector contains a circular dependency.\n" +
+                      "  Path:\n" +
+                      "    [Injector]       com.example.injector.circular.DirectlyCircularDependencyModel\n" +
+                      "    [Injectable] +-< com.example.injector.circular.DirectlyCircularDependencyModel.MyModel1\n" +
+                      "    [Injectable] |   com.example.injector.circular.DirectlyCircularDependencyModel.MyModel2\n" +
+                      "    [Injectable] +-> com.example.injector.circular.DirectlyCircularDependencyModel.MyModel1" },
 
         new Object[]{ "com.example.injector.dependency.MethodReturningVoidDependencyModel",
                       "@Dependency target must return a value" },
