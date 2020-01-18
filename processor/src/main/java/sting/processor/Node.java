@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 final class Node
@@ -163,7 +164,8 @@ final class Node
       //TODO: Add support for Factory
       assert Binding.Type.PROVIDES == _binding.getBindingType() ||
              Binding.Type.NULLABLE_PROVIDES == _binding.getBindingType();
-      return ( (TypeElement) _binding.getElement() ).getQualifiedName() + "." + _binding.getElement().getSimpleName();
+      final Element element = _binding.getElement();
+      return ( (TypeElement) element.getEnclosingElement() ).getQualifiedName() + "." + element.getSimpleName();
     }
   }
 
