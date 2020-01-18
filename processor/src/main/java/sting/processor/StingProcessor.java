@@ -580,7 +580,7 @@ public final class StingProcessor
                                                               " type with a wildcard parameter" ),
                                         method );
         }
-        else if ( typeArgument instanceof DeclaredType &&
+        else if ( TypeKind.DECLARED == typeArgument.getKind() &&
                   Supplier.class.getCanonicalName().equals( getClassname( (DeclaredType) typeArgument ) ) )
         {
           throw new IllegalStateException( "Not yet implemented" );
@@ -901,7 +901,7 @@ public final class StingProcessor
                                                               " type with a wildcard parameter" ),
                                         parameter );
         }
-        else if ( typeArgument instanceof DeclaredType &&
+        else if ( TypeKind.DECLARED == typeArgument.getKind() &&
                   Supplier.class.getCanonicalName().equals( getClassname( (DeclaredType) typeArgument ) ) )
         {
           throw new IllegalStateException( "Not yet implemented" );
@@ -1113,7 +1113,7 @@ public final class StingProcessor
                                                               " type with a wildcard parameter" ),
                                         parameter );
         }
-        else if ( typeArgument instanceof DeclaredType &&
+        else if ( TypeKind.DECLARED == typeArgument.getKind() &&
                   Supplier.class.getCanonicalName().equals( getClassname( (DeclaredType) typeArgument ) ) )
         {
           throw new IllegalStateException( "Not yet implemented" );
