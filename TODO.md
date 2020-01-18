@@ -28,8 +28,6 @@ complete as there is too much un-said.
 * Injectors that are inherited by another injector can disable eager services? For usage in tests.
 * Add test for unresolved `@Injector`. Add a separate test for unresolved include and another for
   unresolved dependency.
-* Detect cycles. This is probably when building up the graph. Each cycle is detected via a stack with different
-  stacks each time a `Supplier` variant is reached.
 * Change the `Coordinate._type` to a fully qualified classname rather than a `TypeMirror`.
 
 * Convert the `@Factory` annotation into an `@Injectable` with another processor and just change the `includes`
