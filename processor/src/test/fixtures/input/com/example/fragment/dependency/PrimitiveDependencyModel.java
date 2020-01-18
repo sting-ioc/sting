@@ -1,6 +1,5 @@
 package com.example.fragment.dependency;
 
-import javax.annotation.Nullable;
 import sting.Fragment;
 
 @Fragment
