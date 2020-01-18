@@ -2,7 +2,7 @@
   "schema": "injector/1",
   "dependencies": [
     {
-      "type": "COLLECTION_INSTANCE",
+      "type": "COLLECTION",
       "coordinate": {
         "type": "com.example.injector.dependency.CollectionDependencyModel.MyModel"
       }

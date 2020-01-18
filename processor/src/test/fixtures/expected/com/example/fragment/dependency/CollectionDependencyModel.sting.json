@@ -9,7 +9,7 @@
       ],
       "dependencies": [
         {
-          "type": "COLLECTION_INSTANCE",
+          "type": "COLLECTION",
           "coordinate": {
             "type": "java.lang.String"
           }

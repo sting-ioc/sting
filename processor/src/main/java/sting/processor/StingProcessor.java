@@ -587,7 +587,7 @@ public final class StingProcessor
         }
         else
         {
-          type = DependencyDescriptor.Type.COLLECTION_INSTANCE;
+          type = DependencyDescriptor.Type.COLLECTION;
           dependencyValueType = typeArgument;
         }
       }
@@ -908,7 +908,7 @@ public final class StingProcessor
         }
         else
         {
-          type = DependencyDescriptor.Type.COLLECTION_INSTANCE;
+          type = DependencyDescriptor.Type.COLLECTION;
           dependencyValueType = typeArgument;
         }
       }
@@ -1120,7 +1120,7 @@ public final class StingProcessor
         }
         else
         {
-          type = DependencyDescriptor.Type.COLLECTION_INSTANCE;
+          type = DependencyDescriptor.Type.COLLECTION;
           dependencyValueType = typeArgument;
         }
       }

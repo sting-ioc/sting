@@ -87,9 +87,9 @@ final class DependencyDescriptor
     /// A request for Supplier<T> that produces the dependency type T
     SUPPLIER( true, false ),
     /// A request for a collection of instance of type T. i.e. Collection<T>
-    COLLECTION_INSTANCE( false, true ),
+    COLLECTION( false, true ),
     /// A request for a collection of suppliers that produce the dependency of type T. i.e. Collection<Supplier<T>>
-    COLLECTION_SUPPLIER( true, true );
+    SUPPLIER_COLLECTION( true, true );
     private final boolean _supplier;
     private final boolean _collection;
 
