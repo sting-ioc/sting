@@ -60,6 +60,7 @@ public final class StingProcessorInjectorGraphTest
     assertEager( values, classname, "MyModel3", true );
   }
 
+  @SuppressWarnings( "SameParameterValue" )
   private void assertIndex( @Nonnull final JsonArray values,
                             @Nonnull final String classname,
                             @Nonnull final String idSuffix,
@@ -106,6 +107,7 @@ public final class StingProcessorInjectorGraphTest
     assertValueWithIdPresent( values, classname, "MyModel3" );
   }
 
+  @SuppressWarnings( "SameParameterValue" )
   private void assertValueWithIdPresent( @Nonnull final JsonArray values,
                                          @Nonnull final String classname,
                                          @Nonnull final String idSuffix )
@@ -113,6 +115,7 @@ public final class StingProcessorInjectorGraphTest
     getValueById( values, classname, idSuffix );
   }
 
+  @SuppressWarnings( "SameParameterValue" )
   private void assertValueWithIdNotPresent( @Nonnull final JsonArray values,
                                             @Nonnull final String classname,
                                             @Nonnull final String idSuffix )
