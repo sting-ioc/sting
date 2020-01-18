@@ -558,7 +558,7 @@ public final class StingProcessor
       if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
-        if ( typeArgument instanceof WildcardType )
+        if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
                                                               "return a value that is a " +
@@ -572,7 +572,7 @@ public final class StingProcessor
       else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
-        if ( typeArgument instanceof WildcardType )
+        if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
                                                               "return a value that is a " +
@@ -879,7 +879,7 @@ public final class StingProcessor
       if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
-        if ( typeArgument instanceof WildcardType )
+        if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                               "have a method with a parameter that is a " +
@@ -893,7 +893,7 @@ public final class StingProcessor
       else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
-        if ( typeArgument instanceof WildcardType )
+        if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                               "have a method with a parameter that is a " +
@@ -1091,7 +1091,7 @@ public final class StingProcessor
       if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
-        if ( typeArgument instanceof WildcardType )
+        if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
                                                               "have a constructor with a parameter that is " +
@@ -1105,7 +1105,7 @@ public final class StingProcessor
       else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
-        if ( typeArgument instanceof WildcardType )
+        if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
                                                               "have a constructor with a parameter that " +
