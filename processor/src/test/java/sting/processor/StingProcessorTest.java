@@ -1,5 +1,6 @@
 package sting.processor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -365,5 +366,14 @@ public final class StingProcessorTest
   public void processCompileWithoutWarnings( @Nonnull final String classname )
   {
     assertCompilesWithoutWarnings( classname );
+  }
+
+  @Nonnull
+  @Override
+  protected List<String> getOptions()
+  {
+    final List<String> options = new ArrayList<>( super.getOptions() );
+    options.add( "-Asting.emit_json_descriptors=true" );
+    return options;
   }
 }

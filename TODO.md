@@ -4,8 +4,7 @@ This document is essentially a list of shorthand notes describing work yet to co
 Unfortunately it is not complete enough for other people to pick work off the list and
 complete as there is too much un-said.
 
-* Emit descriptors as binary data. Make emitting descriptors as json optional and only enabled by an explicit
-  annotation parameter.
+* Emit descriptors as binary data.
 * On processing an `@Injector` annotated class we load the binary descriptors. If the descriptors are not present
   then we defer processing the `@Injector` annotated class until the descriptors are present or we generate an
   error when the processor reaches the last round.

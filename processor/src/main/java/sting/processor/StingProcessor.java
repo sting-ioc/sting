@@ -54,7 +54,7 @@ import org.realityforge.proton.SuperficialValidation;
                              Constants.FRAGMENT_CLASSNAME,
                              Constants.DEPENDENCY_CLASSNAME } )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
-@SupportedOptions( { "sting.defer.unresolved", "sting.defer.errors" } )
+@SupportedOptions( { "sting.defer.unresolved", "sting.defer.errors", "sting.emit_json_descriptors" } )
 public final class StingProcessor
   extends AbstractStandardProcessor
 {
@@ -73,6 +73,11 @@ public final class StingProcessor
    */
   @Nonnull
   private final Registry _registry = new Registry();
+  /**
+   * Flag controlling whether json descriptors are emitted.
+   * Json descriptors are primarily used during debugging and probably should not be enabled in production code.
+   */
+  private boolean _emitJsonDescriptors;
 
   @Nonnull
   @Override
@@ -92,6 +97,9 @@ public final class StingProcessor
   @Override
   public boolean process( @Nonnull final Set<? extends TypeElement> annotations, @Nonnull final RoundEnvironment env )
   {
+    _emitJsonDescriptors =
+      "true".equals( processingEnv.getOptions().getOrDefault( "sting.emit_json_descriptors", "false" ) );
+
     annotations.stream()
       .filter( a -> a.getQualifiedName().toString().equals( Constants.INJECTABLE_CLASSNAME ) )
       .findAny()
@@ -319,9 +327,12 @@ public final class StingProcessor
   private void emitObjectGraphDescriptor( @Nonnull final ObjectGraph graph )
     throws IOException
   {
-    final TypeElement element = graph.getInjector().getElement();
-    final String filename = toFilename( element ) + GRAPH_SUFFIX;
-    JsonUtil.writeJsonResource( processingEnv, element, filename, graph::write );
+    if ( _emitJsonDescriptors )
+    {
+      final TypeElement element = graph.getInjector().getElement();
+      final String filename = toFilename( element ) + GRAPH_SUFFIX;
+      JsonUtil.writeJsonResource( processingEnv, element, filename, graph::write );
+    }
   }
 
   @Nonnull
@@ -446,9 +457,12 @@ public final class StingProcessor
   private void emitInjectorDescriptor( @Nonnull final InjectorDescriptor injector )
     throws IOException
   {
-    final TypeElement element = injector.getElement();
-    final String filename = toFilename( element ) + DESCRIPTOR_SUFFIX;
-    JsonUtil.writeJsonResource( processingEnv, element, filename, injector::write );
+    if ( _emitJsonDescriptors )
+    {
+      final TypeElement element = injector.getElement();
+      final String filename = toFilename( element ) + DESCRIPTOR_SUFFIX;
+      JsonUtil.writeJsonResource( processingEnv, element, filename, injector::write );
+    }
   }
 
   private void injectorConstructorMustNotBePublic( @Nonnull final ExecutableElement constructor )
@@ -680,9 +694,12 @@ public final class StingProcessor
   private void emitFragmentDescriptor( @Nonnull final FragmentDescriptor fragment )
     throws IOException
   {
-    final TypeElement element = fragment.getElement();
-    final String filename = toFilename( element ) + DESCRIPTOR_SUFFIX;
-    JsonUtil.writeJsonResource( processingEnv, element, filename, fragment::write );
+    if ( _emitJsonDescriptors )
+    {
+      final TypeElement element = fragment.getElement();
+      final String filename = toFilename( element ) + DESCRIPTOR_SUFFIX;
+      JsonUtil.writeJsonResource( processingEnv, element, filename, fragment::write );
+    }
   }
 
   private void processProvidesMethod( @Nonnull final TypeElement element,
@@ -936,8 +953,19 @@ public final class StingProcessor
                    dependencies.toArray( new DependencyDescriptor[ 0 ] ) );
     final InjectableDescriptor injectable = new InjectableDescriptor( binding );
     _registry.registerInjectable( injectable );
-    final String filename = toFilename( element ) + DESCRIPTOR_SUFFIX;
-    JsonUtil.writeJsonResource( processingEnv, element, filename, injectable::write );
+
+    emitInjectableDescriptor( injectable );
+  }
+
+  private void emitInjectableDescriptor( @Nonnull final InjectableDescriptor injectable )
+    throws IOException
+  {
+    if ( _emitJsonDescriptors )
+    {
+      final TypeElement element = injectable.getElement();
+      final String filename = toFilename( element ) + DESCRIPTOR_SUFFIX;
+      JsonUtil.writeJsonResource( processingEnv, element, filename, injectable::write );
+    }
   }
 
   @Nonnull

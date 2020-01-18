@@ -3,6 +3,7 @@ package sting.processor;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -191,5 +192,14 @@ public final class StingProcessorInjectorGraphTest
     final String simpleClassName = -1 == index ? classname : classname.substring( index + 1 );
     return JavaFileObject.Kind.SOURCE == target.getKind() ||
            target.getName().endsWith( simpleClassName + StingProcessor.GRAPH_SUFFIX );
+  }
+
+  @Nonnull
+  @Override
+  protected List<String> getOptions()
+  {
+    final List<String> options = new ArrayList<>( super.getOptions() );
+    options.add( "-Asting.emit_json_descriptors=true" );
+    return options;
   }
 }
