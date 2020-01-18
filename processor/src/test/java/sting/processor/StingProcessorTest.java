@@ -87,6 +87,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel" },
 
         new Object[]{ "com.example.injector.dependency.BasicDependencyModel" },
+        new Object[]{ "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel" },
         new Object[]{ "com.example.injector.dependency.CollectionDependencyModel" },
         new Object[]{ "com.example.injector.dependency.ComplexDependencyModel" },
         new Object[]{ "com.example.injector.dependency.MultipleDependencyModel" },

@@ -1,0 +1,17 @@
+{
+  "schema": "graph/1",
+  "values": [
+    {
+      "id": "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel.MyFragment1#myModel",
+      "bindingType": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel.MyFragment2#myModel",
+      "bindingType": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel.MyFragment3#myModel",
+      "bindingType": "PROVIDES"
+    }
+  ]
+}

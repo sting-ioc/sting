@@ -1,0 +1,16 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel.MyFragment1",
+    "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel.MyFragment2",
+    "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel.MyFragment3"
+  ],
+  "dependencies": [
+    {
+      "type": "COLLECTION",
+      "coordinate": {
+        "type": "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel.MyModel"
+      }
+    }
+  ]
+}
