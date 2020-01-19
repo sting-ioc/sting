@@ -24,8 +24,7 @@ final class DependencyDescriptor
   /**
    * The element that declares this dependency.
    * The parameter will either be a parameter on a @Provides annotated method, a parameter of
-   * the constructor in an @Injectable annotated type, a parameter of the abstract method in
-   * the @Factory annotated type or a ExecutableElement for a dependency on an @Injector.
+   * the constructor in an @Injectable annotated type or a ExecutableElement for a dependency on an @Injector.
    */
   @Nonnull
   private final Element _element;
