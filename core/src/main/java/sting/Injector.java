@@ -34,7 +34,6 @@ import java.lang.annotation.Target;
  * interface MyInjector {
  *   MyWidget myWidget();
  *
- *   {@literal @}Factory
  *   interface Factory {
  *     MyInjector create(MyService myService);
  *   }
