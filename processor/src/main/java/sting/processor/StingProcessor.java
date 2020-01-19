@@ -594,7 +594,7 @@ public final class StingProcessor
     }
 
     final Coordinate coordinate = new Coordinate( qualifier, dependencyValueType );
-    return new DependencyDescriptor( type, coordinate, optional, method );
+    return new DependencyDescriptor( type, coordinate, optional, method, -1 );
   }
 
   private void verifyDependencyElements( @Nonnull final RoundEnvironment env,
@@ -779,8 +779,8 @@ public final class StingProcessor
       final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) method.asType() ).getParameterTypes();
       for ( final VariableElement parameter : method.getParameters() )
       {
-        final TypeMirror parameterType = parameterTypes.get( index++ );
-        dependencies.add( processFragmentDependencyParameter( parameter, parameterType ) );
+        dependencies.add( processFragmentDependencyParameter( parameter, parameterTypes.get( index ), index ) );
+        index++;
       }
       if ( publishedTypes.isEmpty() && !eager )
       {
@@ -815,7 +815,8 @@ public final class StingProcessor
 
   @Nonnull
   private DependencyDescriptor processFragmentDependencyParameter( @Nonnull final VariableElement parameter,
-                                                                   @Nonnull final TypeMirror parameterType )
+                                                                   @Nonnull final TypeMirror parameterType,
+                                                                   final int parameterIndex )
   {
     final boolean optional =
       AnnotationsUtil.hasAnnotationOfType( parameter, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
@@ -914,7 +915,7 @@ public final class StingProcessor
     }
 
     final Coordinate coordinate = new Coordinate( qualifier, dependencyValueType );
-    return new DependencyDescriptor( type, coordinate, optional, parameter );
+    return new DependencyDescriptor( type, coordinate, optional, parameter, parameterIndex );
   }
 
   private void processInjectable( @Nonnull final TypeElement element )
@@ -986,7 +987,8 @@ public final class StingProcessor
     final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) constructor.asType() ).getParameterTypes();
     for ( final VariableElement parameter : constructor.getParameters() )
     {
-      dependencies.add( handleConstructorParameter( parameter, parameterTypes.get( index++ ) ) );
+      dependencies.add( handleConstructorParameter( parameter, parameterTypes.get( index ), index ) );
+      index++;
     }
     if ( publishedTypes.isEmpty() && !eager )
     {
@@ -1027,7 +1029,8 @@ public final class StingProcessor
 
   @Nonnull
   private DependencyDescriptor handleConstructorParameter( @Nonnull final VariableElement parameter,
-                                                           @Nonnull final TypeMirror parameterType )
+                                                           @Nonnull final TypeMirror parameterType,
+                                                           final int parameterIndex )
   {
     final boolean optional =
       AnnotationsUtil.hasAnnotationOfType( parameter, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
@@ -1126,7 +1129,7 @@ public final class StingProcessor
     }
 
     final Coordinate coordinate = new Coordinate( qualifier, dependencyValueType );
-    return new DependencyDescriptor( type, coordinate, optional, parameter );
+    return new DependencyDescriptor( type, coordinate, optional, parameter, parameterIndex );
   }
 
   private boolean isDefaultTypes( @Nonnull final List<TypeMirror> types )

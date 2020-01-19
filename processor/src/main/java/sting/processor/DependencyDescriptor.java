@@ -28,16 +28,22 @@ final class DependencyDescriptor
    */
   @Nonnull
   private final Element _element;
+  /**
+   * Index of the parameter unless the dependency comes from an @Injector in which case this is -1.
+   */
+  private final int _parameterIndex;
 
   DependencyDescriptor( @Nonnull final Type type,
                         @Nonnull final Coordinate coordinate,
                         final boolean optional,
-                        @Nonnull final Element element )
+                        @Nonnull final Element element,
+                        final int parameterIndex )
   {
     _type = Objects.requireNonNull( type );
     _coordinate = Objects.requireNonNull( coordinate );
     _optional = optional;
     _element = Objects.requireNonNull( element );
+    _parameterIndex = parameterIndex;
   }
 
   @Nonnull
@@ -61,6 +67,11 @@ final class DependencyDescriptor
   Element getElement()
   {
     return _element;
+  }
+
+  int getParameterIndex()
+  {
+    return _parameterIndex;
   }
 
   void write( @Nonnull final JsonGenerator g )

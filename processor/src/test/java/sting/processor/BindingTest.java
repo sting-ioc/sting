@@ -177,7 +177,8 @@ public class BindingTest
     return new DependencyDescriptor( dependencyType,
                                      coord( qualifier, type ),
                                      optional,
-                                     mock( VariableElement.class ) );
+                                     mock( VariableElement.class ),
+                                     1 );
   }
 
   @Nonnull
