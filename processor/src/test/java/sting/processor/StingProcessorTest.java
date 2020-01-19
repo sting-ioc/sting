@@ -389,6 +389,13 @@ public final class StingProcessorTest
   {
     final List<String> options = new ArrayList<>( super.getOptions() );
     options.add( "-Asting.emit_json_descriptors=true" );
+    options.add( "-Asting.verify_descriptors=true" );
     return options;
+  }
+
+  @Override
+  protected boolean emitGeneratedFile( @Nonnull final JavaFileObject target )
+  {
+    return super.emitGeneratedFile( target ) && !target.getName().endsWith( StingProcessor.SUFFIX );
   }
 }

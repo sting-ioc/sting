@@ -2,9 +2,15 @@ package sting.processor;
 
 import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.code.Symbol;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -16,6 +22,7 @@ import java.util.Stack;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
@@ -33,6 +40,8 @@ import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
 import org.realityforge.proton.AbstractStandardProcessor;
 import org.realityforge.proton.AnnotationsUtil;
 import org.realityforge.proton.ElementsUtil;
@@ -51,7 +60,10 @@ import org.realityforge.proton.SuperficialValidation;
                              Constants.FRAGMENT_CLASSNAME,
                              Constants.DEPENDENCY_CLASSNAME } )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
-@SupportedOptions( { "sting.defer.unresolved", "sting.defer.errors", "sting.emit_json_descriptors" } )
+@SupportedOptions( { "sting.defer.unresolved",
+                     "sting.defer.errors",
+                     "sting.emit_json_descriptors",
+                     "sting.verify_descriptors" } )
 public final class StingProcessor
   extends AbstractStandardProcessor
 {
@@ -59,6 +71,10 @@ public final class StingProcessor
    * Extension for json descriptors.
    */
   static final String DESCRIPTOR_SUFFIX = ".sting.json";
+  /**
+   * Extension for sting binary descriptors.
+   */
+  static final String SUFFIX = ".sbf";
   /**
    * Extension for the computed graph descriptor.
    */
@@ -75,6 +91,16 @@ public final class StingProcessor
    * Json descriptors are primarily used during debugging and probably should not be enabled in production code.
    */
   private boolean _emitJsonDescriptors;
+  /**
+   * Flag controlling whether the binary descriptors are deserialized after serialization to verify
+   * that they produce the expected output. This is only used for debugging and should not be enabled
+   * in production code.
+   */
+  private boolean _verifyDescriptors;
+  /**
+   * A utility class for reading and writing the binary descriptors.
+   */
+  private DescriptorIO _descriptorIO;
 
   @Nonnull
   @Override
@@ -90,12 +116,21 @@ public final class StingProcessor
     return "sting";
   }
 
+  @Override
+  public synchronized void init( final ProcessingEnvironment processingEnv )
+  {
+    super.init( processingEnv );
+    _descriptorIO = new DescriptorIO( processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
+  }
+
   @SuppressWarnings( "unchecked" )
   @Override
   public boolean process( @Nonnull final Set<? extends TypeElement> annotations, @Nonnull final RoundEnvironment env )
   {
     _emitJsonDescriptors =
       "true".equals( processingEnv.getOptions().getOrDefault( "sting.emit_json_descriptors", "false" ) );
+    _verifyDescriptors =
+      "true".equals( processingEnv.getOptions().getOrDefault( "sting.verify_descriptors", "false" ) );
 
     annotations.stream()
       .filter( a -> a.getQualifiedName().toString().equals( Constants.INJECTABLE_CLASSNAME ) )
@@ -1007,7 +1042,61 @@ public final class StingProcessor
     final InjectableDescriptor injectable = new InjectableDescriptor( binding );
     _registry.registerInjectable( injectable );
 
+    writeBinaryDescriptor( element, injectable );
     emitInjectableDescriptor( injectable );
+  }
+
+  private void writeBinaryDescriptor( @Nonnull final TypeElement element,
+                                      @Nonnull final Object descriptor )
+    throws IOException
+  {
+    final String binaryName = processingEnv.getElementUtils().getBinaryName( element ).toString();
+    final int lastIndex = binaryName.lastIndexOf( "." );
+    final String packageName = -1 == lastIndex ? "" : binaryName.substring( 0, lastIndex );
+    final String relativeName = binaryName.substring( -1 == lastIndex ? 0 : lastIndex + 1 ) + SUFFIX;
+
+    // Write out the descriptor
+    final FileObject resource =
+      processingEnv.getFiler().createResource( StandardLocation.CLASS_OUTPUT, packageName, relativeName, element );
+    try ( final OutputStream out = resource.openOutputStream() )
+    {
+      try ( final DataOutputStream dos1 = new DataOutputStream( out ) )
+      {
+        _descriptorIO.write( dos1, descriptor );
+      }
+    }
+
+    if ( _verifyDescriptors )
+    {
+      verifyDescriptor( element, descriptor );
+    }
+  }
+
+  private void verifyDescriptor( @Nonnull final TypeElement element,
+                                 @Nonnull final Object descriptor )
+    throws IOException
+  {
+    final ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
+    try ( final DataOutputStream dos = new DataOutputStream( baos1 ) )
+    {
+      _descriptorIO.write( dos, descriptor );
+    }
+    try ( final DataInputStream dos = new DataInputStream( new ByteArrayInputStream( baos1.toByteArray() ) ) )
+    {
+      _descriptorIO.read( dos, element.getQualifiedName().toString() );
+    }
+    final ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
+    try ( final DataOutputStream dos = new DataOutputStream( baos2 ) )
+    {
+      _descriptorIO.write( dos, descriptor );
+    }
+
+    if ( !Arrays.equals( baos1.toByteArray(), baos2.toByteArray() ) )
+    {
+      throw new ProcessorException( "Failed to emit valid binary descriptor for " + element.getQualifiedName() +
+                                    ". Reading the emitted descriptor did not produce the same value.",
+                                    element );
+    }
   }
 
   private void emitInjectableDescriptor( @Nonnull final InjectableDescriptor injectable )
