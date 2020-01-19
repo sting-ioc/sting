@@ -70,7 +70,7 @@ public final class StingProcessor
   /**
    * Extension for json descriptors.
    */
-  static final String DESCRIPTOR_SUFFIX = ".sting.json";
+  static final String JSON_SUFFIX = ".sting.json";
   /**
    * Extension for sting binary descriptors.
    */
@@ -78,7 +78,7 @@ public final class StingProcessor
   /**
    * Extension for the computed graph descriptor.
    */
-  static final String GRAPH_SUFFIX = "__ObjectGraph" + DESCRIPTOR_SUFFIX;
+  static final String GRAPH_SUFFIX = "__ObjectGraph" + JSON_SUFFIX;
   /**
    * A local cache of bindings that is cleared on error or when processing is complete.
    * This will probably be loaded from json cache files in the future but now we require
@@ -484,7 +484,7 @@ public final class StingProcessor
     if ( _emitJsonDescriptors )
     {
       final TypeElement element = injector.getElement();
-      final String filename = toFilename( element ) + DESCRIPTOR_SUFFIX;
+      final String filename = toFilename( element ) + JSON_SUFFIX;
       JsonUtil.writeJsonResource( processingEnv, element, filename, injector::write );
     }
   }
@@ -751,7 +751,7 @@ public final class StingProcessor
     if ( _emitJsonDescriptors )
     {
       final TypeElement element = fragment.getElement();
-      final String filename = toFilename( element ) + DESCRIPTOR_SUFFIX;
+      final String filename = toFilename( element ) + JSON_SUFFIX;
       JsonUtil.writeJsonResource( processingEnv, element, filename, fragment::write );
     }
   }
@@ -1105,7 +1105,7 @@ public final class StingProcessor
     if ( _emitJsonDescriptors )
     {
       final TypeElement element = injectable.getElement();
-      final String filename = toFilename( element ) + DESCRIPTOR_SUFFIX;
+      final String filename = toFilename( element ) + JSON_SUFFIX;
       JsonUtil.writeJsonResource( processingEnv, element, filename, injectable::write );
     }
   }

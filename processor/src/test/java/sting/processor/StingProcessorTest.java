@@ -73,7 +73,7 @@ public final class StingProcessorTest
     throws Exception
   {
     assertSuccessfulCompile( classname,
-                             toFilename( "expected", classname, "", StingProcessor.DESCRIPTOR_SUFFIX ) );
+                             toFilename( "expected", classname, "", StingProcessor.JSON_SUFFIX ) );
   }
 
   @DataProvider( name = "successfulInjectorCompiles" )
@@ -109,7 +109,7 @@ public final class StingProcessorTest
     throws Exception
   {
     final List<String> expectedOutputs =
-      Arrays.asList( toFilename( "expected", classname, "", StingProcessor.DESCRIPTOR_SUFFIX ),
+      Arrays.asList( toFilename( "expected", classname, "", StingProcessor.JSON_SUFFIX ),
                      toFilename( "expected", classname, "", StingProcessor.GRAPH_SUFFIX ) );
     assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
   }
@@ -119,7 +119,7 @@ public final class StingProcessorTest
     final int index = classname.lastIndexOf( "." );
     final String simpleClassName = -1 == index ? classname : classname.substring( index + 1 );
     return JavaFileObject.Kind.SOURCE == target.getKind() ||
-           target.getName().endsWith( simpleClassName + StingProcessor.DESCRIPTOR_SUFFIX ) ||
+           target.getName().endsWith( simpleClassName + StingProcessor.JSON_SUFFIX ) ||
            target.getName().endsWith( simpleClassName + StingProcessor.GRAPH_SUFFIX );
   }
 
@@ -131,7 +131,7 @@ public final class StingProcessorTest
                              toFilename( "expected",
                                          "com.example.injectable.NestedModel_MyModel",
                                          "",
-                                         StingProcessor.DESCRIPTOR_SUFFIX ) );
+                                         StingProcessor.JSON_SUFFIX ) );
   }
 
   @Test
@@ -142,7 +142,7 @@ public final class StingProcessorTest
                              toFilename( "expected",
                                          "com.example.injectable.NestedNestedModel_Middle_MyModel",
                                          "",
-                                         StingProcessor.DESCRIPTOR_SUFFIX ) );
+                                         StingProcessor.JSON_SUFFIX ) );
   }
 
   @Test
@@ -153,7 +153,7 @@ public final class StingProcessorTest
                              toFilename( "expected",
                                          "com.example.fragment.NestedModel_MyModel",
                                          "",
-                                         StingProcessor.DESCRIPTOR_SUFFIX ) );
+                                         StingProcessor.JSON_SUFFIX ) );
   }
 
   @Test
@@ -164,7 +164,7 @@ public final class StingProcessorTest
                              toFilename( "expected",
                                          "com.example.fragment.NestedNestedModel_Middle_MyModel",
                                          "",
-                                         StingProcessor.DESCRIPTOR_SUFFIX ) );
+                                         StingProcessor.JSON_SUFFIX ) );
   }
 
   @Test
@@ -177,7 +177,7 @@ public final class StingProcessorTest
       toFilename( "expected",
                   "com.example.fragment.includes.BasicIncludesModel",
                   "",
-                  StingProcessor.DESCRIPTOR_SUFFIX );
+                  StingProcessor.JSON_SUFFIX );
     assertSuccessfulCompile( Arrays.asList( input1, input2 ), Collections.singletonList( output1 ) );
   }
 
@@ -193,7 +193,7 @@ public final class StingProcessorTest
       toFilename( "expected",
                   "com.example.fragment.includes.MultipleIncludesModel",
                   "",
-                  StingProcessor.DESCRIPTOR_SUFFIX );
+                  StingProcessor.JSON_SUFFIX );
     assertSuccessfulCompile( Arrays.asList( input1, input2, input3 ), Collections.singletonList( output1 ) );
   }
 

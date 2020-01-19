@@ -43,7 +43,7 @@ public final class StingProcessorNoJsonTest
     final List<String> jsonFiles =
       compilation.generatedFiles()
         .stream()
-        .filter( f -> f.getName().endsWith( StingProcessor.DESCRIPTOR_SUFFIX ) )
+        .filter( f -> f.getName().endsWith( StingProcessor.JSON_SUFFIX ) )
         .map( FileObject::getName )
         .collect( Collectors.toList() );
 
