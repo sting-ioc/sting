@@ -2,7 +2,6 @@
   "schema": "injector/1",
   "includes": [
     "com.example.injector.includes.MultipleIncludesModel.MyFragment",
-    "com.example.injector.includes.MultipleIncludesModel.MyFactory",
     "com.example.injector.includes.MultipleIncludesModel.MyModel"
   ],
   "dependencies": [

@@ -189,13 +189,12 @@ public final class StingProcessorTest
       fixture( toFilename( "input", "com.example.fragment.includes.MultipleIncludesModel" ) );
     final JavaFileObject input2 = fixture( toFilename( "input", "com.example.fragment.includes.Included1Model" ) );
     final JavaFileObject input3 = fixture( toFilename( "input", "com.example.fragment.includes.Included2Model" ) );
-    final JavaFileObject input4 = fixture( toFilename( "input", "com.example.fragment.includes.Included3Model" ) );
     final String output1 =
       toFilename( "expected",
                   "com.example.fragment.includes.MultipleIncludesModel",
                   "",
                   StingProcessor.DESCRIPTOR_SUFFIX );
-    assertSuccessfulCompile( Arrays.asList( input1, input2, input3, input4 ), Collections.singletonList( output1 ) );
+    assertSuccessfulCompile( Arrays.asList( input1, input2, input3 ), Collections.singletonList( output1 ) );
   }
 
   @DataProvider( name = "failedCompiles" )
@@ -216,7 +215,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.ParameterizedModel", "@Fragment target must not have type parameters" },
 
         new Object[]{ "com.example.fragment.includes.BadTypesInIncludesModel",
-                      "@Fragment target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment, @Injectable or @Factory" },
+                      "@Fragment target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment or @Injectable" },
 
         new Object[]{ "com.example.fragment.id.DuplicateIdModel",
                       "@Provides target must have a unique id but it has the same id as the method named runnable2" },
@@ -325,7 +324,7 @@ public final class StingProcessorTest
                       "@Dependency target must not return a value that is a java.util.function.Supplier type with a wildcard parameter" },
 
         new Object[]{ "com.example.injector.includes.BadTypesInIncludesModel",
-                      "@Injector target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment, @Injectable or @Factory" }
+                      "@Injector target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment or @Injectable" }
       };
   }
 

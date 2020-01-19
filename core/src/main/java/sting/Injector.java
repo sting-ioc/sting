@@ -24,8 +24,8 @@ import java.lang.annotation.Target;
  * <a name="instantiation"></a>
  * <h2>Instantiation</h2>
  *
- * <p>If a nested {@link Factory @Factory} type exists in the component, an implementation of that type
- * will generated and an instance will be returned via a static method named {@code factory()}.</p>
+ * <p>If a nested interface named Factory exists in the component, an implementation of the Factory interface
+ * will be generated and an instance will be returned via a static method named {@code factory()}.</p>
  *
  * <p>Example of using a factory:</p>
  *
@@ -47,8 +47,9 @@ import java.lang.annotation.Target;
  *   }
  * }</code></pre>
  *
- * <p>If a nested {@link Factory @Factory} does not exist then it is assumed that the component
- * is completed and the generated component will have a factory method {@code create()}.</p>
+
+ * <p>If a nested interface named Factory does not exist then it is assumed that the component
+ * is self-contained and the generated component will have a factory method {@code create()}.</p>
  *
  * <p>Example of using create:</p>
  *
@@ -78,7 +79,7 @@ public @interface Injector
    *
    * <p>If the annotation processor detects a dependency that is required but not explicitly included in the
    * includes list then it will attempt to automatically add the type to the graph if it is annotated with
-   * {@link Injectable @Injectable} or {@link Factory @Factory}. The current implementation include types
+   * {@link Injectable @Injectable}. The current implementation include types
    * if they were compiled in the same invocation of the java compiler. In the future the annotation processor
    * will load the descriptors from the filesystem.</p>
    *

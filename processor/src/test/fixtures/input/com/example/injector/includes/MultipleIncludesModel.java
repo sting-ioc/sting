@@ -1,13 +1,10 @@
 package com.example.injector.includes;
 
-import sting.Factory;
 import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
 
-@Injector( includes = { MultipleIncludesModel.MyFragment.class,
-                        MultipleIncludesModel.MyFactory.class,
-                        MultipleIncludesModel.MyModel.class } )
+@Injector( includes = { MultipleIncludesModel.MyFragment.class, MultipleIncludesModel.MyModel.class } )
 abstract class MultipleIncludesModel
 {
   abstract Runnable getRunnable();
@@ -19,12 +16,6 @@ abstract class MultipleIncludesModel
     {
       return null;
     }
-  }
-
-  @Factory
-  public interface MyFactory
-  {
-    Runnable create();
   }
 
   @Injectable

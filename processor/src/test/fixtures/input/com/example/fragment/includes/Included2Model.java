@@ -1,9 +1,8 @@
 package com.example.fragment.includes;
 
-import sting.Factory;
+import sting.Injectable;
 
-@Factory
-public interface Included2Model
+@Injectable
+public class Included2Model
 {
-  Runnable create();
 }

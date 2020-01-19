@@ -161,7 +161,6 @@ final class Node
     }
     else
     {
-      //TODO: Add support for Factory
       assert Binding.Type.PROVIDES == _binding.getBindingType() ||
              Binding.Type.NULLABLE_PROVIDES == _binding.getBindingType();
       final Element element = _binding.getElement();

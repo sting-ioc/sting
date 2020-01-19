@@ -18,24 +18,16 @@ complete as there is too much un-said.
   present.
 * Support `SUPPLIER_COLLECTION` dependency type.
 * Add a `@PostConstruct` hook so that custom code can be run after eager beans are constructed.
-* Consider removing `@Factory` support from `includes` parameters of `@Fragments` and `@Injector`
-  and just assume that they are detected if they are referenced from within the object graph. The
-  `@Injectable` types are also detected but can be manually added if you want them eagerly instantiated and
-  they are not a dependency of any other element.
 * Add test suite for `Registry`
 * Injectors that are inherited by another injector can disable eager services? For usage in tests.
 * Add test for unresolved `@Injector`. Add a separate test for unresolved include and another for
   unresolved dependency.
 * Change the `Coordinate._type` to a fully qualified classname rather than a `TypeMirror`.
 
-* Convert the `@Factory` annotation into an `@Injectable` with another processor and just change the `includes`
-  such that they replace the type with the generated type.
-
-* Or ... add an annotation that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
+* Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
   or `Injector` will have their type annotations scanned for matching annotations of which there must be at most
   1. This annotation gives the name pattern for the expected `@Injectable` or `@Fragment` annotated class that
-  provides the type. The `@Factory` type would just use this as implementation strategy ... if we are using a
-  separate annotation processor to generate the factory implementation.
+  provides the type.
 
 * Figure out terminology. Currently it is a mixed bag derived from various injector frameworks that it has
   been inspired from. Terms that are misused and should be cleaned up. This would involved cleaning up lots
@@ -48,13 +40,6 @@ complete as there is too much un-said.
   * Edge = the actual between two nodes
 
 ## Old Notes
-
-## Phase 1:
-
-* Introduce the `Factory` annotation that allows the construction of components by supplying parameters.
-  Abstract methods return the type that is produced. Any parameters must match the parameter types and/or
-  names of parameters in components constructor. Components produced must have a single constructor. Any
-  parameter supplied is assumed to be from the object graph.
 
 ## Differences from Dagger
 

@@ -99,10 +99,6 @@ public final class StingProcessorInjectorGraphTest
     assertValueWithIdPresent( values, classname, "MyFragment1#provideRunnable" );
     assertValueWithIdPresent( values, classname, "MyFragment2#provideRunnable" );
     assertValueWithIdPresent( values, classname, "MyFragment3#provideRunnable" );
-    //TODO: Enable once factories are implemented
-    //assertValueWithIdPresent( values, classname, "MyFactory1" );
-    //assertValueWithIdPresent( values, classname, "MyFactory2" );
-    //assertValueWithIdPresent( values, classname, "MyFactory3" );
     assertValueWithIdPresent( values, classname, "MyModel1" );
     assertValueWithIdPresent( values, classname, "MyModel2" );
     assertValueWithIdPresent( values, classname, "MyModel3" );

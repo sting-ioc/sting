@@ -172,7 +172,6 @@ final class CircularDependencyChecker
       }
       else
       {
-        //TODO: Add support for Factory
         assert Binding.Type.PROVIDES == binding.getBindingType() ||
                Binding.Type.NULLABLE_PROVIDES == binding.getBindingType();
         return "[Provides]   ";

@@ -222,8 +222,9 @@ public final class StingProcessor
         registerIncludes( graph, fragment.getIncludes() );
         graph.registerFragment( fragment );
       }
-      else if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+      else
       {
+        assert AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME );
         final InjectableDescriptor injectable =
           _registry.getInjectableByClassName( element.getQualifiedName().toString() );
         final Binding binding = injectable.getBinding();
@@ -232,11 +233,6 @@ public final class StingProcessor
           graph.findOrCreateNode( binding );
         }
         graph.registerInjectable( injectable );
-      }
-      else
-      {
-        assert AnnotationsUtil.hasAnnotationOfType( element, Constants.FACTORY_CLASSNAME );
-        //TODO: Add support for factory
       }
     }
   }
@@ -377,8 +373,9 @@ public final class StingProcessor
             }
           }
         }
-        else if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+        else
         {
+          assert AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME );
           final String classname = element.getQualifiedName().toString();
           InjectableDescriptor injectable = _registry.findInjectableByClassName( classname );
           if ( null == injectable )
@@ -393,11 +390,6 @@ public final class StingProcessor
               return false;
             }
           }
-        }
-        else
-        {
-          assert AnnotationsUtil.hasAnnotationOfType( element, Constants.FACTORY_CLASSNAME );
-          //TODO: Add support for factory
         }
       }
     }
@@ -701,15 +693,13 @@ public final class StingProcessor
     {
       final Element includeElement = processingEnv.getTypeUtils().asElement( include );
       if ( !AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FRAGMENT_CLASSNAME ) &&
-           !AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) &&
-           !AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FACTORY_CLASSNAME ) )
+           !AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) )
       {
         throw new ProcessorException( MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
                                       "includes parameter containing the value " + include + " that is not a type " +
                                       "annotated by either " +
-                                      MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + ", " +
-                                      MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) + " or " +
-                                      MemberChecks.toSimpleName( Constants.FACTORY_CLASSNAME ),
+                                      MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " or " +
+                                      MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ),
                                       element );
       }
       else
