@@ -23,6 +23,7 @@ complete as there is too much un-said.
 * Add test for unresolved `@Injector`. Add a separate test for unresolved include and another for
   unresolved dependency.
 * Change the `Coordinate._type` to a fully qualified classname rather than a `TypeMirror`.
+* Explicitly reject arrays as dependency types.
 
 * Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
   or `Injector` will have their type annotations scanned for matching annotations of which there must be at most
