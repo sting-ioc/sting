@@ -227,7 +227,7 @@ public final class StingProcessor
 
     CircularDependencyChecker.verifyNoCircularDependencyLoops( graph );
 
-    emitObjectGraphDescriptor( graph );
+    emitObjectGraphJsonDescriptor( graph );
 
     //TODO: Generate and emit java code
   }
@@ -352,7 +352,7 @@ public final class StingProcessor
     }
   }
 
-  private void emitObjectGraphDescriptor( @Nonnull final ObjectGraph graph )
+  private void emitObjectGraphJsonDescriptor( @Nonnull final ObjectGraph graph )
     throws IOException
   {
     if ( _emitJsonDescriptors )
@@ -475,10 +475,10 @@ public final class StingProcessor
     }
     final InjectorDescriptor injector = new InjectorDescriptor( element, includes, topLevelDependencies );
     _registry.registerInjector( injector );
-    emitInjectorDescriptor( injector );
+    emitInjectorJsonDescriptor( injector );
   }
 
-  private void emitInjectorDescriptor( @Nonnull final InjectorDescriptor injector )
+  private void emitInjectorJsonDescriptor( @Nonnull final InjectorDescriptor injector )
     throws IOException
   {
     if ( _emitJsonDescriptors )
@@ -714,7 +714,7 @@ public final class StingProcessor
     }
     final FragmentDescriptor fragment = new FragmentDescriptor( element, includes, bindings.values() );
     _registry.registerFragment( fragment );
-    emitFragmentDescriptor( fragment );
+    emitFragmentJsonDescriptor( fragment );
   }
 
   @Nonnull
@@ -745,7 +745,7 @@ public final class StingProcessor
     return results;
   }
 
-  private void emitFragmentDescriptor( @Nonnull final FragmentDescriptor fragment )
+  private void emitFragmentJsonDescriptor( @Nonnull final FragmentDescriptor fragment )
     throws IOException
   {
     if ( _emitJsonDescriptors )
@@ -1043,7 +1043,7 @@ public final class StingProcessor
     _registry.registerInjectable( injectable );
 
     writeBinaryDescriptor( element, injectable );
-    emitInjectableDescriptor( injectable );
+    emitInjectableJsonDescriptor( injectable );
   }
 
   private void writeBinaryDescriptor( @Nonnull final TypeElement element,
@@ -1099,7 +1099,7 @@ public final class StingProcessor
     }
   }
 
-  private void emitInjectableDescriptor( @Nonnull final InjectableDescriptor injectable )
+  private void emitInjectableJsonDescriptor( @Nonnull final InjectableDescriptor injectable )
     throws IOException
   {
     if ( _emitJsonDescriptors )
