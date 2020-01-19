@@ -8,11 +8,6 @@ complete as there is too much un-said.
 * On processing an `@Injector` annotated class we load the binary descriptors. If the descriptors are not present
   then we defer processing the `@Injector` annotated class until the descriptors are present or we generate an
   error when the processor reaches the last round.
-* Add a separate annotation processor that provides [AssistedInject](https://github.com/square/AssistedInject)
-  capabilities if it is desired. The reason for using a separate annotation processor is that it actually
-  generates code used by users and thus has to be marked as a API-generating processor in Bazel which can reduce
-  the degree of parallelization that is possible. Moving it to a separate annotation processor means we can
-  explicitly control whether we accept this cost.
 * Consider generating warnings if `@Fragment` types will not resolve unless the user supplies an explicit
   `incomplete` parameter. By resolve it means that every component should have all of it's dependencies
   present.
