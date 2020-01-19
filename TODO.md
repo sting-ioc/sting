@@ -53,7 +53,7 @@ The significant differences from Dagger:
 * `@Nullable` provider will provide for `@Nullable` dependency but a null will also be provided to dependency if it
   is not declared in graph.
 * No parameterized types can be part of object graph except specific framework types (i.e. `Supplier` and
-  `Collection` in the future)
+  `Collection`)
 * Components may have an optional factory that accepts any dependencies from outside the system but these are
   incorporated into ObjectGraph
 * Can very easily extend an existing component and replace some beans in object with those used in testing.
