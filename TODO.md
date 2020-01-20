@@ -21,6 +21,7 @@ complete as there is too much un-said.
 * Add ability to auto-include a fragment defined within the `@Injector` annotated type. The auto-include could
   just be based on whether it is an interface annotated with `@Fragment` or maybe it could be based on naming
   pattern?
+* Ensure that ids are unique across an object graph.
 
 * Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
   or `Injector` will have their type annotations scanned for matching annotations of which there must be at most
