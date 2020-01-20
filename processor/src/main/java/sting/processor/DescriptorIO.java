@@ -258,13 +258,19 @@ final class DescriptorIO
       case "D":
         return _types.getPrimitiveType( TypeKind.DOUBLE );
       default:
-        assert descriptor.startsWith( "L" );
-        assert descriptor.endsWith( ";" );
-        // Injected types do NOT contain arrays and thus the only other valid parameterized type is DECLARED
-        final String classname = descriptor.substring( 1, descriptor.length() - 1 ).replace("$",".");
-        final TypeElement typeElement = _elements.getTypeElement( classname );
-        assert null != typeElement;
-        return typeElement.asType();
+        return readDeclaredType( descriptor );
     }
+  }
+
+  @Nonnull
+  private DeclaredType readDeclaredType( @Nonnull final String descriptor )
+  {
+    assert descriptor.startsWith( "L" );
+    assert descriptor.endsWith( ";" );
+    // Injected types do NOT contain arrays and thus the only other valid parameterized type is DECLARED
+    final String classname = descriptor.substring( 1, descriptor.length() - 1 ).replace( "$", "." );
+    final TypeElement typeElement = _elements.getTypeElement( classname );
+    assert null != typeElement;
+    return (DeclaredType) typeElement.asType();
   }
 }
