@@ -201,7 +201,7 @@ public final class StingProcessor
     for ( final InjectorDescriptor injector : new ArrayList<>( _registry.getInjectors() ) )
     {
       performAction( env, e -> {
-        if ( isInjectorResolved( env, injector ) )
+        if ( isInjectorResolved( injector ) )
         {
           buildAndEmitObjectGraph( injector );
           _registry.deregisterInjector( injector );
@@ -413,7 +413,7 @@ public final class StingProcessor
     return "TODO";
   }
 
-  private boolean isInjectorResolved( @Nonnull final RoundEnvironment env, @Nonnull final InjectorDescriptor injector )
+  private boolean isInjectorResolved( @Nonnull final InjectorDescriptor injector )
   {
     for ( final DeclaredType include : injector.getIncludes() )
     {
