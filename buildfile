@@ -108,4 +108,8 @@ define 'sting' do
       end
     end
   end
+
+  ipr.add_component('JavacSettings') do |xml|
+    xml.option(:name => 'ADDITIONAL_OPTIONS_STRING', :value => '-Xlint:all,-processing,-serial')
+  end
 end
