@@ -19,6 +19,11 @@ complete as there is too much un-said.
 * Add test for unresolved `@Injector`. Add a separate test for unresolved include and another for
   unresolved dependency.
 * Change the `Coordinate._type` to a fully qualified classname rather than a `TypeMirror`.
+* Add support for `Factory` interface in `@Injector` annotated types by which additional bindings can be supplied.
+  These are assumed to have a qualifier of `""` and have atype as specified.
+* Add ability to auto-include a fragment defined within the `@Injector` annotated type. The auto-include could
+  just be based on whether it is an interface annotated with `@Fragment` or maybe it could be based on naming
+  pattern?
 
 * Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
   or `Injector` will have their type annotations scanned for matching annotations of which there must be at most
