@@ -272,6 +272,14 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.NoDirectDependenciesAndNoEagerInIncludesModel",
                       "@Injector target produced an empty object graph. This means that there are no eager values in the includes and there are no dependencies or only unsatisfied optional dependencies defined by the injector" },
 
+        new Object[]{ "com.example.injector.circular.FragmentWalkingCircularDependencyModel",
+                      "Injector contains a circular dependency.\n" +
+                      "  Path:\n" +
+                      "    [Injector]       com.example.injector.circular.FragmentWalkingCircularDependencyModel\n" +
+                      "    [Injectable] +-< com.example.injector.circular.FragmentWalkingCircularDependencyModel.MyModel1\n" +
+                      "    [Provides]   |   com.example.injector.circular.FragmentWalkingCircularDependencyModel.MyFragment.provideMyModel2\n" +
+                      "    [Injectable] |   com.example.injector.circular.FragmentWalkingCircularDependencyModel.MyModel3\n" +
+                      "    [Injectable] +-> com.example.injector.circular.FragmentWalkingCircularDependencyModel.MyModel1" },
         new Object[]{ "com.example.injector.circular.ChainedCircularDependencyModel",
                       "Injector contains a circular dependency.\n" +
                       "  Path:\n" +
