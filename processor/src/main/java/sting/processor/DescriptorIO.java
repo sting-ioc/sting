@@ -210,18 +210,11 @@ final class DescriptorIO
     writeCoordinate( dos, dependency.getCoordinate() );
     dos.writeBoolean( dependency.isOptional() );
     final Element element = dependency.getElement();
-    final ElementKind kind = element.getKind();
-    if ( ElementKind.METHOD == kind )
-    {
-      // method of @Injector annotated type
-      dos.writeUTF( element.getSimpleName().toString() );
-    }
-    else
-    {
-      assert ElementKind.PARAMETER == kind;
-      // parameter of @Provides method on @Fragment type or parameter of constructor on @Injectable type
-      dos.writeUTF( toFieldDescriptor( element.asType() ) );
-    }
+    assert ElementKind.PARAMETER == element.getKind();
+    // parameter of @Provides method on @Fragment type or parameter of constructor on @Injectable type
+    // we are not expected to emit binary descriptors for @Injector annotated typed and thus do need
+    // to handle when "ElementKind.METHOD == kind"
+    dos.writeUTF( toFieldDescriptor( element.asType() ) );
     dos.writeShort( dependency.getParameterIndex() );
   }
 
