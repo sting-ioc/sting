@@ -1081,14 +1081,15 @@ public final class StingProcessor
     {
       _descriptorIO.write( dos, descriptor );
     }
+    final Object newDescriptor;
     try ( final DataInputStream dos = new DataInputStream( new ByteArrayInputStream( baos1.toByteArray() ) ) )
     {
-      _descriptorIO.read( dos, element.getQualifiedName().toString() );
+      newDescriptor = _descriptorIO.read( dos, element.getQualifiedName().toString() );
     }
     final ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
     try ( final DataOutputStream dos = new DataOutputStream( baos2 ) )
     {
-      _descriptorIO.write( dos, descriptor );
+      _descriptorIO.write( dos, newDescriptor );
     }
 
     if ( !Arrays.equals( baos1.toByteArray(), baos2.toByteArray() ) )
