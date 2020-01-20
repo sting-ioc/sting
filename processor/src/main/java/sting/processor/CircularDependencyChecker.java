@@ -79,7 +79,7 @@ final class CircularDependencyChecker
                                                @Nonnull final Node node )
   {
     int index = stack.size() - 1;
-    while ( index >= 0 )
+    while ( index > 0 )
     {
       final Entry entry = stack.get( index );
       if ( doesEdgeBreakDependencyChain( entry._edge ) )
