@@ -6,7 +6,42 @@
   "dependencies": [
     {
       "coordinate": {
+        "type": "boolean"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "char"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "byte"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "short"
+      }
+    },
+    {
+      "coordinate": {
         "type": "int"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "long"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "float"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "double"
       }
     }
   ]
