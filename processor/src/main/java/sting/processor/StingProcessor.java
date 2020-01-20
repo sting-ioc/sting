@@ -1063,14 +1063,11 @@ public final class StingProcessor
                                       @Nonnull final Object descriptor )
     throws IOException
   {
-    final String binaryName = processingEnv.getElementUtils().getBinaryName( element ).toString();
-    final int lastIndex = binaryName.lastIndexOf( "." );
-    final String packageName = -1 == lastIndex ? "" : binaryName.substring( 0, lastIndex );
-    final String relativeName = binaryName.substring( -1 == lastIndex ? 0 : lastIndex + 1 ) + SUFFIX;
+    final String[] nameParts = extractNameParts( element );
 
     // Write out the descriptor
     final FileObject resource =
-      processingEnv.getFiler().createResource( StandardLocation.CLASS_OUTPUT, packageName, relativeName, element );
+      processingEnv.getFiler().createResource( StandardLocation.CLASS_OUTPUT, nameParts[ 0 ], nameParts[ 1 ], element );
     try ( final OutputStream out = resource.openOutputStream() )
     {
       try ( final DataOutputStream dos1 = new DataOutputStream( out ) )
@@ -1085,8 +1082,18 @@ public final class StingProcessor
     }
   }
 
-  private void verifyDescriptor( @Nonnull final TypeElement element,
-                                 @Nonnull final Object descriptor )
+  @Nonnull
+  private String[] extractNameParts( @Nonnull final TypeElement element )
+  {
+    final String binaryName = processingEnv.getElementUtils().getBinaryName( element ).toString();
+    final int lastIndex = binaryName.lastIndexOf( "." );
+    final String packageName = -1 == lastIndex ? "" : binaryName.substring( 0, lastIndex );
+    final String relativeName = binaryName.substring( -1 == lastIndex ? 0 : lastIndex + 1 ) + SUFFIX;
+
+    return new String[]{ packageName, relativeName };
+  }
+
+  private void verifyDescriptor( @Nonnull final TypeElement element, @Nonnull final Object descriptor )
     throws IOException
   {
     final ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
