@@ -1334,7 +1334,7 @@ public final class StingProcessor
   private byte[] tryLoadDescriptorData( @Nonnull final TypeElement element )
   {
     final byte[] data = tryLoadDescriptorData( StandardLocation.CLASS_PATH, element );
-    return null != data ? null : tryLoadDescriptorData( StandardLocation.CLASS_OUTPUT, element );
+    return null != data ? data : tryLoadDescriptorData( StandardLocation.CLASS_OUTPUT, element );
   }
 
   @Nullable
