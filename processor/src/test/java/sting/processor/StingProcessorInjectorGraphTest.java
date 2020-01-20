@@ -24,7 +24,7 @@ public final class StingProcessorInjectorGraphTest
     throws Exception
   {
     final String classname = "com.example.injector.dependency.eager.BasicEagerDependencyModel";
-    final String objectGraphFilename = toObjectGraphFilename( classname );
+    final String objectGraphFilename = jsonGraphOutput( classname );
     final List<String> expectedOutputs = Collections.singletonList( objectGraphFilename );
     assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
     final JsonArray values = readInjectorGraph( objectGraphFilename );
@@ -51,7 +51,7 @@ public final class StingProcessorInjectorGraphTest
     throws Exception
   {
     final String classname = "com.example.injector.dependency.eager.EagerInjectableViaIncludesModel";
-    final String objectGraphFilename = toObjectGraphFilename( classname );
+    final String objectGraphFilename = jsonGraphOutput( classname );
     assertSuccessfulCompile( inputs( classname ),
                              Collections.singletonList( objectGraphFilename ),
                              t -> emitInjectorGeneratedFile( classname, t ) );
@@ -91,7 +91,7 @@ public final class StingProcessorInjectorGraphTest
     throws Exception
   {
     final String classname = "com.example.injector.includes.RecursiveIncludesModel";
-    final String objectGraphFilename = toObjectGraphFilename( classname );
+    final String objectGraphFilename = jsonGraphOutput( classname );
     assertSuccessfulCompile( inputs( classname ),
                              Collections.singletonList( objectGraphFilename ),
                              t -> emitInjectorGeneratedFile( classname, t ) );
@@ -174,12 +174,6 @@ public final class StingProcessorInjectorGraphTest
         return parser.readObject();
       }
     }
-  }
-
-  @Nonnull
-  private String toObjectGraphFilename( @Nonnull final String classname )
-  {
-    return toFilename( "expected", classname, "", StingProcessor.GRAPH_SUFFIX );
   }
 
   private boolean emitInjectorGeneratedFile( @Nonnull final String classname, @Nonnull final JavaFileObject target )

@@ -20,4 +20,16 @@ public abstract class AbstractStingProcessorTest
   {
     return "sting";
   }
+
+  @Nonnull
+  final String jsonGraphOutput( @Nonnull final String classname )
+  {
+    return toFilename( "expected", classname, "", StingProcessor.GRAPH_SUFFIX );
+  }
+
+  @Nonnull
+  final String jsonOutput( @Nonnull final String classname )
+  {
+    return toFilename( "expected", classname, "", StingProcessor.JSON_SUFFIX );
+  }
 }

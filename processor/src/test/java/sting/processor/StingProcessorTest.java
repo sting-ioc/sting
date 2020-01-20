@@ -73,7 +73,7 @@ public final class StingProcessorTest
     throws Exception
   {
     assertSuccessfulCompile( classname,
-                             toFilename( "expected", classname, "", StingProcessor.JSON_SUFFIX ) );
+                             jsonOutput( classname ) );
   }
 
   @DataProvider( name = "successfulInjectorCompiles" )
@@ -108,9 +108,7 @@ public final class StingProcessorTest
   public void processSuccessfulInjectorCompile( @Nonnull final String classname )
     throws Exception
   {
-    final List<String> expectedOutputs =
-      Arrays.asList( toFilename( "expected", classname, "", StingProcessor.JSON_SUFFIX ),
-                     toFilename( "expected", classname, "", StingProcessor.GRAPH_SUFFIX ) );
+    final List<String> expectedOutputs = Arrays.asList( jsonOutput( classname ), jsonGraphOutput( classname ) );
     assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
   }
 
@@ -128,10 +126,7 @@ public final class StingProcessorTest
     throws Exception
   {
     assertSuccessfulCompile( "com.example.injectable.NestedModel",
-                             toFilename( "expected",
-                                         "com.example.injectable.NestedModel_MyModel",
-                                         "",
-                                         StingProcessor.JSON_SUFFIX ) );
+                             jsonOutput( "com.example.injectable.NestedModel_MyModel" ) );
   }
 
   @Test
@@ -139,10 +134,7 @@ public final class StingProcessorTest
     throws Exception
   {
     assertSuccessfulCompile( "com.example.injectable.NestedNestedModel",
-                             toFilename( "expected",
-                                         "com.example.injectable.NestedNestedModel_Middle_MyModel",
-                                         "",
-                                         StingProcessor.JSON_SUFFIX ) );
+                             jsonOutput( "com.example.injectable.NestedNestedModel_Middle_MyModel" ) );
   }
 
   @Test
@@ -150,10 +142,7 @@ public final class StingProcessorTest
     throws Exception
   {
     assertSuccessfulCompile( "com.example.fragment.NestedModel",
-                             toFilename( "expected",
-                                         "com.example.fragment.NestedModel_MyModel",
-                                         "",
-                                         StingProcessor.JSON_SUFFIX ) );
+                             jsonOutput( "com.example.fragment.NestedModel_MyModel" ) );
   }
 
   @Test
@@ -161,10 +150,7 @@ public final class StingProcessorTest
     throws Exception
   {
     assertSuccessfulCompile( "com.example.fragment.NestedNestedModel",
-                             toFilename( "expected",
-                                         "com.example.fragment.NestedNestedModel_Middle_MyModel",
-                                         "",
-                                         StingProcessor.JSON_SUFFIX ) );
+                             jsonOutput( "com.example.fragment.NestedNestedModel_Middle_MyModel" ) );
   }
 
   @Test
@@ -174,10 +160,7 @@ public final class StingProcessorTest
     final JavaFileObject input1 = fixture( toFilename( "input", "com.example.fragment.includes.BasicIncludesModel" ) );
     final JavaFileObject input2 = fixture( toFilename( "input", "com.example.fragment.includes.Included1Model" ) );
     final String output1 =
-      toFilename( "expected",
-                  "com.example.fragment.includes.BasicIncludesModel",
-                  "",
-                  StingProcessor.JSON_SUFFIX );
+      jsonOutput( "com.example.fragment.includes.BasicIncludesModel" );
     assertSuccessfulCompile( Arrays.asList( input1, input2 ), Collections.singletonList( output1 ) );
   }
 
@@ -185,15 +168,12 @@ public final class StingProcessorTest
   public void multipleIncludesFragment()
     throws Exception
   {
+    final String classname = "com.example.fragment.includes.MultipleIncludesModel";
     final JavaFileObject input1 =
-      fixture( toFilename( "input", "com.example.fragment.includes.MultipleIncludesModel" ) );
+      fixture( toFilename( "input", classname ) );
     final JavaFileObject input2 = fixture( toFilename( "input", "com.example.fragment.includes.Included1Model" ) );
     final JavaFileObject input3 = fixture( toFilename( "input", "com.example.fragment.includes.Included2Model" ) );
-    final String output1 =
-      toFilename( "expected",
-                  "com.example.fragment.includes.MultipleIncludesModel",
-                  "",
-                  StingProcessor.JSON_SUFFIX );
+    final String output1 = jsonOutput( classname );
     assertSuccessfulCompile( Arrays.asList( input1, input2, input3 ), Collections.singletonList( output1 ) );
   }
 
