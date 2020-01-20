@@ -209,12 +209,10 @@ final class DescriptorIO
     dos.writeByte( dependency.getType().ordinal() );
     writeCoordinate( dos, dependency.getCoordinate() );
     dos.writeBoolean( dependency.isOptional() );
-    final Element element = dependency.getElement();
-    assert ElementKind.PARAMETER == element.getKind();
+    assert ElementKind.PARAMETER == dependency.getElement().getKind();
     // parameter of @Provides method on @Fragment type or parameter of constructor on @Injectable type
     // we are not expected to emit binary descriptors for @Injector annotated typed and thus do need
-    // to handle when "ElementKind.METHOD == kind"
-    dos.writeUTF( toFieldDescriptor( element.asType() ) );
+    // to handle when "ElementKind.METHOD == dependency.getElement().getKind()"
     dos.writeShort( dependency.getParameterIndex() );
   }
 
@@ -226,23 +224,9 @@ final class DescriptorIO
     final DependencyDescriptor.Type type = DependencyDescriptor.Type.values()[ dis.readByte() ];
     final Coordinate coordinate = readCoordinate( dis );
     final boolean optional = dis.readBoolean();
-    final String elementName = dis.readUTF();
     final short parameterIndex = dis.readShort();
-
-    final Element element;
-    if ( -1 == parameterIndex )
-    {
-      //Must be a dependency provided by an @Injector method
-      element = enclosingElement.getEnclosedElements()
-        .stream()
-        .filter( e -> ElementKind.METHOD == e.getKind() && e.getSimpleName().toString().equals( elementName ) )
-        .findAny()
-        .orElse( null );
-    }
-    else
-    {
-      element = ( (ExecutableElement) enclosingElement ).getParameters().get( parameterIndex );
-    }
+    assert -1 != parameterIndex;
+    final Element element = ( (ExecutableElement) enclosingElement ).getParameters().get( parameterIndex );
     assert null != element;
 
     return new DependencyDescriptor( type, coordinate, optional, element, parameterIndex );
