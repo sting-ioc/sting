@@ -308,7 +308,9 @@ public final class StingProcessor
               final Object descriptor = loadDescriptor( classname, data );
               if ( descriptor instanceof InjectableDescriptor )
               {
-                _registry.registerInjectable( (InjectableDescriptor) descriptor );
+                final InjectableDescriptor injectableDescriptor = (InjectableDescriptor) descriptor;
+                _registry.registerInjectable( injectableDescriptor );
+                bindings.add( injectableDescriptor.getBinding() );
               }
             }
             catch ( final IOException e )
