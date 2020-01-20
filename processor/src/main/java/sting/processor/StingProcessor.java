@@ -198,11 +198,13 @@ public final class StingProcessor
   {
     for ( final InjectorDescriptor injector : new ArrayList<>( _registry.getInjectors() ) )
     {
-      if ( isInjectorResolved( env, injector ) )
-      {
-        performAction( env, e -> buildAndEmitObjectGraph( injector ), injector.getElement() );
-        _registry.deregisterInjector( injector );
-      }
+      performAction( env, e -> {
+        if ( isInjectorResolved( env, injector ) )
+        {
+          buildAndEmitObjectGraph( injector );
+          _registry.deregisterInjector( injector );
+        }
+      }, injector.getElement() );
     }
   }
 
@@ -391,39 +393,41 @@ public final class StingProcessor
       else
       {
         final TypeElement element = (TypeElement) include.asElement();
-        if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
+        final String classname = element.getQualifiedName().toString();
+        if ( null == _registry.findFragmentByClassName( classname ) &&
+             null == _registry.findInjectableByClassName( classname ) )
         {
-          final String classname = element.getQualifiedName().toString();
-          FragmentDescriptor fragment = _registry.findFragmentByClassName( classname );
-          if ( null == fragment )
+          final byte[] data;
+          try
           {
-            // TODO: In the future we should attempt to load binary descriptor here
-            //  rather than analyzing element. If binary descriptor is missing then we
-            //  should just return false and assume it will be picked up in a future round
-            performAction( env, this::processFragment, element );
-            fragment = _registry.findFragmentByClassName( classname );
-            if ( null == fragment )
+            final String[] nameParts = extractNameParts( element );
+            final FileObject resource =
+              processingEnv.getFiler().getResource( StandardLocation.CLASS_PATH, nameParts[ 0 ], nameParts[ 1 ] );
+            data = IOUtil.readFully( resource );
+          }
+          catch ( final IOException ignored )
+          {
+            return false;
+          }
+          try
+          {
+            final Object descriptor =
+              _descriptorIO.read( new DataInputStream( new ByteArrayInputStream( data ) ), classname );
+            if ( descriptor instanceof FragmentDescriptor )
             {
-              return false;
+              _registry.registerFragment( (FragmentDescriptor) descriptor );
+            }
+            else
+            {
+              _registry.registerInjectable( (InjectableDescriptor) descriptor );
             }
           }
-        }
-        else
-        {
-          assert AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME );
-          final String classname = element.getQualifiedName().toString();
-          InjectableDescriptor injectable = _registry.findInjectableByClassName( classname );
-          if ( null == injectable )
+          catch ( final IOException e )
           {
-            // TODO: In the future we should attempt to load binary descriptor here
-            //  rather than analyzing element. If binary descriptor is missing then we
-            //  should just return false and assume it will be picked up in a future round
-            performAction( env, this::processFragment, element );
-            injectable = _registry.findInjectableByClassName( classname );
-            if ( null == injectable )
-            {
-              return false;
-            }
+            throw new ProcessorException( "Failed to read the Sting descriptor for " +
+                                          "include: " + classname + ". " +
+                                          "Error: " + e,
+                                          injector.getElement() );
           }
         }
       }

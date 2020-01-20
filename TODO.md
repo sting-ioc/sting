@@ -4,9 +4,6 @@ This document is essentially a list of shorthand notes describing work yet to co
 Unfortunately it is not complete enough for other people to pick work off the list and
 complete as there is too much un-said.
 
-* On processing an `@Injector` annotated class we load the binary descriptors. If the descriptors are not present
-  then we defer processing the `@Injector` annotated class until the descriptors are present or we generate an
-  error when the processor reaches the last round.
 * Consider generating warnings if `@Fragment` types will not resolve unless the user supplies an explicit
   `incomplete` parameter. By resolve it means that every component should have all of it's dependencies
   present.
