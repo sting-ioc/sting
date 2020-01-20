@@ -19,6 +19,8 @@ import javax.lang.model.util.Types;
 
 final class DescriptorIO
 {
+  private static final int FILE_HEADER = 0x2187;
+  private static final int FILE_VERSION = 1;
   private static final int INJECTABLE_TAG = 0;
   private static final int FRAGMENT_TAG = 1;
   @Nonnull
@@ -36,6 +38,15 @@ final class DescriptorIO
   Object read( @Nonnull final DataInputStream dis, @Nonnull final String classname )
     throws IOException
   {
+    if ( FILE_HEADER != dis.readInt() )
+    {
+      throw new IOException( "Descriptor for " + classname + " is in an incorrect format. Bad header." );
+    }
+    final int version = dis.readShort();
+    if ( FILE_VERSION != version )
+    {
+      throw new IOException( "Descriptor for " + classname + " is in an unknown version: " + version );
+    }
     final TypeElement typeElement = _elements.getTypeElement( classname );
     assert null != typeElement;
     final byte tag = dis.readByte();
@@ -53,6 +64,8 @@ final class DescriptorIO
   void write( @Nonnull final DataOutputStream dos, @Nonnull final Object descriptor )
     throws IOException
   {
+    dos.writeInt( FILE_HEADER );
+    dos.writeShort( FILE_VERSION );
     if ( descriptor instanceof FragmentDescriptor )
     {
       dos.writeByte( FRAGMENT_TAG );
