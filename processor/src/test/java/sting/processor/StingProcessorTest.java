@@ -227,6 +227,8 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.provides.ParameterizedProvidesModel",
                       "@Provides target must not have any type parameters" },
 
+        new Object[]{ "com.example.fragment.provides.dependency.ArrayDependencyModel",
+                      "@Fragment target must not have a method with a parameter that is an array type" },
         new Object[]{ "com.example.fragment.provides.dependency.ParameterizedDependencyModel",
                       "@Fragment target must not have a method with a parameter that is a parameterized type. This is only permitted for specific types such as java.util.function.Supplier and java.util.Collection" },
         new Object[]{ "com.example.fragment.provides.dependency.RawCollectionDependencyModel",
@@ -257,6 +259,8 @@ public final class StingProcessorTest
                       "@Injectable target must not be a non-static nested class" },
         new Object[]{ "com.example.injectable.ParameterizedModel", "@Injectable target must not have type parameters" },
 
+        new Object[]{ "com.example.injectable.dependency.ArrayDependencyModel",
+                      "@Injectable target must not have a constructor with a parameter that is an array type" },
         new Object[]{ "com.example.injectable.dependency.ParameterizedDependencyModel",
                       "@Injectable target must not have a constructor with a parameter that is a parameterized type. This is only permitted for specific types such as java.util.function.Supplier" },
         new Object[]{ "com.example.injectable.dependency.RawCollectionDependencyModel",
@@ -304,6 +308,8 @@ public final class StingProcessorTest
                       "    [Injectable] |   com.example.injector.circular.DirectlyCircularDependencyModel.MyModel2\n" +
                       "    [Injectable] +-> com.example.injector.circular.DirectlyCircularDependencyModel.MyModel1" },
 
+        new Object[]{ "com.example.injector.dependency.ArrayDependencyModel",
+                      "@Dependency target must not return a value that is an array type" },
         new Object[]{ "com.example.injector.dependency.MethodReturningVoidDependencyModel",
                       "@Dependency target must return a value" },
         new Object[]{ "com.example.injector.dependency.MethodWithParametersDependencyModel",

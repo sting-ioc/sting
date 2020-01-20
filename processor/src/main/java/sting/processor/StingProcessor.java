@@ -545,7 +545,13 @@ public final class StingProcessor
     final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
     final DependencyDescriptor.Type type;
     final TypeMirror dependencyValueType;
-    if ( null == declaredType )
+    if ( TypeKind.ARRAY == returnType.getKind() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                          "return a value that is an array type" ),
+                                    method );
+    }
+    else if ( null == declaredType )
     {
       type = DependencyDescriptor.Type.INSTANCE;
       dependencyValueType = returnType;
@@ -866,7 +872,13 @@ public final class StingProcessor
     final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
     final DependencyDescriptor.Type type;
     final TypeMirror dependencyValueType;
-    if ( null == declaredType )
+    if ( TypeKind.ARRAY == parameterType.getKind() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                          "have a method with a parameter that is an array type" ),
+                                    parameter );
+    }
+    else if ( null == declaredType )
     {
       type = DependencyDescriptor.Type.INSTANCE;
       dependencyValueType = parameterType;
@@ -1135,7 +1147,13 @@ public final class StingProcessor
     final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
     final DependencyDescriptor.Type type;
     final TypeMirror dependencyValueType;
-    if ( null == declaredType )
+    if ( TypeKind.ARRAY == parameterType.getKind() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                          "have a constructor with a parameter that is an array type" ),
+                                    parameter );
+    }
+    else if ( null == declaredType )
     {
       type = DependencyDescriptor.Type.INSTANCE;
       dependencyValueType = parameterType;
