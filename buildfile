@@ -40,6 +40,7 @@ define 'sting' do
 
     test.with :compile_testing,
               :guava,
+              :guava_failureaccess,
               :proton_qa,
               Java.tools_jar,
               :truth,

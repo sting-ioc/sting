@@ -21,6 +21,7 @@ artifacts:
 
   compile_testing: com.google.testing.compile:compile-testing:jar:0.18
   guava: com.google.guava:guava:jar:27.1-jre
+  guava_failureaccess: com.google.guava:failureaccess:jar:1.0.1
   truth: com.google.truth:truth:jar:0.44
   junit: junit:junit:jar:4.12
   hamcrest_core: org.hamcrest:hamcrest-core:jar:1.3
