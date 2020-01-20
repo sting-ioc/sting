@@ -44,6 +44,11 @@ final class Edge
     }
   }
 
+  boolean hasNode()
+  {
+    return null != _node;
+  }
+
   @Nonnull
   Node getNode()
   {
