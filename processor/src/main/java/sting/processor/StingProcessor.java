@@ -22,6 +22,7 @@ import java.util.Stack;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -41,6 +42,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
+import javax.tools.JavaFileManager;
 import javax.tools.StandardLocation;
 import org.realityforge.proton.AbstractStandardProcessor;
 import org.realityforge.proton.AnnotationsUtil;
@@ -289,13 +291,39 @@ public final class StingProcessor
 
       if ( bindings.isEmpty() )
       {
-        //TODO: This means that only if the @Injectable was compiled in the same compilation. We really should
-        // instead try to look up injectable descriptor if not compiled already.
         final String classname = coordinate.getType().toString();
         final InjectableDescriptor injectable = _registry.findInjectableByClassName( classname );
         if ( null != injectable && injectable.getBinding().getCoordinates().contains( coordinate ) )
         {
           bindings.add( injectable.getBinding() );
+        }
+        if ( bindings.isEmpty() )
+        {
+          final TypeElement typeElement = processingEnv.getElementUtils().getTypeElement( classname );
+          final byte[] data = tryLoadDescriptorData( typeElement );
+          if ( null != data )
+          {
+            try
+            {
+              final Object descriptor = loadDescriptor( classname, data );
+              if ( descriptor instanceof InjectableDescriptor )
+              {
+                _registry.registerInjectable( (InjectableDescriptor) descriptor );
+              }
+            }
+            catch ( final IOException e )
+            {
+              final Node node = edge.hasNode() ? edge.getNode() : null;
+              final Object owner = null != node ? node.getBinding().getOwner() : null;
+              final TypeElement ownerElement =
+                owner instanceof FragmentDescriptor ? ( (FragmentDescriptor) owner ).getElement() :
+                owner instanceof InjectableDescriptor ? ( (InjectableDescriptor) owner ).getElement() :
+                injector.getElement();
+              throw new ProcessorException( "Failed to read the Sting descriptor for " +
+                                            "type " + classname + ". Error: " + e,
+                                            ownerElement );
+            }
+          }
         }
       }
 
@@ -398,22 +426,14 @@ public final class StingProcessor
         if ( null == _registry.findFragmentByClassName( classname ) &&
              null == _registry.findInjectableByClassName( classname ) )
         {
-          final byte[] data;
-          try
-          {
-            final String[] nameParts = extractNameParts( element );
-            final FileObject resource =
-              processingEnv.getFiler().getResource( StandardLocation.CLASS_PATH, nameParts[ 0 ], nameParts[ 1 ] );
-            data = IOUtil.readFully( resource );
-          }
-          catch ( final IOException ignored )
+          final byte[] data = tryLoadDescriptorData( element );
+          if ( null == data )
           {
             return false;
           }
           try
           {
-            final Object descriptor =
-              _descriptorIO.read( new DataInputStream( new ByteArrayInputStream( data ) ), classname );
+            final Object descriptor = loadDescriptor( classname, data );
             if ( descriptor instanceof FragmentDescriptor )
             {
               _registry.registerFragment( (FragmentDescriptor) descriptor );
@@ -1301,5 +1321,49 @@ public final class StingProcessor
   {
     final long flags = ( (Symbol) element ).flags();
     return 0 == ( flags & Flags.SYNTHETIC ) && 0 == ( flags & Flags.GENERATEDCONSTR );
+  }
+
+  @Nonnull
+  private Object loadDescriptor( final String classname, final byte[] data )
+    throws IOException
+  {
+    return _descriptorIO.read( new DataInputStream( new ByteArrayInputStream( data ) ), classname );
+  }
+
+  @Nullable
+  private byte[] tryLoadDescriptorData( @Nonnull final TypeElement element )
+  {
+    final byte[] data = tryLoadDescriptorData( StandardLocation.CLASS_PATH, element );
+    return null != data ? null : tryLoadDescriptorData( StandardLocation.CLASS_OUTPUT, element );
+  }
+
+  @Nullable
+  private byte[] tryLoadDescriptorData( @Nonnull final JavaFileManager.Location location,
+                                        @Nonnull final TypeElement element )
+  {
+    final String[] nameParts = extractNameParts( element );
+    try
+    {
+      return IOUtil.readFully( processingEnv.getFiler().getResource( location, nameParts[ 0 ], nameParts[ 1 ] ) );
+    }
+    catch ( final IOException ignored )
+    {
+      return null;
+    }
+    catch ( final RuntimeException e )
+    {
+      // The javac compiler in Java8 will return a null from the JavaFileManager when it should
+      // throw an IOException which later causes a NullPointerException when wrapping the code
+      // This ugly hack works around this scenario and just lets the compile continue
+      if ( e.getClass().getCanonicalName().equals( "com.sun.tools.javac.util.ClientCodeException" ) &&
+           e.getCause() instanceof NullPointerException )
+      {
+        return null;
+      }
+      else
+      {
+        throw e;
+      }
+    }
   }
 }
