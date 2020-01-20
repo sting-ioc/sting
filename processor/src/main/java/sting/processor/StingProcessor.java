@@ -714,6 +714,7 @@ public final class StingProcessor
     }
     final FragmentDescriptor fragment = new FragmentDescriptor( element, includes, bindings.values() );
     _registry.registerFragment( fragment );
+    writeBinaryDescriptor( element, fragment );
     emitFragmentJsonDescriptor( fragment );
   }
 

@@ -3,12 +3,15 @@ package sting.processor;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -16,6 +19,8 @@ import javax.lang.model.util.Types;
 
 final class DescriptorIO
 {
+  private static final int INJECTABLE_TAG = 0;
+  private static final int FRAGMENT_TAG = 1;
   @Nonnull
   private final Elements _elements;
   @Nonnull
@@ -33,22 +38,74 @@ final class DescriptorIO
   {
     final TypeElement typeElement = _elements.getTypeElement( classname );
     assert null != typeElement;
-    final byte type = dis.readByte();
-    assert 0 == type;
-    return readInjectable( dis, typeElement );
+    final byte tag = dis.readByte();
+    if ( FRAGMENT_TAG == tag )
+    {
+      return readFragment( dis, typeElement );
+    }
+    else
+    {
+      assert INJECTABLE_TAG == tag;
+      return readInjectable( dis, typeElement );
+    }
   }
 
   void write( @Nonnull final DataOutputStream dos, @Nonnull final Object descriptor )
     throws IOException
   {
-    assert descriptor instanceof InjectableDescriptor;
-    writeInjectable( dos, (InjectableDescriptor) descriptor );
+    if ( descriptor instanceof FragmentDescriptor )
+    {
+      dos.writeByte( FRAGMENT_TAG );
+      writeFragment( dos, (FragmentDescriptor) descriptor );
+    }
+    else
+    {
+      assert descriptor instanceof InjectableDescriptor;
+      dos.writeByte( INJECTABLE_TAG );
+      writeInjectable( dos, (InjectableDescriptor) descriptor );
+    }
+  }
+
+  private void writeFragment( @Nonnull final DataOutputStream dos, @Nonnull final FragmentDescriptor fragment )
+    throws IOException
+  {
+    final Collection<DeclaredType> includes = fragment.getIncludes();
+    dos.writeShort( includes.size() );
+    for ( final DeclaredType include : includes )
+    {
+      dos.writeUTF( toFieldDescriptor( include ) );
+    }
+    final Collection<Binding> bindings = fragment.getBindings();
+    dos.writeShort( bindings.size() );
+    for ( final Binding binding : bindings )
+    {
+      writeBinding( dos, binding );
+    }
+  }
+
+  @Nonnull
+  private FragmentDescriptor readFragment( @Nonnull final DataInputStream dis,
+                                           @Nonnull final TypeElement enclosingElement )
+    throws IOException
+  {
+    final short includeCount = dis.readShort();
+    final DeclaredType[] types = new DeclaredType[ includeCount ];
+    for ( int i = 0; i < types.length; i++ )
+    {
+      types[ i ] = readDeclaredType( dis.readUTF() );
+    }
+    final short bindingCount = dis.readShort();
+    final Binding[] bindings = new Binding[ bindingCount ];
+    for ( int i = 0; i < bindings.length; i++ )
+    {
+      bindings[ i ] = readBinding( dis, enclosingElement );
+    }
+    return new FragmentDescriptor( enclosingElement, Arrays.asList( types ), Arrays.asList( bindings ) );
   }
 
   private void writeInjectable( @Nonnull final DataOutputStream dos, @Nonnull final InjectableDescriptor injectable )
     throws IOException
   {
-    dos.writeByte( 0 );
     writeBinding( dos, injectable.getBinding() );
   }
 
