@@ -6,6 +6,7 @@ import sting.Fragment;
 @Fragment
 public interface RawParameterizedDependencyModel
 {
+  @SuppressWarnings( "rawtypes" )
   default String provideX( Consumer consumer )
   {
     return null;
