@@ -21,7 +21,7 @@ public final class IOUtil
       int remaining = inputStream.available();
       final byte[] data = new byte[ remaining ];
       int count;
-      while ( -1 != ( count = inputStream.read( data, offset, remaining ) ) )
+      while ( 0 < ( count = inputStream.read( data, offset, remaining ) ) )
       {
         remaining -= count;
         offset += count;
