@@ -291,7 +291,8 @@ public final class StingProcessor
       {
         //TODO: This means that only if the @Injectable was compiled in the same compilation. We really should
         // instead try to look up injectable descriptor if not compiled already.
-        final InjectableDescriptor injectable = _registry.findInjectableByClassName( coordinate.getType().toString() );
+        final String classname = coordinate.getType().toString();
+        final InjectableDescriptor injectable = _registry.findInjectableByClassName( classname );
         if ( null != injectable && injectable.getBinding().getCoordinates().contains( coordinate ) )
         {
           bindings.add( injectable.getBinding() );
