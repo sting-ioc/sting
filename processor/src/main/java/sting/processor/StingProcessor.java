@@ -204,6 +204,7 @@ public final class StingProcessor
       performAction( env, e -> {
         if ( isInjectorResolved( injector ) )
         {
+          _registry.deregisterInjector( injector );
           buildAndEmitObjectGraph( injector );
           _registry.deregisterInjector( injector );
         }
