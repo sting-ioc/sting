@@ -112,18 +112,18 @@ final class CircularDependencyChecker
   /**
    * Generate a description of the dependency stack that includes a circular dependency.
    *
-   * @param callStack the dependency stack.
-   * @param badEntry  the entry that depends upon itself.
+   * @param stack    the dependency stack.
+   * @param badEntry the entry that depends upon itself.
    * @return a string description.
    */
   @Nonnull
-  private static String describeCircularDependencyPath( @Nonnull final Stack<Entry> callStack,
+  private static String describeCircularDependencyPath( @Nonnull final Stack<Entry> stack,
                                                         @Nonnull final Entry badEntry )
   {
     final StringBuilder sb = new StringBuilder();
 
     boolean matched = false;
-    for ( final Entry entry : callStack )
+    for ( final Entry entry : stack )
     {
       final Node node = entry._node;
       sb.append( "  " );
