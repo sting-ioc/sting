@@ -10,7 +10,7 @@ final class Edge
   /**
    * The node that declared the dependency.
    */
-  @Nullable
+  @Nonnull
   private final Node _node;
   /**
    * The dependency that needs to be satisfied.
@@ -24,9 +24,9 @@ final class Edge
   @Nullable
   private Collection<Node> _satisfiedBy;
 
-  Edge( @Nullable final Node node, @Nonnull final DependencyDescriptor dependency )
+  Edge( @Nonnull final Node node, @Nonnull final DependencyDescriptor dependency )
   {
-    _node = node;
+    _node = Objects.requireNonNull( node );
     _dependency = Objects.requireNonNull( dependency );
   }
 
@@ -37,22 +37,13 @@ final class Edge
     for ( final Node node : satisfiedBy )
     {
       node.usedBy( this );
-      if ( null != _node )
-      {
-        node.setDepth( _node.getDepth() + 1 );
-      }
+      node.setDepth( _node.getDepth() + 1 );
     }
-  }
-
-  boolean hasNode()
-  {
-    return null != _node;
   }
 
   @Nonnull
   Node getNode()
   {
-    assert null != _node;
     return _node;
   }
 
