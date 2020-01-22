@@ -281,12 +281,15 @@ public final class StingProcessor
   private void buildObjectGraphNodes( @Nonnull final ObjectGraph graph )
   {
     final InjectorDescriptor injector = graph.getInjector();
+    final Node rootNode = graph.getRootNode();
     final Set<Node> completed = new HashSet<>();
-    final Stack<Edge> workList = new Stack<>();
-    workList.addAll( graph.getRootNode().getDependsOn() );
+    final Stack<WorkEntry> workList = new Stack<>();
+    addDependsOnToWorkList( workList, rootNode, null );
     while ( !workList.isEmpty() )
     {
-      final Edge edge = workList.pop();
+      final WorkEntry workEntry = workList.pop();
+      final Edge edge = workEntry.getEntry().getEdge();
+      assert null != edge;
       final DependencyDescriptor dependency = edge.getDependency();
       final Coordinate coordinate = dependency.getCoordinate();
       final List<Binding> bindings = new ArrayList<>( graph.findAllBindingsByCoordinate( coordinate ) );
@@ -317,8 +320,8 @@ public final class StingProcessor
             }
             catch ( final IOException e )
             {
-              final Node node = edge.hasNode() ? edge.getNode() : null;
-              final Object owner = null != node ? node.getBinding().getOwner() : null;
+              final Node node = edge.getNode();
+              final Object owner = node.hasNoBinding() ? null : node.getBinding().getOwner();
               final TypeElement ownerElement =
                 owner instanceof FragmentDescriptor ? ( (FragmentDescriptor) owner ).getElement() :
                 owner instanceof InjectableDescriptor ? ( (InjectableDescriptor) owner ).getElement() :
@@ -339,7 +342,7 @@ public final class StingProcessor
         throw new ProcessorException( "@Nullable annotated provider method is attempting to satisfy non-optional " +
                                       "dependency " + coordinate + " for injector defined by type " +
                                       injector.getElement().getQualifiedName() + ".\n\nPath to dependency: " +
-                                      getPath( injector, edge ) + ".\n\n@Nullable annotated provider methods: " +
+                                      getPath( workEntry ) + ".\n\n@Nullable annotated provider methods: " +
                                       describeProviderMethods( nullableProviders ),
                                       dependency.getElement() );
       }
@@ -351,9 +354,9 @@ public final class StingProcessor
         }
         else
         {
-          throw new ProcessorException( "Unable to satisfy non-optional dependency " + coordinate +
-                                        " for injector defined by type " + injector.getElement().getQualifiedName() +
-                                        ". Path to dependency: " + getPath( injector, edge ),
+          throw new ProcessorException( "Injector defined by type '" + injector.getElement().getQualifiedName() +
+                                        "' is unable to satisfy non-optional dependency " + coordinate + ".\n" +
+                                        "Path:\n" + getPath( workEntry ),
                                         dependency.getElement() );
         }
       }
@@ -368,7 +371,7 @@ public final class StingProcessor
             if ( !completed.contains( node ) )
             {
               completed.add( node );
-              workList.addAll( node.getDependsOn() );
+              addDependsOnToWorkList( workList, node, workEntry );
             }
           }
           edge.setSatisfiedBy( nodes );
@@ -380,10 +383,27 @@ public final class StingProcessor
           throw new ProcessorException( "Dependency that expects a single value to satisfy dependency can be " +
                                         "satisfied by multiple values in injector defined by type " +
                                         injector.getElement().getQualifiedName() +
-                                        ". Path to dependency: " + getPath( injector, edge ) + ". Bindings:",
+                                        ". Path to dependency: " + getPath( workEntry ) + ". Bindings:",
                                         dependency.getElement() );
         }
       }
+    }
+  }
+
+  private void addDependsOnToWorkList( @Nonnull final Stack<WorkEntry> workList,
+                                       @Nonnull final Node node,
+                                       @Nullable final WorkEntry parent )
+  {
+    for ( final Edge e : node.getDependsOn() )
+    {
+      final Stack<PathEntry> stack = new Stack<>();
+      if ( null != parent )
+      {
+        stack.addAll( parent.getStack() );
+      }
+      final PathEntry entry = new PathEntry( node, e );
+      stack.add( entry );
+      workList.add( new WorkEntry( entry, stack ) );
     }
   }
 
@@ -410,9 +430,40 @@ public final class StingProcessor
     } ).collect( Collectors.joining( "\n---\n" ) );
   }
 
-  private String getPath( @Nonnull final InjectorDescriptor injector, @Nonnull final Edge edge )
+  private String getPath( @Nonnull final WorkEntry workEntry )
   {
-    return "TODO";
+    return describePathFromRoot( workEntry.getStack() );
+  }
+
+  @Nonnull
+  private static String describePathFromRoot( @Nonnull final Stack<PathEntry> stack )
+  {
+    final StringBuilder sb = new StringBuilder();
+
+    final int size = stack.size();
+    for ( int i = 0; i < size; i++ )
+    {
+      final PathEntry entry = stack.get( i );
+      final Node node = entry.getNode();
+      final String connector;
+      if ( node.hasNoBinding() )
+      {
+        connector = "   ";
+      }
+      else if ( size - 1 == i )
+      {
+        connector = " * ";
+      }
+      else
+      {
+        connector = "   ";
+      }
+      sb.append( node.describe( connector ) );
+
+      sb.append( "\n" );
+    }
+
+    return sb.toString();
   }
 
   private boolean isInjectorResolved( @Nonnull final InjectorDescriptor injector )

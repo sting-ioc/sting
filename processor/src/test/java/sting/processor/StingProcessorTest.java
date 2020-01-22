@@ -298,6 +298,13 @@ public final class StingProcessorTest
                       "@Dependency target must not have any parameters" },
         new Object[]{ "com.example.injector.dependency.MethodWithTypeParametersDependencyModel",
                       "@Dependency target must not have any type parameters" },
+        new Object[]{ "com.example.injector.dependency.MissingDependencyModel",
+                      "Injector defined by type 'com.example.injector.dependency.MissingDependencyModel' is unable to satisfy non-optional dependency [com.example.injector.dependency.MissingDependencyModel.MyModel4].\n" +
+                      "  Path:\n" +
+                      "    [Injector]       com.example.injector.dependency.MissingDependencyModel\n" +
+                      "    [Injectable]     com.example.injector.dependency.MissingDependencyModel.MyModel1\n" +
+                      "    [Provides]       com.example.injector.dependency.MissingDependencyModel.MyFragment1.provideMyModel2\n" +
+                      "    [Provides]    *  com.example.injector.dependency.MissingDependencyModel.MyFragment2.provideMyModel3" },
         new Object[]{ "com.example.injector.dependency.ParameterizedDependencyModel",
                       "@Dependency target must not return a value that is a parameterized type. This is only permitted for specific types such as java.util.function.Supplier" },
         new Object[]{ "com.example.injector.dependency.RawCollectionDependencyModel",
