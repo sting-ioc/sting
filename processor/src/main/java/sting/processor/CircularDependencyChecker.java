@@ -1,7 +1,6 @@
 package sting.processor;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 import javax.annotation.Nonnull;
@@ -33,23 +32,23 @@ final class CircularDependencyChecker
                                                                @Nonnull final Node node,
                                                                @Nonnull final Set<Node> completed )
   {
-    final Stack<Entry> stack = new Stack<>();
-    final Entry entry = new Entry( node, null );
+    final Stack<PathEntry> stack = new Stack<>();
+    final PathEntry entry = new PathEntry( node, null );
     verifyNoCircularDependenciesForNode( graph, entry, stack, completed );
     assert stack.isEmpty();
   }
 
   private static void verifyNoCircularDependenciesForNode( @Nonnull final ObjectGraph graph,
-                                                           @Nonnull final Entry entry,
-                                                           @Nonnull final Stack<Entry> stack,
+                                                           @Nonnull final PathEntry entry,
+                                                           @Nonnull final Stack<PathEntry> stack,
                                                            @Nonnull final Set<Node> completed )
   {
     stack.add( entry );
-    for ( final Edge edge : entry._node.getDependsOn() )
+    for ( final Edge edge : entry.getNode().getDependsOn() )
     {
       for ( final Node node : edge.getSatisfiedBy() )
       {
-        final Entry childEntry = new Entry( node, edge );
+        final PathEntry childEntry = new PathEntry( node, edge );
         final int indexOfMatching =
           doesEdgeBreakDependencyChain( edge ) ? -1 : detectCircularDependency( stack, node );
         if ( -1 != indexOfMatching )
@@ -63,7 +62,7 @@ final class CircularDependencyChecker
         {
           if ( !completed.contains( node ) )
           {
-            completed.add( entry._node );
+            completed.add( entry.getNode() );
 
             final int size = stack.size();
             verifyNoCircularDependenciesForNode( graph, childEntry, stack, completed );
@@ -75,18 +74,18 @@ final class CircularDependencyChecker
     stack.pop();
   }
 
-  private static int detectCircularDependency( @Nonnull final Stack<Entry> stack,
+  private static int detectCircularDependency( @Nonnull final Stack<PathEntry> stack,
                                                @Nonnull final Node node )
   {
     int index = stack.size() - 1;
     while ( index > 0 )
     {
-      final Entry entry = stack.get( index );
-      if ( doesEdgeBreakDependencyChain( entry._edge ) )
+      final PathEntry entry = stack.get( index );
+      if ( doesEdgeBreakDependencyChain( entry.getEdge() ) )
       {
         return -1;
       }
-      else if ( entry._node == node )
+      else if ( entry.getNode() == node )
       {
         return index - 1;
       }
@@ -117,79 +116,37 @@ final class CircularDependencyChecker
    * @return a string description.
    */
   @Nonnull
-  private static String describeCircularDependencyPath( @Nonnull final Stack<Entry> stack,
-                                                        @Nonnull final Entry badEntry )
+  private static String describeCircularDependencyPath( @Nonnull final Stack<PathEntry> stack,
+                                                        @Nonnull final PathEntry badEntry )
   {
     final StringBuilder sb = new StringBuilder();
 
     boolean matched = false;
-    for ( final Entry entry : stack )
+    for ( final PathEntry entry : stack )
     {
-      final Node node = entry._node;
-      sb.append( "  " );
-      sb.append( getNodeTypeLabel( node ) );
-      if ( node == badEntry._node )
+      final Node node = entry.getNode();
+      final String connector;
+      if ( node == badEntry.getNode() )
       {
-        sb.append( "+-< " );
+        connector = "+-<";
         matched = true;
       }
       else if ( matched )
       {
-        sb.append( "|   " );
+        connector = "|  ";
       }
       else
       {
-        sb.append( "    " );
+        connector = "   ";
       }
-      sb.append( node.describeBinding() );
+      sb.append( node.describe( connector ) );
 
       sb.append( "\n" );
     }
 
-    final Node node = badEntry._node;
-    sb.append( "  " );
-    sb.append( getNodeTypeLabel( node ) );
-    sb.append( "+-> " );
-    sb.append( node.describeBinding() );
+    sb.append( badEntry.getNode().describe( "+->" ) );
     sb.append( "\n" );
 
     return sb.toString();
-  }
-
-  @Nonnull
-  private static String getNodeTypeLabel( @Nonnull final Node node )
-  {
-    if ( node.hasNoBinding() )
-    {
-      return "[Injector]   ";
-    }
-    else
-    {
-      final Binding binding = node.getBinding();
-      if ( Binding.Type.INJECTABLE == binding.getBindingType() )
-      {
-        return "[Injectable] ";
-      }
-      else
-      {
-        assert Binding.Type.PROVIDES == binding.getBindingType() ||
-               Binding.Type.NULLABLE_PROVIDES == binding.getBindingType();
-        return "[Provides]   ";
-      }
-    }
-  }
-
-  private static class Entry
-  {
-    @Nonnull
-    private final Node _node;
-    @Nullable
-    private final Edge _edge;
-
-    Entry( @Nonnull final Node node, @Nullable final Edge edge )
-    {
-      _node = Objects.requireNonNull( node );
-      _edge = edge;
-    }
   }
 }
