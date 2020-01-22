@@ -281,6 +281,25 @@ public final class StingProcessorTest
                       "@Injector target must not have multiple constructors" },
         new Object[]{ "com.example.injector.NoDirectDependenciesAndNoEagerInIncludesModel",
                       "@Injector target produced an empty object graph. This means that there are no eager values in the includes and there are no dependencies or only unsatisfied optional dependencies defined by the injector" },
+        new Object[]{ "com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel",
+                      "Injector defined by type 'com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel' contains a nullable provides method and a non-optional dependency [com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyModel3] with the same coordinate.\n" +
+                      "  Dependency Path:\n" +
+                      "    [Injector]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel\n" +
+                      "    [Injectable]     com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyModel1\n" +
+                      "    [Provides]    *  com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment1.provideMyModel2\n" +
+                      "  \n" +
+                      "  Bindings:\n" +
+                      "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment2.provideMyModel3\n" +
+                      "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment4.provideMyModel3" },
+        new Object[]{ "com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel",
+                      "Injector defined by type 'com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel' contains a nullable provides method and a non-optional dependency [com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyModel3] with the same coordinate.\n" +
+                      "  Dependency Path:\n" +
+                      "    [Injector]       com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel\n" +
+                      "    [Injectable]     com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyModel1\n" +
+                      "    [Provides]    *  com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment1.provideMyModel2\n" +
+                      "  \n" +
+                      "  Binding:\n" +
+                      "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment2.provideMyModel3" },
 
         new Object[]{ "com.example.injector.circular.ChainedCircularDependencyModel",
                       "Injector contains a circular dependency.\n" +

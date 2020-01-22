@@ -8,7 +8,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -339,11 +338,12 @@ public final class StingProcessor
         .collect( Collectors.toList() );
       if ( !dependency.isOptional() && !nullableProviders.isEmpty() )
       {
-        throw new ProcessorException( "@Nullable annotated provider method is attempting to satisfy non-optional " +
-                                      "dependency " + coordinate + " for injector defined by type " +
-                                      injector.getElement().getQualifiedName() + ".\n\nPath to dependency: " +
-                                      getPath( workEntry ) + ".\n\n@Nullable annotated provider methods: " +
-                                      describeProviderMethods( nullableProviders ),
+        throw new ProcessorException( "Injector defined by type '" + injector.getElement().getQualifiedName() +
+                                      "' contains a nullable provides method and a non-optional dependency " +
+                                      coordinate + " with the same coordinate.\n" +
+                                      "Dependency Path:\n" + getPath( workEntry ) + "\n" +
+                                      "Binding" + ( nullableProviders.size() > 1 ? "s" : "" ) + ":\n" +
+                                      bindingsToString( nullableProviders ),
                                       dependency.getElement() );
       }
       if ( bindings.isEmpty() )
@@ -427,18 +427,6 @@ public final class StingProcessor
       final String filename = toFilename( element ) + GRAPH_SUFFIX;
       JsonUtil.writeJsonResource( processingEnv, element, filename, graph::write );
     }
-  }
-
-  @Nonnull
-  private String describeProviderMethods( final List<Binding> providers )
-  {
-    return providers.stream().map( binding -> {
-      final Binding.Type bindingType = binding.getBindingType();
-      assert Binding.Type.PROVIDES == bindingType || Binding.Type.NULLABLE_PROVIDES == bindingType;
-      final StringWriter sw = new StringWriter();
-      processingEnv.getElementUtils().printElements( sw, binding.getElement() );
-      return sw.toString();
-    } ).collect( Collectors.joining( "\n---\n" ) );
   }
 
   private String getPath( @Nonnull final WorkEntry workEntry )
