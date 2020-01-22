@@ -268,6 +268,15 @@ public final class StingProcessorTest
                       "@Injector target must not must be abstract if the target is a class" },
         new Object[]{ "com.example.injector.EnumInjector",
                       "@Injector target must be an interface or an abstract class" },
+        new Object[]{ "com.example.injector.MultipleCandidatesForSingularDependencyModel",
+                      "Injector defined by type 'com.example.injector.MultipleCandidatesForSingularDependencyModel' contains a dependency [java.lang.Runnable] that expects to be satisfied by a single value but the injector contains multiple values that satisfy the dependency.\n" +
+                      "  \n" +
+                      "  Dependency Path:\n" +
+                      "    [Injector]       com.example.injector.MultipleCandidatesForSingularDependencyModel\n" +
+                      "  \n" +
+                      "  Bindings:\n" +
+                      "    [Provides]       com.example.injector.MultipleCandidatesForSingularDependencyModel.MyFragment1.provideRunnable1\n" +
+                      "    [Provides]       com.example.injector.MultipleCandidatesForSingularDependencyModel.MyFragment2.provideRunnable2" },
         new Object[]{ "com.example.injector.MultipleConstructorClassInjector",
                       "@Injector target must not have multiple constructors" },
         new Object[]{ "com.example.injector.NoDirectDependenciesAndNoEagerInIncludesModel",

@@ -380,14 +380,25 @@ public final class StingProcessor
         {
           //noinspection ConstantConditions
           assert bindings.size() > 1 && !type.isCollection();
-          throw new ProcessorException( "Dependency that expects a single value to satisfy dependency can be " +
-                                        "satisfied by multiple values in injector defined by type " +
-                                        injector.getElement().getQualifiedName() +
-                                        ". Path to dependency: " + getPath( workEntry ) + ". Bindings:",
+          throw new ProcessorException( "Injector defined by type '" + injector.getElement().getQualifiedName() +
+                                        "' contains a dependency " + coordinate + " that expects to be satisfied " +
+                                        "by a single value but the injector contains multiple values that satisfy " +
+                                        "the dependency.\n\n" +
+                                        "Dependency Path:\n" + getPath( workEntry ) + "\n" +
+                                        "Bindings:\n" + bindingsToString( bindings ),
                                         dependency.getElement() );
         }
       }
     }
+  }
+
+  @Nonnull
+  private String bindingsToString( @Nonnull final List<Binding> bindings )
+  {
+    return bindings
+      .stream()
+      .map( b -> "  " + b.getTypeLabel() + "    " + b.describe() )
+      .collect( Collectors.joining( "\n" ) );
   }
 
   private void addDependsOnToWorkList( @Nonnull final Stack<WorkEntry> workList,
