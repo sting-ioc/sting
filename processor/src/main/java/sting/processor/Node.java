@@ -9,8 +9,6 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
 
 final class Node
 {
@@ -165,40 +163,15 @@ final class Node
   @Nonnull
   String getTypeLabel()
   {
-    if ( null == _binding )
-    {
-      return "[Injector]   ";
-    }
-    else if ( Binding.Type.INJECTABLE == _binding.getBindingType() )
-    {
-      return "[Injectable] ";
-    }
-    else
-    {
-      assert Binding.Type.PROVIDES == _binding.getBindingType() ||
-             Binding.Type.NULLABLE_PROVIDES == _binding.getBindingType();
-      return "[Provides]   ";
-    }
+    return null == _binding ? "[Injector]   " : _binding.getTypeLabel();
   }
 
   @Nonnull
   String describeBinding()
   {
-    if ( null == _binding )
-    {
-      return _objectGraph.getInjector().getElement().getQualifiedName().toString();
-    }
-    else if ( Binding.Type.INJECTABLE == _binding.getBindingType() )
-    {
-      return ( (TypeElement) _binding.getElement() ).getQualifiedName().toString();
-    }
-    else
-    {
-      assert Binding.Type.PROVIDES == _binding.getBindingType() ||
-             Binding.Type.NULLABLE_PROVIDES == _binding.getBindingType();
-      final Element element = _binding.getElement();
-      return ( (TypeElement) element.getEnclosingElement() ).getQualifiedName() + "." + element.getSimpleName();
-    }
+    return null == _binding ?
+           _objectGraph.getInjector().getElement().getQualifiedName().toString() :
+           _binding.describe();
   }
 
   void write( @Nonnull final JsonGenerator g )

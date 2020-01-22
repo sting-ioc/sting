@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
 final class Binding
@@ -182,6 +183,34 @@ final class Binding
            ( owner instanceof FragmentDescriptor && Type.PROVIDES == _bindingType ) ||
            ( owner instanceof FragmentDescriptor && Type.NULLABLE_PROVIDES == _bindingType );
     _owner = owner;
+  }
+
+  @Nonnull
+  String describe()
+  {
+    if ( Binding.Type.INJECTABLE == _bindingType )
+    {
+      return ( (TypeElement) _element ).getQualifiedName().toString();
+    }
+    else
+    {
+      assert Binding.Type.PROVIDES == _bindingType || Binding.Type.NULLABLE_PROVIDES == _bindingType;
+      return ( (TypeElement) _element.getEnclosingElement() ).getQualifiedName() + "." + _element.getSimpleName();
+    }
+  }
+
+  @Nonnull
+  String getTypeLabel()
+  {
+    if ( Binding.Type.INJECTABLE == _bindingType )
+    {
+      return "[Injectable] ";
+    }
+    else
+    {
+      assert Binding.Type.PROVIDES == _bindingType || Binding.Type.NULLABLE_PROVIDES == _bindingType;
+      return "[Provides]   ";
+    }
   }
 
   enum Type
