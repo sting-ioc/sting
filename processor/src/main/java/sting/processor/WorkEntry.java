@@ -28,4 +28,35 @@ final class WorkEntry
   {
     return _stack;
   }
+
+  @Nonnull
+  String describePathFromRoot()
+  {
+    final StringBuilder sb = new StringBuilder();
+
+    final int size = _stack.size();
+    for ( int i = 0; i < size; i++ )
+    {
+      final PathEntry entry = _stack.get( i );
+      final Node node = entry.getNode();
+      final String connector;
+      if ( node.hasNoBinding() )
+      {
+        connector = "   ";
+      }
+      else if ( size - 1 == i )
+      {
+        connector = " * ";
+      }
+      else
+      {
+        connector = "   ";
+      }
+      sb.append( node.describe( connector ) );
+
+      sb.append( "\n" );
+    }
+
+    return sb.toString();
+  }
 }

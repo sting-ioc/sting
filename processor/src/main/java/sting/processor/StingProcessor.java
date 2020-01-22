@@ -341,7 +341,7 @@ public final class StingProcessor
         throw new ProcessorException( "Injector defined by type '" + injector.getElement().getQualifiedName() +
                                       "' contains a nullable provides method and a non-optional dependency " +
                                       coordinate + " with the same coordinate.\n" +
-                                      "Dependency Path:\n" + getPath( workEntry ) + "\n" +
+                                      "Dependency Path:\n" + workEntry.describePathFromRoot() + "\n" +
                                       "Binding" + ( nullableProviders.size() > 1 ? "s" : "" ) + ":\n" +
                                       bindingsToString( nullableProviders ),
                                       dependency.getElement() );
@@ -356,7 +356,7 @@ public final class StingProcessor
         {
           throw new ProcessorException( "Injector defined by type '" + injector.getElement().getQualifiedName() +
                                         "' is unable to satisfy non-optional dependency " + coordinate + ".\n" +
-                                        "Path:\n" + getPath( workEntry ),
+                                        "Path:\n" + workEntry.describePathFromRoot(),
                                         dependency.getElement() );
         }
       }
@@ -384,7 +384,7 @@ public final class StingProcessor
                                         "' contains a dependency " + coordinate + " that expects to be satisfied " +
                                         "by a single value but the injector contains multiple values that satisfy " +
                                         "the dependency.\n\n" +
-                                        "Dependency Path:\n" + getPath( workEntry ) + "\n" +
+                                        "Dependency Path:\n" + workEntry.describePathFromRoot() + "\n" +
                                         "Bindings:\n" + bindingsToString( bindings ),
                                         dependency.getElement() );
         }
@@ -427,42 +427,6 @@ public final class StingProcessor
       final String filename = toFilename( element ) + GRAPH_SUFFIX;
       JsonUtil.writeJsonResource( processingEnv, element, filename, graph::write );
     }
-  }
-
-  private String getPath( @Nonnull final WorkEntry workEntry )
-  {
-    return describePathFromRoot( workEntry.getStack() );
-  }
-
-  @Nonnull
-  private static String describePathFromRoot( @Nonnull final Stack<PathEntry> stack )
-  {
-    final StringBuilder sb = new StringBuilder();
-
-    final int size = stack.size();
-    for ( int i = 0; i < size; i++ )
-    {
-      final PathEntry entry = stack.get( i );
-      final Node node = entry.getNode();
-      final String connector;
-      if ( node.hasNoBinding() )
-      {
-        connector = "   ";
-      }
-      else if ( size - 1 == i )
-      {
-        connector = " * ";
-      }
-      else
-      {
-        connector = "   ";
-      }
-      sb.append( node.describe( connector ) );
-
-      sb.append( "\n" );
-    }
-
-    return sb.toString();
   }
 
   private boolean isInjectorResolved( @Nonnull final InjectorDescriptor injector )
