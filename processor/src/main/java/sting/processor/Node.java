@@ -148,6 +148,39 @@ final class Node
     _usedBy.add( edge );
   }
 
+  /**
+   * Describe a node as a single line.
+   * Typically this is used when emitting messages to user.
+   *
+   * @param connector a 3-character string that appears between type label and the node description. Typically
+   *                  used for describing connectors between successive nodes.
+   * @return the string description.
+   */
+  @Nonnull
+  String describe( @Nonnull final String connector )
+  {
+    return "  " + getTypeLabel() + connector + " " + describeBinding();
+  }
+
+  @Nonnull
+  String getTypeLabel()
+  {
+    if ( null == _binding )
+    {
+      return "[Injector]   ";
+    }
+    else if ( Binding.Type.INJECTABLE == _binding.getBindingType() )
+    {
+      return "[Injectable] ";
+    }
+    else
+    {
+      assert Binding.Type.PROVIDES == _binding.getBindingType() ||
+             Binding.Type.NULLABLE_PROVIDES == _binding.getBindingType();
+      return "[Provides]   ";
+    }
+  }
+
   @Nonnull
   String describeBinding()
   {
