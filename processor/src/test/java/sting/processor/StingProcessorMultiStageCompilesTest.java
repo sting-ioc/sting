@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.Compiler;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -57,8 +56,8 @@ public final class StingProcessorMultiStageCompilesTest
     assertDescriptorCount( stage2Output, 1L );
 
     final Path targetDir = Files.createTempDirectory( "sting" );
-    outputFiles( stage1.generatedFiles(), targetDir );
-    outputFiles( stage2.generatedFiles(), targetDir );
+    outputFiles( stage1.generatedFiles(), targetDir, f -> true );
+    outputFiles( stage2.generatedFiles(), targetDir, f -> true );
 
     final ImmutableList<File> classPath = buildClasspath( targetDir.toFile() );
     final Compilation stage3 =
@@ -145,28 +144,5 @@ public final class StingProcessorMultiStageCompilesTest
     final List<String> options = new ArrayList<>( super.getOptions() );
     options.add( "-Asting.verify_descriptors=true" );
     return options;
-  }
-
-  private void outputFiles( @Nonnull final ImmutableList<JavaFileObject> files, @Nonnull final Path targetDir )
-    throws IOException
-  {
-    for ( final JavaFileObject f : files )
-    {
-      outputFile( f, targetDir );
-    }
-  }
-
-  private void outputFile( @Nonnull final JavaFileObject fileObject, @Nonnull final Path targetDir )
-    throws IOException
-  {
-    final String filename =
-      fileObject.getName().replace( "/SOURCE_OUTPUT/", "" ).replace( "/CLASS_OUTPUT/", "" );
-    final Path target = targetDir.resolve( filename );
-    final File dir = target.getParent().toFile();
-    if ( !dir.exists() )
-    {
-      assertTrue( dir.mkdirs() );
-    }
-    Files.copy( fileObject.openInputStream(), target );
   }
 }
