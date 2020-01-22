@@ -11,7 +11,6 @@ complete as there is too much un-said.
 * Add a `@PostConstruct` hook so that custom code can be run after eager beans are constructed. Probably has to
   be on `@Fragment` types will take as parameters the dependencies on which it operates. The `@PostConstruct` will
   only be invoked if the binding is present. A binding can be made optional by annotating it with `@Nullable`.
-* Add test suite for `Registry`
 * Injectors that are inherited by another injector can disable eager services? For usage in tests.
 * Add test for unresolved `@Injector`. Add a separate test for unresolved include and another for
   unresolved dependency.
