@@ -37,6 +37,11 @@ complete as there is too much un-said.
   * Node = very similar to Value but a little more precise
   * Edge = the actual between two nodes
 
+* Generate a [.dot](https://en.wikipedia.org/wiki/DOT_(graph_description_language) formatted version of
+  object graph so that it can be fed into graphviz
+
+* Generate a website where you can view the graph similar to [dagger-browser](https://github.com/Snapchat/dagger-browser)
+
 ## Old Notes
 
 ## Differences from Dagger
