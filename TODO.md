@@ -7,7 +7,6 @@ complete as there is too much un-said.
 * Consider generating warnings if `@Fragment` types will not resolve unless the user supplies an explicit
   `incomplete` parameter. By resolve it means that every component should have all of it's dependencies
   present.
-* Support `SUPPLIER_COLLECTION` dependency type.
 * Add a `@PostConstruct` hook so that custom code can be run after eager beans are constructed. Probably has to
   be on `@Fragment` types will take as parameters the dependencies on which it operates. The `@PostConstruct` will
   only be invoked if the binding is present. A binding can be made optional by annotating it with `@Nullable`.
