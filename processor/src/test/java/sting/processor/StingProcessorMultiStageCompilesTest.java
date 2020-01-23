@@ -2,15 +2,10 @@ package sting.processor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.testing.compile.Compilation;
-import com.google.testing.compile.Compiler;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import javax.annotation.Nonnull;
-import javax.annotation.processing.Processor;
 import javax.tools.JavaFileObject;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
@@ -71,14 +66,5 @@ public final class StingProcessorMultiStageCompilesTest
   private void assertClassFileCount( @Nonnull final ImmutableList<JavaFileObject> output, final long count )
   {
     assertEquals( output.stream().filter( f -> JavaFileObject.Kind.CLASS == f.getKind() ).count(), count );
-  }
-
-  @Nonnull
-  @Override
-  protected List<String> getOptions()
-  {
-    final List<String> options = new ArrayList<>( super.getOptions() );
-    options.add( "-Asting.verify_descriptors=true" );
-    return options;
   }
 }

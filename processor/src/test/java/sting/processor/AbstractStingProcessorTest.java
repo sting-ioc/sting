@@ -43,6 +43,15 @@ public abstract class AbstractStingProcessorTest
   }
 
   @Nonnull
+  @Override
+  protected List<String> getOptions()
+  {
+    final List<String> options = new ArrayList<>( super.getOptions() );
+    options.add( "-Asting.verify_descriptors=true" );
+    return options;
+  }
+
+  @Nonnull
   final String jsonGraphOutput( @Nonnull final String classname )
   {
     return toFilename( "expected", classname, "", StingProcessor.GRAPH_SUFFIX );
