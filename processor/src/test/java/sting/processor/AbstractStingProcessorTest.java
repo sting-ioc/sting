@@ -48,6 +48,7 @@ public abstract class AbstractStingProcessorTest
   {
     final List<String> options = new ArrayList<>( super.getOptions() );
     options.add( "-Asting.verify_descriptors=true" );
+    options.add( "-Asting.verbose_out_of_round.errors=false" );
     return options;
   }
 

@@ -65,6 +65,7 @@ import org.realityforge.proton.SuperficialValidation;
 @SupportedOptions( { "sting.defer.unresolved",
                      "sting.defer.errors",
                      "sting.emit_json_descriptors",
+                     "sting.verbose_out_of_round.errors",
                      "sting.verify_descriptors" } )
 public final class StingProcessor
   extends AbstractStandardProcessor
