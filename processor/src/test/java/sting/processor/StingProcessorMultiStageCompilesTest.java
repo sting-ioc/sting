@@ -107,8 +107,9 @@ public final class StingProcessorMultiStageCompilesTest
     {
       if ( classloader == ClassLoader.getSystemClassLoader() )
       {
-        for ( final String element : System.getProperty( "java.class.path" )
-          .split( System.getProperty( "path.separator" ) ) )
+        final String[] baseClassPathElements =
+          System.getProperty( "java.class.path" ).split( System.getProperty( "path.separator" ) );
+        for ( final String element : baseClassPathElements )
         {
           elements.add( new File( element ) );
         }
