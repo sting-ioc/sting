@@ -639,7 +639,7 @@ public final class StingProcessor
           throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
                                                               "return a value that is a " +
                                                               Supplier.class.getCanonicalName() +
-                                                              " type with a wildcard parameter" ),
+                                                              " type with a wildcard type parameter" ),
                                         method );
         }
         type = DependencyDescriptor.Type.SUPPLIER;
@@ -653,7 +653,7 @@ public final class StingProcessor
           throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
                                                               "return a value that is a " +
                                                               Collection.class.getCanonicalName() +
-                                                              " type with a wildcard parameter" ),
+                                                              " type with a wildcard type parameter" ),
                                         method );
         }
         else if ( TypeKind.DECLARED == typeArgument.getKind() &&
@@ -966,7 +966,7 @@ public final class StingProcessor
           throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                               "have a method with a parameter that is a " +
                                                               Supplier.class.getCanonicalName() +
-                                                              " type with a wildcard parameter" ),
+                                                              " type with a wildcard type parameter" ),
                                         parameter );
         }
         type = DependencyDescriptor.Type.SUPPLIER;
@@ -980,7 +980,7 @@ public final class StingProcessor
           throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                               "have a method with a parameter that is a " +
                                                               Collection.class.getCanonicalName() +
-                                                              " type with a wildcard parameter" ),
+                                                              " type with a wildcard type parameter" ),
                                         parameter );
         }
         else if ( TypeKind.DECLARED == typeArgument.getKind() &&
@@ -1248,7 +1248,7 @@ public final class StingProcessor
           throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
                                                               "have a constructor with a parameter that is " +
                                                               "a " + Supplier.class.getCanonicalName() +
-                                                              " type with a wildcard parameter" ),
+                                                              " type with a wildcard type parameter" ),
                                         parameter );
         }
         type = DependencyDescriptor.Type.SUPPLIER;
@@ -1262,7 +1262,7 @@ public final class StingProcessor
           throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
                                                               "have a constructor with a parameter that " +
                                                               "is a " + Collection.class.getCanonicalName() +
-                                                              " type with a wildcard parameter" ),
+                                                              " type with a wildcard type parameter" ),
                                         parameter );
         }
         else if ( TypeKind.DECLARED == typeArgument.getKind() &&

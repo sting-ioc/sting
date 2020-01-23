@@ -219,9 +219,9 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.provides.dependency.RawSupplierDependencyModel",
                       "@Fragment target must not have a method with a parameter that is a raw java.util.function.Supplier type" },
         new Object[]{ "com.example.fragment.provides.dependency.WildcardCollectionDependencyModel",
-                      "@Fragment target must not have a method with a parameter that is a java.util.Collection type with a wildcard parameter" },
+                      "@Fragment target must not have a method with a parameter that is a java.util.Collection type with a wildcard type parameter" },
         new Object[]{ "com.example.fragment.provides.dependency.WildcardSupplierDependencyModel",
-                      "@Fragment target must not have a method with a parameter that is a java.util.function.Supplier type with a wildcard parameter" },
+                      "@Fragment target must not have a method with a parameter that is a java.util.function.Supplier type with a wildcard type parameter" },
 
         new Object[]{ "com.example.fragment.provides.types.BadType1Model",
                       "@Provides target has a type parameter containing the value java.lang.Runnable that is not assignable to the return type of the method" },
@@ -251,9 +251,9 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.dependency.RawSupplierDependencyModel",
                       "@Injectable target must not have a constructor with a parameter that is a raw java.util.function.Supplier type" },
         new Object[]{ "com.example.injectable.dependency.WildcardCollectionDependencyModel",
-                      "@Injectable target must not have a constructor with a parameter that is a java.util.Collection type with a wildcard parameter" },
+                      "@Injectable target must not have a constructor with a parameter that is a java.util.Collection type with a wildcard type parameter" },
         new Object[]{ "com.example.injectable.dependency.WildcardSupplierDependencyModel",
-                      "@Injectable target must not have a constructor with a parameter that is a java.util.function.Supplier type with a wildcard parameter" },
+                      "@Injectable target must not have a constructor with a parameter that is a java.util.function.Supplier type with a wildcard type parameter" },
 
         new Object[]{ "com.example.injectable.types.BadType1Model",
                       "@Injectable target has a type parameter containing the value java.lang.Runnable that is not assignable to the declaring type" },
@@ -342,9 +342,9 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.dependency.RawSupplierDependencyModel",
                       "@Dependency target must not return a value that is a raw java.util.function.Supplier type" },
         new Object[]{ "com.example.injector.dependency.WildcardCollectionDependencyModel",
-                      "@Dependency target must not return a value that is a java.util.Collection type with a wildcard parameter" },
+                      "@Dependency target must not return a value that is a java.util.Collection type with a wildcard type parameter" },
         new Object[]{ "com.example.injector.dependency.WildcardSupplierDependencyModel",
-                      "@Dependency target must not return a value that is a java.util.function.Supplier type with a wildcard parameter" },
+                      "@Dependency target must not return a value that is a java.util.function.Supplier type with a wildcard type parameter" },
 
         new Object[]{ "com.example.injector.includes.BadTypesInIncludesModel",
                       "@Injector target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment or @Injectable" }
