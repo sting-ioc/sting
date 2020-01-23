@@ -38,7 +38,8 @@ final class DescriptorIO
   Object read( @Nonnull final DataInputStream dis, @Nonnull final String classname )
     throws IOException
   {
-    if ( FILE_HEADER != dis.readInt() )
+    final int header = dis.readInt();
+    if ( FILE_HEADER != header )
     {
       throw new IOException( "Descriptor for " + classname + " is in an incorrect format. Bad header." );
     }
