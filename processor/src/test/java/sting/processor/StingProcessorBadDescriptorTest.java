@@ -1,6 +1,7 @@
 package sting.processor;
 
 import com.google.testing.compile.Compilation;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -150,11 +151,7 @@ public final class StingProcessorBadDescriptorTest
         .resolve( "scenario1" )
         .resolve( "Model1.sbf" );
 
-    final RandomAccessFile file = new RandomAccessFile( descriptor.toFile().getAbsolutePath(), "rw" );
-
-    // This is incorrect header
-    file.setLength( 8 );
-    file.close();
+    truncateDescriptor( descriptor );
 
     final Compilation stage2 =
       compiler()
@@ -224,8 +221,7 @@ public final class StingProcessorBadDescriptorTest
         .resolve( "scenario2" )
         .resolve( "Model1.sbf" );
 
-    Files.delete( descriptor );
-    assertFalse( Files.exists( descriptor ) );
+    truncateDescriptor( descriptor );
 
     final Compilation stage2 =
       compiler()
@@ -235,10 +231,7 @@ public final class StingProcessorBadDescriptorTest
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
     assertDiagnosticPresent( stage2,
-                             "Injector defined by type 'com.example.bad_descriptors.scenario2.MyInjectorModel' is unable to satisfy non-optional dependency [com.example.bad_descriptors.scenario2.Model1].\n" +
-                             "  Path:\n" +
-                             "    [Injector]       com.example.bad_descriptors.scenario2.MyInjectorModel\n" +
-                             "    [Injectable]  *  com.example.bad_descriptors.scenario2.Model2" );
+                             "Failed to read the Sting descriptor for type com.example.bad_descriptors.scenario2.Model1. Error: java.io.EOFException" );
     assertDiagnosticPresent( stage2,
                              "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
@@ -254,5 +247,13 @@ public final class StingProcessorBadDescriptorTest
     }
     fail( "Failed but missing expected message:\n" + message +
           "\nActual diagnostics:\n" + describeFailureDiagnostics( compilation ) );
+  }
+
+  private void truncateDescriptor( @Nonnull final Path descriptor )
+    throws IOException
+  {
+    final RandomAccessFile file = new RandomAccessFile( descriptor.toFile().getAbsolutePath(), "rw" );
+    file.setLength( 8 );
+    file.close();
   }
 }
