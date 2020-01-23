@@ -236,6 +236,42 @@ public final class StingProcessorBadDescriptorTest
                              "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
 
+  @Test
+  public void missingDescriptorForFragmentDependency()
+    throws Exception
+  {
+    final Compilation stage1 =
+      compiler().compile( inputs( "com.example.bad_descriptors.scenario3.Model1",
+                                  "com.example.bad_descriptors.scenario3.Model2",
+                                  "com.example.bad_descriptors.scenario3.MyFragment" ) );
+
+    assertCompilationSuccessful( stage1 );
+
+    final Path targetDir = Files.createTempDirectory( "sting" );
+    outputFiles( stage1.generatedFiles(), targetDir );
+
+    final Path descriptor =
+      targetDir.resolve( "com" )
+        .resolve( "example" )
+        .resolve( "bad_descriptors" )
+        .resolve( "scenario3" )
+        .resolve( "Model1.sbf" );
+
+    truncateDescriptor( descriptor );
+
+    final Compilation stage2 =
+      compiler()
+        .withClasspath( buildClasspath( targetDir.toFile() ) )
+        .compile( inputs( "com.example.bad_descriptors.scenario3.MyInjectorModel" ) );
+
+    assertEquals( stage2.status(), Compilation.Status.FAILURE );
+
+    assertDiagnosticPresent( stage2,
+                             "Failed to read the Sting descriptor for type com.example.bad_descriptors.scenario3.Model1. Error: java.io.EOFException" );
+    assertDiagnosticPresent( stage2,
+                             "StingProcessor failed to process 1 types. See earlier warnings for further details." );
+  }
+
   private void assertDiagnosticPresent( @Nonnull final Compilation compilation, @Nonnull final String message )
   {
     for ( final Diagnostic<? extends JavaFileObject> diagnostic : compilation.diagnostics() )
