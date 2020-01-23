@@ -56,8 +56,8 @@ public final class StingProcessorMultiStageCompilesTest
     assertDescriptorCount( stage2Output, 1L );
 
     final Path targetDir = Files.createTempDirectory( "sting" );
-    outputFiles( stage1.generatedFiles(), targetDir, f -> true );
-    outputFiles( stage2.generatedFiles(), targetDir, f -> true );
+    outputFiles( stage1.generatedFiles(), targetDir );
+    outputFiles( stage2.generatedFiles(), targetDir );
 
     final ImmutableList<File> classPath = buildClasspath( targetDir.toFile() );
     final Compilation stage3 =
