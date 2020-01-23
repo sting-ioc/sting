@@ -7,9 +7,10 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.Processor;
 import javax.tools.JavaFileObject;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
@@ -22,9 +23,7 @@ public final class StingProcessorMultiStageCompilesTest
     throws Exception
   {
     final Compilation stage1 =
-      Compiler.javac()
-        .withProcessors( Collections.singletonList( processor() ) )
-        .withOptions( getOptions() )
+      compiler()
         .compile( inputs( "com.example.multistage.stage1.Model1",
                           "com.example.multistage.stage1.Model2",
                           "com.example.multistage.stage1.MyFragment" ) );
@@ -37,10 +36,7 @@ public final class StingProcessorMultiStageCompilesTest
     assertDescriptorCount( stage1Output, 2L );
 
     final Compilation stage2 =
-      Compiler.javac()
-        .withProcessors( Collections.singletonList( processor() ) )
-        .withOptions( getOptions() )
-        .compile( inputs( "com.example.multistage.stage2.Model3" ) );
+      compiler().compile( inputs( "com.example.multistage.stage2.Model3" ) );
 
     assertCompilationSuccessful( stage2 );
     final ImmutableList<JavaFileObject> stage2Output = stage2.generatedFiles();
@@ -55,9 +51,7 @@ public final class StingProcessorMultiStageCompilesTest
 
     final ImmutableList<File> classPath = buildClasspath( targetDir.toFile() );
     final Compilation stage3 =
-      Compiler.javac()
-        .withProcessors( Collections.singletonList( processor() ) )
-        .withOptions( getOptions() )
+      compiler()
         .withClasspath( classPath )
         .compile( inputs( "com.example.multistage.stage3.MultiStageInjectorModel" ) );
 

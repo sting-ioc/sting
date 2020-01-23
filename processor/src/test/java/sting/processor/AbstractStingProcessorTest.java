@@ -1,5 +1,9 @@
 package sting.processor;
 
+import com.google.testing.compile.Compiler;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.Processor;
 import org.realityforge.proton.qa.AbstractProcessorTest;
@@ -19,6 +23,23 @@ public abstract class AbstractStingProcessorTest
   protected String getOptionPrefix()
   {
     return "sting";
+  }
+
+  @Nonnull
+  protected final Compiler compiler()
+  {
+    return Compiler.javac()
+      .withProcessors( processors() )
+      .withOptions( getOptions() );
+  }
+
+  @Nonnull
+  private List<Processor> processors()
+  {
+    final List<Processor> processors = new ArrayList<>();
+    processors.add( processor() );
+    processors.addAll( Arrays.asList( additionalProcessors() ) );
+    return processors;
   }
 
   @Nonnull
