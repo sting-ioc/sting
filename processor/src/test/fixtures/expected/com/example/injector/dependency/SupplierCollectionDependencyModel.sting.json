@@ -1,0 +1,11 @@
+{
+  "schema": "injector/1",
+  "dependencies": [
+    {
+      "type": "SUPPLIER_COLLECTION",
+      "coordinate": {
+        "type": "com.example.injector.dependency.SupplierCollectionDependencyModel.MyModel"
+      }
+    }
+  ]
+}

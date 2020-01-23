@@ -659,7 +659,38 @@ public final class StingProcessor
         else if ( TypeKind.DECLARED == typeArgument.getKind() &&
                   Supplier.class.getCanonicalName().equals( getClassname( (DeclaredType) typeArgument ) ) )
         {
-          throw new IllegalStateException( "Not yet implemented" );
+          final DeclaredType supplierType = (DeclaredType) typeArgument;
+          final List<? extends TypeMirror> nestedTypeArguments = supplierType.getTypeArguments();
+          if ( nestedTypeArguments.isEmpty() )
+          {
+            throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                                "return a value with a supplier " +
+                                                                "collection parameter that contains a raw " +
+                                                                Supplier.class.getCanonicalName() + " type" ),
+                                          method );
+          }
+          else
+          {
+            final TypeMirror nestedParameterType = nestedTypeArguments.get( 0 );
+            if ( TypeKind.WILDCARD == nestedParameterType.getKind() )
+            {
+              throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                                  "return a value with a supplier collection parameter with a wildcard type parameter" ),
+                                            method );
+            }
+            else if ( TypeKind.DECLARED == nestedParameterType.getKind() &&
+                      isParameterized( (DeclaredType) nestedParameterType ) )
+            {
+              throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                                  "return a value with a supplier collection that contains a parameterized type" ),
+                                            method );
+            }
+            else
+            {
+              type = DependencyDescriptor.Type.SUPPLIER_COLLECTION;
+              dependencyValueType = nestedParameterType;
+            }
+          }
         }
         else
         {
@@ -986,7 +1017,38 @@ public final class StingProcessor
         else if ( TypeKind.DECLARED == typeArgument.getKind() &&
                   Supplier.class.getCanonicalName().equals( getClassname( (DeclaredType) typeArgument ) ) )
         {
-          throw new IllegalStateException( "Not yet implemented" );
+          final DeclaredType supplierType = (DeclaredType) typeArgument;
+          final List<? extends TypeMirror> nestedTypeArguments = supplierType.getTypeArguments();
+          if ( nestedTypeArguments.isEmpty() )
+          {
+            throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                                "have a method with a supplier " +
+                                                                "collection parameter that contains a raw " +
+                                                                Supplier.class.getCanonicalName() + " type" ),
+                                          parameter );
+          }
+          else
+          {
+            final TypeMirror nestedParameterType = nestedTypeArguments.get( 0 );
+            if ( TypeKind.WILDCARD == nestedParameterType.getKind() )
+            {
+              throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                                  "have a method with a supplier collection parameter with a wildcard type parameter" ),
+                                            parameter );
+            }
+            else if ( TypeKind.DECLARED == nestedParameterType.getKind() &&
+                      isParameterized( (DeclaredType) nestedParameterType ) )
+            {
+              throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                                  "have a method with a supplier collection that contains a parameterized type" ),
+                                            parameter );
+            }
+            else
+            {
+              type = DependencyDescriptor.Type.SUPPLIER_COLLECTION;
+              dependencyValueType = nestedParameterType;
+            }
+          }
         }
         else
         {
@@ -1268,7 +1330,38 @@ public final class StingProcessor
         else if ( TypeKind.DECLARED == typeArgument.getKind() &&
                   Supplier.class.getCanonicalName().equals( getClassname( (DeclaredType) typeArgument ) ) )
         {
-          throw new IllegalStateException( "Not yet implemented" );
+          final DeclaredType supplierType = (DeclaredType) typeArgument;
+          final List<? extends TypeMirror> nestedTypeArguments = supplierType.getTypeArguments();
+          if ( nestedTypeArguments.isEmpty() )
+          {
+            throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                                "have a constructor with a supplier " +
+                                                                "collection parameter that contains a raw " +
+                                                                Supplier.class.getCanonicalName() + " type" ),
+                                          parameter );
+          }
+          else
+          {
+            final TypeMirror nestedParameterType = nestedTypeArguments.get( 0 );
+            if ( TypeKind.WILDCARD == nestedParameterType.getKind() )
+            {
+              throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                                  "have a constructor with a supplier collection parameter with a wildcard type parameter" ),
+                                            parameter );
+            }
+            else if ( TypeKind.DECLARED == nestedParameterType.getKind() &&
+                      isParameterized( (DeclaredType) nestedParameterType ) )
+            {
+              throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                                  "have a constructor with a supplier collection that contains a parameterized type" ),
+                                            parameter );
+            }
+            else
+            {
+              type = DependencyDescriptor.Type.SUPPLIER_COLLECTION;
+              dependencyValueType = nestedParameterType;
+            }
+          }
         }
         else
         {
@@ -1384,5 +1477,10 @@ public final class StingProcessor
         throw e;
       }
     }
+  }
+
+  private boolean isParameterized( @Nonnull final DeclaredType nestedParameterType )
+  {
+    return !( (TypeElement) nestedParameterType.asElement() ).getTypeParameters().isEmpty();
   }
 }
