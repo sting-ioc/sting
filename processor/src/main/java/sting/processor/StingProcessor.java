@@ -591,8 +591,7 @@ public final class StingProcessor
     final TypeMirror dependencyValueType;
     if ( TypeKind.ARRAY == returnType.getKind() )
     {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
-                                                          "return a value that is an array type" ),
+      throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME, "return an array type" ),
                                     method );
     }
     else if ( null == declaredType )
@@ -605,23 +604,23 @@ public final class StingProcessor
       if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
         throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
-                                                            "return a value that is a raw " +
-                                                            Supplier.class.getCanonicalName() + " type" ),
+                                                            "return a raw " +
+                                                            Supplier.class.getCanonicalName() +
+                                                            " type" ),
                                       method );
       }
       else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
         throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
-                                                            "return a value that is a raw " +
+                                                            "return a a raw " +
                                                             Collection.class.getCanonicalName() + " type" ),
                                       method );
       }
       else if ( !( (TypeElement) declaredType.asElement() ).getTypeParameters().isEmpty() )
       {
         throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
-                                                            "return a value that is a raw parameterized " +
-                                                            "type. Parameterized types are only permitted for " +
-                                                            "specific types such as " +
+                                                            "return a raw parameterized type. Parameterized " +
+                                                            "types are only permitted for specific types such as " +
                                                             Supplier.class.getCanonicalName() + " and " +
                                                             Collection.class.getCanonicalName() ),
                                       method );
@@ -637,8 +636,7 @@ public final class StingProcessor
         if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
-                                                              "return a value that is a " +
-                                                              Supplier.class.getCanonicalName() +
+                                                              "return a " + Supplier.class.getCanonicalName() +
                                                               " type with a wildcard type parameter" ),
                                         method );
         }
@@ -651,8 +649,7 @@ public final class StingProcessor
         if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
-                                                              "return a value that is a " +
-                                                              Collection.class.getCanonicalName() +
+                                                              "return a " + Collection.class.getCanonicalName() +
                                                               " type with a wildcard type parameter" ),
                                         method );
         }
@@ -664,8 +661,8 @@ public final class StingProcessor
           if ( nestedTypeArguments.isEmpty() )
           {
             throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
-                                                                "return a value with a supplier " +
-                                                                "collection parameter that contains a raw " +
+                                                                "return a supplier collection parameter that " +
+                                                                "contains a raw " +
                                                                 Supplier.class.getCanonicalName() + " type" ),
                                           method );
           }
@@ -675,14 +672,14 @@ public final class StingProcessor
             if ( TypeKind.WILDCARD == nestedParameterType.getKind() )
             {
               throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
-                                                                  "return a value with a supplier collection parameter with a wildcard type parameter" ),
+                                                                  "return a supplier collection parameter with a wildcard type parameter" ),
                                             method );
             }
             else if ( TypeKind.DECLARED == nestedParameterType.getKind() &&
                       isParameterized( (DeclaredType) nestedParameterType ) )
             {
               throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
-                                                                  "return a value with a supplier collection that contains a parameterized type" ),
+                                                                  "return a a supplier collection type that contains a parameterized type" ),
                                             method );
             }
             else
@@ -1046,7 +1043,7 @@ public final class StingProcessor
                       isParameterized( (DeclaredType) nestedParameterType ) )
             {
               throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                                  "have a method with a supplier collection that contains a parameterized type" ),
+                                                                  "have a method with a supplier collection parameter that contains a parameterized type" ),
                                             parameter );
             }
             else
@@ -1365,7 +1362,7 @@ public final class StingProcessor
                       isParameterized( (DeclaredType) nestedParameterType ) )
             {
               throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                                  "have a constructor with a supplier collection that contains a parameterized type" ),
+                                                                  "have a constructor with a supplier collection parameter that contains a parameterized type" ),
                                             parameter );
             }
             else
