@@ -1,6 +1,7 @@
 package sting.processor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +69,12 @@ final class Registry
   FragmentDescriptor getFragmentByClassName( @Nonnull final String name )
   {
     return Objects.requireNonNull( findFragmentByClassName( name ) );
+  }
+
+  @Nonnull
+  Collection<FragmentDescriptor> getFragments()
+  {
+    return _fragments.values();
   }
 
   /**
