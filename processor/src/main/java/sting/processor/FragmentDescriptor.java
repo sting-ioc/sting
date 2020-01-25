@@ -65,7 +65,7 @@ final class FragmentDescriptor
     return _javaStubGenerated;
   }
 
-   void markJavaStubAsGenerated()
+  void markJavaStubAsGenerated()
   {
     _javaStubGenerated = true;
   }
