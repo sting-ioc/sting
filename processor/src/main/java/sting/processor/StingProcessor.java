@@ -222,7 +222,6 @@ public final class StingProcessor
         {
           _registry.deregisterInjector( injector );
           buildAndEmitObjectGraph( injector );
-          _registry.deregisterInjector( injector );
         }
       }, injector.getElement() );
     }
