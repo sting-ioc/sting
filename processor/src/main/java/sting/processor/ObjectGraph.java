@@ -81,6 +81,11 @@ final class ObjectGraph
     return _nodes.values();
   }
 
+  int getNodeCount()
+  {
+    return _nodes.size();
+  }
+
   @Nonnull
   List<Node> getOrderedNodes()
   {
