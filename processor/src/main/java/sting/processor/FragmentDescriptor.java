@@ -43,6 +43,12 @@ final class FragmentDescriptor
   }
 
   @Nonnull
+  String getQualifiedTypeName()
+  {
+    return _element.getQualifiedName().toString();
+  }
+
+  @Nonnull
   TypeElement getElement()
   {
     return _element;
