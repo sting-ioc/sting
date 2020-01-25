@@ -26,6 +26,10 @@ final class FragmentDescriptor
    */
   @Nonnull
   private final Collection<Binding> _bindings;
+  /**
+   * True if the java stub has been generated.
+   */
+  private boolean _javaStubGenerated;
 
   FragmentDescriptor( @Nonnull final TypeElement element,
                       @Nonnull final Collection<DeclaredType> includes,
@@ -54,6 +58,16 @@ final class FragmentDescriptor
   Collection<Binding> getBindings()
   {
     return _bindings;
+  }
+
+  boolean isJavaStubGenerated()
+  {
+    return _javaStubGenerated;
+  }
+
+   void markJavaStubAsGenerated()
+  {
+    _javaStubGenerated = true;
   }
 
   void write( @Nonnull final JsonGenerator g )

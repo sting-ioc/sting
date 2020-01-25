@@ -114,7 +114,10 @@ final class DescriptorIO
     {
       bindings[ i ] = readBinding( dis, enclosingElement );
     }
-    return new FragmentDescriptor( enclosingElement, Arrays.asList( types ), Arrays.asList( bindings ) );
+    final FragmentDescriptor fragment =
+      new FragmentDescriptor( enclosingElement, Arrays.asList( types ), Arrays.asList( bindings ) );
+    fragment.markJavaStubAsGenerated();
+    return fragment;
   }
 
   private void writeInjectable( @Nonnull final DataOutputStream dos, @Nonnull final InjectableDescriptor injectable )

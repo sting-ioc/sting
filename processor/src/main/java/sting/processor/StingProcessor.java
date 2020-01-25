@@ -161,6 +161,7 @@ public final class StingProcessor
                                             (Collection<TypeElement>) env.getElementsAnnotatedWith( a ),
                                             this::processInjector ) );
 
+    processResolvedFragments( env );
     processResolvedInjectors( env );
 
     errorIfProcessingOverAndInvalidTypesDetected( env );
@@ -194,6 +195,21 @@ public final class StingProcessor
                            "as not all of the dependencies could be resolved." );
         }
       }
+    }
+  }
+
+  private void processResolvedFragments( @Nonnull final RoundEnvironment env )
+  {
+    for ( final FragmentDescriptor fragment : new ArrayList<>( _registry.getFragments() ) )
+    {
+      performAction( env, e -> {
+        if ( isFragmentResolved( fragment ) && !fragment.isJavaStubGenerated() )
+        {
+          fragment.markJavaStubAsGenerated();
+          writeBinaryDescriptor( fragment.getElement(), fragment );
+          emitFragmentJsonDescriptor( fragment );
+        }
+      }, fragment.getElement() );
     }
   }
 
@@ -431,9 +447,19 @@ public final class StingProcessor
     }
   }
 
+  private boolean isFragmentResolved( @Nonnull final FragmentDescriptor fragment )
+  {
+    return isResolved( fragment.getElement(), fragment.getIncludes() );
+  }
+
   private boolean isInjectorResolved( @Nonnull final InjectorDescriptor injector )
   {
-    for ( final DeclaredType include : injector.getIncludes() )
+    return isResolved( injector.getElement(), injector.getIncludes() );
+  }
+
+  private boolean isResolved( @Nonnull final TypeElement originator, @Nonnull final Collection<DeclaredType> includes )
+  {
+    for ( final DeclaredType include : includes )
     {
       if ( !SuperficialValidation.validateType( processingEnv, include ) )
       {
@@ -468,7 +494,7 @@ public final class StingProcessor
             throw new ProcessorException( "Failed to read the Sting descriptor for " +
                                           "include: " + classname + ". " +
                                           "Error: " + e,
-                                          injector.getElement() );
+                                          originator );
           }
         }
       }
@@ -799,8 +825,6 @@ public final class StingProcessor
     }
     final FragmentDescriptor fragment = new FragmentDescriptor( element, includes, bindings.values() );
     _registry.registerFragment( fragment );
-    writeBinaryDescriptor( element, fragment );
-    emitFragmentJsonDescriptor( fragment );
   }
 
   @Nonnull
