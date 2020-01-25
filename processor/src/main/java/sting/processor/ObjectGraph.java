@@ -81,6 +81,15 @@ final class ObjectGraph
     return _nodes.values();
   }
 
+  @Nonnull
+  List<Node> getOrderedNodes()
+  {
+    return _nodes.values()
+      .stream()
+      .sorted( Comparator.comparing( Node::getDepth ).thenComparing( n -> n.getBinding().getId() ) )
+      .collect( Collectors.toList() );
+  }
+
   /**
    * Register the binding in the object graph.
    *
@@ -132,11 +141,7 @@ final class ObjectGraph
 
     g.writeStartArray( "values" );
 
-    final Collection<Node> nodes = _nodes.values()
-      .stream()
-      .sorted( Comparator.comparing( Node::getDepth ).thenComparing( n -> n.getBinding().getId() ) )
-      .collect( Collectors.toList() );
-    for ( final Node node : nodes )
+    for ( final Node node : getOrderedNodes() )
     {
       node.write( g );
     }
