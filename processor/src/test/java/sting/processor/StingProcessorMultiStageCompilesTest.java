@@ -29,6 +29,7 @@ public final class StingProcessorMultiStageCompilesTest
     assertEquals( stage1Output.size(), 5 );
     assertClassFileCount( stage1Output, 3L );
     assertDescriptorCount( stage1Output, 2L );
+    assertSourceFileCount( stage1Output, 0L );
 
     final Compilation stage2 =
       compiler().compile( inputs( "com.example.multistage.stage2.Model3" ) );
@@ -39,6 +40,7 @@ public final class StingProcessorMultiStageCompilesTest
     assertEquals( stage2Output.size(), 2 );
     assertClassFileCount( stage2Output, 1L );
     assertDescriptorCount( stage2Output, 1L );
+    assertSourceFileCount( stage2Output, 0L );
 
     final Path targetDir = Files.createTempDirectory( "sting" );
     outputFiles( stage1.generatedFiles(), targetDir );
@@ -54,13 +56,19 @@ public final class StingProcessorMultiStageCompilesTest
 
     final ImmutableList<JavaFileObject> stage3Output = stage3.generatedFiles();
 
-    assertEquals( stage3Output.size(), 1 );
-    assertClassFileCount( stage3Output, 1L );
+    assertEquals( stage3Output.size(), 3 );
+    assertClassFileCount( stage3Output, 2L );
+    assertSourceFileCount( stage3Output, 1L );
   }
 
   private void assertDescriptorCount( @Nonnull final ImmutableList<JavaFileObject> output, final long count )
   {
     assertEquals( output.stream().filter( f -> JavaFileObject.Kind.OTHER == f.getKind() ).count(), count );
+  }
+
+  private void assertSourceFileCount( @Nonnull final ImmutableList<JavaFileObject> output, final long count )
+  {
+    assertEquals( output.stream().filter( f -> JavaFileObject.Kind.SOURCE == f.getKind() ).count(), count );
   }
 
   private void assertClassFileCount( @Nonnull final ImmutableList<JavaFileObject> output, final long count )

@@ -235,7 +235,8 @@ public final class StingProcessor
 
     emitObjectGraphJsonDescriptor( graph );
 
-    //TODO: Generate and emit java code
+    final String packageName = GeneratorUtil.getQualifiedPackageName( graph.getInjector().getElement() );
+    emitTypeSpec( packageName, InjectorGenerator.buildType( processingEnv, graph ) );
   }
 
   private void propagateEagerFlagUpstream( @Nonnull final ObjectGraph graph )
