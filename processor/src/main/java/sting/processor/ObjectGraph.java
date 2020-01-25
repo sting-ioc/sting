@@ -109,10 +109,6 @@ final class ObjectGraph
   {
     assert !_complete;
     _complete = true;
-    _orderedNodes = _nodes.values()
-      .stream()
-      .sorted( Comparator.comparing( Node::getDepth ).thenComparing( n -> n.getBinding().getId() ) )
-      .collect( Collectors.toList() );
     final AtomicInteger index = new AtomicInteger();
     _fragmentNodes = _nodes
       .values()
@@ -123,6 +119,12 @@ final class ObjectGraph
       .map( n -> (FragmentDescriptor) n.getBinding().getOwner() )
       .sorted( Comparator.comparing( FragmentDescriptor::getQualifiedTypeName ) )
       .map( f -> new FragmentNode( f, "fragment" + index.incrementAndGet() ) )
+      .collect( Collectors.toList() );
+    index.set( 0 );
+    _orderedNodes = _nodes.values()
+      .stream()
+      .sorted( Comparator.comparing( Node::getDepth ).thenComparing( n -> n.getBinding().getId() ) )
+      .peek( n -> n.setName( "node" + index.incrementAndGet() ) )
       .collect( Collectors.toList() );
   }
 
