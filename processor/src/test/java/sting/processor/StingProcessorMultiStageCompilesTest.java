@@ -26,10 +26,10 @@ public final class StingProcessorMultiStageCompilesTest
     assertCompilationSuccessful( stage1 );
     final ImmutableList<JavaFileObject> stage1Output = stage1.generatedFiles();
 
-    assertEquals( stage1Output.size(), 5 );
-    assertClassFileCount( stage1Output, 3L );
+    assertEquals( stage1Output.size(), 7 );
+    assertClassFileCount( stage1Output, 4L );
     assertDescriptorCount( stage1Output, 2L );
-    assertSourceFileCount( stage1Output, 0L );
+    assertSourceFileCount( stage1Output, 1L );
 
     final Compilation stage2 =
       compiler().compile( inputs( "com.example.multistage.stage2.Model3" ) );

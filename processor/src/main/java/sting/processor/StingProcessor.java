@@ -208,9 +208,17 @@ public final class StingProcessor
           fragment.markJavaStubAsGenerated();
           writeBinaryDescriptor( fragment.getElement(), fragment );
           emitFragmentJsonDescriptor( fragment );
+          emitFragmentStub( fragment );
         }
       }, fragment.getElement() );
     }
+  }
+
+  private void emitFragmentStub( @Nonnull final FragmentDescriptor fragment )
+    throws IOException
+  {
+    final String packageName = GeneratorUtil.getQualifiedPackageName( fragment.getElement() );
+    emitTypeSpec( packageName, FragmentGenerator.buildType( processingEnv, fragment ) );
   }
 
   private void processResolvedInjectors( @Nonnull final RoundEnvironment env )
