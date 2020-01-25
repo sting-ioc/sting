@@ -29,6 +29,8 @@ complete as there is too much un-said.
 * Add tests where `@Fragment` is package access - probably needs to be via an `includes` in public Fragment
   that included in `@Injector`
 
+* Should `@Fragment` types be able to extend other `@Fragment` types? If so then add example. If not then verify not.
+
 * Verify `@Fragment` methods are not static.
 
 * Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
