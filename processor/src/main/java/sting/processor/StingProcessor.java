@@ -243,7 +243,7 @@ public final class StingProcessor
 
     buildObjectGraphNodes( graph );
 
-    if ( 0 == graph.getNodeCount() )
+    if ( graph.getNodes().isEmpty() )
     {
       throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " target " +
                                     "produced an empty object graph. This means that there are no eager values " +
@@ -415,6 +415,7 @@ public final class StingProcessor
         }
       }
     }
+    graph.complete();
   }
 
   @Nonnull

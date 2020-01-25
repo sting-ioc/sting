@@ -1,7 +1,6 @@
 package sting.processor;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -9,8 +8,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
 
 final class ObjectGraph
@@ -50,6 +51,20 @@ final class ObjectGraph
    */
   @Nonnull
   private final Node _rootNode;
+  /**
+   * true when the graph has been completely built.
+   */
+  private boolean _complete;
+  /**
+   * The list of nodes included in graph in stable order based on depth in graph and node id.
+   */
+  @Nullable
+  private List<Node> _orderedNodes;
+  /**
+   * The list of fragment nodes included in graph in stable order based on name.
+   */
+  @Nullable
+  private List<FragmentNode> _fragmentNodes;
 
   ObjectGraph( @Nonnull final InjectorDescriptor injector )
   {
@@ -72,26 +87,42 @@ final class ObjectGraph
   @Nonnull
   Node findOrCreateNode( @Nonnull final Binding binding )
   {
-    return _nodes.computeIfAbsent( binding, binding1 -> new Node( this, binding1 ) );
+    assert !_complete;
+    return _nodes.computeIfAbsent( binding, b -> new Node( this, b ) );
   }
 
   @Nonnull
-  Collection<Node> getNodes()
+  List<Node> getNodes()
   {
-    return _nodes.values();
-  }
-
-  int getNodeCount()
-  {
-    return _nodes.size();
+    assert null != _orderedNodes;
+    return _orderedNodes;
   }
 
   @Nonnull
-  List<Node> getOrderedNodes()
+  List<FragmentNode> getFragments()
   {
-    return _nodes.values()
+    assert null != _fragmentNodes;
+    return _fragmentNodes;
+  }
+
+  void complete()
+  {
+    assert !_complete;
+    _complete = true;
+    _orderedNodes = _nodes.values()
       .stream()
       .sorted( Comparator.comparing( Node::getDepth ).thenComparing( n -> n.getBinding().getId() ) )
+      .collect( Collectors.toList() );
+    final AtomicInteger index = new AtomicInteger();
+    _fragmentNodes = _nodes
+      .values()
+      .stream()
+      .filter( n -> !n.hasNoBinding() &&
+                    ( Binding.Type.PROVIDES == n.getBinding().getBindingType() ||
+                      Binding.Type.NULLABLE_PROVIDES == n.getBinding().getBindingType() ) )
+      .map( n -> (FragmentDescriptor) n.getBinding().getOwner() )
+      .sorted( Comparator.comparing( FragmentDescriptor::getQualifiedTypeName ) )
+      .map( f -> new FragmentNode( f, "fragment" + index.incrementAndGet() ) )
       .collect( Collectors.toList() );
   }
 
@@ -146,7 +177,7 @@ final class ObjectGraph
 
     g.writeStartArray( "values" );
 
-    for ( final Node node : getOrderedNodes() )
+    for ( final Node node : getNodes() )
     {
       node.write( g );
     }
