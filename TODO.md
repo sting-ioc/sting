@@ -23,6 +23,12 @@ complete as there is too much un-said.
 
 * Generate an error if Injector has type parameters
 
+* Add tests where `@Injectable` is package access, provided to other values within package and provided as
+  dependency to values in other packages via a public published interface
+
+* Add tests where `@Fragment` is package access - probably needs to be via an `includes` in public Fragment
+  that included in `@Injector`
+
 * Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
   or `Injector` will have their type annotations scanned for matching annotations of which there must be at most
   1. This annotation gives the name pattern for the expected `@Injectable` or `@Fragment` annotated class that
