@@ -9,6 +9,14 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 
 final class Node
 {
@@ -47,6 +55,17 @@ final class Node
    */
   @Nullable
   private String _name;
+  /**
+   * The type of the value provided by the node.
+   * this will be null if _binding is null.
+   */
+  @Nullable
+  private final TypeMirror _type;
+  /**
+   * Is the visibility of the type effectively public. This means that the type and
+   * all enclosing types must have a public modifier.
+   */
+  private final boolean _public;
 
   /**
    * Constructor used to construct a Node for the Injector.
@@ -80,6 +99,41 @@ final class Node
     {
       _dependsOn.put( dependency, new Edge( this, dependency ) );
     }
+    if ( null != _binding )
+    {
+      final Binding.Type bindingType = _binding.getBindingType();
+      if ( Binding.Type.INJECTABLE == bindingType )
+      {
+        _type = binding.getElement().asType();
+      }
+      else
+      {
+        assert Binding.Type.PROVIDES == bindingType || Binding.Type.NULLABLE_PROVIDES == bindingType;
+        _type = ( (ExecutableElement) binding.getElement() ).getReturnType();
+      }
+
+      _public = TypeKind.DECLARED != _type.getKind() ||
+                isEffectivelyPublic( (TypeElement) ( (DeclaredType) _type ).asElement() );
+    }
+    else
+    {
+      _type = null;
+      _public = true;
+    }
+  }
+
+  private boolean isEffectivelyPublic( @Nonnull final TypeElement element )
+  {
+    if ( !element.getModifiers().contains( Modifier.PUBLIC ) )
+    {
+      return false;
+    }
+    else
+    {
+      final Element enclosing = element.getEnclosingElement();
+      return ElementKind.PACKAGE == enclosing.getKind() || isEffectivelyPublic( (TypeElement) enclosing );
+    }
+  }
 
   @Nonnull
   String getName()
@@ -92,6 +146,24 @@ final class Node
   {
     _name = Objects.requireNonNull( name );
   }
+
+  @Nonnull
+  TypeMirror getType()
+  {
+    assert null != _type;
+    return _type;
+  }
+
+  boolean isPublicAccess()
+  {
+    return _public;
+  }
+
+  // will the value be nonnull everywhere it is accessed.
+  // This means it is effectively eager and does not come from @Nullable annotated provides
+  boolean isNonnull()
+  {
+    return isEager() && Binding.Type.NULLABLE_PROVIDES != getBinding().getBindingType();
   }
 
   boolean isEager()
