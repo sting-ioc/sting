@@ -692,6 +692,12 @@ public final class StingProcessor
             }
           }
         }
+        else if ( TypeKind.DECLARED == typeArgument.getKind() && isParameterized( (DeclaredType) typeArgument ) )
+        {
+          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                              "return a collection type that contains a parameterized type" ),
+                                        method );
+        }
         else
         {
           type = DependencyDescriptor.Type.COLLECTION;
@@ -1050,6 +1056,12 @@ public final class StingProcessor
             }
           }
         }
+        else if ( TypeKind.DECLARED == typeArgument.getKind() && isParameterized( (DeclaredType) typeArgument ) )
+        {
+          throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                              "have a method with a collection parameter that contains a parameterized type" ),
+                                        parameter );
+        }
         else
         {
           type = DependencyDescriptor.Type.COLLECTION;
@@ -1362,6 +1374,12 @@ public final class StingProcessor
               dependencyValueType = nestedParameterType;
             }
           }
+        }
+        else if ( TypeKind.DECLARED == typeArgument.getKind() && isParameterized( (DeclaredType) typeArgument ) )
+        {
+          throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                              "have a constructor with a collection parameter that contains a parameterized type" ),
+                                        parameter );
         }
         else
         {
