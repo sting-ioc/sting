@@ -4,4 +4,7 @@ import javax.annotation.Generated;
 
 @Generated("sting.processor.StingProcessor")
 public final class CollectionContainingMultipleInstancesDependencyModel_Sting_MyFragment3 implements CollectionContainingMultipleInstancesDependencyModel.MyFragment3 {
+  public Object $sting$_myModel() {
+    return myModel();
+  }
 }
