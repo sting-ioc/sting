@@ -209,9 +209,17 @@ public final class StingProcessor
           injectable.markJavaStubAsGenerated();
           writeBinaryDescriptor( injectable.getElement(), injectable );
           emitInjectableJsonDescriptor( injectable );
+          emitInjectableStub( injectable );
         }
       }, injectable.getElement() );
     }
+  }
+
+  private void emitInjectableStub( @Nonnull final InjectableDescriptor injectable )
+    throws IOException
+  {
+    final String packageName = GeneratorUtil.getQualifiedPackageName( injectable.getElement() );
+    emitTypeSpec( packageName, InjectableGenerator.buildType( processingEnv, injectable ) );
   }
 
   private void processResolvedFragments( @Nonnull final RoundEnvironment env )

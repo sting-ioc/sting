@@ -26,10 +26,10 @@ public final class StingProcessorMultiStageCompilesTest
     assertCompilationSuccessful( stage1 );
     final ImmutableList<JavaFileObject> stage1Output = stage1.generatedFiles();
 
-    assertEquals( stage1Output.size(), 7 );
-    assertClassFileCount( stage1Output, 4L );
+    assertEquals( stage1Output.size(), 9 );
+    assertClassFileCount( stage1Output, 5L );
     assertDescriptorCount( stage1Output, 2L );
-    assertSourceFileCount( stage1Output, 1L );
+    assertSourceFileCount( stage1Output, 2L );
 
     final Compilation stage2 =
       compiler().compile( inputs( "com.example.multistage.stage2.Model3" ) );
@@ -37,10 +37,10 @@ public final class StingProcessorMultiStageCompilesTest
     assertCompilationSuccessful( stage2 );
     final ImmutableList<JavaFileObject> stage2Output = stage2.generatedFiles();
 
-    assertEquals( stage2Output.size(), 2 );
-    assertClassFileCount( stage2Output, 1L );
+    assertEquals( stage2Output.size(), 4 );
+    assertClassFileCount( stage2Output, 2L );
     assertDescriptorCount( stage2Output, 1L );
-    assertSourceFileCount( stage2Output, 0L );
+    assertSourceFileCount( stage2Output, 1L );
 
     final Path targetDir = Files.createTempDirectory( "sting" );
     outputFiles( stage1.generatedFiles(), targetDir );
