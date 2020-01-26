@@ -51,7 +51,7 @@ final class InjectorGenerator
   }
 
   private static void emitConstructor( @Nonnull final ObjectGraph graph,
-                                       final TypeSpec.Builder builder )
+                                       @Nonnull final TypeSpec.Builder builder )
   {
     final MethodSpec.Builder ctor = MethodSpec.constructorBuilder();
     ctor.addModifiers( Modifier.PRIVATE );
