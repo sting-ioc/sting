@@ -80,8 +80,7 @@ public final class StingProcessorTest
   public void processSuccessfulCompile( @Nonnull final String classname )
     throws Exception
   {
-    assertSuccessfulCompile( classname,
-                             jsonOutput( classname ) );
+    assertSuccessfulCompile( classname, jsonOutput( classname ) );
   }
 
   @DataProvider( name = "successfulInjectorCompiles" )
