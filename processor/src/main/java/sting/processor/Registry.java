@@ -49,6 +49,12 @@ final class Registry
     return Objects.requireNonNull( findInjectableByClassName( name ) );
   }
 
+  @Nonnull
+  Collection<InjectableDescriptor> getInjectables()
+  {
+    return _injectables.values();
+  }
+
   /**
    * Register the fragment in the local cache.
    *
