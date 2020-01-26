@@ -94,20 +94,22 @@ final class StingGeneratorUtil
       }
       else if ( DependencyDescriptor.Type.INSTANCE == dependencyType )
       {
-        anyNonPublicNonInstance = true;
         paramType = TypeName.OBJECT;
       }
       else if ( DependencyDescriptor.Type.SUPPLIER == dependencyType )
       {
+        anyNonPublicNonInstance = true;
         paramType = StingTypeNames.SUPPLIER;
       }
       else if ( DependencyDescriptor.Type.COLLECTION == dependencyType )
       {
+        anyNonPublicNonInstance = true;
         paramType = StingTypeNames.COLLECTION;
       }
       else
       {
         assert DependencyDescriptor.Type.SUPPLIER_COLLECTION == dependencyType;
+        anyNonPublicNonInstance = true;
         paramType = StingTypeNames.COLLECTION;
       }
       final ParameterSpec.Builder param = ParameterSpec.builder( paramType, paramName, Modifier.FINAL );
