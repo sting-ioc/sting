@@ -1,5 +1,6 @@
 package sting.processor;
 
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import javax.annotation.Nonnull;
@@ -36,6 +37,17 @@ final class InjectorGenerator
       {
         builder.addSuperinterface( TypeName.get( element.asType() ) );
       }
+    }
+
+    for ( final FragmentNode node : graph.getFragments() )
+    {
+      final TypeName type = GeneratorUtil.getGeneratedClassName( node.getFragment().getElement(), "Sting_", "" );
+      builder.addField( FieldSpec
+                          .builder( type, node.getName(), Modifier.PRIVATE, Modifier.FINAL )
+                          .addAnnotation( GeneratorUtil.NONNULL_CLASSNAME )
+                          .initializer( "new $T()", type )
+                          .build() );
+
     }
 
     GeneratorUtil.addGeneratedAnnotation( processingEnv, builder, StingProcessor.class.getName() );
