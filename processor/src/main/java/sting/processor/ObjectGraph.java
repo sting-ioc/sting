@@ -113,9 +113,7 @@ final class ObjectGraph
     _fragmentNodes = _nodes
       .values()
       .stream()
-      .filter( n -> !n.hasNoBinding() &&
-                    ( Binding.Type.PROVIDES == n.getBinding().getBindingType() ||
-                      Binding.Type.NULLABLE_PROVIDES == n.getBinding().getBindingType() ) )
+      .filter( Node::isFromProvides )
       .map( n -> (FragmentDescriptor) n.getBinding().getOwner() )
       .sorted( Comparator.comparing( FragmentDescriptor::getQualifiedTypeName ) )
       .map( f -> new FragmentNode( f, "fragment" + index.incrementAndGet() ) )
