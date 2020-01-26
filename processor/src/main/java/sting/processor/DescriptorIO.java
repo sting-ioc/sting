@@ -131,7 +131,9 @@ final class DescriptorIO
                                                @Nonnull final TypeElement enclosingElement )
     throws IOException
   {
-    return new InjectableDescriptor( readBinding( dis, enclosingElement ) );
+    final InjectableDescriptor injectable = new InjectableDescriptor( readBinding( dis, enclosingElement ) );
+    injectable.markJavaStubAsGenerated();
+    return injectable;
   }
 
   private void writeBinding( @Nonnull final DataOutputStream dos, @Nonnull final Binding binding )

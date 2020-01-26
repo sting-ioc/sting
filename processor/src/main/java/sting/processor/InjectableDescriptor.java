@@ -9,6 +9,10 @@ final class InjectableDescriptor
 {
   @Nonnull
   private final Binding _binding;
+  /**
+   * True if the java stub has been generated.
+   */
+  private boolean _javaStubGenerated;
 
   InjectableDescriptor( @Nonnull final Binding binding )
   {
@@ -26,6 +30,16 @@ final class InjectableDescriptor
   Binding getBinding()
   {
     return _binding;
+  }
+
+  boolean isJavaStubGenerated()
+  {
+    return _javaStubGenerated;
+  }
+
+  void markJavaStubAsGenerated()
+  {
+    _javaStubGenerated = true;
   }
 
   void write( @Nonnull final JsonGenerator g )

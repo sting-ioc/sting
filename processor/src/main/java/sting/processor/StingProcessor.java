@@ -161,6 +161,7 @@ public final class StingProcessor
                                             (Collection<TypeElement>) env.getElementsAnnotatedWith( a ),
                                             this::processInjector ) );
 
+    processResolvedInjectables( env );
     processResolvedFragments( env );
     processResolvedInjectors( env );
 
@@ -195,6 +196,21 @@ public final class StingProcessor
                            "as not all of the dependencies could be resolved." );
         }
       }
+    }
+  }
+
+  private void processResolvedInjectables( @Nonnull final RoundEnvironment env )
+  {
+    for ( final InjectableDescriptor injectable : new ArrayList<>( _registry.getInjectables() ) )
+    {
+      performAction( env, e -> {
+        if ( isInjectableResolved( injectable ) && !injectable.isJavaStubGenerated() )
+        {
+          injectable.markJavaStubAsGenerated();
+          writeBinaryDescriptor( injectable.getElement(), injectable );
+          emitInjectableJsonDescriptor( injectable );
+        }
+      }, injectable.getElement() );
     }
   }
 
@@ -453,6 +469,11 @@ public final class StingProcessor
       final String filename = toFilename( element ) + GRAPH_SUFFIX;
       JsonUtil.writeJsonResource( processingEnv, element, filename, graph::write );
     }
+  }
+
+  private boolean isInjectableResolved( @Nonnull final InjectableDescriptor injectable )
+  {
+    return isResolved( injectable.getElement(), Collections.emptyList() );
   }
 
   private boolean isFragmentResolved( @Nonnull final FragmentDescriptor fragment )
@@ -1202,9 +1223,6 @@ public final class StingProcessor
                    dependencies.toArray( new DependencyDescriptor[ 0 ] ) );
     final InjectableDescriptor injectable = new InjectableDescriptor( binding );
     _registry.registerInjectable( injectable );
-
-    writeBinaryDescriptor( element, injectable );
-    emitInjectableJsonDescriptor( injectable );
   }
 
   private void writeBinaryDescriptor( @Nonnull final TypeElement element,
