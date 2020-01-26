@@ -11,9 +11,12 @@ public final class BasicEagerDependencyModel_Sting_MyModel4 {
   }
 
   @Nonnull
-  @SuppressWarnings("unchecked")
-  public static BasicEagerDependencyModel.MyModel4 create(final Object modelA, final Object modelB,
-      final Object modelC) {
+  @SuppressWarnings({
+      "rawtypes",
+      "unchecked"
+  })
+  public static BasicEagerDependencyModel.MyModel4 create(final Object modelA,
+      final Supplier modelB, final Supplier modelC) {
     return new BasicEagerDependencyModel.MyModel4( Objects.requireNonNull( (BasicEagerDependencyModel.MyModel2) modelA ), Objects.requireNonNull( (Supplier<BasicEagerDependencyModel.MyModel3>) modelB ), Objects.requireNonNull( (Supplier<BasicEagerDependencyModel.MyModel1>) modelC ) );
   }
 }

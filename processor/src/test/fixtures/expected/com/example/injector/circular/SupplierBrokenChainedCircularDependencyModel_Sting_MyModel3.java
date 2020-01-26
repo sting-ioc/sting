@@ -11,8 +11,11 @@ public final class SupplierBrokenChainedCircularDependencyModel_Sting_MyModel3 {
   }
 
   @Nonnull
-  @SuppressWarnings("unchecked")
-  public static SupplierBrokenChainedCircularDependencyModel.MyModel3 create(final Object model) {
+  @SuppressWarnings({
+      "rawtypes",
+      "unchecked"
+  })
+  public static SupplierBrokenChainedCircularDependencyModel.MyModel3 create(final Supplier model) {
     return new SupplierBrokenChainedCircularDependencyModel.MyModel3( Objects.requireNonNull( (Supplier<SupplierBrokenChainedCircularDependencyModel.MyModel1>) model ) );
   }
 }

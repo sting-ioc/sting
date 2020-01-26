@@ -1,8 +1,17 @@
 package sting.processor;
 
+import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
@@ -26,6 +35,7 @@ final class InjectorGenerator
         .addModifiers( Modifier.FINAL );
     GeneratorUtil.addOriginatingTypes( element, builder );
     GeneratorUtil.copyWhitelistedAnnotations( element, builder );
+    GeneratorUtil.addGeneratedAnnotation( processingEnv, builder, StingProcessor.class.getName() );
 
     if ( false )
     {
@@ -39,6 +49,225 @@ final class InjectorGenerator
       }
     }
 
+    emitFragmentFields( builder, graph );
+    emitNodeFields( graph, builder );
+    emitConstructor( graph, builder );
+    emitNodeAccessorMethod( graph, builder );
+
+    return builder.build();
+  }
+
+  private static void emitConstructor( @Nonnull final ObjectGraph graph,
+                                       final TypeSpec.Builder builder )
+  {
+    final MethodSpec.Builder ctor = MethodSpec.constructorBuilder();
+    ctor.addModifiers( Modifier.PRIVATE );
+
+    final List<Node> nodes = new ArrayList<>( graph.getNodes() );
+    Collections.reverse( nodes );
+    for ( final Node node : nodes )
+    {
+      if ( node.isEager() )
+      {
+        final StringBuilder code = new StringBuilder();
+        final List<Object> args = new ArrayList<>();
+        provideAndAssign( node, code, args );
+        ctor.addStatement( code.toString(), args.toArray() );
+      }
+    }
+
+    builder.addMethod( ctor.build() );
+  }
+
+  private static void emitNodeFields( @Nonnull final ObjectGraph graph,
+                                      @Nonnull final TypeSpec.Builder builder )
+  {
+    for ( final Node node : graph.getNodes() )
+    {
+      final FieldSpec.Builder field =
+        FieldSpec
+          .builder( getPublicTypeName( node ), node.getName(), Modifier.PRIVATE )
+          .addAnnotation( node.isNonnull() ? GeneratorUtil.NONNULL_CLASSNAME : GeneratorUtil.NULLABLE_CLASSNAME );
+      if ( node.isEager() )
+      {
+        field.addModifiers( Modifier.FINAL );
+      }
+
+      builder.addField( field.build() );
+    }
+  }
+
+  private static TypeName getPublicTypeName( @Nonnull final Node node )
+  {
+    if ( node.isPublicAccess() )
+    {
+      return TypeName.get( node.getType() );
+    }
+    else
+    {
+      return TypeName.OBJECT;
+    }
+  }
+
+  private static void emitNodeAccessorMethod( @Nonnull final ObjectGraph graph,
+                                              @Nonnull final TypeSpec.Builder builder )
+  {
+    for ( final Node node : graph.getNodes() )
+    {
+      if ( !node.isEager() )
+      {
+        builder.addField( FieldSpec.builder( TypeName.BOOLEAN, getFlagFieldName( node ), Modifier.PRIVATE ).build() );
+
+        final MethodSpec.Builder method =
+          MethodSpec
+            .methodBuilder( node.getName() )
+            .addModifiers( Modifier.PRIVATE )
+            .returns( getPublicTypeName( node ) );
+        if ( node.isNonnull() )
+        {
+          method.addAnnotation( GeneratorUtil.NONNULL_CLASSNAME );
+        }
+
+        final CodeBlock.Builder block = CodeBlock.builder();
+        final String flagName = getFlagFieldName( node );
+        block.beginControlFlow( "if ( !$N )", flagName );
+        block.addStatement( "$N = true", flagName );
+        final StringBuilder code = new StringBuilder();
+        final List<Object> args = new ArrayList<>();
+        provideAndAssign( node, code, args );
+        block.addStatement( code.toString(), args.toArray() );
+        block.endControlFlow();
+        method.addCode( block.build() );
+        method.addStatement( "return $N", node.getName() );
+
+        builder.addMethod( method.build() );
+      }
+    }
+  }
+
+  @Nonnull
+  private static String getFlagFieldName( @Nonnull final Node node )
+  {
+    return StingGeneratorUtil.FRAMEWORK_PREFIX + node.getName() + "_allocated";
+  }
+
+  private static void provideAndAssign( @Nonnull final Node node,
+                                        @Nonnull final StringBuilder code,
+                                        @Nonnull final List<Object> args )
+  {
+    code.append( "$N = " );
+    args.add( node.getName() );
+    if ( node.isNonnull() )
+    {
+      code.append( "$T.requireNonNull( " );
+      args.add( Objects.class );
+    }
+    if ( node.isFromProvides() )
+    {
+      code.append( "$N.$N" );
+      args.add( node.getFragment().getName() );
+      args.add( StingGeneratorUtil.FRAMEWORK_PREFIX + node.getBinding().getElement().getSimpleName().toString() );
+    }
+    else
+    {
+      final InjectableDescriptor injectable = (InjectableDescriptor) node.getBinding().getOwner();
+      code.append( "$T.create" );
+      args.add( StingGeneratorUtil.getGeneratedClassName( injectable.getElement() ) );
+    }
+    code.append( '(' );
+    boolean firstParam = true;
+    for ( final Edge edge : node.getDependsOn() )
+    {
+      if ( !firstParam )
+      {
+        code.append( ", " );
+      }
+      else
+      {
+        firstParam = false;
+      }
+      final Collection<Node> satisfiedBy = edge.getSatisfiedBy();
+      final DependencyDescriptor.Type depType = edge.getDependency().getType();
+      if ( !depType.isCollection() )
+      {
+        if ( satisfiedBy.isEmpty() )
+        {
+          code.append( "null" );
+        }
+        else
+        {
+          emitNodeAccessor( depType, satisfiedBy.iterator().next(), code, args );
+        }
+      }
+      else
+      {
+        final int count = satisfiedBy.size();
+        if ( 0 == count )
+        {
+          code.append( "$T.emptyList()" );
+          args.add( Collections.class );
+        }
+        else if ( 1 == count )
+        {
+          code.append( "$T.singletonList( " );
+          args.add( Collections.class );
+          emitNodeAccessor( depType, satisfiedBy.iterator().next(), code, args );
+          code.append( " )" );
+        }
+        else
+        {
+          code.append( "$T.asList( " );
+          args.add( Arrays.class );
+          final Iterator<Node> iterator = satisfiedBy.iterator();
+          for ( int i = 0; i < count; i++ )
+          {
+            if ( 0 != i )
+            {
+              code.append( ", " );
+            }
+            emitNodeAccessor( depType, iterator.next(), code, args );
+          }
+          code.append( " )" );
+        }
+      }
+    }
+    code.append( ')' );
+    if ( node.isNonnull() )
+    {
+      code.append( " )" );
+    }
+  }
+
+  /**
+   * Emit the code required to access the specified node.
+   *
+   * @param node the node value.
+   * @param code the code template to append to.
+   * @param args the args that passed to javapoet template.
+   */
+  private static void emitNodeAccessor( @Nonnull DependencyDescriptor.Type depType,
+                                        @Nonnull final Node node,
+                                        @Nonnull final StringBuilder code,
+                                        @Nonnull final List<Object> args )
+  {
+    if ( depType.isSupplier() )
+    {
+      code.append( "() -> " );
+    }
+    if ( node.isEager() )
+    {
+      code.append( "$N" );
+      args.add( node.getName() );
+    }
+    else
+    {
+      code.append( "$N()" );
+      args.add( node.getName() );
+    }
+  }
+
+  private static void emitFragmentFields( @Nonnull final TypeSpec.Builder builder, @Nonnull final ObjectGraph graph )
+  {
     for ( final FragmentNode node : graph.getFragments() )
     {
       final TypeName type = StingGeneratorUtil.getGeneratedClassName( node.getFragment().getElement() );
@@ -49,9 +278,5 @@ final class InjectorGenerator
                           .build() );
 
     }
-
-    GeneratorUtil.addGeneratedAnnotation( processingEnv, builder, StingProcessor.class.getName() );
-
-    return builder.build();
   }
 }
