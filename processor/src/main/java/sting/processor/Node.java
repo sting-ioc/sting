@@ -9,10 +9,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -106,17 +103,10 @@ final class Node
     }
     if ( null != _binding )
     {
-      final Binding.Type bindingType = _binding.getBindingType();
-      if ( Binding.Type.INJECTABLE == bindingType )
-      {
-        _type = binding.getElement().asType();
-      }
-      else
-      {
-        assert Binding.Type.PROVIDES == bindingType || Binding.Type.NULLABLE_PROVIDES == bindingType;
-        _type = ( (ExecutableElement) binding.getElement() ).getReturnType();
-      }
-
+      _type =
+        isFromProvides() ?
+        ( (ExecutableElement) binding.getElement() ).getReturnType() :
+        binding.getElement().asType();
       _public = TypeKind.DECLARED != _type.getKind() ||
                 StingElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) _type ).asElement() );
     }
@@ -127,16 +117,16 @@ final class Node
     }
   }
 
-  private boolean isEffectivelyPublic( @Nonnull final TypeElement element )
+  boolean isFromProvides()
   {
-    if ( !element.getModifiers().contains( Modifier.PUBLIC ) )
+    if ( null == _binding )
     {
       return false;
     }
     else
     {
-      final Element enclosing = element.getEnclosingElement();
-      return ElementKind.PACKAGE == enclosing.getKind() || isEffectivelyPublic( (TypeElement) enclosing );
+      final Binding.Type bindingType = _binding.getBindingType();
+      return Binding.Type.PROVIDES == bindingType || Binding.Type.NULLABLE_PROVIDES == bindingType;
     }
   }
 
