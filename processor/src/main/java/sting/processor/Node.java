@@ -66,6 +66,11 @@ final class Node
    * all enclosing types must have a public modifier.
    */
   private final boolean _public;
+  /**
+   * The Fragment node that this node is derived from if it is from a Fragment provider method.
+   */
+  @Nullable
+  private FragmentNode _fragment;
 
   /**
    * Constructor used to construct a Node for the Injector.
@@ -227,6 +232,20 @@ final class Node
   {
     assert !_usedBy.contains( edge );
     _usedBy.add( edge );
+  }
+
+  void setFragment( @Nonnull final FragmentNode fragment )
+  {
+    assert isFromProvides();
+    assert null == _fragment;
+    _fragment = fragment;
+  }
+
+  @Nonnull
+  FragmentNode getFragment()
+  {
+    assert null != _fragment;
+    return _fragment;
   }
 
   /**
