@@ -110,6 +110,7 @@ final class ObjectGraph
     assert !_complete;
     _complete = true;
     final AtomicInteger index = new AtomicInteger();
+    final Map<FragmentDescriptor, FragmentNode> fragmentMap = new HashMap<>();
     _fragmentNodes = _nodes
       .values()
       .stream()
@@ -117,12 +118,19 @@ final class ObjectGraph
       .map( n -> (FragmentDescriptor) n.getBinding().getOwner() )
       .sorted( Comparator.comparing( FragmentDescriptor::getQualifiedTypeName ) )
       .map( f -> new FragmentNode( f, "fragment" + index.incrementAndGet() ) )
+      .peek( f -> fragmentMap.put( f.getFragment(), f ) )
       .collect( Collectors.toList() );
     index.set( 0 );
     _orderedNodes = _nodes.values()
       .stream()
       .sorted( Comparator.comparing( Node::getDepth ).thenComparing( n -> n.getBinding().getId() ) )
       .peek( n -> n.setName( "node" + index.incrementAndGet() ) )
+      .peek( n -> {
+        if ( n.isFromProvides() )
+        {
+          n.setFragment( fragmentMap.get( (FragmentDescriptor) n.getBinding().getOwner() ) );
+        }
+      } )
       .collect( Collectors.toList() );
   }
 
