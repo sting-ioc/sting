@@ -1,5 +1,6 @@
 package sting.processor;
 
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
@@ -125,5 +126,11 @@ final class StingGeneratorUtil
                                                           typesProcessed );
     }
     return method.build();
+  }
+
+  @Nonnull
+  static ClassName getGeneratedClassName( @Nonnull final TypeElement element )
+  {
+    return GeneratorUtil.getGeneratedClassName( element, "Sting_", "" );
   }
 }

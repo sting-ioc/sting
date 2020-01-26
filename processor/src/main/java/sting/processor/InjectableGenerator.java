@@ -24,7 +24,7 @@ final class InjectableGenerator
     final TypeElement element = injectable.getElement();
     final TypeSpec.Builder builder =
       TypeSpec
-        .classBuilder( GeneratorUtil.getGeneratedClassName( element, "Sting_", "" ) )
+        .classBuilder( StingGeneratorUtil.getGeneratedClassName( element ) )
         .addModifiers( Modifier.PUBLIC, Modifier.FINAL );
     GeneratorUtil.addOriginatingTypes( element, builder );
     GeneratorUtil.addGeneratedAnnotation( processingEnv, builder, StingProcessor.class.getName() );

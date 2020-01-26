@@ -22,7 +22,7 @@ final class InjectorGenerator
     final TypeElement element = injector.getElement();
     final TypeSpec.Builder builder =
       TypeSpec
-        .classBuilder( GeneratorUtil.getGeneratedClassName( element, "Sting_", "" ) )
+        .classBuilder( StingGeneratorUtil.getGeneratedClassName( element ) )
         .addModifiers( Modifier.FINAL );
     GeneratorUtil.addOriginatingTypes( element, builder );
     GeneratorUtil.copyWhitelistedAnnotations( element, builder );
@@ -41,7 +41,7 @@ final class InjectorGenerator
 
     for ( final FragmentNode node : graph.getFragments() )
     {
-      final TypeName type = GeneratorUtil.getGeneratedClassName( node.getFragment().getElement(), "Sting_", "" );
+      final TypeName type = StingGeneratorUtil.getGeneratedClassName( node.getFragment().getElement() );
       builder.addField( FieldSpec
                           .builder( type, node.getName(), Modifier.PRIVATE, Modifier.FINAL )
                           .addAnnotation( GeneratorUtil.NONNULL_CLASSNAME )
