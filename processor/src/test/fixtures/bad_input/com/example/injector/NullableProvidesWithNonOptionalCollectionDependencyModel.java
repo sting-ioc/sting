@@ -10,12 +10,12 @@ import sting.Injector;
                         NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment2.class,
                         NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment3.class,
                         NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment4.class } )
-abstract class NullableProvidesWithNonOptionalCollectionDependencyModel
+interface NullableProvidesWithNonOptionalCollectionDependencyModel
 {
-  abstract MyModel1 getMyModel1();
+  MyModel1 getMyModel1();
 
   @Injectable
-  static class MyModel1
+  class MyModel1
   {
     MyModel1( MyModel2 model )
     {
@@ -23,7 +23,7 @@ abstract class NullableProvidesWithNonOptionalCollectionDependencyModel
   }
 
   @Fragment
-  public interface MyFragment1
+  interface MyFragment1
   {
     default MyModel2 provideMyModel2( /* This should be @Nullable annotated */ Collection<MyModel3> models )
     {
@@ -31,7 +31,7 @@ abstract class NullableProvidesWithNonOptionalCollectionDependencyModel
     }
   }
 
-  static class MyModel2
+  class MyModel2
   {
     MyModel2( Collection<MyModel3> models )
     {
@@ -39,7 +39,7 @@ abstract class NullableProvidesWithNonOptionalCollectionDependencyModel
   }
 
   @Fragment
-  public interface MyFragment2
+  interface MyFragment2
   {
     // Nullable provides
     @Nullable
@@ -50,7 +50,7 @@ abstract class NullableProvidesWithNonOptionalCollectionDependencyModel
   }
 
   @Fragment
-  public interface MyFragment3
+  interface MyFragment3
   {
     default MyModel3 provideMyModel3()
     {
@@ -59,7 +59,7 @@ abstract class NullableProvidesWithNonOptionalCollectionDependencyModel
   }
 
   @Fragment
-  public interface MyFragment4
+  interface MyFragment4
   {
     // Nullable provides
     @Nullable
@@ -69,7 +69,7 @@ abstract class NullableProvidesWithNonOptionalCollectionDependencyModel
     }
   }
 
-  static class MyModel3
+  class MyModel3
   {
   }
 }

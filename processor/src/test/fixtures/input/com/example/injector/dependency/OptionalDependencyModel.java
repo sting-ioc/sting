@@ -5,13 +5,13 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-abstract class OptionalDependencyModel
+interface OptionalDependencyModel
 {
   @Nullable
-  abstract MyModel getMyModel();
+  MyModel getMyModel();
 
   @Injectable
-  static class MyModel
+  class MyModel
   {
   }
 }

@@ -5,31 +5,31 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-abstract class BasicEagerDependencyModel
+interface BasicEagerDependencyModel
 {
-  abstract MyModel6 getMyModel();
+  MyModel6 getMyModel();
 
   // This will not be eager as only dependency from non-eager
   @Injectable
-  static class MyModel0
+  class MyModel0
   {
   }
 
   // This will be eager as dependency via Supplier dependency and instance from Model4 and Model5 respectively
   @Injectable
-  static class MyModel1
+  class MyModel1
   {
   }
 
   // This will be eager as a dependency of both eager and non-eager
   @Injectable
-  static class MyModel2
+  class MyModel2
   {
   }
 
   // This will not be eager as only dependency via Supplier dependency from both Model4 and Model5
   @Injectable
-  static class MyModel3
+  class MyModel3
   {
     MyModel3( MyModel0 modelA, MyModel2 modelB )
     {
@@ -38,7 +38,7 @@ abstract class BasicEagerDependencyModel
 
   // This will be eager as required by MyModel6 which is eager
   @Injectable
-  static class MyModel4
+  class MyModel4
   {
     MyModel4( MyModel2 modelA, Supplier<MyModel3> modelB, Supplier<MyModel1> modelC )
     {
@@ -47,7 +47,7 @@ abstract class BasicEagerDependencyModel
 
   // This will be eager as required by MyModel6 which is eager
   @Injectable
-  static class MyModel5
+  class MyModel5
   {
     MyModel5( MyModel2 modelA, Supplier<MyModel3> modelB, MyModel1 modelC )
     {
@@ -55,7 +55,7 @@ abstract class BasicEagerDependencyModel
   }
 
   @Injectable( eager = true )
-  static class MyModel6
+  class MyModel6
   {
     MyModel6( MyModel4 modelA, MyModel5 modelB )
     {

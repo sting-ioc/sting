@@ -5,12 +5,12 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector( includes = { MultipleIncludesModel.MyFragment.class, MultipleIncludesModel.MyModel.class } )
-abstract class MultipleIncludesModel
+interface MultipleIncludesModel
 {
-  abstract Runnable getRunnable();
+  Runnable getRunnable();
 
   @Fragment
-  public interface MyFragment
+  interface MyFragment
   {
     default Runnable provideRunnable()
     {
@@ -19,7 +19,7 @@ abstract class MultipleIncludesModel
   }
 
   @Injectable
-  static class MyModel
+  class MyModel
   {
   }
 }

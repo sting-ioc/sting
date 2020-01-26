@@ -6,16 +6,16 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector( includes = SupplierBrokenFragmentWalkingCircularDependencyModel.MyFragment.class )
-abstract class SupplierBrokenFragmentWalkingCircularDependencyModel
+interface SupplierBrokenFragmentWalkingCircularDependencyModel
 {
-  abstract MyModel1 getMyModel1();
+  MyModel1 getMyModel1();
 
-  abstract MyModel2 getMyModel2();
+  MyModel2 getMyModel2();
 
-  abstract MyModel3 getMyModel3();
+  MyModel3 getMyModel3();
 
   @Injectable
-  static class MyModel1
+  class MyModel1
   {
     MyModel1( MyModel2 model )
     {
@@ -23,7 +23,7 @@ abstract class SupplierBrokenFragmentWalkingCircularDependencyModel
   }
 
   @Injectable
-  static class MyModel2
+  class MyModel2
   {
     MyModel2( MyModel3 model )
     {
@@ -31,7 +31,7 @@ abstract class SupplierBrokenFragmentWalkingCircularDependencyModel
   }
 
   @Fragment
-  public interface MyFragment
+  interface MyFragment
   {
     default MyModel3 provideMyModel2( Supplier<MyModel1> model )
     {
@@ -39,7 +39,7 @@ abstract class SupplierBrokenFragmentWalkingCircularDependencyModel
     }
   }
 
-  static class MyModel3
+  class MyModel3
   {
     MyModel3( Supplier<MyModel1> model )
     {

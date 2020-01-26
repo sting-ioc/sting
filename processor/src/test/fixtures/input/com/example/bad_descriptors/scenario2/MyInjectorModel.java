@@ -3,7 +3,7 @@ package com.example.bad_descriptors.scenario2;
 import sting.Injector;
 
 @Injector
-abstract class MyInjectorModel
+interface MyInjectorModel
 {
-  abstract Model2 getModel2();
+  Model2 getModel2();
 }

@@ -5,13 +5,13 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-abstract class QualifiedDependencyModel
+interface QualifiedDependencyModel
 {
   @Dependency( qualifier = "Foo" )
-  abstract MyModel getMyModel();
+  MyModel getMyModel();
 
   @Injectable( qualifier = "Foo" )
-  static class MyModel
+  class MyModel
   {
   }
 }

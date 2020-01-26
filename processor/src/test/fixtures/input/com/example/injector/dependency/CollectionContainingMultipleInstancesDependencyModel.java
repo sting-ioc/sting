@@ -7,25 +7,16 @@ import sting.Injector;
 @Injector( includes = { CollectionContainingMultipleInstancesDependencyModel.MyFragment1.class,
                         CollectionContainingMultipleInstancesDependencyModel.MyFragment2.class,
                         CollectionContainingMultipleInstancesDependencyModel.MyFragment3.class } )
-abstract class CollectionContainingMultipleInstancesDependencyModel
+interface CollectionContainingMultipleInstancesDependencyModel
 {
-  abstract Collection<MyModel> getMyModel();
+  Collection<MyModel> getMyModel();
 
-  static class MyModel
+  class MyModel
   {
   }
 
   @Fragment
-  public interface MyFragment1
-  {
-    default MyModel myModel()
-    {
-      return null;
-    }
-  }
-
-  @Fragment
-  public interface MyFragment2
+  interface MyFragment1
   {
     default MyModel myModel()
     {
@@ -34,7 +25,16 @@ abstract class CollectionContainingMultipleInstancesDependencyModel
   }
 
   @Fragment
-  public interface MyFragment3
+  interface MyFragment2
+  {
+    default MyModel myModel()
+    {
+      return null;
+    }
+  }
+
+  @Fragment
+  interface MyFragment3
   {
     default MyModel myModel()
     {

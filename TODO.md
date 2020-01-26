@@ -35,8 +35,6 @@ complete as there is too much un-said.
 
 * Add tests where fragments are deprecated or `@Provides` methods are deprecated.
 
-* Require `@Injector` to be interface as no need for state to complicate things.
-
 * Add tests where `@Injectable` is deprecated or the constructor is deprecated or one of the ctor parameters is deprecated.
 
 * Should `@Fragment` types be able to extend other `@Fragment` types? If so then add example. If not then verify not.

@@ -4,12 +4,12 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-abstract class BasicDependencyModel
+interface BasicDependencyModel
 {
-  abstract MyModel getMyModel();
+  MyModel getMyModel();
 
   @Injectable
-  static class MyModel
+  class MyModel
   {
   }
 }

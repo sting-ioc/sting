@@ -5,13 +5,13 @@ import sting.Fragment;
 import sting.Injector;
 
 @Injector( includes = OptionalProvidesDependencyModel.MyFragment.class )
-abstract class OptionalProvidesDependencyModel
+interface OptionalProvidesDependencyModel
 {
   @Nullable
-  abstract MyModel getMyModel();
+  MyModel getMyModel();
 
   @Fragment
-  public interface MyFragment
+  interface MyFragment
   {
     @Nullable
     default MyModel provideValue()
@@ -20,7 +20,7 @@ abstract class OptionalProvidesDependencyModel
     }
   }
 
-  static class MyModel
+  class MyModel
   {
   }
 }

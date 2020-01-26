@@ -6,30 +6,30 @@ import sting.Injector;
 
 @Injector( includes = { EagerInjectableViaIncludesModel.MyModel1.class,
                         EagerInjectableViaIncludesModel.MyFragment1.class } )
-abstract class EagerInjectableViaIncludesModel
+interface EagerInjectableViaIncludesModel
 {
   @Fragment( includes = { MyFragment2.class, MyModel2.class } )
-  public interface MyFragment1
+  interface MyFragment1
   {
   }
 
   @Injectable( eager = true )
-  static class MyModel1
+  class MyModel1
   {
   }
 
   @Fragment( includes = MyModel3.class )
-  public interface MyFragment2
+  interface MyFragment2
   {
   }
 
   @Injectable
-  static class MyModel2
+  class MyModel2
   {
   }
 
   @Injectable( eager = true )
-  static class MyModel3
+  class MyModel3
   {
   }
 }

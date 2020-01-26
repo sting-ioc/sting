@@ -543,30 +543,10 @@ public final class StingProcessor
     throws Exception
   {
     final ElementKind kind = element.getKind();
-    if ( ElementKind.INTERFACE != kind && ElementKind.CLASS != kind )
+    if ( ElementKind.INTERFACE != kind )
     {
-      throw new ProcessorException( MemberChecks.must( Constants.INJECTOR_CLASSNAME,
-                                                       "be an interface or an abstract class" ),
+      throw new ProcessorException( MemberChecks.must( Constants.INJECTOR_CLASSNAME, "be an interface" ),
                                     element );
-    }
-    else if ( ElementKind.CLASS == kind && !element.getModifiers().contains( Modifier.ABSTRACT ) )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                                          "must be abstract if the target is a class" ),
-                                    element );
-    }
-    if ( ElementKind.CLASS == kind )
-    {
-      final List<ExecutableElement> constructors = ElementsUtil.getConstructors( element );
-      final ExecutableElement constructor = constructors.get( 0 );
-      if ( constructors.size() > 1 )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                                            "have multiple constructors" ),
-                                      element );
-      }
-      injectorConstructorMustNotBeProtected( constructor );
-      injectorConstructorMustNotBePublic( constructor );
     }
 
     final List<DeclaredType> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
@@ -594,36 +574,6 @@ public final class StingProcessor
       final TypeElement element = injector.getElement();
       final String filename = toFilename( element ) + JSON_SUFFIX;
       JsonUtil.writeJsonResource( processingEnv, element, filename, injector::write );
-    }
-  }
-
-  private void injectorConstructorMustNotBePublic( @Nonnull final ExecutableElement constructor )
-  {
-    if ( isNotSynthetic( constructor ) &&
-         constructor.getModifiers().contains( Modifier.PUBLIC ) &&
-         ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_PUBLIC_CONSTRUCTOR ) )
-    {
-      final String message =
-        MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " target should not have a public " +
-        "constructor. The type should not be directly instantiated and should have a protected or package-access " +
-        "constructor. " + MemberChecks.suppressedBy( Constants.WARNING_PUBLIC_CONSTRUCTOR );
-      processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, constructor );
-    }
-  }
-
-  private void injectorConstructorMustNotBeProtected( @Nonnull final ExecutableElement constructor )
-  {
-    if ( !constructor.getEnclosingElement().getModifiers().contains( Modifier.PUBLIC ) &&
-         constructor.getModifiers().contains( Modifier.PROTECTED ) &&
-         ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_PROTECTED_CONSTRUCTOR ) )
-    {
-      final String message =
-        MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) +
-        " target should not have a protected " +
-        "constructor when the type is not public. The constructor is only invoked from subclasses that must be " +
-        "package-access as the type is not public. " +
-        MemberChecks.suppressedBy( Constants.WARNING_PROTECTED_CONSTRUCTOR );
-      processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, constructor );
     }
   }
 

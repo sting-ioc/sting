@@ -4,12 +4,12 @@ import sting.Fragment;
 import sting.Injector;
 
 @Injector( includes = SingleIncludesModel.MyFragment.class )
-abstract class SingleIncludesModel
+interface SingleIncludesModel
 {
-  abstract Runnable getRunnable();
+  Runnable getRunnable();
 
   @Fragment
-  public interface MyFragment
+  interface MyFragment
   {
     default Runnable provideRunnable()
     {

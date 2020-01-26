@@ -7,12 +7,12 @@ import sting.Injector;
 
 @Injector( includes = { MissingDependencyModel.MyFragment1.class,
                         MissingDependencyModel.MyFragment2.class } )
-abstract class MissingDependencyModel
+interface MissingDependencyModel
 {
-  abstract MyModel1 getMyModel1();
+  MyModel1 getMyModel1();
 
   @Injectable
-  static class MyModel1
+  class MyModel1
   {
     MyModel1( MyModel2 model )
     {
@@ -20,7 +20,7 @@ abstract class MissingDependencyModel
   }
 
   @Fragment
-  public interface MyFragment1
+  interface MyFragment1
   {
     default MyModel2 provideMyModel2( @Nullable MyModel3 model )
     {
@@ -28,7 +28,7 @@ abstract class MissingDependencyModel
     }
   }
 
-  static class MyModel2
+  class MyModel2
   {
     MyModel2( @Nullable MyModel3 model )
     {
@@ -36,7 +36,7 @@ abstract class MissingDependencyModel
   }
 
   @Fragment
-  public interface MyFragment2
+  interface MyFragment2
   {
     // Nullable provides
     @Nullable
@@ -46,14 +46,14 @@ abstract class MissingDependencyModel
     }
   }
 
-  static class MyModel3
+  class MyModel3
   {
     MyModel3( MyModel4 model )
     {
     }
   }
 
-  static class MyModel4
+  class MyModel4
   {
   }
 }

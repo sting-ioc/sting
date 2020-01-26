@@ -39,14 +39,7 @@ final class InjectorGenerator
 
     if ( false )
     {
-      if ( injector.isClassType() )
-      {
-        builder.superclass( TypeName.get( element.asType() ) );
-      }
-      else
-      {
-        builder.addSuperinterface( TypeName.get( element.asType() ) );
-      }
+      builder.addSuperinterface( TypeName.get( element.asType() ) );
     }
 
     emitFragmentFields( builder, graph );

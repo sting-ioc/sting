@@ -4,26 +4,26 @@ import sting.Fragment;
 import sting.Injector;
 
 @Injector( includes = PrimitiveDependencyModel.MyFragment.class )
-abstract class PrimitiveDependencyModel
+interface PrimitiveDependencyModel
 {
-  abstract boolean getValue1();
+  boolean getValue1();
 
-  abstract char getValue2();
+  char getValue2();
 
-  abstract byte getValue3();
+  byte getValue3();
 
-  abstract short getValue4();
+  short getValue4();
 
-  abstract int getValue5();
+  int getValue5();
 
-  abstract long getValue6();
+  long getValue6();
 
-  abstract float getValue7();
+  float getValue7();
 
-  abstract double getValue8();
+  double getValue8();
 
   @Fragment
-  public interface MyFragment
+  interface MyFragment
   {
     default boolean provideValue()
     {

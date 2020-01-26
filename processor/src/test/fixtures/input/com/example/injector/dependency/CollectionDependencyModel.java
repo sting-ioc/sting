@@ -5,12 +5,12 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-abstract class CollectionDependencyModel
+interface CollectionDependencyModel
 {
-  abstract Collection<MyModel> getMyModel();
+  Collection<MyModel> getMyModel();
 
   @Injectable
-  static class MyModel
+  class MyModel
   {
   }
 }

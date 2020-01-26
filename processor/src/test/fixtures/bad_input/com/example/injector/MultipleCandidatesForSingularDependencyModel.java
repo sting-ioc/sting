@@ -5,12 +5,12 @@ import sting.Injector;
 
 @Injector( includes = { MultipleCandidatesForSingularDependencyModel.MyFragment1.class,
                         MultipleCandidatesForSingularDependencyModel.MyFragment2.class } )
-abstract class MultipleCandidatesForSingularDependencyModel
+interface MultipleCandidatesForSingularDependencyModel
 {
-  abstract Runnable getRunnable();
+  Runnable getRunnable();
 
   @Fragment
-  public interface MyFragment1
+  interface MyFragment1
   {
     default Runnable provideRunnable1()
     {
@@ -19,7 +19,7 @@ abstract class MultipleCandidatesForSingularDependencyModel
   }
 
   @Fragment
-  public interface MyFragment2
+  interface MyFragment2
   {
     default Runnable provideRunnable2()
     {

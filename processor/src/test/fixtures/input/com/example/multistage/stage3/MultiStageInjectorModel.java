@@ -7,11 +7,11 @@ import com.example.multistage.stage2.Model3;
 import sting.Injector;
 
 @Injector( includes = { Model1.class, MyFragment.class } )
-abstract class MultiStageInjectorModel
+interface MultiStageInjectorModel
 {
   // From MyFragment
-  abstract Model2 getModel2();
+  Model2 getModel2();
 
   // This dependency should be auto-added by virtue of being an @Injectable
-  abstract Model3 getModel3();
+  Model3 getModel3();
 }

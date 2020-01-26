@@ -296,10 +296,8 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.types.NoTypesAndLazyModel",
                       "@Injectable target must have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" },
 
-        new Object[]{ "com.example.injector.ConcreteClassInjector",
-                      "@Injector target must not must be abstract if the target is a class" },
-        new Object[]{ "com.example.injector.EnumInjector",
-                      "@Injector target must be an interface or an abstract class" },
+        new Object[]{ "com.example.injector.ClassInjector", "@Injector target must be an interface" },
+        new Object[]{ "com.example.injector.EnumInjector", "@Injector target must be an interface" },
         new Object[]{ "com.example.injector.MultipleCandidatesForSingularDependencyModel",
                       "Injector defined by type 'com.example.injector.MultipleCandidatesForSingularDependencyModel' contains a dependency [java.lang.Runnable] that expects to be satisfied by a single value but the injector contains multiple values that satisfy the dependency.\n" +
                       "  \n" +
@@ -309,8 +307,6 @@ public final class StingProcessorTest
                       "  Bindings:\n" +
                       "    [Provides]       com.example.injector.MultipleCandidatesForSingularDependencyModel.MyFragment1.provideRunnable1\n" +
                       "    [Provides]       com.example.injector.MultipleCandidatesForSingularDependencyModel.MyFragment2.provideRunnable2" },
-        new Object[]{ "com.example.injector.MultipleConstructorClassInjector",
-                      "@Injector target must not have multiple constructors" },
         new Object[]{ "com.example.injector.NoDirectDependenciesAndNoEagerInIncludesModel",
                       "@Injector target produced an empty object graph. This means that there are no eager values in the includes and there are no dependencies or only unsatisfied optional dependencies defined by the injector" },
         new Object[]{ "com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel",
@@ -409,12 +405,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.ProtectedConstructorModel",
                       "@Injectable target should not have a protected constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:ProtectedConstructor\" )" },
         new Object[]{ "com.example.injectable.PublicConstructorModel",
-                      "@Injectable target should not have a public constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:PublicConstructor\" )" },
-
-        new Object[]{ "com.example.injector.ProtectedConstructorInjector",
-                      "@Injector target should not have a protected constructor when the type is not public. The constructor is only invoked from subclasses that must be package-access as the type is not public. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:ProtectedConstructor\" )" },
-        new Object[]{ "com.example.injector.PublicConstructorInjector",
-                      "@Injector target should not have a public constructor. The type should not be directly instantiated and should have a protected or package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:PublicConstructor\" )" }
+                      "@Injectable target should not have a public constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:PublicConstructor\" )" }
       };
   }
 
@@ -437,10 +428,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.FinalModel" },
         new Object[]{ "com.example.injectable.PackageAccessModel" },
         new Object[]{ "com.example.injectable.SuppressedProtectedConstructorModel" },
-        new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" },
-
-        new Object[]{ "com.example.injector.SuppressedProtectedConstructorInjector" },
-        new Object[]{ "com.example.injector.SuppressedPublicConstructorInjector" }
+        new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" }
       };
   }
 

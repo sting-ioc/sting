@@ -5,19 +5,19 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-abstract class OptionalMissingDependencyModel
+interface OptionalMissingDependencyModel
 {
   @Nullable
-  abstract MyModel1 getMyModel1();
+  MyModel1 getMyModel1();
 
-  abstract MyModel2 getMyModel2();
+  MyModel2 getMyModel2();
 
-  static class MyModel1
+  class MyModel1
   {
   }
 
   @Injectable
-  static class MyModel2
+  class MyModel2
   {
   }
 }

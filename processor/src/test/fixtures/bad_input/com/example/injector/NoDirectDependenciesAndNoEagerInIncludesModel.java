@@ -4,10 +4,10 @@ import sting.Fragment;
 import sting.Injector;
 
 @Injector( includes = NoDirectDependenciesAndNoEagerInIncludesModel.MyFragment.class )
-abstract class NoDirectDependenciesAndNoEagerInIncludesModel
+interface NoDirectDependenciesAndNoEagerInIncludesModel
 {
   @Fragment
-  public interface MyFragment
+  interface MyFragment
   {
     default Runnable provideRunnable()
     {

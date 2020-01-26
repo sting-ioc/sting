@@ -43,11 +43,6 @@ final class InjectorDescriptor
     return _element;
   }
 
-  boolean isClassType()
-  {
-    return ElementKind.CLASS == getElement().getKind();
-  }
-
   @Nonnull
   Collection<DeclaredType> getIncludes()
   {
