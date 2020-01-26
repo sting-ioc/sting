@@ -1,5 +1,6 @@
 package com.example.injector.circular;
 
+import java.util.Objects;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 
@@ -9,8 +10,9 @@ public final class SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_My
   }
 
   @Nonnull
+  @SuppressWarnings("unchecked")
   public static SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1 create(
-      final SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2 model) {
-    return new SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1( model );
+      final Object model) {
+    return new SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1( Objects.requireNonNull( (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2) model ) );
   }
 }

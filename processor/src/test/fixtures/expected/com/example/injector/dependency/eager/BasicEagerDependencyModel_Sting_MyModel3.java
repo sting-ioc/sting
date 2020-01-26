@@ -1,5 +1,6 @@
 package com.example.injector.dependency.eager;
 
+import java.util.Objects;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 
@@ -9,9 +10,9 @@ public final class BasicEagerDependencyModel_Sting_MyModel3 {
   }
 
   @Nonnull
-  public static BasicEagerDependencyModel.MyModel3 create(
-      final BasicEagerDependencyModel.MyModel0 modelA,
-      final BasicEagerDependencyModel.MyModel2 modelB) {
-    return new BasicEagerDependencyModel.MyModel3( modelA, modelB );
+  @SuppressWarnings("unchecked")
+  public static BasicEagerDependencyModel.MyModel3 create(final Object modelA,
+      final Object modelB) {
+    return new BasicEagerDependencyModel.MyModel3( Objects.requireNonNull( (BasicEagerDependencyModel.MyModel0) modelA ), Objects.requireNonNull( (BasicEagerDependencyModel.MyModel2) modelB ) );
   }
 }

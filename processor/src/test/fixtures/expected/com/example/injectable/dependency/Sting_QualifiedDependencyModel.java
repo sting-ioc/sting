@@ -1,5 +1,6 @@
 package com.example.injectable.dependency;
 
+import java.util.Objects;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 
@@ -10,6 +11,6 @@ public final class Sting_QualifiedDependencyModel {
 
   @Nonnull
   public static QualifiedDependencyModel create(final Runnable runnable) {
-    return new QualifiedDependencyModel( runnable );
+    return new QualifiedDependencyModel( Objects.requireNonNull( runnable ) );
   }
 }

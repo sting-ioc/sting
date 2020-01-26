@@ -1,5 +1,6 @@
 package com.example.injectable.dependency;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
@@ -11,6 +12,6 @@ public final class Sting_SupplierDependencyModel {
 
   @Nonnull
   public static SupplierDependencyModel create(final Supplier<Runnable> runnable) {
-    return new SupplierDependencyModel( runnable );
+    return new SupplierDependencyModel( Objects.requireNonNull( runnable ) );
   }
 }

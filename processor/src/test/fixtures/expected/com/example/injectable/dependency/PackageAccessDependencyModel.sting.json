@@ -1,0 +1,32 @@
+{
+  "schema": "injectable/1",
+  "id": "com.example.injectable.dependency.PackageAccessDependencyModel",
+  "types": [
+    "com.example.injectable.dependency.PackageAccessDependencyModel"
+  ],
+  "dependencies": [
+    {
+      "coordinate": {
+        "type": "com.example.injectable.dependency.PackageAccessDependencyModel.MyType1"
+      }
+    },
+    {
+      "type": "SUPPLIER",
+      "coordinate": {
+        "type": "com.example.injectable.dependency.PackageAccessDependencyModel.MyType2"
+      }
+    },
+    {
+      "type": "COLLECTION",
+      "coordinate": {
+        "type": "com.example.injectable.dependency.PackageAccessDependencyModel.MyType3"
+      }
+    },
+    {
+      "type": "SUPPLIER_COLLECTION",
+      "coordinate": {
+        "type": "com.example.injectable.dependency.PackageAccessDependencyModel.MyType4"
+      }
+    }
+  ]
+}

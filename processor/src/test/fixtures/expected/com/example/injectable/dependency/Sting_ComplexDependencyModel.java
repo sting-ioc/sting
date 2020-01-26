@@ -2,6 +2,7 @@ package com.example.injectable.dependency;
 
 import java.io.Serializable;
 import java.util.EventListener;
+import java.util.Objects;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,6 +16,6 @@ public final class Sting_ComplexDependencyModel {
   public static ComplexDependencyModel create(final Runnable runnable,
       @Nullable final EventListener listener, final Serializable serializable,
       final int countDown) {
-    return new ComplexDependencyModel( runnable, listener, serializable, countDown );
+    return new ComplexDependencyModel( Objects.requireNonNull( runnable ), listener, Objects.requireNonNull( serializable ), Objects.requireNonNull( countDown ) );
   }
 }

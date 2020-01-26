@@ -1,5 +1,6 @@
 package com.example.injector.circular;
 
+import java.util.Objects;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 
@@ -9,8 +10,8 @@ public final class SupplierBrokenDirectCircularDependencyModel_Sting_MyModel1 {
   }
 
   @Nonnull
-  public static SupplierBrokenDirectCircularDependencyModel.MyModel1 create(
-      final SupplierBrokenDirectCircularDependencyModel.MyModel2 model) {
-    return new SupplierBrokenDirectCircularDependencyModel.MyModel1( model );
+  @SuppressWarnings("unchecked")
+  public static SupplierBrokenDirectCircularDependencyModel.MyModel1 create(final Object model) {
+    return new SupplierBrokenDirectCircularDependencyModel.MyModel1( Objects.requireNonNull( (SupplierBrokenDirectCircularDependencyModel.MyModel2) model ) );
   }
 }
