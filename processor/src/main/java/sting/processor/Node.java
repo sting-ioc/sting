@@ -113,7 +113,7 @@ final class Node
       }
 
       _public = TypeKind.DECLARED != _type.getKind() ||
-                isEffectivelyPublic( (TypeElement) ( (DeclaredType) _type ).asElement() );
+                StingElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) _type ).asElement() );
     }
     else
     {
