@@ -6,7 +6,6 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
@@ -71,6 +70,7 @@ final class StingGeneratorUtil
       code.append( ' ' );
     }
     boolean allPublic = true;
+    boolean anyNonPublicNonInstance = false;
     boolean firstParam = true;
     for ( final DependencyDescriptor dependency : dependencies )
     {
@@ -86,7 +86,30 @@ final class StingGeneratorUtil
 
       final TypeName actualTypeName = getDependencyType( dependency );
 
-      final TypeName paramType = isPublic ? actualTypeName : TypeName.OBJECT;
+      final DependencyDescriptor.Type dependencyType = dependency.getType();
+      final TypeName paramType;
+      if ( isPublic )
+      {
+        paramType = actualTypeName;
+      }
+      else if ( DependencyDescriptor.Type.INSTANCE == dependencyType )
+      {
+        anyNonPublicNonInstance = true;
+        paramType = TypeName.OBJECT;
+      }
+      else if ( DependencyDescriptor.Type.SUPPLIER == dependencyType )
+      {
+        paramType = StingTypeNames.SUPPLIER;
+      }
+      else if ( DependencyDescriptor.Type.COLLECTION == dependencyType )
+      {
+        paramType = StingTypeNames.COLLECTION;
+      }
+      else
+      {
+        assert DependencyDescriptor.Type.SUPPLIER_COLLECTION == dependencyType;
+        paramType = StingTypeNames.COLLECTION;
+      }
       final ParameterSpec.Builder param = ParameterSpec.builder( paramType, paramName, Modifier.FINAL );
       GeneratorUtil.copyWhitelistedAnnotations( parameter, param );
       method.addParameter( param.build() );
@@ -118,13 +141,19 @@ final class StingGeneratorUtil
     }
     code.append( ")" );
     method.addStatement( code.toString(), args.toArray() );
+    final ArrayList<String> additionalSuppressions = new ArrayList<>();
     if ( !allPublic )
     {
-      SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv,
-                                                          method,
-                                                          Collections.singleton( "unchecked" ),
-                                                          typesProcessed );
+      additionalSuppressions.add( "unchecked" );
     }
+    if ( anyNonPublicNonInstance )
+    {
+      additionalSuppressions.add( "rawtypes" );
+    }
+    SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv,
+                                                        method,
+                                                        additionalSuppressions,
+                                                        typesProcessed );
     return method.build();
   }
 
