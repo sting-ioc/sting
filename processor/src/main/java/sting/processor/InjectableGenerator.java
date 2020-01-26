@@ -47,7 +47,7 @@ final class InjectableGenerator
     final StringBuilder code = new StringBuilder();
     final List<Object> args = new ArrayList<>();
     code.append( "return new $T(" );
-    args.add(  element.asType() );
+    args.add( element.asType() );
     if ( !originalParameters.isEmpty() )
     {
       code.append( ' ' );
