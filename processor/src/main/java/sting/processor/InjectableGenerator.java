@@ -64,9 +64,9 @@ final class InjectableGenerator
       {
         code.append( ", " );
       }
+      firstParam = false;
       code.append( "$N" );
       args.add( paramName );
-      firstParam = false;
     }
     if ( !originalParameters.isEmpty() )
     {
