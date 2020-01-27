@@ -128,7 +128,8 @@ final class ObjectGraph
       .peek( n -> {
         if ( n.isFromProvides() )
         {
-          n.setFragment( fragmentMap.get( (FragmentDescriptor) n.getBinding().getOwner() ) );
+          //noinspection SuspiciousMethodCalls
+          n.setFragment( fragmentMap.get( n.getBinding().getOwner() ) );
         }
       } )
       .collect( Collectors.toList() );
