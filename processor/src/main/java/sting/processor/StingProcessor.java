@@ -784,7 +784,6 @@ public final class StingProcessor
   }
 
   private void processFragment( @Nonnull final TypeElement element )
-    throws Exception
   {
     if ( ElementKind.INTERFACE != element.getKind() )
     {
@@ -1094,7 +1093,6 @@ public final class StingProcessor
   }
 
   private void processInjectable( @Nonnull final TypeElement element )
-    throws Exception
   {
     if ( ElementKind.CLASS != element.getKind() )
     {
