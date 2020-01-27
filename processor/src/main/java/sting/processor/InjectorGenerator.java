@@ -76,8 +76,7 @@ final class InjectorGenerator
   {
     final MethodSpec.Builder ctor = MethodSpec.constructorBuilder();
 
-    final List<Node> nodes = new ArrayList<>( graph.getNodes() );
-    for ( final Node node : nodes )
+    for ( final Node node : graph.getNodes() )
     {
       if ( node.isEager() )
       {
