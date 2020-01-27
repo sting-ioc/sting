@@ -31,8 +31,6 @@ complete as there is too much un-said.
   will be in a separate module and will use javapoet to generate the code, existing test infrastructure
   to compile the code repeatedly until we get stable builds.
 
-* Write jre integration tests that test various behaviour in different circumstances:
-
 * Generate/Figure out how to model `Supplier` can return null. Also what does `@Nullable` on non-instance dependency types mean?
 
 * Add support to dependencyType so that the boxed types and primitives interoperate. ie. Can have a collection of `Integer` that derived from `int` values.
