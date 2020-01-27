@@ -21,6 +21,18 @@ complete as there is too much un-said.
   pattern?
 * Ensure that ids are unique across an object graph.
 
+* Write integration tests that compare with dagger the following performance characteristics.
+  * time to compile the injector
+  * time to initialize and access the injector at runtime
+  * Code size of the the injector when compiled to GWT
+
+  The integration tests will generate an injector with various numbers of fragments, injectables with
+  a dependency tree that has various shapes (i.e. width and depth of tree varied). The integration tests
+  will be in a separate module and will use javapoet to generate the code, existing test infrastructure
+  to compile the code repeatedly until we get stable builds.
+
+* Write jre integration tests that test various behaviour in different circumstances:
+
 * Generate an error if Injector has type parameters
 
 * Add tests where `@Injectable` is package access, provided to other values within package and provided as
