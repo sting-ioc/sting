@@ -38,7 +38,7 @@ final class Sting_CollectionContainingMultipleInstancesDependencyModel implement
   private Object node1() {
     if ( !$sting$_node1_allocated ) {
       $sting$_node1_allocated = true;
-      node1 = fragment1.$sting$_myModel();
+      node1 = fragment3.$sting$_myModel();
     }
     return node1;
   }
@@ -54,13 +54,13 @@ final class Sting_CollectionContainingMultipleInstancesDependencyModel implement
   private Object node3() {
     if ( !$sting$_node3_allocated ) {
       $sting$_node3_allocated = true;
-      node3 = fragment3.$sting$_myModel();
+      node3 = fragment1.$sting$_myModel();
     }
     return node3;
   }
 
   @Override
   public Collection<CollectionContainingMultipleInstancesDependencyModel.MyModel> getMyModel() {
-    return Arrays.asList( (CollectionContainingMultipleInstancesDependencyModel.MyModel) node1(), (CollectionContainingMultipleInstancesDependencyModel.MyModel) node2(), (CollectionContainingMultipleInstancesDependencyModel.MyModel) node3() );
+    return Arrays.asList( (CollectionContainingMultipleInstancesDependencyModel.MyModel) node3(), (CollectionContainingMultipleInstancesDependencyModel.MyModel) node2(), (CollectionContainingMultipleInstancesDependencyModel.MyModel) node1() );
   }
 }

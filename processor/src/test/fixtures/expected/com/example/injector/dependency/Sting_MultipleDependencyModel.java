@@ -22,7 +22,7 @@ final class Sting_MultipleDependencyModel implements MultipleDependencyModel {
   private Object node1() {
     if ( !$sting$_node1_allocated ) {
       $sting$_node1_allocated = true;
-      node1 = MultipleDependencyModel_Sting_MyModel1.create();
+      node1 = MultipleDependencyModel_Sting_MyModel2.create();
     }
     return node1;
   }
@@ -30,18 +30,18 @@ final class Sting_MultipleDependencyModel implements MultipleDependencyModel {
   private Object node2() {
     if ( !$sting$_node2_allocated ) {
       $sting$_node2_allocated = true;
-      node2 = MultipleDependencyModel_Sting_MyModel2.create();
+      node2 = MultipleDependencyModel_Sting_MyModel1.create();
     }
     return node2;
   }
 
   @Override
   public MultipleDependencyModel.MyModel1 getMyModel() {
-    return (MultipleDependencyModel.MyModel1) node1();
+    return (MultipleDependencyModel.MyModel1) node2();
   }
 
   @Override
   public Supplier<MultipleDependencyModel.MyModel2> getMyModelSupplier() {
-    return () -> (MultipleDependencyModel.MyModel2) node2();
+    return () -> (MultipleDependencyModel.MyModel2) node1();
   }
 }

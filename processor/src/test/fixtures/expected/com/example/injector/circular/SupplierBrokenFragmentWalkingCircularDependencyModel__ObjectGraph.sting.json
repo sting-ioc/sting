@@ -2,15 +2,15 @@
   "schema": "graph/1",
   "values": [
     {
-      "id": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1",
-      "bindingType": "INJECTABLE",
+      "id": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyFragment#provideMyModel2",
+      "bindingType": "PROVIDES",
       "dependencies": [
         {
           "coordinate": {
-            "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2"
+            "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1"
           },
           "supportedBy": [
-            "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2"
+            "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1"
           ]
         }
       ]
@@ -30,15 +30,15 @@
       ]
     },
     {
-      "id": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyFragment#provideMyModel2",
-      "bindingType": "PROVIDES",
+      "id": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1",
+      "bindingType": "INJECTABLE",
       "dependencies": [
         {
           "coordinate": {
-            "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1"
+            "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2"
           },
           "supportedBy": [
-            "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1"
+            "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2"
           ]
         }
       ]

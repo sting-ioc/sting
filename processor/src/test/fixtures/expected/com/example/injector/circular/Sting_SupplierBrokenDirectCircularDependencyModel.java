@@ -21,7 +21,7 @@ final class Sting_SupplierBrokenDirectCircularDependencyModel implements Supplie
   private Object node1() {
     if ( !$sting$_node1_allocated ) {
       $sting$_node1_allocated = true;
-      node1 = SupplierBrokenDirectCircularDependencyModel_Sting_MyModel1.create((SupplierBrokenDirectCircularDependencyModel.MyModel2) node2());
+      node1 = SupplierBrokenDirectCircularDependencyModel_Sting_MyModel2.create(() -> (SupplierBrokenDirectCircularDependencyModel.MyModel1) node2());
     }
     return node1;
   }
@@ -29,18 +29,18 @@ final class Sting_SupplierBrokenDirectCircularDependencyModel implements Supplie
   private Object node2() {
     if ( !$sting$_node2_allocated ) {
       $sting$_node2_allocated = true;
-      node2 = SupplierBrokenDirectCircularDependencyModel_Sting_MyModel2.create(() -> (SupplierBrokenDirectCircularDependencyModel.MyModel1) node1());
+      node2 = SupplierBrokenDirectCircularDependencyModel_Sting_MyModel1.create((SupplierBrokenDirectCircularDependencyModel.MyModel2) node1());
     }
     return node2;
   }
 
   @Override
   public SupplierBrokenDirectCircularDependencyModel.MyModel1 getMyModel1() {
-    return (SupplierBrokenDirectCircularDependencyModel.MyModel1) node1();
+    return (SupplierBrokenDirectCircularDependencyModel.MyModel1) node2();
   }
 
   @Override
   public SupplierBrokenDirectCircularDependencyModel.MyModel2 getMyModel2() {
-    return (SupplierBrokenDirectCircularDependencyModel.MyModel2) node2();
+    return (SupplierBrokenDirectCircularDependencyModel.MyModel2) node1();
   }
 }

@@ -2,27 +2,7 @@
   "schema": "graph/1",
   "values": [
     {
-      "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue",
-      "bindingType": "PROVIDES"
-    },
-    {
-      "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue2",
-      "bindingType": "PROVIDES"
-    },
-    {
-      "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue3",
-      "bindingType": "PROVIDES"
-    },
-    {
-      "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue4",
-      "bindingType": "PROVIDES"
-    },
-    {
-      "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue5",
-      "bindingType": "PROVIDES"
-    },
-    {
-      "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue6",
+      "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue8",
       "bindingType": "PROVIDES"
     },
     {
@@ -30,7 +10,27 @@
       "bindingType": "PROVIDES"
     },
     {
-      "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue8",
+      "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue6",
+      "bindingType": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue5",
+      "bindingType": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue4",
+      "bindingType": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue3",
+      "bindingType": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue2",
+      "bindingType": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue",
       "bindingType": "PROVIDES"
     }
   ]

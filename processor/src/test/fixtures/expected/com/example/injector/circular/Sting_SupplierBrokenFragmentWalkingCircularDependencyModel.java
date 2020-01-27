@@ -30,7 +30,7 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
   private Object node1() {
     if ( !$sting$_node1_allocated ) {
       $sting$_node1_allocated = true;
-      node1 = SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel1.create((SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2) node2());
+      node1 = fragment1.$sting$_provideMyModel2(() -> (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1) node3());
     }
     return node1;
   }
@@ -38,7 +38,7 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
   private Object node2() {
     if ( !$sting$_node2_allocated ) {
       $sting$_node2_allocated = true;
-      node2 = SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel2.create((SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3) node3());
+      node2 = SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel2.create((SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3) node1());
     }
     return node2;
   }
@@ -46,14 +46,14 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
   private Object node3() {
     if ( !$sting$_node3_allocated ) {
       $sting$_node3_allocated = true;
-      node3 = fragment1.$sting$_provideMyModel2(() -> (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1) node1());
+      node3 = SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel1.create((SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2) node2());
     }
     return node3;
   }
 
   @Override
   public SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1 getMyModel1() {
-    return (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1) node1();
+    return (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1) node3();
   }
 
   @Override
@@ -63,6 +63,6 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
 
   @Override
   public SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3 getMyModel3() {
-    return (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3) node3();
+    return (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3) node1();
   }
 }

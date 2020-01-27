@@ -2,7 +2,7 @@
   "schema": "graph/1",
   "values": [
     {
-      "id": "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel.MyFragment1#myModel",
+      "id": "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel.MyFragment3#myModel",
       "bindingType": "PROVIDES"
     },
     {
@@ -10,7 +10,7 @@
       "bindingType": "PROVIDES"
     },
     {
-      "id": "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel.MyFragment3#myModel",
+      "id": "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel.MyFragment1#myModel",
       "bindingType": "PROVIDES"
     }
   ]

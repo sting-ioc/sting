@@ -2,11 +2,11 @@
   "schema": "graph/1",
   "values": [
     {
-      "id": "com.example.injector.dependency.MultipleDependencyModel.MyModel1",
+      "id": "com.example.injector.dependency.MultipleDependencyModel.MyModel2",
       "bindingType": "INJECTABLE"
     },
     {
-      "id": "com.example.injector.dependency.MultipleDependencyModel.MyModel2",
+      "id": "com.example.injector.dependency.MultipleDependencyModel.MyModel1",
       "bindingType": "INJECTABLE"
     }
   ]

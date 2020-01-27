@@ -2,20 +2,6 @@
   "schema": "graph/1",
   "values": [
     {
-      "id": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel1",
-      "bindingType": "INJECTABLE",
-      "dependencies": [
-        {
-          "coordinate": {
-            "type": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel2"
-          },
-          "supportedBy": [
-            "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel2"
-          ]
-        }
-      ]
-    },
-    {
       "id": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel2",
       "bindingType": "INJECTABLE",
       "dependencies": [
@@ -25,6 +11,20 @@
           },
           "supportedBy": [
             "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel1",
+      "bindingType": "INJECTABLE",
+      "dependencies": [
+        {
+          "coordinate": {
+            "type": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel2"
+          },
+          "supportedBy": [
+            "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel2"
           ]
         }
       ]

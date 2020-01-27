@@ -78,7 +78,6 @@ final class InjectorGenerator
     ctor.addModifiers( Modifier.PRIVATE );
 
     final List<Node> nodes = new ArrayList<>( graph.getNodes() );
-    Collections.reverse( nodes );
     for ( final Node node : nodes )
     {
       if ( node.isEager() )

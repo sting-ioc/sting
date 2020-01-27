@@ -36,14 +36,14 @@ public final class StingProcessorInjectorGraphTest
     assertEager( values, classname, "MyModel5", true );
     assertEager( values, classname, "MyModel6", true );
 
-    // Order is stable and based on depth of node from root dependencies
-    assertIndex( values, classname, "MyModel6", 0 );
-    assertIndex( values, classname, "MyModel4", 1 );
-    assertIndex( values, classname, "MyModel5", 2 );
+    // Order is stable and based on inverse of (depth of node from root dependencies + node id)
+    assertIndex( values, classname, "MyModel6", 6 );
+    assertIndex( values, classname, "MyModel4", 5 );
+    assertIndex( values, classname, "MyModel5", 4 );
     assertIndex( values, classname, "MyModel1", 3 );
-    assertIndex( values, classname, "MyModel2", 4 );
-    assertIndex( values, classname, "MyModel3", 5 );
-    assertIndex( values, classname, "MyModel0", 6 );
+    assertIndex( values, classname, "MyModel2", 2 );
+    assertIndex( values, classname, "MyModel3", 1 );
+    assertIndex( values, classname, "MyModel0", 0 );
   }
 
   @Test

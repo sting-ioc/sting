@@ -123,7 +123,7 @@ final class ObjectGraph
     index.set( 0 );
     _orderedNodes = _nodes.values()
       .stream()
-      .sorted( Comparator.comparing( Node::getDepth ).thenComparing( n -> n.getBinding().getId() ) )
+      .sorted( Comparator.comparing( Node::getDepth ).thenComparing( n -> n.getBinding().getId() ).reversed() )
       .peek( n -> n.setName( "node" + index.incrementAndGet() ) )
       .peek( n -> {
         if ( n.isFromProvides() )

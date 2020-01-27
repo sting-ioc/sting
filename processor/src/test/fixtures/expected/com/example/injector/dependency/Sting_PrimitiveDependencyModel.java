@@ -31,28 +31,28 @@ final class Sting_PrimitiveDependencyModel implements PrimitiveDependencyModel {
   private final PrimitiveDependencyModel_Sting_MyFragment fragment8 = new PrimitiveDependencyModel_Sting_MyFragment();
 
   @Nullable
-  private boolean node1;
+  private double node1;
 
   @Nullable
-  private char node2;
+  private float node2;
 
   @Nullable
-  private byte node3;
+  private long node3;
 
   @Nullable
-  private short node4;
+  private int node4;
 
   @Nullable
-  private int node5;
+  private short node5;
 
   @Nullable
-  private long node6;
+  private byte node6;
 
   @Nullable
-  private float node7;
+  private char node7;
 
   @Nullable
-  private double node8;
+  private boolean node8;
 
   private boolean $sting$_node1_allocated;
 
@@ -73,107 +73,107 @@ final class Sting_PrimitiveDependencyModel implements PrimitiveDependencyModel {
   private Sting_PrimitiveDependencyModel() {
   }
 
-  private boolean node1() {
+  private double node1() {
     if ( !$sting$_node1_allocated ) {
       $sting$_node1_allocated = true;
-      node1 = fragment8.$sting$_provideValue();
+      node1 = fragment8.$sting$_provideValue8();
     }
     return node1;
   }
 
-  private char node2() {
+  private float node2() {
     if ( !$sting$_node2_allocated ) {
       $sting$_node2_allocated = true;
-      node2 = fragment8.$sting$_provideValue2();
+      node2 = fragment8.$sting$_provideValue7();
     }
     return node2;
   }
 
-  private byte node3() {
+  private long node3() {
     if ( !$sting$_node3_allocated ) {
       $sting$_node3_allocated = true;
-      node3 = fragment8.$sting$_provideValue3();
+      node3 = fragment8.$sting$_provideValue6();
     }
     return node3;
   }
 
-  private short node4() {
+  private int node4() {
     if ( !$sting$_node4_allocated ) {
       $sting$_node4_allocated = true;
-      node4 = fragment8.$sting$_provideValue4();
+      node4 = fragment8.$sting$_provideValue5();
     }
     return node4;
   }
 
-  private int node5() {
+  private short node5() {
     if ( !$sting$_node5_allocated ) {
       $sting$_node5_allocated = true;
-      node5 = fragment8.$sting$_provideValue5();
+      node5 = fragment8.$sting$_provideValue4();
     }
     return node5;
   }
 
-  private long node6() {
+  private byte node6() {
     if ( !$sting$_node6_allocated ) {
       $sting$_node6_allocated = true;
-      node6 = fragment8.$sting$_provideValue6();
+      node6 = fragment8.$sting$_provideValue3();
     }
     return node6;
   }
 
-  private float node7() {
+  private char node7() {
     if ( !$sting$_node7_allocated ) {
       $sting$_node7_allocated = true;
-      node7 = fragment8.$sting$_provideValue7();
+      node7 = fragment8.$sting$_provideValue2();
     }
     return node7;
   }
 
-  private double node8() {
+  private boolean node8() {
     if ( !$sting$_node8_allocated ) {
       $sting$_node8_allocated = true;
-      node8 = fragment8.$sting$_provideValue8();
+      node8 = fragment8.$sting$_provideValue();
     }
     return node8;
   }
 
   @Override
   public boolean getValue1() {
-    return node1();
+    return node8();
   }
 
   @Override
   public char getValue2() {
-    return node2();
-  }
-
-  @Override
-  public byte getValue3() {
-    return node3();
-  }
-
-  @Override
-  public short getValue4() {
-    return node4();
-  }
-
-  @Override
-  public int getValue5() {
-    return node5();
-  }
-
-  @Override
-  public long getValue6() {
-    return node6();
-  }
-
-  @Override
-  public float getValue7() {
     return node7();
   }
 
   @Override
+  public byte getValue3() {
+    return node6();
+  }
+
+  @Override
+  public short getValue4() {
+    return node5();
+  }
+
+  @Override
+  public int getValue5() {
+    return node4();
+  }
+
+  @Override
+  public long getValue6() {
+    return node3();
+  }
+
+  @Override
+  public float getValue7() {
+    return node2();
+  }
+
+  @Override
   public double getValue8() {
-    return node8();
+    return node1();
   }
 }
