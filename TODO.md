@@ -25,6 +25,8 @@ complete as there is too much un-said.
 * Rename `DependencyDescriptor.Type` to `DependencyDescriptor.Kind` to eliminate confusion with java types.
 * Ensure that ids are unique across an object graph.
 
+* Any nested `@Fragment` annotated classes in `@Injector` are automagically added to the `@Injector`
+
 * Write integration tests that compare with dagger the following performance characteristics.
   * time to compile the injector
   * time to initialize and access the injector at runtime
