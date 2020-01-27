@@ -31,7 +31,6 @@ complete as there is too much un-said.
   will be in a separate module and will use javapoet to generate the code, existing test infrastructure
   to compile the code repeatedly until we get stable builds.
 
-
 * Generate a website using same tech as Arez. Publish to a separate github module like in Arez
 
 * Consider moving to sting ot sting-ioc github organization
