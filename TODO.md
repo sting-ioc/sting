@@ -53,6 +53,8 @@ complete as there is too much un-said.
 
 * Verify `@Fragment` methods are not static.
 
+* Verify `@Nullable` provides does not return a primitive type.
+
 * Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
   or `Injector` will have their type annotations scanned for matching annotations of which there must be at most
   1. This annotation gives the name pattern for the expected `@Injectable` or `@Fragment` annotated class that
