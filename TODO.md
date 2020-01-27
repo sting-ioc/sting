@@ -14,11 +14,15 @@ complete as there is too much un-said.
 * Add test for unresolved `@Injector`. Add a separate test for unresolved include and another for
   unresolved dependency.
 * Change the `Coordinate._type` to a fully qualified classname rather than a `TypeMirror`.
-* Add support for `Factory` interface in `@Injector` annotated types by which additional bindings can be supplied.
-  These are assumed to have a qualifier of `""` and have atype as specified.
+* Add `type` parameter to dependency that indicates the dependency type that must be returned. The actual
+  parameter/return value must be able to be assigned to the specified type. It defaults to the actual type but
+  can be overridden. By definition these are `INSTANCE` dependency types.
+* Add a `@Injector.dependencies` parameter that can be used to specify additional dependencies passed into injector.
+  These must have `@Dependency.type` specified but other than that they can specify any type
 * Add ability to auto-include a fragment defined within the `@Injector` annotated type. The auto-include could
   just be based on whether it is an interface annotated with `@Fragment` or maybe it could be based on naming
   pattern?
+* Rename `DependencyDescriptor.Type` to `DependencyDescriptor.Kind` to eliminate confusion with java types.
 * Ensure that ids are unique across an object graph.
 
 * Write integration tests that compare with dagger the following performance characteristics.
