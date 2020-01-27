@@ -19,7 +19,6 @@ complete as there is too much un-said.
   can be overridden. By definition these are `INSTANCE` dependency types.
 * Add a `@Injector.dependencies` parameter that can be used to specify additional dependencies passed into injector.
   These must have `@Dependency.type` specified but other than that they can specify any type
-* Ensure that ids are unique across an object graph.
 
 * Any nested `@Fragment` annotated classes in `@Injector` are automagically added to the `@Injector`
 

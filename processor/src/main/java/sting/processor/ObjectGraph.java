@@ -32,6 +32,11 @@ final class ObjectGraph
   @Nonnull
   private final Map<Binding, Node> _nodes = new HashMap<>();
   /**
+   * The index of ids to Node.
+   */
+  @Nonnull
+  private final Map<String, Node> _nodesById = new HashMap<>();
+  /**
    * The node that represents the Injector.
    */
   @Nonnull
@@ -69,11 +74,27 @@ final class ObjectGraph
     return _rootNode;
   }
 
+  @Nullable
+  Node findNodeById( @Nonnull final String id )
+  {
+    return _nodesById.get( id );
+  }
+
   @Nonnull
   Node findOrCreateNode( @Nonnull final Binding binding )
   {
     assert !_complete;
-    return _nodes.computeIfAbsent( binding, b -> new Node( this, b ) );
+    return _nodes.computeIfAbsent( binding, this::createNode );
+  }
+
+  @Nonnull
+  private Node createNode( @Nonnull final Binding binding )
+  {
+    final String id = binding.getId();
+    assert !_nodesById.containsKey( id );
+    final Node node = new Node( this, binding );
+    _nodesById.put( id, node );
+    return node;
   }
 
   @Nonnull

@@ -414,9 +414,21 @@ public final class StingProcessor
         final DependencyDescriptor.Kind kind = dependency.getKind();
         if ( 1 == bindings.size() || kind.isCollection() )
         {
-          final List<Node> nodes = bindings.stream().map( graph::findOrCreateNode ).collect( Collectors.toList() );
-          for ( final Node node : nodes )
+          final List<Node> nodes = new ArrayList<>();
+          for ( final Binding binding : bindings )
           {
+            final String id = binding.getId();
+            final Node existing = graph.findNodeById( id );
+            if ( null != existing && binding != existing.getBinding() )
+            {
+              throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                                                  "contain multiple nodes with the id '" +
+                                                                  id + "'.\nPath:\n" +
+                                                                  workEntry.describePathFromRoot() ),
+                                            existing.getBinding().getElement() );
+            }
+            final Node node = graph.findOrCreateNode( binding );
+            nodes.add( node );
             if ( !completed.contains( node ) )
             {
               completed.add( node );

@@ -311,6 +311,10 @@ public final class StingProcessorTest
                       "@Injectable target must have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" },
 
         new Object[]{ "com.example.injector.ClassInjector", "@Injector target must be an interface" },
+        new Object[]{ "com.example.injector.DuplicateIdInjectorModel",
+                      "@Injector target must not contain multiple nodes with the id 'foo'.\n" +
+                      "  Path:\n" +
+                      "    [Injector]       com.example.injector.DuplicateIdInjectorModel" },
         new Object[]{ "com.example.injector.EnumInjector", "@Injector target must be an interface" },
         new Object[]{ "com.example.injector.MultipleCandidatesForSingularDependencyModel",
                       "Injector defined by type 'com.example.injector.MultipleCandidatesForSingularDependencyModel' contains a dependency [java.lang.Runnable] that expects to be satisfied by a single value but the injector contains multiple values that satisfy the dependency.\n" +
