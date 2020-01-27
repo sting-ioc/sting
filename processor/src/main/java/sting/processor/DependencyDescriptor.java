@@ -4,6 +4,10 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
+import javax.lang.model.type.TypeMirror;
 
 final class DependencyDescriptor
 {
@@ -61,6 +65,14 @@ final class DependencyDescriptor
   boolean isOptional()
   {
     return _optional;
+  }
+
+  boolean isPublic()
+  {
+    final TypeMirror type = _coordinate.getType();
+    return
+      TypeKind.DECLARED != type.getKind() ||
+      StingElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) type ).asElement() );
   }
 
   @Nonnull

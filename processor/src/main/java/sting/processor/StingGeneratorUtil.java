@@ -13,8 +13,6 @@ import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
@@ -79,9 +77,7 @@ final class StingGeneratorUtil
 
       final TypeMirror valueType = dependency.getCoordinate().getType();
       typesProcessed.add( valueType );
-      final boolean isPublic =
-        TypeKind.DECLARED != valueType.getKind() ||
-        StingElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) valueType ).asElement() );
+      final boolean isPublic = dependency.isPublic();
       allPublic &= isPublic;
 
       final TypeName actualTypeName = getDependencyType( dependency );
