@@ -1,10 +1,11 @@
 package com.example.injector.dependency;
 
+import java.util.function.Supplier;
 import javax.annotation.Generated;
 import javax.annotation.Nullable;
 
 @Generated("sting.processor.StingProcessor")
-final class Sting_MultipleDependencyModel {
+final class Sting_MultipleDependencyModel implements MultipleDependencyModel {
   @Nullable
   private Object node1;
 
@@ -32,5 +33,15 @@ final class Sting_MultipleDependencyModel {
       node2 = MultipleDependencyModel_Sting_MyModel2.create();
     }
     return node2;
+  }
+
+  @Override
+  public MultipleDependencyModel.MyModel1 getMyModel() {
+    return (MultipleDependencyModel.MyModel1) node1();
+  }
+
+  @Override
+  public Supplier<MultipleDependencyModel.MyModel2> getMyModelSupplier() {
+    return () -> (MultipleDependencyModel.MyModel2) node2();
   }
 }

@@ -1,10 +1,11 @@
 package com.example.injector.dependency;
 
+import java.util.function.Supplier;
 import javax.annotation.Generated;
 import javax.annotation.Nullable;
 
 @Generated("sting.processor.StingProcessor")
-final class Sting_ComplexDependencyModel {
+final class Sting_ComplexDependencyModel implements ComplexDependencyModel {
   @Nullable
   private Object node1;
 
@@ -45,5 +46,27 @@ final class Sting_ComplexDependencyModel {
       node3 = ComplexDependencyModel_Sting_MyModel3.create();
     }
     return node3;
+  }
+
+  @Override
+  public ComplexDependencyModel.MyModel1 getMyModel1() {
+    return (ComplexDependencyModel.MyModel1) node1();
+  }
+
+  @Override
+  @Nullable
+  public Supplier<ComplexDependencyModel.MyModel2> getMyModel2Supplier() {
+    return () -> (ComplexDependencyModel.MyModel2) node2();
+  }
+
+  @Override
+  public Supplier<ComplexDependencyModel.MyModel3> getMyModel3Supplier() {
+    return () -> (ComplexDependencyModel.MyModel3) node3();
+  }
+
+  @Override
+  @Nullable
+  public ComplexDependencyModel.MyModel4 getMyModel4() {
+    return null;
   }
 }

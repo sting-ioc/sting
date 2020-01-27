@@ -4,7 +4,7 @@ import javax.annotation.Generated;
 import javax.annotation.Nullable;
 
 @Generated("sting.processor.StingProcessor")
-final class Sting_OptionalMissingDependencyModel {
+final class Sting_OptionalMissingDependencyModel implements OptionalMissingDependencyModel {
   @Nullable
   private Object node1;
 
@@ -19,5 +19,16 @@ final class Sting_OptionalMissingDependencyModel {
       node1 = OptionalMissingDependencyModel_Sting_MyModel2.create();
     }
     return node1;
+  }
+
+  @Override
+  @Nullable
+  public OptionalMissingDependencyModel.MyModel1 getMyModel1() {
+    return null;
+  }
+
+  @Override
+  public OptionalMissingDependencyModel.MyModel2 getMyModel2() {
+    return (OptionalMissingDependencyModel.MyModel2) node1();
   }
 }

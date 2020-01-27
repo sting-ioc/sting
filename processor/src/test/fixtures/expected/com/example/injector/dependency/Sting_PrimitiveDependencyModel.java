@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @Generated("sting.processor.StingProcessor")
-final class Sting_PrimitiveDependencyModel {
+final class Sting_PrimitiveDependencyModel implements PrimitiveDependencyModel {
   @Nonnull
   private final PrimitiveDependencyModel_Sting_MyFragment fragment1 = new PrimitiveDependencyModel_Sting_MyFragment();
 
@@ -135,5 +135,45 @@ final class Sting_PrimitiveDependencyModel {
       node8 = fragment8.$sting$_provideValue8();
     }
     return node8;
+  }
+
+  @Override
+  public boolean getValue1() {
+    return node1();
+  }
+
+  @Override
+  public char getValue2() {
+    return node2();
+  }
+
+  @Override
+  public byte getValue3() {
+    return node3();
+  }
+
+  @Override
+  public short getValue4() {
+    return node4();
+  }
+
+  @Override
+  public int getValue5() {
+    return node5();
+  }
+
+  @Override
+  public long getValue6() {
+    return node6();
+  }
+
+  @Override
+  public float getValue7() {
+    return node7();
+  }
+
+  @Override
+  public double getValue8() {
+    return node8();
   }
 }

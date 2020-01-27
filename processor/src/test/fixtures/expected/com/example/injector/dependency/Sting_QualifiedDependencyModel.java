@@ -4,7 +4,7 @@ import javax.annotation.Generated;
 import javax.annotation.Nullable;
 
 @Generated("sting.processor.StingProcessor")
-final class Sting_QualifiedDependencyModel {
+final class Sting_QualifiedDependencyModel implements QualifiedDependencyModel {
   @Nullable
   private Object node1;
 
@@ -19,5 +19,10 @@ final class Sting_QualifiedDependencyModel {
       node1 = QualifiedDependencyModel_Sting_MyModel.create();
     }
     return node1;
+  }
+
+  @Override
+  public QualifiedDependencyModel.MyModel getMyModel() {
+    return (QualifiedDependencyModel.MyModel) node1();
   }
 }

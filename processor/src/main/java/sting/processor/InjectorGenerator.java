@@ -14,8 +14,10 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.DeclaredType;
 import org.realityforge.proton.GeneratorUtil;
 
 final class InjectorGenerator
@@ -37,17 +39,37 @@ final class InjectorGenerator
     GeneratorUtil.copyWhitelistedAnnotations( element, builder );
     GeneratorUtil.addGeneratedAnnotation( processingEnv, builder, StingProcessor.class.getName() );
 
-    if ( false )
-    {
-      builder.addSuperinterface( TypeName.get( element.asType() ) );
-    }
+    builder.addSuperinterface( TypeName.get( element.asType() ) );
 
     emitFragmentFields( builder, graph );
     emitNodeFields( graph, builder );
     emitConstructor( graph, builder );
     emitNodeAccessorMethod( graph, builder );
+    emitTopLevelDependencyMethods( processingEnv, graph, builder );
 
     return builder.build();
+  }
+
+  private static void emitTopLevelDependencyMethods( @Nonnull final ProcessingEnvironment processingEnv,
+                                                     @Nonnull final ObjectGraph graph,
+                                                     @Nonnull final TypeSpec.Builder builder )
+  {
+    for ( final Edge edge : graph.getRootNode().getDependsOn() )
+    {
+      final DependencyDescriptor dependency = edge.getDependency();
+      final MethodSpec.Builder method =
+        MethodSpec.overriding( (ExecutableElement) dependency.getElement(),
+                               (DeclaredType) graph.getInjector().getElement().asType(),
+                               processingEnv.getTypeUtils() );
+      GeneratorUtil.copyWhitelistedAnnotations( dependency.getElement(), method );
+
+      final StringBuilder code = new StringBuilder();
+      final ArrayList<Object> args = new ArrayList<>();
+      code.append( "return " );
+      emitDependencyValue( edge, code, args );
+      method.addStatement( code.toString(), args.toArray() );
+      builder.addMethod( method.build() );
+    }
   }
 
   private static void emitConstructor( @Nonnull final ObjectGraph graph,
@@ -179,55 +201,63 @@ final class InjectorGenerator
       {
         firstParam = false;
       }
-      final Collection<Node> satisfiedBy = edge.getSatisfiedBy();
-      final DependencyDescriptor.Type depType = edge.getDependency().getType();
-      if ( !depType.isCollection() )
-      {
-        if ( satisfiedBy.isEmpty() )
-        {
-          code.append( "null" );
-        }
-        else
-        {
-          emitNodeAccessor( depType, satisfiedBy.iterator().next(), code, args );
-        }
-      }
-      else
-      {
-        final int count = satisfiedBy.size();
-        if ( 0 == count )
-        {
-          code.append( "$T.emptyList()" );
-          args.add( Collections.class );
-        }
-        else if ( 1 == count )
-        {
-          code.append( "$T.singletonList( " );
-          args.add( Collections.class );
-          emitNodeAccessor( depType, satisfiedBy.iterator().next(), code, args );
-          code.append( " )" );
-        }
-        else
-        {
-          code.append( "$T.asList( " );
-          args.add( Arrays.class );
-          final Iterator<Node> iterator = satisfiedBy.iterator();
-          for ( int i = 0; i < count; i++ )
-          {
-            if ( 0 != i )
-            {
-              code.append( ", " );
-            }
-            emitNodeAccessor( depType, iterator.next(), code, args );
-          }
-          code.append( " )" );
-        }
-      }
+      emitDependencyValue( edge, code, args );
     }
     code.append( ')' );
     if ( node.isNonnull() )
     {
       code.append( " )" );
+    }
+  }
+
+  private static void emitDependencyValue( @Nonnull final Edge edge,
+                                           @Nonnull final StringBuilder code,
+                                           @Nonnull final List<Object> args )
+  {
+    final Collection<Node> satisfiedBy = edge.getSatisfiedBy();
+    final DependencyDescriptor dependency = edge.getDependency();
+    final DependencyDescriptor.Type depType = dependency.getType();
+    if ( !depType.isCollection() )
+    {
+      if ( satisfiedBy.isEmpty() )
+      {
+        code.append( "null" );
+      }
+      else
+      {
+        emitNodeAccessor( dependency, satisfiedBy.iterator().next(), code, args );
+      }
+    }
+    else
+    {
+      final int count = satisfiedBy.size();
+      if ( 0 == count )
+      {
+        code.append( "$T.emptyList()" );
+        args.add( Collections.class );
+      }
+      else if ( 1 == count )
+      {
+        code.append( "$T.singletonList( " );
+        args.add( Collections.class );
+        emitNodeAccessor( dependency, satisfiedBy.iterator().next(), code, args );
+        code.append( " )" );
+      }
+      else
+      {
+        code.append( "$T.asList( " );
+        args.add( Arrays.class );
+        final Iterator<Node> iterator = satisfiedBy.iterator();
+        for ( int i = 0; i < count; i++ )
+        {
+          if ( 0 != i )
+          {
+            code.append( ", " );
+          }
+          emitNodeAccessor( dependency, iterator.next(), code, args );
+        }
+        code.append( " )" );
+      }
     }
   }
 
@@ -238,14 +268,20 @@ final class InjectorGenerator
    * @param code the code template to append to.
    * @param args the args that passed to javapoet template.
    */
-  private static void emitNodeAccessor( @Nonnull DependencyDescriptor.Type depType,
+  private static void emitNodeAccessor( @Nonnull final DependencyDescriptor dependency,
                                         @Nonnull final Node node,
                                         @Nonnull final StringBuilder code,
                                         @Nonnull final List<Object> args )
   {
+    final DependencyDescriptor.Type depType = dependency.getType();
     if ( depType.isSupplier() )
     {
       code.append( "() -> " );
+    }
+    if ( !dependency.isPublic() )
+    {
+      code.append( "($T) " );
+      args.add( dependency.getCoordinate().getType() );
     }
     if ( node.isEager() )
     {

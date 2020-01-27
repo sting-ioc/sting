@@ -4,7 +4,7 @@ import javax.annotation.Generated;
 import javax.annotation.Nullable;
 
 @Generated("sting.processor.StingProcessor")
-final class Sting_BasicDependencyModel {
+final class Sting_BasicDependencyModel implements BasicDependencyModel {
   @Nullable
   private Object node1;
 
@@ -19,5 +19,10 @@ final class Sting_BasicDependencyModel {
       node1 = BasicDependencyModel_Sting_MyModel.create();
     }
     return node1;
+  }
+
+  @Override
+  public BasicDependencyModel.MyModel getMyModel() {
+    return (BasicDependencyModel.MyModel) node1();
   }
 }

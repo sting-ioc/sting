@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @Generated("sting.processor.StingProcessor")
-final class Sting_RecursiveIncludesModel {
+final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
   @Nonnull
   private final RecursiveIncludesModel_Sting_MyFragment1 fragment1 = new RecursiveIncludesModel_Sting_MyFragment1();
 
@@ -94,5 +94,35 @@ final class Sting_RecursiveIncludesModel {
       node6 = RecursiveIncludesModel_Sting_MyModel3.create();
     }
     return node6;
+  }
+
+  @Override
+  public Runnable getRunnable1() {
+    return node1();
+  }
+
+  @Override
+  public Runnable getRunnable2() {
+    return node2();
+  }
+
+  @Override
+  public Runnable getRunnable3() {
+    return node3();
+  }
+
+  @Override
+  public RecursiveIncludesModel.MyModel1 getMyModel1() {
+    return (RecursiveIncludesModel.MyModel1) node4();
+  }
+
+  @Override
+  public RecursiveIncludesModel.MyModel2 getMyModel2() {
+    return (RecursiveIncludesModel.MyModel2) node5();
+  }
+
+  @Override
+  public RecursiveIncludesModel.MyModel3 getMyModel3() {
+    return (RecursiveIncludesModel.MyModel3) node6();
   }
 }

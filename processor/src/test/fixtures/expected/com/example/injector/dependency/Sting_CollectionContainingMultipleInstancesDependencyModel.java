@@ -1,11 +1,13 @@
 package com.example.injector.dependency;
 
+import java.util.Arrays;
+import java.util.Collection;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @Generated("sting.processor.StingProcessor")
-final class Sting_CollectionContainingMultipleInstancesDependencyModel {
+final class Sting_CollectionContainingMultipleInstancesDependencyModel implements CollectionContainingMultipleInstancesDependencyModel {
   @Nonnull
   private final CollectionContainingMultipleInstancesDependencyModel_Sting_MyFragment1 fragment1 = new CollectionContainingMultipleInstancesDependencyModel_Sting_MyFragment1();
 
@@ -55,5 +57,10 @@ final class Sting_CollectionContainingMultipleInstancesDependencyModel {
       node3 = fragment3.$sting$_myModel();
     }
     return node3;
+  }
+
+  @Override
+  public Collection<CollectionContainingMultipleInstancesDependencyModel.MyModel> getMyModel() {
+    return Arrays.asList( (CollectionContainingMultipleInstancesDependencyModel.MyModel) node1(), (CollectionContainingMultipleInstancesDependencyModel.MyModel) node2(), (CollectionContainingMultipleInstancesDependencyModel.MyModel) node3() );
   }
 }

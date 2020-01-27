@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @Generated("sting.processor.StingProcessor")
-final class Sting_OptionalProvidesDependencyModel {
+final class Sting_OptionalProvidesDependencyModel implements OptionalProvidesDependencyModel {
   @Nonnull
   private final OptionalProvidesDependencyModel_Sting_MyFragment fragment1 = new OptionalProvidesDependencyModel_Sting_MyFragment();
 
@@ -23,5 +23,11 @@ final class Sting_OptionalProvidesDependencyModel {
       node1 = fragment1.$sting$_provideValue();
     }
     return node1;
+  }
+
+  @Override
+  @Nullable
+  public OptionalProvidesDependencyModel.MyModel getMyModel() {
+    return (OptionalProvidesDependencyModel.MyModel) node1();
   }
 }

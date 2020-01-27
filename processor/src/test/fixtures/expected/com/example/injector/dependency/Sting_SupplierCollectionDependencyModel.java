@@ -1,10 +1,13 @@
 package com.example.injector.dependency;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.function.Supplier;
 import javax.annotation.Generated;
 import javax.annotation.Nullable;
 
 @Generated("sting.processor.StingProcessor")
-final class Sting_SupplierCollectionDependencyModel {
+final class Sting_SupplierCollectionDependencyModel implements SupplierCollectionDependencyModel {
   @Nullable
   private Object node1;
 
@@ -19,5 +22,10 @@ final class Sting_SupplierCollectionDependencyModel {
       node1 = SupplierCollectionDependencyModel_Sting_MyModel.create();
     }
     return node1;
+  }
+
+  @Override
+  public Collection<Supplier<SupplierCollectionDependencyModel.MyModel>> getMyModel() {
+    return Collections.singletonList( () -> (SupplierCollectionDependencyModel.MyModel) node1() );
   }
 }

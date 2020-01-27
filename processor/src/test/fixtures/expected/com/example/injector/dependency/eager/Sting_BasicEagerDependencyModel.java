@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @Generated("sting.processor.StingProcessor")
-final class Sting_BasicEagerDependencyModel {
+final class Sting_BasicEagerDependencyModel implements BasicEagerDependencyModel {
   @Nonnull
   private final Object node1;
 
@@ -35,15 +35,15 @@ final class Sting_BasicEagerDependencyModel {
   private Sting_BasicEagerDependencyModel() {
     node5 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel2.create() );
     node4 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel1.create() );
-    node3 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel5.create(node5, () -> node6(), node4) );
-    node2 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel4.create(node5, () -> node6(), () -> node4) );
-    node1 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel6.create(node2, node3) );
+    node3 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel5.create((BasicEagerDependencyModel.MyModel2) node5, () -> (BasicEagerDependencyModel.MyModel3) node6(), (BasicEagerDependencyModel.MyModel1) node4) );
+    node2 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel4.create((BasicEagerDependencyModel.MyModel2) node5, () -> (BasicEagerDependencyModel.MyModel3) node6(), () -> (BasicEagerDependencyModel.MyModel1) node4) );
+    node1 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel6.create((BasicEagerDependencyModel.MyModel4) node2, (BasicEagerDependencyModel.MyModel5) node3) );
   }
 
   private Object node6() {
     if ( !$sting$_node6_allocated ) {
       $sting$_node6_allocated = true;
-      node6 = BasicEagerDependencyModel_Sting_MyModel3.create(node7(), node5);
+      node6 = BasicEagerDependencyModel_Sting_MyModel3.create((BasicEagerDependencyModel.MyModel0) node7(), (BasicEagerDependencyModel.MyModel2) node5);
     }
     return node6;
   }
@@ -54,5 +54,10 @@ final class Sting_BasicEagerDependencyModel {
       node7 = BasicEagerDependencyModel_Sting_MyModel0.create();
     }
     return node7;
+  }
+
+  @Override
+  public BasicEagerDependencyModel.MyModel6 getMyModel() {
+    return (BasicEagerDependencyModel.MyModel6) node1;
   }
 }
