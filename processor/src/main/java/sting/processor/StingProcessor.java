@@ -879,7 +879,7 @@ public final class StingProcessor
       final boolean nullablePresent =
         AnnotationsUtil.hasAnnotationOfType( method, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
 
-      if ( nullablePresent && method.getReturnType().getKind().isPrimitive())
+      if ( nullablePresent && method.getReturnType().getKind().isPrimitive() )
       {
         throw new ProcessorException( MemberChecks.toSimpleName( Constants.PROVIDES_CLASSNAME ) +
                                       " target is incorrectly annotated with " +
