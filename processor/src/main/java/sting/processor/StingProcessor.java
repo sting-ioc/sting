@@ -878,6 +878,15 @@ public final class StingProcessor
       final boolean providesPresent = AnnotationsUtil.hasAnnotationOfType( method, Constants.PROVIDES_CLASSNAME );
       final boolean nullablePresent =
         AnnotationsUtil.hasAnnotationOfType( method, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
+
+      if ( nullablePresent && method.getReturnType().getKind().isPrimitive())
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.PROVIDES_CLASSNAME ) +
+                                      " target is incorrectly annotated with " +
+                                      MemberChecks.toSimpleName( GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) +
+                                      " as the return type is a primitive",
+                                      method );
+      }
       final List<TypeMirror> types =
         providesPresent ?
         AnnotationsUtil.getTypeMirrorsAnnotationParameter( method, Constants.PROVIDES_CLASSNAME, "types" ) :

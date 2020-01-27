@@ -215,6 +215,8 @@ public final class StingProcessorTest
                       "@Provides target must have a default modifier" },
         new Object[]{ "com.example.fragment.provides.BadReturnTypeProvidesModel",
                       "@Provides target must return a value" },
+        new Object[]{ "com.example.fragment.provides.NullablePrimitiveReturnTypeProvidesModel",
+                      "@Provides target is incorrectly annotated with @Nullable as the return type is a primitive" },
         new Object[]{ "com.example.fragment.provides.ParameterizedProvidesModel",
                       "@Provides target must not have any type parameters" },
         new Object[]{ "com.example.fragment.provides.StaticMethodProvidesModel",
