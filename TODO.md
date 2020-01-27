@@ -23,6 +23,8 @@ complete as there is too much un-said.
 
 * Any nested `@Fragment` annotated classes in `@Injector` are automagically added to the `@Injector`
 
+* `Injector defined by type ...` messages should be of the form `@Injector target ...`
+
 * Write integration tests that compare with dagger the following performance characteristics.
   * time to compile the injector
   * time to initialize and access the injector at runtime
