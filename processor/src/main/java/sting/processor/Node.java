@@ -154,13 +154,6 @@ final class Node
     return _public;
   }
 
-  // will the value be nonnull everywhere it is accessed.
-  // This means it is effectively eager and does not come from @Nullable annotated provides
-  boolean isNonnull()
-  {
-    return isEager() && Binding.Type.NULLABLE_PROVIDES != getBinding().getBindingType();
-  }
-
   boolean isEager()
   {
     return _eager;

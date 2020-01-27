@@ -1,5 +1,6 @@
 package com.example.injector.includes;
 
+import java.util.Objects;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -12,16 +13,15 @@ final class Sting_SingleIncludesModel implements SingleIncludesModel {
   @Nullable
   private Runnable node1;
 
-  private boolean $sting$_node1_allocated;
-
   Sting_SingleIncludesModel() {
   }
 
+  @Nonnull
   private Runnable node1() {
-    if ( !$sting$_node1_allocated ) {
-      $sting$_node1_allocated = true;
-      node1 = fragment1.$sting$_provideRunnable();
+    if ( null == node1 ) {
+      node1 = Objects.requireNonNull( fragment1.$sting$_provideRunnable() );
     }
+    assert null != node1;
     return node1;
   }
 

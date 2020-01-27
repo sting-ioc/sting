@@ -28,10 +28,6 @@ final class Sting_BasicEagerDependencyModel implements BasicEagerDependencyModel
   @Nonnull
   private final Object node7;
 
-  private boolean $sting$_node1_allocated;
-
-  private boolean $sting$_node2_allocated;
-
   Sting_BasicEagerDependencyModel() {
     node3 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel2.create() );
     node4 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel1.create() );
@@ -40,19 +36,21 @@ final class Sting_BasicEagerDependencyModel implements BasicEagerDependencyModel
     node7 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel6.create((BasicEagerDependencyModel.MyModel4) node6, (BasicEagerDependencyModel.MyModel5) node5) );
   }
 
+  @Nonnull
   private Object node1() {
-    if ( !$sting$_node1_allocated ) {
-      $sting$_node1_allocated = true;
-      node1 = BasicEagerDependencyModel_Sting_MyModel0.create();
+    if ( null == node1 ) {
+      node1 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel0.create() );
     }
+    assert null != node1;
     return node1;
   }
 
+  @Nonnull
   private Object node2() {
-    if ( !$sting$_node2_allocated ) {
-      $sting$_node2_allocated = true;
-      node2 = BasicEagerDependencyModel_Sting_MyModel3.create((BasicEagerDependencyModel.MyModel0) node1(), (BasicEagerDependencyModel.MyModel2) node3);
+    if ( null == node2 ) {
+      node2 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel3.create((BasicEagerDependencyModel.MyModel0) node1(), (BasicEagerDependencyModel.MyModel2) node3) );
     }
+    assert null != node2;
     return node2;
   }
 

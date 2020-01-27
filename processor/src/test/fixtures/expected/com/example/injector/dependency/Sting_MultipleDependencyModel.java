@@ -1,7 +1,9 @@
 package com.example.injector.dependency;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 import javax.annotation.Generated;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @Generated("sting.processor.StingProcessor")
@@ -12,26 +14,24 @@ final class Sting_MultipleDependencyModel implements MultipleDependencyModel {
   @Nullable
   private Object node2;
 
-  private boolean $sting$_node1_allocated;
-
-  private boolean $sting$_node2_allocated;
-
   Sting_MultipleDependencyModel() {
   }
 
+  @Nonnull
   private Object node1() {
-    if ( !$sting$_node1_allocated ) {
-      $sting$_node1_allocated = true;
-      node1 = MultipleDependencyModel_Sting_MyModel2.create();
+    if ( null == node1 ) {
+      node1 = Objects.requireNonNull( MultipleDependencyModel_Sting_MyModel2.create() );
     }
+    assert null != node1;
     return node1;
   }
 
+  @Nonnull
   private Object node2() {
-    if ( !$sting$_node2_allocated ) {
-      $sting$_node2_allocated = true;
-      node2 = MultipleDependencyModel_Sting_MyModel1.create();
+    if ( null == node2 ) {
+      node2 = Objects.requireNonNull( MultipleDependencyModel_Sting_MyModel1.create() );
     }
+    assert null != node2;
     return node2;
   }
 

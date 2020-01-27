@@ -2,6 +2,7 @@ package com.example.injector.dependency;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,36 +27,33 @@ final class Sting_CollectionContainingMultipleInstancesDependencyModel implement
   @Nullable
   private Object node3;
 
-  private boolean $sting$_node1_allocated;
-
-  private boolean $sting$_node2_allocated;
-
-  private boolean $sting$_node3_allocated;
-
   Sting_CollectionContainingMultipleInstancesDependencyModel() {
   }
 
+  @Nonnull
   private Object node1() {
-    if ( !$sting$_node1_allocated ) {
-      $sting$_node1_allocated = true;
-      node1 = fragment3.$sting$_myModel();
+    if ( null == node1 ) {
+      node1 = Objects.requireNonNull( fragment3.$sting$_myModel() );
     }
+    assert null != node1;
     return node1;
   }
 
+  @Nonnull
   private Object node2() {
-    if ( !$sting$_node2_allocated ) {
-      $sting$_node2_allocated = true;
-      node2 = fragment2.$sting$_myModel();
+    if ( null == node2 ) {
+      node2 = Objects.requireNonNull( fragment2.$sting$_myModel() );
     }
+    assert null != node2;
     return node2;
   }
 
+  @Nonnull
   private Object node3() {
-    if ( !$sting$_node3_allocated ) {
-      $sting$_node3_allocated = true;
-      node3 = fragment1.$sting$_myModel();
+    if ( null == node3 ) {
+      node3 = Objects.requireNonNull( fragment1.$sting$_myModel() );
     }
+    assert null != node3;
     return node3;
   }
 

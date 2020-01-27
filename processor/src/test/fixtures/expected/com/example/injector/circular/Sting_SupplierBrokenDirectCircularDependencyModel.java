@@ -1,6 +1,8 @@
 package com.example.injector.circular;
 
+import java.util.Objects;
 import javax.annotation.Generated;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 @Generated("sting.processor.StingProcessor")
@@ -11,26 +13,24 @@ final class Sting_SupplierBrokenDirectCircularDependencyModel implements Supplie
   @Nullable
   private Object node2;
 
-  private boolean $sting$_node1_allocated;
-
-  private boolean $sting$_node2_allocated;
-
   Sting_SupplierBrokenDirectCircularDependencyModel() {
   }
 
+  @Nonnull
   private Object node1() {
-    if ( !$sting$_node1_allocated ) {
-      $sting$_node1_allocated = true;
-      node1 = SupplierBrokenDirectCircularDependencyModel_Sting_MyModel2.create(() -> (SupplierBrokenDirectCircularDependencyModel.MyModel1) node2());
+    if ( null == node1 ) {
+      node1 = Objects.requireNonNull( SupplierBrokenDirectCircularDependencyModel_Sting_MyModel2.create(() -> (SupplierBrokenDirectCircularDependencyModel.MyModel1) node2()) );
     }
+    assert null != node1;
     return node1;
   }
 
+  @Nonnull
   private Object node2() {
-    if ( !$sting$_node2_allocated ) {
-      $sting$_node2_allocated = true;
-      node2 = SupplierBrokenDirectCircularDependencyModel_Sting_MyModel1.create((SupplierBrokenDirectCircularDependencyModel.MyModel2) node1());
+    if ( null == node2 ) {
+      node2 = Objects.requireNonNull( SupplierBrokenDirectCircularDependencyModel_Sting_MyModel1.create((SupplierBrokenDirectCircularDependencyModel.MyModel2) node1()) );
     }
+    assert null != node2;
     return node2;
   }
 

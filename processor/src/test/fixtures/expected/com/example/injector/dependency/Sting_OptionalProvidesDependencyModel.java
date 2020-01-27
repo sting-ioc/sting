@@ -12,14 +12,15 @@ final class Sting_OptionalProvidesDependencyModel implements OptionalProvidesDep
   @Nullable
   private Object node1;
 
-  private boolean $sting$_node1_allocated;
+  private boolean node1_allocated;
 
   Sting_OptionalProvidesDependencyModel() {
   }
 
+  @Nullable
   private Object node1() {
-    if ( !$sting$_node1_allocated ) {
-      $sting$_node1_allocated = true;
+    if ( !node1_allocated ) {
+      node1_allocated = true;
       node1 = fragment1.$sting$_provideValue();
     }
     return node1;

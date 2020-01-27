@@ -116,7 +116,8 @@ final class StingGeneratorUtil
         code.append( ", " );
       }
       firstParam = false;
-      if ( !dependency.isOptional() )
+      final boolean requireNonNull = !dependency.isOptional() && !typeProduced.getKind().isPrimitive();
+      if ( requireNonNull )
       {
         code.append( "$T.requireNonNull( " );
         args.add( Objects.class );
@@ -128,7 +129,7 @@ final class StingGeneratorUtil
       }
       code.append( "$N" );
       args.add( paramName );
-      if ( !dependency.isOptional() )
+      if ( requireNonNull )
       {
         code.append( " )" );
       }

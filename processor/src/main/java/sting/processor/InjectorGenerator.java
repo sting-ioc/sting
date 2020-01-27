@@ -95,16 +95,24 @@ final class InjectorGenerator
   {
     for ( final Node node : graph.getNodes() )
     {
+      final boolean isNonnull = node.isEager() && Binding.Type.NULLABLE_PROVIDES != node.getBinding().getBindingType();
       final FieldSpec.Builder field =
         FieldSpec
           .builder( getPublicTypeName( node ), node.getName(), Modifier.PRIVATE )
-          .addAnnotation( node.isNonnull() ? GeneratorUtil.NONNULL_CLASSNAME : GeneratorUtil.NULLABLE_CLASSNAME );
+          .addAnnotation( isNonnull ? GeneratorUtil.NONNULL_CLASSNAME : GeneratorUtil.NULLABLE_CLASSNAME );
       if ( node.isEager() )
       {
         field.addModifiers( Modifier.FINAL );
       }
 
       builder.addField( field.build() );
+
+      if ( !node.isEager() &&
+           ( Binding.Type.NULLABLE_PROVIDES == node.getBinding().getBindingType() ||
+             node.getType().getKind().isPrimitive() ) )
+      {
+        builder.addField( FieldSpec.builder( TypeName.BOOLEAN, getFlagFieldName( node ), Modifier.PRIVATE ).build() );
+      }
     }
   }
 
@@ -127,28 +135,39 @@ final class InjectorGenerator
     {
       if ( !node.isEager() )
       {
-        builder.addField( FieldSpec.builder( TypeName.BOOLEAN, getFlagFieldName( node ), Modifier.PRIVATE ).build() );
-
         final MethodSpec.Builder method =
           MethodSpec
             .methodBuilder( node.getName() )
             .addModifiers( Modifier.PRIVATE )
             .returns( getPublicTypeName( node ) );
-        if ( node.isNonnull() )
+        final boolean isNonnull = Binding.Type.NULLABLE_PROVIDES != node.getBinding().getBindingType();
+        final boolean isNonPrimitive = !node.getType().getKind().isPrimitive();
+        if ( isNonPrimitive )
         {
-          method.addAnnotation( GeneratorUtil.NONNULL_CLASSNAME );
+          method.addAnnotation( isNonnull ? GeneratorUtil.NONNULL_CLASSNAME : GeneratorUtil.NULLABLE_CLASSNAME );
         }
 
         final CodeBlock.Builder block = CodeBlock.builder();
-        final String flagName = getFlagFieldName( node );
-        block.beginControlFlow( "if ( !$N )", flagName );
-        block.addStatement( "$N = true", flagName );
+        if ( isNonnull && isNonPrimitive )
+        {
+          block.beginControlFlow( "if ( null == $N )", node.getName() );
+        }
+        else
+        {
+          final String flagName = getFlagFieldName( node );
+          block.beginControlFlow( "if ( !$N )", flagName );
+          block.addStatement( "$N = true", flagName );
+        }
         final StringBuilder code = new StringBuilder();
         final List<Object> args = new ArrayList<>();
         provideAndAssign( node, code, args );
         block.addStatement( code.toString(), args.toArray() );
         block.endControlFlow();
         method.addCode( block.build() );
+        if ( isNonnull && isNonPrimitive )
+        {
+          method.addStatement( "assert null != $N", node.getName() );
+        }
         method.addStatement( "return $N", node.getName() );
 
         builder.addMethod( method.build() );
@@ -159,7 +178,7 @@ final class InjectorGenerator
   @Nonnull
   private static String getFlagFieldName( @Nonnull final Node node )
   {
-    return StingGeneratorUtil.FRAMEWORK_PREFIX + node.getName() + "_allocated";
+    return node.getName() + "_allocated";
   }
 
   private static void provideAndAssign( @Nonnull final Node node,
@@ -168,7 +187,9 @@ final class InjectorGenerator
   {
     code.append( "$N = " );
     args.add( node.getName() );
-    if ( node.isNonnull() )
+    final boolean isNonnull = Binding.Type.NULLABLE_PROVIDES != node.getBinding().getBindingType();
+    final boolean requireNonNull = isNonnull && !node.getType().getKind().isPrimitive();
+    if ( requireNonNull )
     {
       code.append( "$T.requireNonNull( " );
       args.add( Objects.class );
@@ -200,7 +221,7 @@ final class InjectorGenerator
       emitDependencyValue( edge, code, args );
     }
     code.append( ')' );
-    if ( node.isNonnull() )
+    if ( requireNonNull )
     {
       code.append( " )" );
     }

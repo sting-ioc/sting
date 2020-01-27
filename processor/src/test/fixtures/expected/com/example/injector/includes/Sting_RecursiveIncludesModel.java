@@ -1,5 +1,6 @@
 package com.example.injector.includes;
 
+import java.util.Objects;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,66 +34,60 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
   @Nullable
   private Runnable node6;
 
-  private boolean $sting$_node1_allocated;
-
-  private boolean $sting$_node2_allocated;
-
-  private boolean $sting$_node3_allocated;
-
-  private boolean $sting$_node4_allocated;
-
-  private boolean $sting$_node5_allocated;
-
-  private boolean $sting$_node6_allocated;
-
   Sting_RecursiveIncludesModel() {
   }
 
+  @Nonnull
   private Object node1() {
-    if ( !$sting$_node1_allocated ) {
-      $sting$_node1_allocated = true;
-      node1 = RecursiveIncludesModel_Sting_MyModel3.create();
+    if ( null == node1 ) {
+      node1 = Objects.requireNonNull( RecursiveIncludesModel_Sting_MyModel3.create() );
     }
+    assert null != node1;
     return node1;
   }
 
+  @Nonnull
   private Object node2() {
-    if ( !$sting$_node2_allocated ) {
-      $sting$_node2_allocated = true;
-      node2 = RecursiveIncludesModel_Sting_MyModel2.create();
+    if ( null == node2 ) {
+      node2 = Objects.requireNonNull( RecursiveIncludesModel_Sting_MyModel2.create() );
     }
+    assert null != node2;
     return node2;
   }
 
+  @Nonnull
   private Object node3() {
-    if ( !$sting$_node3_allocated ) {
-      $sting$_node3_allocated = true;
-      node3 = RecursiveIncludesModel_Sting_MyModel1.create();
+    if ( null == node3 ) {
+      node3 = Objects.requireNonNull( RecursiveIncludesModel_Sting_MyModel1.create() );
     }
+    assert null != node3;
     return node3;
   }
 
+  @Nonnull
   private Runnable node4() {
-    if ( !$sting$_node4_allocated ) {
-      $sting$_node4_allocated = true;
-      node4 = fragment3.$sting$_provideRunnable();
+    if ( null == node4 ) {
+      node4 = Objects.requireNonNull( fragment3.$sting$_provideRunnable() );
     }
+    assert null != node4;
     return node4;
   }
 
+  @Nonnull
   private Runnable node5() {
-    if ( !$sting$_node5_allocated ) {
-      $sting$_node5_allocated = true;
-      node5 = fragment2.$sting$_provideRunnable();
+    if ( null == node5 ) {
+      node5 = Objects.requireNonNull( fragment2.$sting$_provideRunnable() );
     }
+    assert null != node5;
     return node5;
   }
 
+  @Nonnull
   private Runnable node6() {
-    if ( !$sting$_node6_allocated ) {
-      $sting$_node6_allocated = true;
-      node6 = fragment1.$sting$_provideRunnable();
+    if ( null == node6 ) {
+      node6 = Objects.requireNonNull( fragment1.$sting$_provideRunnable() );
     }
+    assert null != node6;
     return node6;
   }
 
