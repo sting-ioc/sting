@@ -800,6 +800,11 @@ public final class StingProcessor
       throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME, "have type parameters" ),
                                     element );
     }
+    else if ( !element.getInterfaces().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME, "extend any interfaces" ),
+                                    element );
+    }
     final List<DeclaredType> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME );
     final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
     final List<ExecutableElement> methods =

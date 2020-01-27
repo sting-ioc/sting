@@ -199,6 +199,8 @@ public final class StingProcessorTest
                       "@Dependency target must only be present on a parameter of a method if the enclosing type is annotated with @Fragment" },
 
         new Object[]{ "com.example.fragment.ClassModel", "@Fragment target must be an interface" },
+        new Object[]{ "com.example.fragment.FragmentExtendsSuperinterfaceModel",
+                      "@Fragment target must not extend any interfaces" },
         new Object[]{ "com.example.fragment.NoProvidesOrIncludesModel",
                       "@Fragment target must contain one or more methods or one or more includes" },
         new Object[]{ "com.example.fragment.ParameterizedModel", "@Fragment target must not have type parameters" },
