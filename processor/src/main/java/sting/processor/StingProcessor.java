@@ -989,8 +989,7 @@ public final class StingProcessor
     final TypeMirror dependencyValueType;
     if ( TypeKind.ARRAY == parameterType.getKind() )
     {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                          "have a method with a parameter that is an array type" ),
+      throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME, "be an array type" ),
                                     parameter );
     }
     else if ( null == declaredType )
@@ -1000,28 +999,10 @@ public final class StingProcessor
     }
     else if ( !isParameterizedType )
     {
-      if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
+      if ( !( (TypeElement) declaredType.asElement() ).getTypeParameters().isEmpty() )
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                            "have a method with a parameter that is a raw " +
-                                                            Supplier.class.getCanonicalName() + " type" ),
-                                      parameter );
-      }
-      else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                            "have a method with a parameter that is a raw " +
-                                                            Collection.class.getCanonicalName() + " type" ),
-                                      parameter );
-      }
-      else if ( !( (TypeElement) declaredType.asElement() ).getTypeParameters().isEmpty() )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                            "have a method with a parameter that is a " +
-                                                            "raw parameterized type. Parameterized types are only " +
-                                                            "permitted for specific types such as " +
-                                                            Supplier.class.getCanonicalName() + " and " +
-                                                            Collection.class.getCanonicalName() ),
+        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                            "be a raw parameterized type" ),
                                       parameter );
       }
       type = DependencyDescriptor.Type.INSTANCE;
@@ -1034,10 +1015,8 @@ public final class StingProcessor
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
         if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                              "have a method with a parameter that is a " +
-                                                              Supplier.class.getCanonicalName() +
-                                                              " type with a wildcard type parameter" ),
+          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                              "be a parameterized type with a wildcard type parameter" ),
                                         parameter );
         }
         type = DependencyDescriptor.Type.SUPPLIER;
@@ -1048,10 +1027,8 @@ public final class StingProcessor
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
         if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                              "have a method with a parameter that is a " +
-                                                              Collection.class.getCanonicalName() +
-                                                              " type with a wildcard type parameter" ),
+          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                              "be a parameterized type with a wildcard type parameter" ),
                                         parameter );
         }
         else if ( TypeKind.DECLARED == typeArgument.getKind() &&
@@ -1061,10 +1038,8 @@ public final class StingProcessor
           final List<? extends TypeMirror> nestedTypeArguments = supplierType.getTypeArguments();
           if ( nestedTypeArguments.isEmpty() )
           {
-            throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                                "have a method with a supplier " +
-                                                                "collection parameter that contains a raw " +
-                                                                Supplier.class.getCanonicalName() + " type" ),
+            throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                                "be a raw supplier collection type" ),
                                           parameter );
           }
           else
@@ -1072,15 +1047,15 @@ public final class StingProcessor
             final TypeMirror nestedParameterType = nestedTypeArguments.get( 0 );
             if ( TypeKind.WILDCARD == nestedParameterType.getKind() )
             {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                                  "have a method with a supplier collection parameter with a wildcard type parameter" ),
+              throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                                  "be a supplier collection with a wildcard type parameter" ),
                                             parameter );
             }
             else if ( TypeKind.DECLARED == nestedParameterType.getKind() &&
                       isParameterized( (DeclaredType) nestedParameterType ) )
             {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                                  "have a method with a supplier collection parameter that contains a parameterized type" ),
+              throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                                  "be a supplier collection with a parameterized type as the type parameter" ),
                                             parameter );
             }
             else
@@ -1092,8 +1067,8 @@ public final class StingProcessor
         }
         else if ( TypeKind.DECLARED == typeArgument.getKind() && isParameterized( (DeclaredType) typeArgument ) )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                              "have a method with a collection parameter that contains a parameterized type" ),
+          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                              "be a collection parameter that contains a parameterized type as the type parameter" ),
                                         parameter );
         }
         else
@@ -1104,10 +1079,9 @@ public final class StingProcessor
       }
       else
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                            "have a method with a parameter that is a " +
-                                                            "parameterized type. This is only permitted for " +
-                                                            "specific types such as " +
+        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                            "be a parameterized type other than the special " +
+                                                            "types known by the framework such as " +
                                                             Supplier.class.getCanonicalName() + " and " +
                                                             Collection.class.getCanonicalName() ),
                                       parameter );
@@ -1311,8 +1285,7 @@ public final class StingProcessor
     final TypeMirror dependencyValueType;
     if ( TypeKind.ARRAY == parameterType.getKind() )
     {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                          "have a constructor with a parameter that is an array type" ),
+      throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME, "be an array type" ),
                                     parameter );
     }
     else if ( null == declaredType )
@@ -1322,28 +1295,10 @@ public final class StingProcessor
     }
     else if ( !isParameterizedType )
     {
-      if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
+      if ( !( (TypeElement) declaredType.asElement() ).getTypeParameters().isEmpty() )
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                            "have a constructor with a parameter that is a " +
-                                                            "raw " + Supplier.class.getCanonicalName() + " type" ),
-                                      parameter );
-      }
-      else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                            "have a constructor with a parameter that is a " +
-                                                            "raw " + Collection.class.getCanonicalName() + " type" ),
-                                      parameter );
-      }
-      else if ( !( (TypeElement) declaredType.asElement() ).getTypeParameters().isEmpty() )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                            "have a constructor with a parameter that is a " +
-                                                            "raw parameterized type. Parameterized types are only " +
-                                                            "permitted for specific types such as " +
-                                                            Supplier.class.getCanonicalName() + " and " +
-                                                            Collection.class.getCanonicalName() ),
+        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                            "be a raw parameterized type" ),
                                       parameter );
       }
       type = DependencyDescriptor.Type.INSTANCE;
@@ -1356,9 +1311,8 @@ public final class StingProcessor
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
         if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                              "have a constructor with a parameter that is " +
-                                                              "a " + Supplier.class.getCanonicalName() +
+          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                              "be a " + Supplier.class.getCanonicalName() +
                                                               " type with a wildcard type parameter" ),
                                         parameter );
         }
@@ -1370,9 +1324,8 @@ public final class StingProcessor
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
         if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                              "have a constructor with a parameter that " +
-                                                              "is a " + Collection.class.getCanonicalName() +
+          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                              "be a " + Collection.class.getCanonicalName() +
                                                               " type with a wildcard type parameter" ),
                                         parameter );
         }
@@ -1383,10 +1336,8 @@ public final class StingProcessor
           final List<? extends TypeMirror> nestedTypeArguments = supplierType.getTypeArguments();
           if ( nestedTypeArguments.isEmpty() )
           {
-            throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                                "have a constructor with a supplier " +
-                                                                "collection parameter that contains a raw " +
-                                                                Supplier.class.getCanonicalName() + " type" ),
+            throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                                "be a raw parameterized type" ),
                                           parameter );
           }
           else
@@ -1394,15 +1345,15 @@ public final class StingProcessor
             final TypeMirror nestedParameterType = nestedTypeArguments.get( 0 );
             if ( TypeKind.WILDCARD == nestedParameterType.getKind() )
             {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                                  "have a constructor with a supplier collection parameter with a wildcard type parameter" ),
+              throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                                  "be a supplier collection parameter with a wildcard type parameter" ),
                                             parameter );
             }
             else if ( TypeKind.DECLARED == nestedParameterType.getKind() &&
                       isParameterized( (DeclaredType) nestedParameterType ) )
             {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                                  "have a constructor with a supplier collection parameter that contains a parameterized type" ),
+              throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                                  "be a supplier collection parameter that contains a parameterized type" ),
                                             parameter );
             }
             else
@@ -1414,8 +1365,8 @@ public final class StingProcessor
         }
         else if ( TypeKind.DECLARED == typeArgument.getKind() && isParameterized( (DeclaredType) typeArgument ) )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                              "have a constructor with a collection parameter that contains a parameterized type" ),
+          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                              "be a collection parameter that contains a parameterized type" ),
                                         parameter );
         }
         else
@@ -1426,10 +1377,9 @@ public final class StingProcessor
       }
       else
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                            "have a constructor with a parameter that is " +
-                                                            "a parameterized type. This is only permitted for " +
-                                                            "specific types such as " +
+        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                            "be a parameterized type other than the special " +
+                                                            "types known by the framework such as " +
                                                             Supplier.class.getCanonicalName() + " and " +
                                                             Collection.class.getCanonicalName() ),
                                       parameter );
