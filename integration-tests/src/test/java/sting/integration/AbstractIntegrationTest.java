@@ -14,7 +14,7 @@ public abstract class AbstractIntegrationTest
 
   public static abstract class BaseModel
   {
-    BaseModel( final Object... args )
+    protected BaseModel( final Object... args )
     {
       c_trace.add( toString() + Arrays.asList( args ) );
     }
