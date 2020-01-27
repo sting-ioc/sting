@@ -133,7 +133,7 @@ Dagger2 is not a great injection framework for our context. Some annoyances that
 * Building the Dagger components is extremely complex. There are many different ways in which the dagger artifacts
   need to be combined to form a component (i.e. added as a module or not, extending the component or not,
   explicitly calling bind helper methods or not).
-* Need to incorporate factory functionality (i.e. [AssistedInject](https://github.com/square/AssistedInject))
+* Need to incorporate auto-factory functionality (i.e. [AssistedInject](https://github.com/square/AssistedInject))
   that has been duplicated through numerous downstream consumers.
 * There is no way to indicate that certain components are not lazy/`@Eager` and should be created when the Dagger
   component is created. Our applications end up adding accessors on the component just so that we can call them
