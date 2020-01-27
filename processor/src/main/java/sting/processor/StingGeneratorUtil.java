@@ -29,23 +29,23 @@ final class StingGeneratorUtil
   static TypeName getDependencyType( @Nonnull final DependencyDescriptor dependency )
   {
     final TypeMirror valueType = dependency.getCoordinate().getType();
-    final DependencyDescriptor.Type type = dependency.getType();
+    final DependencyDescriptor.Kind kind = dependency.getKind();
     final TypeName baseType = TypeName.get( valueType );
-    if ( DependencyDescriptor.Type.INSTANCE == type )
+    if ( DependencyDescriptor.Kind.INSTANCE == kind )
     {
       return baseType;
     }
-    else if ( DependencyDescriptor.Type.SUPPLIER == type )
+    else if ( DependencyDescriptor.Kind.SUPPLIER == kind )
     {
       return ParameterizedTypeName.get( StingTypeNames.SUPPLIER, baseType );
     }
-    else if ( DependencyDescriptor.Type.COLLECTION == type )
+    else if ( DependencyDescriptor.Kind.COLLECTION == kind )
     {
       return ParameterizedTypeName.get( StingTypeNames.COLLECTION, baseType );
     }
     else
     {
-      assert DependencyDescriptor.Type.SUPPLIER_COLLECTION == type;
+      assert DependencyDescriptor.Kind.SUPPLIER_COLLECTION == kind;
       return ParameterizedTypeName.get( StingTypeNames.COLLECTION,
                                         ParameterizedTypeName.get( StingTypeNames.SUPPLIER, baseType ) );
     }
@@ -82,29 +82,29 @@ final class StingGeneratorUtil
 
       final TypeName actualTypeName = getDependencyType( dependency );
 
-      final DependencyDescriptor.Type dependencyType = dependency.getType();
+      final DependencyDescriptor.Kind kind = dependency.getKind();
       final TypeName paramType;
       if ( isPublic )
       {
         paramType = actualTypeName;
       }
-      else if ( DependencyDescriptor.Type.INSTANCE == dependencyType )
+      else if ( DependencyDescriptor.Kind.INSTANCE == kind )
       {
         paramType = TypeName.OBJECT;
       }
-      else if ( DependencyDescriptor.Type.SUPPLIER == dependencyType )
+      else if ( DependencyDescriptor.Kind.SUPPLIER == kind )
       {
         anyNonPublicNonInstance = true;
         paramType = StingTypeNames.SUPPLIER;
       }
-      else if ( DependencyDescriptor.Type.COLLECTION == dependencyType )
+      else if ( DependencyDescriptor.Kind.COLLECTION == kind )
       {
         anyNonPublicNonInstance = true;
         paramType = StingTypeNames.COLLECTION;
       }
       else
       {
-        assert DependencyDescriptor.Type.SUPPLIER_COLLECTION == dependencyType;
+        assert DependencyDescriptor.Kind.SUPPLIER_COLLECTION == kind;
         anyNonPublicNonInstance = true;
         paramType = StingTypeNames.COLLECTION;
       }

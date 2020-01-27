@@ -212,7 +212,7 @@ final class DescriptorIO
   private void writeDependency( @Nonnull final DataOutputStream dos, @Nonnull final DependencyDescriptor dependency )
     throws IOException
   {
-    dos.writeByte( dependency.getType().ordinal() );
+    dos.writeByte( dependency.getKind().ordinal() );
     writeCoordinate( dos, dependency.getCoordinate() );
     dos.writeBoolean( dependency.isOptional() );
     assert ElementKind.PARAMETER == dependency.getElement().getKind();
@@ -227,7 +227,7 @@ final class DescriptorIO
                                                @Nonnull final Element enclosingElement )
     throws IOException
   {
-    final DependencyDescriptor.Type type = DependencyDescriptor.Type.values()[ dis.readByte() ];
+    final DependencyDescriptor.Kind type = DependencyDescriptor.Kind.values()[ dis.readByte() ];
     final Coordinate coordinate = readCoordinate( dis );
     final boolean optional = dis.readBoolean();
     final short parameterIndex = dis.readShort();

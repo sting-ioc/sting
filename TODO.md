@@ -22,7 +22,6 @@ complete as there is too much un-said.
 * Add ability to auto-include a fragment defined within the `@Injector` annotated type. The auto-include could
   just be based on whether it is an interface annotated with `@Fragment` or maybe it could be based on naming
   pattern?
-* Rename `DependencyDescriptor.Type` to `DependencyDescriptor.Kind` to eliminate confusion with java types.
 * Ensure that ids are unique across an object graph.
 
 * Any nested `@Fragment` annotated classes in `@Injector` are automagically added to the `@Injector`

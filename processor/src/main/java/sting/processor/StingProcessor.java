@@ -411,8 +411,8 @@ public final class StingProcessor
       }
       else
       {
-        final DependencyDescriptor.Type type = dependency.getType();
-        if ( 1 == bindings.size() || type.isCollection() )
+        final DependencyDescriptor.Kind kind = dependency.getKind();
+        if ( 1 == bindings.size() || kind.isCollection() )
         {
           final List<Node> nodes = bindings.stream().map( graph::findOrCreateNode ).collect( Collectors.toList() );
           for ( final Node node : nodes )
@@ -428,7 +428,7 @@ public final class StingProcessor
         else
         {
           //noinspection ConstantConditions
-          assert bindings.size() > 1 && !type.isCollection();
+          assert bindings.size() > 1 && !kind.isCollection();
           throw new ProcessorException( "Injector defined by type '" + injector.getElement().getQualifiedName() +
                                         "' contains a dependency " + coordinate + " that expects to be satisfied " +
                                         "by a single value but the injector contains multiple values that satisfy " +
@@ -606,7 +606,7 @@ public final class StingProcessor
     final boolean isDeclaredType = TypeKind.DECLARED == returnType.getKind();
     final DeclaredType declaredType = isDeclaredType ? (DeclaredType) returnType : null;
     final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
-    final DependencyDescriptor.Type type;
+    final DependencyDescriptor.Kind type;
     final TypeMirror dependencyValueType;
     if ( TypeKind.ARRAY == returnType.getKind() )
     {
@@ -615,7 +615,7 @@ public final class StingProcessor
     }
     else if ( null == declaredType )
     {
-      type = DependencyDescriptor.Type.INSTANCE;
+      type = DependencyDescriptor.Kind.INSTANCE;
       dependencyValueType = returnType;
     }
     else if ( !isParameterizedType )
@@ -644,7 +644,7 @@ public final class StingProcessor
                                                             Collection.class.getCanonicalName() ),
                                       method );
       }
-      type = DependencyDescriptor.Type.INSTANCE;
+      type = DependencyDescriptor.Kind.INSTANCE;
       dependencyValueType = returnType;
     }
     else
@@ -659,7 +659,7 @@ public final class StingProcessor
                                                               " type with a wildcard type parameter" ),
                                         method );
         }
-        type = DependencyDescriptor.Type.SUPPLIER;
+        type = DependencyDescriptor.Kind.SUPPLIER;
         dependencyValueType = typeArgument;
       }
       else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
@@ -703,7 +703,7 @@ public final class StingProcessor
             }
             else
             {
-              type = DependencyDescriptor.Type.SUPPLIER_COLLECTION;
+              type = DependencyDescriptor.Kind.SUPPLIER_COLLECTION;
               dependencyValueType = nestedParameterType;
             }
           }
@@ -716,7 +716,7 @@ public final class StingProcessor
         }
         else
         {
-          type = DependencyDescriptor.Type.COLLECTION;
+          type = DependencyDescriptor.Kind.COLLECTION;
           dependencyValueType = typeArgument;
         }
       }
@@ -985,7 +985,7 @@ public final class StingProcessor
     final boolean isDeclaredType = TypeKind.DECLARED == parameterType.getKind();
     final DeclaredType declaredType = isDeclaredType ? (DeclaredType) parameterType : null;
     final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
-    final DependencyDescriptor.Type type;
+    final DependencyDescriptor.Kind type;
     final TypeMirror dependencyValueType;
     if ( TypeKind.ARRAY == parameterType.getKind() )
     {
@@ -994,7 +994,7 @@ public final class StingProcessor
     }
     else if ( null == declaredType )
     {
-      type = DependencyDescriptor.Type.INSTANCE;
+      type = DependencyDescriptor.Kind.INSTANCE;
       dependencyValueType = parameterType;
     }
     else if ( !isParameterizedType )
@@ -1005,7 +1005,7 @@ public final class StingProcessor
                                                             "be a raw parameterized type" ),
                                       parameter );
       }
-      type = DependencyDescriptor.Type.INSTANCE;
+      type = DependencyDescriptor.Kind.INSTANCE;
       dependencyValueType = parameterType;
     }
     else
@@ -1019,7 +1019,7 @@ public final class StingProcessor
                                                               "be a parameterized type with a wildcard type parameter" ),
                                         parameter );
         }
-        type = DependencyDescriptor.Type.SUPPLIER;
+        type = DependencyDescriptor.Kind.SUPPLIER;
         dependencyValueType = typeArgument;
       }
       else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
@@ -1060,7 +1060,7 @@ public final class StingProcessor
             }
             else
             {
-              type = DependencyDescriptor.Type.SUPPLIER_COLLECTION;
+              type = DependencyDescriptor.Kind.SUPPLIER_COLLECTION;
               dependencyValueType = nestedParameterType;
             }
           }
@@ -1073,7 +1073,7 @@ public final class StingProcessor
         }
         else
         {
-          type = DependencyDescriptor.Type.COLLECTION;
+          type = DependencyDescriptor.Kind.COLLECTION;
           dependencyValueType = typeArgument;
         }
       }
@@ -1281,7 +1281,7 @@ public final class StingProcessor
     final boolean isDeclaredType = TypeKind.DECLARED == parameterType.getKind();
     final DeclaredType declaredType = isDeclaredType ? (DeclaredType) parameterType : null;
     final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
-    final DependencyDescriptor.Type type;
+    final DependencyDescriptor.Kind type;
     final TypeMirror dependencyValueType;
     if ( TypeKind.ARRAY == parameterType.getKind() )
     {
@@ -1290,7 +1290,7 @@ public final class StingProcessor
     }
     else if ( null == declaredType )
     {
-      type = DependencyDescriptor.Type.INSTANCE;
+      type = DependencyDescriptor.Kind.INSTANCE;
       dependencyValueType = parameterType;
     }
     else if ( !isParameterizedType )
@@ -1301,7 +1301,7 @@ public final class StingProcessor
                                                             "be a raw parameterized type" ),
                                       parameter );
       }
-      type = DependencyDescriptor.Type.INSTANCE;
+      type = DependencyDescriptor.Kind.INSTANCE;
       dependencyValueType = parameterType;
     }
     else
@@ -1316,7 +1316,7 @@ public final class StingProcessor
                                                               " type with a wildcard type parameter" ),
                                         parameter );
         }
-        type = DependencyDescriptor.Type.SUPPLIER;
+        type = DependencyDescriptor.Kind.SUPPLIER;
         dependencyValueType = typeArgument;
       }
       else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
@@ -1358,7 +1358,7 @@ public final class StingProcessor
             }
             else
             {
-              type = DependencyDescriptor.Type.SUPPLIER_COLLECTION;
+              type = DependencyDescriptor.Kind.SUPPLIER_COLLECTION;
               dependencyValueType = nestedParameterType;
             }
           }
@@ -1371,7 +1371,7 @@ public final class StingProcessor
         }
         else
         {
-          type = DependencyDescriptor.Type.COLLECTION;
+          type = DependencyDescriptor.Kind.COLLECTION;
           dependencyValueType = typeArgument;
         }
       }

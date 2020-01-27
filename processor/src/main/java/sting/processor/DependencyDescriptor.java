@@ -12,10 +12,11 @@ import javax.lang.model.type.TypeMirror;
 final class DependencyDescriptor
 {
   /**
-   * The type of the request.
+   * The kind of the dependency.
+   * @see Kind
    */
   @Nonnull
-  private final Type _type;
+  private final Kind _kind;
   /**
    * The coordinate of the dependency to match.
    */
@@ -37,13 +38,13 @@ final class DependencyDescriptor
    */
   private final int _parameterIndex;
 
-  DependencyDescriptor( @Nonnull final Type type,
+  DependencyDescriptor( @Nonnull final Kind kind,
                         @Nonnull final Coordinate coordinate,
                         final boolean optional,
                         @Nonnull final Element element,
                         final int parameterIndex )
   {
-    _type = Objects.requireNonNull( type );
+    _kind = Objects.requireNonNull( kind );
     _coordinate = Objects.requireNonNull( coordinate );
     _optional = optional;
     _element = Objects.requireNonNull( element );
@@ -51,9 +52,9 @@ final class DependencyDescriptor
   }
 
   @Nonnull
-  Type getType()
+  Kind getKind()
   {
-    return _type;
+    return _kind;
   }
 
   @Nonnull
@@ -89,9 +90,9 @@ final class DependencyDescriptor
   void write( @Nonnull final JsonGenerator g )
   {
     g.writeStartObject();
-    if ( DependencyDescriptor.Type.INSTANCE != _type )
+    if ( Kind.INSTANCE != _kind )
     {
-      g.write( "type", _type.name() );
+      g.write( "type", _kind.name() );
     }
 
     _coordinate.write( g );
@@ -102,7 +103,7 @@ final class DependencyDescriptor
     g.writeEnd();
   }
 
-  enum Type
+  enum Kind
   {
     /// A request for an instance of the dependency type T
     INSTANCE( false, false ),
@@ -115,7 +116,7 @@ final class DependencyDescriptor
     private final boolean _supplier;
     private final boolean _collection;
 
-    Type( final boolean supplier, final boolean collection )
+    Kind( final boolean supplier, final boolean collection )
     {
       _supplier = supplier;
       _collection = collection;

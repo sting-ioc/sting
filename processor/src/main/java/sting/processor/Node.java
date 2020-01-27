@@ -169,7 +169,7 @@ final class Node
       // as they do not need to be created until they are accessed
       for ( final Edge edge : _dependsOn.values() )
       {
-        if ( !edge.getDependency().getType().isSupplier() )
+        if ( !edge.getDependency().getKind().isSupplier() )
         {
           edge.getSatisfiedBy().forEach( Node::markNodeAndUpstreamAsEager );
         }

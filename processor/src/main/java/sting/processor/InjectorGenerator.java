@@ -234,8 +234,8 @@ final class InjectorGenerator
   {
     final Collection<Node> satisfiedBy = edge.getSatisfiedBy();
     final DependencyDescriptor dependency = edge.getDependency();
-    final DependencyDescriptor.Type depType = dependency.getType();
-    if ( !depType.isCollection() )
+    final DependencyDescriptor.Kind kind = dependency.getKind();
+    if ( !kind.isCollection() )
     {
       if ( satisfiedBy.isEmpty() )
       {
@@ -292,8 +292,8 @@ final class InjectorGenerator
                                         @Nonnull final StringBuilder code,
                                         @Nonnull final List<Object> args )
   {
-    final DependencyDescriptor.Type depType = dependency.getType();
-    if ( depType.isSupplier() )
+    final DependencyDescriptor.Kind kind = dependency.getKind();
+    if ( kind.isSupplier() )
     {
       code.append( "() -> " );
     }
