@@ -22,21 +22,6 @@ final class ObjectGraph
   @Nonnull
   private final InjectorDescriptor _injector;
   /**
-   * The set of injectables explicitly included in the graph.
-   */
-  @Nonnull
-  private final Map<String, InjectableDescriptor> _injectables = new HashMap<>();
-  /**
-   * The set of fragments explicitly included in the graph.
-   */
-  @Nonnull
-  private final Map<String, FragmentDescriptor> _fragments = new HashMap<>();
-  /**
-   * The set of bindings included in the graph derived from descriptors.
-   */
-  @Nonnull
-  private final List<Binding> _bindings = new ArrayList<>();
-  /**
    * The types that are published in the object graph.
    */
   @Nonnull
@@ -142,7 +127,6 @@ final class ObjectGraph
    */
   private void registerBinding( @Nonnull final Binding binding )
   {
-    _bindings.add( binding );
     binding.getCoordinates()
       .forEach( coordinate -> _publishedTypes.computeIfAbsent( coordinate, c -> new ArrayList<>() ).add( binding ) );
   }
@@ -160,7 +144,6 @@ final class ObjectGraph
    */
   void registerInjectable( @Nonnull final InjectableDescriptor injectable )
   {
-    _injectables.put( injectable.getElement().getQualifiedName().toString(), injectable );
     registerBinding( injectable.getBinding() );
   }
 
@@ -172,7 +155,6 @@ final class ObjectGraph
    */
   void registerFragment( @Nonnull final FragmentDescriptor fragment )
   {
-    _fragments.put( fragment.getElement().getQualifiedName().toString(), fragment );
     for ( final Binding binding : fragment.getBindings() )
     {
       registerBinding( binding );
