@@ -35,9 +35,6 @@ complete as there is too much un-said.
 
 * Generate an error if Injector has type parameters
 
-* Add tests where `@Injectable` is package access, provided to other values within package and provided as
-  dependency to values in other packages via a public published interface
-
 * Generate/Figure out how to model `Supplier` can return null. Also what does `@Nullable` on non-instance dependency types mean?
 
 * Add support to dependencyType so that the boxed types and primitives interoperate. ie. Can have a collection of `Integer` that derived from `int` values.
