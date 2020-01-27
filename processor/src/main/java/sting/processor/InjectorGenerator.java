@@ -66,7 +66,7 @@ final class InjectorGenerator
       final StringBuilder code = new StringBuilder();
       final ArrayList<Object> args = new ArrayList<>();
       code.append( "return " );
-      emitDependencyValue( edge, code, args );
+      emitDependencyValue( edge, true, code, args );
       method.addStatement( code.toString(), args.toArray() );
       builder.addMethod( method.build() );
     }
@@ -218,7 +218,7 @@ final class InjectorGenerator
       {
         firstParam = false;
       }
-      emitDependencyValue( edge, code, args );
+      emitDependencyValue( edge, false, code, args );
     }
     code.append( ')' );
     if ( requireNonNull )
@@ -228,6 +228,7 @@ final class InjectorGenerator
   }
 
   private static void emitDependencyValue( @Nonnull final Edge edge,
+                                           final boolean emitCasts,
                                            @Nonnull final StringBuilder code,
                                            @Nonnull final List<Object> args )
   {
@@ -242,7 +243,7 @@ final class InjectorGenerator
       }
       else
       {
-        emitNodeAccessor( dependency, satisfiedBy.iterator().next(), code, args );
+        emitNodeAccessor( dependency, satisfiedBy.iterator().next(), emitCasts, code, args );
       }
     }
     else
@@ -257,7 +258,7 @@ final class InjectorGenerator
       {
         code.append( "$T.singletonList( " );
         args.add( Collections.class );
-        emitNodeAccessor( dependency, satisfiedBy.iterator().next(), code, args );
+        emitNodeAccessor( dependency, satisfiedBy.iterator().next(), emitCasts, code, args );
         code.append( " )" );
       }
       else
@@ -271,7 +272,7 @@ final class InjectorGenerator
           {
             code.append( ", " );
           }
-          emitNodeAccessor( dependency, iterator.next(), code, args );
+          emitNodeAccessor( dependency, iterator.next(), emitCasts, code, args );
         }
         code.append( " )" );
       }
@@ -287,6 +288,7 @@ final class InjectorGenerator
    */
   private static void emitNodeAccessor( @Nonnull final DependencyDescriptor dependency,
                                         @Nonnull final Node node,
+                                        final boolean emitCasts,
                                         @Nonnull final StringBuilder code,
                                         @Nonnull final List<Object> args )
   {
@@ -295,7 +297,7 @@ final class InjectorGenerator
     {
       code.append( "() -> " );
     }
-    if ( !dependency.isPublic() )
+    if ( emitCasts && !dependency.isPublic() )
     {
       code.append( "($T) " );
       args.add( dependency.getCoordinate().getType() );

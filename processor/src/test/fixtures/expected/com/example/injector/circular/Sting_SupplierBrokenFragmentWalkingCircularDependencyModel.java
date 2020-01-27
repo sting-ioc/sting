@@ -25,7 +25,7 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
   @Nonnull
   private Object node1() {
     if ( null == node1 ) {
-      node1 = Objects.requireNonNull( fragment1.$sting$_provideMyModel2(() -> (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1) node3()) );
+      node1 = Objects.requireNonNull( fragment1.$sting$_provideMyModel2(() -> node3()) );
     }
     assert null != node1;
     return node1;
@@ -34,7 +34,7 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
   @Nonnull
   private Object node2() {
     if ( null == node2 ) {
-      node2 = Objects.requireNonNull( SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel2.create((SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3) node1()) );
+      node2 = Objects.requireNonNull( SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel2.create(node1()) );
     }
     assert null != node2;
     return node2;
@@ -43,7 +43,7 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
   @Nonnull
   private Object node3() {
     if ( null == node3 ) {
-      node3 = Objects.requireNonNull( SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel1.create((SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2) node2()) );
+      node3 = Objects.requireNonNull( SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel1.create(node2()) );
     }
     assert null != node3;
     return node3;

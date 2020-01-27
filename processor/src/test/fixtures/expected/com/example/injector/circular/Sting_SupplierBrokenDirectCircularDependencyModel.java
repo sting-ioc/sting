@@ -19,7 +19,7 @@ final class Sting_SupplierBrokenDirectCircularDependencyModel implements Supplie
   @Nonnull
   private Object node1() {
     if ( null == node1 ) {
-      node1 = Objects.requireNonNull( SupplierBrokenDirectCircularDependencyModel_Sting_MyModel2.create(() -> (SupplierBrokenDirectCircularDependencyModel.MyModel1) node2()) );
+      node1 = Objects.requireNonNull( SupplierBrokenDirectCircularDependencyModel_Sting_MyModel2.create(() -> node2()) );
     }
     assert null != node1;
     return node1;
@@ -28,7 +28,7 @@ final class Sting_SupplierBrokenDirectCircularDependencyModel implements Supplie
   @Nonnull
   private Object node2() {
     if ( null == node2 ) {
-      node2 = Objects.requireNonNull( SupplierBrokenDirectCircularDependencyModel_Sting_MyModel1.create((SupplierBrokenDirectCircularDependencyModel.MyModel2) node1()) );
+      node2 = Objects.requireNonNull( SupplierBrokenDirectCircularDependencyModel_Sting_MyModel1.create(node1()) );
     }
     assert null != node2;
     return node2;
