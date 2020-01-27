@@ -37,9 +37,6 @@ complete as there is too much un-said.
 
 * Add support to dependencyType so that the boxed types and primitives interoperate. ie. Can have a collection of `Integer` that derived from `int` values.
 
-* Add tests where `@Fragment` is package access - probably needs to be via an `includes` in public Fragment
-  that included in `@Injector`
-
 * Add tests where fragments are deprecated or `@Provides` methods are deprecated.
 
 * Add tests where `@Injectable` is deprecated or the constructor is deprecated or one of the ctor parameters is deprecated.
