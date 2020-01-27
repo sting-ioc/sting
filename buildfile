@@ -28,7 +28,6 @@ define 'sting' do
     package(:javadoc)
 
     test.using :testng
-    test.compile.with :guiceyloops
   end
 
   desc 'The Annotation processor'
@@ -74,7 +73,6 @@ define 'sting' do
 
     test.using :testng
     test.options[:properties] = { 'sting.fixture_dir' => _('src/test/fixtures') }
-    test.compile.with :guiceyloops
 
     # The generators are configured to generate to here.
     iml.test_source_directories << _('generated/processors/test/java')
