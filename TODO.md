@@ -43,8 +43,6 @@ complete as there is too much un-said.
 
 * Should `@Fragment` types be able to extend other `@Fragment` types? If so then add example. If not then verify not.
 
-* Verify `@Fragment` methods are not static.
-
 * Verify `@Nullable` provides does not return a primitive type.
 
 * Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`

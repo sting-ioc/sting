@@ -215,6 +215,8 @@ public final class StingProcessorTest
                       "@Provides target must return a value" },
         new Object[]{ "com.example.fragment.provides.ParameterizedProvidesModel",
                       "@Provides target must not have any type parameters" },
+        new Object[]{ "com.example.fragment.provides.StaticMethodProvidesModel",
+                      "@Provides target must have a default modifier" },
 
         new Object[]{ "com.example.fragment.provides.dependency.ArrayDependencyModel",
                       "@Fragment target must not have a method with a parameter that is an array type" },
