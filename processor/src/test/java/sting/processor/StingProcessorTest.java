@@ -328,6 +328,8 @@ public final class StingProcessorTest
                       "  \n" +
                       "  Binding:\n" +
                       "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment2.provideMyModel3" },
+        new Object[]{ "com.example.injector.TypeParametersInjectorModel",
+                      "@Injector target must not have type parameters" },
 
         new Object[]{ "com.example.injector.circular.ChainedCircularDependencyModel",
                       "Injector contains a circular dependency.\n" +

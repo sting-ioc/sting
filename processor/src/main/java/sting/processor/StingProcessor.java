@@ -548,6 +548,11 @@ public final class StingProcessor
       throw new ProcessorException( MemberChecks.must( Constants.INJECTOR_CLASSNAME, "be an interface" ),
                                     element );
     }
+    if ( !element.getTypeParameters().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME, "have type parameters" ),
+                                    element );
+    }
 
     final List<DeclaredType> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
 
