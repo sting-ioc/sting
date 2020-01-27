@@ -224,6 +224,10 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.fragment.provides.dependency.ArrayDependencyModel",
                       "@Fragment target must not have a method with a parameter that is an array type" },
+        new Object[]{ "com.example.fragment.provides.dependency.NullableCollectionDependencyModel",
+                      "@Dependency target must not be annotated with @Nullable and be a collection type" },
+        new Object[]{ "com.example.fragment.provides.dependency.NullableSupplierCollectionDependencyModel",
+                      "@Dependency target must not be annotated with @Nullable and be a collection type" },
         new Object[]{ "com.example.fragment.provides.dependency.ParameterizedCollectionDependencyModel",
                       "@Fragment target must not have a method with a collection parameter that contains a parameterized type" },
         new Object[]{ "com.example.fragment.provides.dependency.ParameterizedDependencyModel",
@@ -268,6 +272,10 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injectable.dependency.ArrayDependencyModel",
                       "@Injectable target must not have a constructor with a parameter that is an array type" },
+        new Object[]{ "com.example.injectable.dependency.NullableCollectionDependencyModel",
+                      "@Dependency target must not be annotated with @Nullable and be a collection type" },
+        new Object[]{ "com.example.injectable.dependency.NullableSupplierCollectionDependencyModel",
+                      "@Dependency target must not be annotated with @Nullable and be a collection type" },
         new Object[]{ "com.example.injectable.dependency.ParameterizedCollectionDependencyModel",
                       "@Injectable target must not have a constructor with a collection parameter that contains a parameterized type" },
         new Object[]{ "com.example.injectable.dependency.ParameterizedSupplierCollectionDependencyModel",
@@ -356,6 +364,10 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injector.dependency.ArrayDependencyModel",
                       "@Dependency target must not return an array type" },
+        new Object[]{ "com.example.injector.dependency.NullableCollectionDependencyModel",
+                      "@Dependency target must not be annotated with @Nullable and be a collection type" },
+        new Object[]{ "com.example.injector.dependency.NullableSupplierCollectionDependencyModel",
+                      "@Dependency target must not be annotated with @Nullable and be a collection type" },
         new Object[]{ "com.example.injector.dependency.MethodReturningVoidDependencyModel",
                       "@Dependency target must return a value" },
         new Object[]{ "com.example.injector.dependency.MethodWithParametersDependencyModel",

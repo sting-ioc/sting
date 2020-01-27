@@ -731,6 +731,13 @@ public final class StingProcessor
       }
     }
 
+    if ( optional && type.isCollection() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                          "be annotated with @Nullable and be a collection type" ),
+                                    method );
+    }
+
     final Coordinate coordinate = new Coordinate( qualifier, dependencyValueType );
     return new DependencyDescriptor( type, coordinate, optional, method, -1 );
   }
@@ -1107,6 +1114,13 @@ public final class StingProcessor
       }
     }
 
+    if ( optional && type.isCollection() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                          "be annotated with @Nullable and be a collection type" ),
+                                    parameter );
+    }
+
     final Coordinate coordinate = new Coordinate( qualifier, dependencyValueType );
     return new DependencyDescriptor( type, coordinate, optional, parameter, parameterIndex );
   }
@@ -1420,6 +1434,12 @@ public final class StingProcessor
                                                             Collection.class.getCanonicalName() ),
                                       parameter );
       }
+    }
+    if ( optional && type.isCollection() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                          "be annotated with @Nullable and be a collection type" ),
+                                    parameter );
     }
 
     final Coordinate coordinate = new Coordinate( qualifier, dependencyValueType );
