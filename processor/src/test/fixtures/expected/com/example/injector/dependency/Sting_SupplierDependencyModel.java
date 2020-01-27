@@ -11,7 +11,7 @@ final class Sting_SupplierDependencyModel implements SupplierDependencyModel {
 
   private boolean $sting$_node1_allocated;
 
-  private Sting_SupplierDependencyModel() {
+  Sting_SupplierDependencyModel() {
   }
 
   private Object node1() {

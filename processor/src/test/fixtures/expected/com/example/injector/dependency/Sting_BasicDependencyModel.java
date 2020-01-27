@@ -10,7 +10,7 @@ final class Sting_BasicDependencyModel implements BasicDependencyModel {
 
   private boolean $sting$_node1_allocated;
 
-  private Sting_BasicDependencyModel() {
+  Sting_BasicDependencyModel() {
   }
 
   private Object node1() {

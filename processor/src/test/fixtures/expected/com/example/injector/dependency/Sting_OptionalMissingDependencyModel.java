@@ -10,7 +10,7 @@ final class Sting_OptionalMissingDependencyModel implements OptionalMissingDepen
 
   private boolean $sting$_node1_allocated;
 
-  private Sting_OptionalMissingDependencyModel() {
+  Sting_OptionalMissingDependencyModel() {
   }
 
   private Object node1() {

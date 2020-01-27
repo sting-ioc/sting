@@ -75,7 +75,6 @@ final class InjectorGenerator
   private static void emitConstructor( @Nonnull final ObjectGraph graph, @Nonnull final TypeSpec.Builder builder )
   {
     final MethodSpec.Builder ctor = MethodSpec.constructorBuilder();
-    ctor.addModifiers( Modifier.PRIVATE );
 
     final List<Node> nodes = new ArrayList<>( graph.getNodes() );
     for ( final Node node : nodes )

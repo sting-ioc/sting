@@ -24,7 +24,7 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
 
   private boolean $sting$_node3_allocated;
 
-  private Sting_SupplierBrokenFragmentWalkingCircularDependencyModel() {
+  Sting_SupplierBrokenFragmentWalkingCircularDependencyModel() {
   }
 
   private Object node1() {

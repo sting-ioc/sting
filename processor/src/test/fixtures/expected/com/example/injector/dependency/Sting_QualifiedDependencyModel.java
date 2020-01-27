@@ -10,7 +10,7 @@ final class Sting_QualifiedDependencyModel implements QualifiedDependencyModel {
 
   private boolean $sting$_node1_allocated;
 
-  private Sting_QualifiedDependencyModel() {
+  Sting_QualifiedDependencyModel() {
   }
 
   private Object node1() {

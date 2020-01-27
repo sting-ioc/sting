@@ -13,7 +13,7 @@ final class Sting_SupplierCollectionDependencyModel implements SupplierCollectio
 
   private boolean $sting$_node1_allocated;
 
-  private Sting_SupplierCollectionDependencyModel() {
+  Sting_SupplierCollectionDependencyModel() {
   }
 
   private Object node1() {

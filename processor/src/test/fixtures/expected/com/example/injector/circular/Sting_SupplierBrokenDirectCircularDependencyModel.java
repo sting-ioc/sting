@@ -15,7 +15,7 @@ final class Sting_SupplierBrokenDirectCircularDependencyModel implements Supplie
 
   private boolean $sting$_node2_allocated;
 
-  private Sting_SupplierBrokenDirectCircularDependencyModel() {
+  Sting_SupplierBrokenDirectCircularDependencyModel() {
   }
 
   private Object node1() {

@@ -21,7 +21,7 @@ final class Sting_ComplexDependencyModel implements ComplexDependencyModel {
 
   private boolean $sting$_node3_allocated;
 
-  private Sting_ComplexDependencyModel() {
+  Sting_ComplexDependencyModel() {
   }
 
   private Object node1() {

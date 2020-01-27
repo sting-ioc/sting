@@ -10,7 +10,7 @@ final class Sting_OptionalDependencyModel implements OptionalDependencyModel {
 
   private boolean $sting$_node1_allocated;
 
-  private Sting_OptionalDependencyModel() {
+  Sting_OptionalDependencyModel() {
   }
 
   private Object node1() {

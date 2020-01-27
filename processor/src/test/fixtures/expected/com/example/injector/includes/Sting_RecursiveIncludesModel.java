@@ -45,7 +45,7 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
 
   private boolean $sting$_node6_allocated;
 
-  private Sting_RecursiveIncludesModel() {
+  Sting_RecursiveIncludesModel() {
   }
 
   private Object node1() {

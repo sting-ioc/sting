@@ -12,7 +12,7 @@ final class Sting_CollectionDependencyModel implements CollectionDependencyModel
 
   private boolean $sting$_node1_allocated;
 
-  private Sting_CollectionDependencyModel() {
+  Sting_CollectionDependencyModel() {
   }
 
   private Object node1() {

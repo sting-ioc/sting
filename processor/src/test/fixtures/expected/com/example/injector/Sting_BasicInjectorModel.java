@@ -10,7 +10,7 @@ final class Sting_BasicInjectorModel implements BasicInjectorModel {
 
   private boolean $sting$_node1_allocated;
 
-  private Sting_BasicInjectorModel() {
+  Sting_BasicInjectorModel() {
   }
 
   private Object node1() {

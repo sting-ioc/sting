@@ -70,7 +70,7 @@ final class Sting_PrimitiveDependencyModel implements PrimitiveDependencyModel {
 
   private boolean $sting$_node8_allocated;
 
-  private Sting_PrimitiveDependencyModel() {
+  Sting_PrimitiveDependencyModel() {
   }
 
   private double node1() {

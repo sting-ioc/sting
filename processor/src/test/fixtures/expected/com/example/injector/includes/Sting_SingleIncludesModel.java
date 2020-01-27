@@ -14,7 +14,7 @@ final class Sting_SingleIncludesModel implements SingleIncludesModel {
 
   private boolean $sting$_node1_allocated;
 
-  private Sting_SingleIncludesModel() {
+  Sting_SingleIncludesModel() {
   }
 
   private Runnable node1() {

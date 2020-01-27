@@ -14,7 +14,7 @@ final class Sting_OptionalProvidesDependencyModel implements OptionalProvidesDep
 
   private boolean $sting$_node1_allocated;
 
-  private Sting_OptionalProvidesDependencyModel() {
+  Sting_OptionalProvidesDependencyModel() {
   }
 
   private Object node1() {

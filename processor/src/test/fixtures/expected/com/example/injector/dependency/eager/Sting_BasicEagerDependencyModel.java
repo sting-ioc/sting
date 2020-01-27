@@ -32,7 +32,7 @@ final class Sting_BasicEagerDependencyModel implements BasicEagerDependencyModel
 
   private boolean $sting$_node2_allocated;
 
-  private Sting_BasicEagerDependencyModel() {
+  Sting_BasicEagerDependencyModel() {
     node3 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel2.create() );
     node4 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel1.create() );
     node5 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel5.create((BasicEagerDependencyModel.MyModel2) node3, () -> (BasicEagerDependencyModel.MyModel3) node2(), (BasicEagerDependencyModel.MyModel1) node4) );

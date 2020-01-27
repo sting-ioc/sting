@@ -16,7 +16,7 @@ final class Sting_MultipleDependencyModel implements MultipleDependencyModel {
 
   private boolean $sting$_node2_allocated;
 
-  private Sting_MultipleDependencyModel() {
+  Sting_MultipleDependencyModel() {
   }
 
   private Object node1() {

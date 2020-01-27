@@ -14,7 +14,7 @@ final class Sting_MultipleIncludesModel implements MultipleIncludesModel {
 
   private boolean $sting$_node1_allocated;
 
-  private Sting_MultipleIncludesModel() {
+  Sting_MultipleIncludesModel() {
   }
 
   private Runnable node1() {

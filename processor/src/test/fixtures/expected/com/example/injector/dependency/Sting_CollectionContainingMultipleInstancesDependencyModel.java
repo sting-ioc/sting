@@ -32,7 +32,7 @@ final class Sting_CollectionContainingMultipleInstancesDependencyModel implement
 
   private boolean $sting$_node3_allocated;
 
-  private Sting_CollectionContainingMultipleInstancesDependencyModel() {
+  Sting_CollectionContainingMultipleInstancesDependencyModel() {
   }
 
   private Object node1() {

@@ -12,7 +12,7 @@ final class Sting_EagerInjectableViaIncludesModel implements EagerInjectableViaI
   @Nonnull
   private final Object node2;
 
-  private Sting_EagerInjectableViaIncludesModel() {
+  Sting_EagerInjectableViaIncludesModel() {
     node1 = Objects.requireNonNull( EagerInjectableViaIncludesModel_Sting_MyModel3.create() );
     node2 = Objects.requireNonNull( EagerInjectableViaIncludesModel_Sting_MyModel1.create() );
   }
