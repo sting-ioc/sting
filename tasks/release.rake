@@ -67,6 +67,36 @@ HEADER
       sh 'git commit -m "Update CHANGELOG.md in preparation for release"'
     end
 
+    stage('PatchWebsite', 'Update the website with a post announcing release') do
+      changelog = IO.read('CHANGELOG.md')
+
+      # Find the double new line after the product version banner
+      start_index = changelog.index("\n\n", changelog.index("## [v#{ENV['PRODUCT_VERSION']}]")) + 2
+
+      end_index = changelog.index("### [v#{ENV['PREVIOUS_PRODUCT_VERSION']}]", start_index)
+
+      filename = "website/blog/#{ENV['RELEASE_DATE']}-version-#{ENV['PRODUCT_VERSION']}-release.md"
+      content = <<CONTENT
+---
+title: Sting #{ENV['PRODUCT_VERSION']} released
+author: Sting Project
+authorURL: https://github.com/sting-ioc
+---
+
+[Full Changelog](https://github.com/sting-ioc/sting/compare/v#{ENV['PREVIOUS_PRODUCT_VERSION']}...v#{ENV['PRODUCT_VERSION']})
+CONTENT
+      if File.exist?("#{WORKSPACE_DIR}/api-test/src/test/resources/fixtures/#{ENV['PREVIOUS_PRODUCT_VERSION']}-#{ENV['PRODUCT_VERSION']}.json")
+        content += <<CONTENT
+[API Differences](/api-diff/?key=sting&old=#{ENV['PREVIOUS_PRODUCT_VERSION']}&new=#{ENV['PRODUCT_VERSION']})
+CONTENT
+      end
+      content += <<CONTENT
+
+#{changelog[start_index, end_index - start_index].gsub('https://sting-ioc.github.io', '')}
+CONTENT
+      IO.write(filename, content)
+    end
+
     stage('TagProject', 'Tag the project') do
       sh "git tag v#{ENV['PRODUCT_VERSION']}"
     end
