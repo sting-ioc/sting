@@ -99,7 +99,7 @@ define 'sting' do
     using(:javadoc,
           :windowtitle => 'Sting API Documentation',
           :linksource => true,
-          :link => %w(https://arez.github.io/arez/api https://docs.oracle.com/javase/8/docs/api http://www.gwtproject.org/javadoc/latest/),
+          :link => %w(https://sting.github.io/sting/api https://docs.oracle.com/javase/8/docs/api http://www.gwtproject.org/javadoc/latest/),
           :group => {
             'Core Packages' => 'sting.*',
             'Annotation Packages' => 'sting.annotations*:sting.processor*'
