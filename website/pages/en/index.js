@@ -37,7 +37,7 @@ class Index extends React.Component {
                   <div className="promoRow">
                     <div className="pluginRowBlock">
                       <Button href="/docs/overview.html">Overview</Button>
-                      <Button href="/docs/concepts.html">Concepts</Button>
+                      {/*<Button href="/docs/concepts.html">Concepts</Button>*/}
                       <Button href="/docs/components.html">Components</Button>
                     </div>
                   </div>
