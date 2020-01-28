@@ -4,7 +4,7 @@ require 'buildr/single_intermediate_layout'
 require 'buildr/gwt'
 require 'buildr/jacoco'
 
-desc 'sting: A simple, compile-time dependency injection toolkit'
+desc 'sting: A fast, easy to use, compile-time dependency injection toolkit'
 define 'sting' do
   project.group = 'org.realityforge.sting'
   compile.options.source = '1.8'
