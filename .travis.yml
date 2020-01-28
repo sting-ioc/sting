@@ -6,7 +6,7 @@ jdk:
 rvm:
 - 2.3.1
 node_js:
-  - v6.10.3
+- v6.10.3
 install:
 - nvm install v6.10.3
 - nvm use v6.10.3
