@@ -106,9 +106,9 @@ define 'sting' do
       artifact("org.realityforge.sting:sting-core:jar:#{ENV['PREVIOUS_PRODUCT_VERSION']}").invoke
       project('core').package(:jar).invoke
       artifact(:revapi_diff).invoke
-    end unless ENV['TEST'] == 'no' || ENV['PRODUCT_VERSION'].nil? || ENV['PREVIOUS_PRODUCT_VERSION'].nil?
+    end unless ENV['TEST'] == 'no' || ENV['PRODUCT_VERSION'].nil? || ENV['PREVIOUS_PRODUCT_VERSION'].nil? || ENV['PREVIOUS_PRODUCT_VERSION'] == '0.00'
 
-    test.exclude '*ApiDiffTest' if ENV['PRODUCT_VERSION'].nil? || ENV['PREVIOUS_PRODUCT_VERSION'].nil?
+    test.exclude '*ApiDiffTest' if ENV['PRODUCT_VERSION'].nil? || ENV['PREVIOUS_PRODUCT_VERSION'].nil? || ENV['PREVIOUS_PRODUCT_VERSION'] == '0.00'
 
     project.jacoco.enabled = false
   end
