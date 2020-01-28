@@ -102,7 +102,7 @@ task 'site:deploy' => ['site:build'] do
 
   # Only publish the site off the master branch if running out of Travis
   if ENV['TRAVIS_BRANCH'].nil? || ENV['TRAVIS_BRANCH'] == 'master'
-    origin_url = 'https://github.com/sting-ioc/sting.github.io.git'
+    origin_url = 'https://github.com/sting-ioc/sting-ioc.github.io.git'
 
     travis_build_number = ENV['TRAVIS_BUILD_NUMBER']
     if travis_build_number
