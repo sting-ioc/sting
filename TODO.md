@@ -36,8 +36,6 @@ complete as there is too much un-said.
 
 * Generate a website using same tech as Arez. Publish to a separate github module like in Arez
 
-* Consider moving to sting ot sting-ioc github organization
-
 * Add support to dependencyType so that the boxed types and primitives interoperate. ie. Can have a collection of `Integer` that derived from `int` values.
 
 * Add tests where `@Fragment` type is deprecated or `@Provides` method is deprecated or `@Dependency` parameter fot `@Provides` method is deprecated.
