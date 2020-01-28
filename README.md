@@ -1,4 +1,4 @@
-# Sting: A simple, compile-time dependency injection toolkit
+# Sting
 
 [![Build Status](https://secure.travis-ci.org/sting-ioc/sting.svg?branch=master)](http://travis-ci.org/sting-ioc/sting)
 [![codecov](https://codecov.io/gh/sting-ioc/sting/branch/master/graph/badge.svg)](https://codecov.io/gh/sting-ioc/sting)
