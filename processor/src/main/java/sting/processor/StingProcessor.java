@@ -109,7 +109,7 @@ public final class StingProcessor
   @Override
   protected String getIssueTrackerURL()
   {
-    return "https://github.com/realityforge/sting/issues";
+    return "https://github.com/sting-ioc/sting/issues";
   }
 
   @Nonnull
