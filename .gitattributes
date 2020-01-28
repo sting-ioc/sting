@@ -1,8 +1,13 @@
 # DO NOT EDIT: File is auto-generated
 * -text
+*.css text
+*.html text
+*.ico binary
 *.java text
+*.js text
 *.json text
 *.md text
+*.png binary
 *.rake text
 *.rb text
 *.xml text
@@ -10,6 +15,7 @@
 *.yml text
 .gitattributes text
 .gitignore text
+.node-version text
 .ruby-version text
 Gemfile text
 LICENSE text
