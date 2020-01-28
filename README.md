@@ -10,7 +10,27 @@
 Sting is a fast, easy to use, compile-time dependency injection toolkit. The toolkit accepts a set of annotated
 java classes and generates source code to instantiate and wire together the components.
 
+Sting is under heavy development, and sometimes the documentation does not keep up to date. However the goal of
+the toolkit is to be easy to use, and this includes clear and concise documentation. If something is unclear
+please [report it as a bug](https://github.com/sting-ioc/sting/issues) because it *is* a bug. If a new user
+has a hard time, then we need to fix the problem.
+
+For more information about Arez, please see the [Website](https://sting-ioc.github.io/). For the source code
+and project support, please visit the [GitHub project](https://github.com/sting-ioc/sting).
+
+# Contributing
+
+The project was released as open source so others could benefit from the project. We are thankful for any
+contributions from the community. A [Code of Conduct](CODE_OF_CONDUCT.md) has been put in place and
+a [Contributing](CONTRIBUTING.md) document is under development.
+
+# License
+
+Arez is licensed under [Apache License, Version 2.0](LICENSE).
+
 # Credit
+
+* [Stock Software](http://www.stocksoftware.com.au/) for some support maintaining the library.
 
 * [Dagger](https://github.com/google/dagger) proved that this technique was possible and provided the ideas
   that kick-started development.
