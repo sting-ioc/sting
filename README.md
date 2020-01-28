@@ -1,3 +1,5 @@
+<p align="center"><img src="/assets/icons/logo.png" alt="Arez" width="120"></p>
+
 # Sting
 
 [![Build Status](https://secure.travis-ci.org/sting-ioc/sting.svg?branch=master)](http://travis-ci.org/sting-ioc/sting)
