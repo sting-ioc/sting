@@ -136,6 +136,7 @@ define 'sting' do
             'Annotation Packages' => 'sting.annotations*:sting.processor*'
           }
     )
+  cleanup_javadocs(project, 'sting')
 
   iml.excluded_directories << project._('tmp')
 
