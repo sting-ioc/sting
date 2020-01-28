@@ -27,3 +27,7 @@ artifacts:
   javax_json: org.glassfish:javax.json:jar:1.1
 
   mockito: org.mockito:mockito-all:jar:1.10.19
+
+  gir: org.realityforge.gir:gir-core:jar:0.11
+
+  revapi_diff: org.realityforge.revapi.diff:revapi-diff:jar:all:0.08
