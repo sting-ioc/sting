@@ -5,7 +5,13 @@ jdk:
 - oraclejdk8
 rvm:
 - 2.3.1
+node_js:
+  - v6.10.3
 install:
+- nvm install v6.10.3
+- nvm use v6.10.3
+- npm install -g yarn
+- yarn install
 - rvm use 2.3.1
 - gem install bundler
 - bundle install
