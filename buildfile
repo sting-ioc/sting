@@ -109,6 +109,14 @@ define 'sting' do
   iml.excluded_directories << project._('tmp')
 
   ipr.add_default_testng_configuration(:jvm_args => '-ea -Dsting.output_fixture_data=false -Dsting.fixture_dir=processor/src/test/fixtures')
+
+  ipr.add_testng_configuration('processor',
+                               :module => 'processor',
+                               :jvm_args => '-ea -Dsting.output_fixture_data=true -Dsting.fixture_dir=src/test/fixtures')
+  ipr.add_testng_configuration('integration-tests',
+                               :module => 'integration-tests',
+                               :jvm_args => '-ea -Dsting.output_fixture_data=true')
+
   ipr.add_component_from_artifact(:idea_codestyle)
 
   ipr.add_component('CompilerConfiguration') do |component|
