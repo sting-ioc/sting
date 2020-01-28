@@ -36,6 +36,12 @@ complete as there is too much un-said.
 
 * Add support to dependencyType so that the boxed types and primitives interoperate. ie. Can have a collection of `Integer` that derived from `int` values.
 
+* Add some basic documentation
+  * Usage documentation.
+  * Recipe style examples for how to solve specific problems.
+  * Comparison to other technologies (i.e. Dagger/IOC) in terms of functionality and performance.
+  * Development process FAQ - just like in Arez but reflective of Stings approach.
+
 * Add tests where `@Fragment` type is deprecated or `@Provides` method is deprecated or `@Dependency` parameter fot `@Provides` method is deprecated.
 
 * Add tests where `@Injectable` is deprecated or the constructor is deprecated or one of the ctor parameters is deprecated.
