@@ -200,13 +200,13 @@ HEADER
 
       client = Octokit::Client.new(:netrc => true, :auto_paginate => true)
       client.login
-      client.create_release('realityforge/sting', tag, :name => tag, :body => changes, :draft => false, :prerelease => true)
+      client.create_release('sting-ioc/sting', tag, :name => tag, :body => changes, :draft => false, :prerelease => true)
 
-      candidates = client.list_milestones('realityforge/sting').select {|m| m[:title].to_s == tag}
+      candidates = client.list_milestones('sting-ioc/sting').select {|m| m[:title].to_s == tag}
       unless candidates.empty?
         milestone = candidates[0]
         unless milestone[:state] == 'closed'
-          client.update_milestone('realityforge/sting', milestone[:number], :state => 'closed')
+          client.update_milestone('sting-ioc/sting', milestone[:number], :state => 'closed')
         end
       end
     end
