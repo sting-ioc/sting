@@ -97,6 +97,11 @@ CONTENT
       IO.write(filename, content)
     end
 
+    stage('BuildWebsite', 'Build the website to ensure site still builds') do
+      task('site:build').invoke
+      task('site:link_check').invoke
+    end
+
     stage('TagProject', 'Tag the project') do
       sh "git tag v#{ENV['PRODUCT_VERSION']}"
     end
