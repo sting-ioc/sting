@@ -34,8 +34,6 @@ complete as there is too much un-said.
   will be in a separate module and will use javapoet to generate the code, existing test infrastructure
   to compile the code repeatedly until we get stable builds.
 
-* Generate a website using same tech as Arez. Publish to a separate github module like in Arez
-
 * Add support to dependencyType so that the boxed types and primitives interoperate. ie. Can have a collection of `Integer` that derived from `int` values.
 
 * Add tests where `@Fragment` type is deprecated or `@Provides` method is deprecated or `@Dependency` parameter fot `@Provides` method is deprecated.
