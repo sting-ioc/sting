@@ -5,7 +5,7 @@
 
 ## What is Sting?
 
-Sting is a super simple, compile time dependency injection toolkit. The toolkit accepts a set of annotated
+Sting is a fast, easy to use, compile-time dependency injection toolkit. The toolkit accepts a set of annotated
 java classes and generates source code to instantiate and wire together the components.
 
 # Credit
