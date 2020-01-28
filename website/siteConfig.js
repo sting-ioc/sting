@@ -168,7 +168,7 @@ embed.register({
 
 const siteConfig = {
   title: 'Sting',
-  tagline: 'Fast, easy, reactive state',
+  tagline: 'A fast, easy to use, compile-time dependency injection toolkit',
   url: 'https://sting.github.io',
   baseUrl: '/',
   projectName: 'sting',
