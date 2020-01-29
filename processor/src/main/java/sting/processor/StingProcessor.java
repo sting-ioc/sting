@@ -317,11 +317,6 @@ public final class StingProcessor
         assert AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME );
         final InjectableDescriptor injectable =
           _registry.getInjectableByClassName( element.getQualifiedName().toString() );
-        final Binding binding = injectable.getBinding();
-        if ( binding.isEager() )
-        {
-          graph.findOrCreateNode( binding );
-        }
         graph.registerInjectable( injectable );
       }
     }

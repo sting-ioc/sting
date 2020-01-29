@@ -1,0 +1,16 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.includes.DiamondDependencyIncludesModel.MyModel",
+    "com.example.injector.includes.DiamondDependencyIncludesModel.MyFragment1",
+    "com.example.injector.includes.DiamondDependencyIncludesModel.MyFragment2",
+    "com.example.injector.includes.DiamondDependencyIncludesModel.MyFragment3"
+  ],
+  "dependencies": [
+    {
+      "coordinate": {
+        "type": "java.lang.Runnable"
+      }
+    }
+  ]
+}

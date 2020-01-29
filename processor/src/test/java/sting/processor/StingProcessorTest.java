@@ -117,6 +117,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.dependency.SupplierCollectionDependencyModel" },
         new Object[]{ "com.example.injector.dependency.SupplierDependencyModel" },
 
+        new Object[]{ "com.example.injector.includes.DiamondDependencyIncludesModel" },
         new Object[]{ "com.example.injector.includes.MultipleIncludesModel" },
         new Object[]{ "com.example.injector.includes.SingleIncludesModel" }
       };

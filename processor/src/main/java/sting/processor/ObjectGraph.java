@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -21,6 +23,13 @@ final class ObjectGraph
    */
   @Nonnull
   private final InjectorDescriptor _injector;
+  /**
+   * The list of types included in the graph.
+   * This is used to skip registers for types that are already present.
+   * This can occur when we have diamond dependency chains.
+   */
+  @Nonnull
+  private final Set<String> _includedTypes = new HashSet<>();
   /**
    * The types that are published in the object graph.
    */
@@ -165,7 +174,16 @@ final class ObjectGraph
    */
   void registerInjectable( @Nonnull final InjectableDescriptor injectable )
   {
-    registerBinding( injectable.getBinding() );
+    final String typeName = injectable.getElement().getQualifiedName().toString();
+    if ( _includedTypes.add( typeName ) )
+    {
+      final Binding binding = injectable.getBinding();
+      registerBinding( binding );
+      if ( binding.isEager() )
+      {
+        findOrCreateNode( binding );
+      }
+    }
   }
 
   /**
@@ -176,9 +194,13 @@ final class ObjectGraph
    */
   void registerFragment( @Nonnull final FragmentDescriptor fragment )
   {
-    for ( final Binding binding : fragment.getBindings() )
+    final String typeName = fragment.getElement().getQualifiedName().toString();
+    if ( _includedTypes.add( typeName ) )
     {
-      registerBinding( binding );
+      for ( final Binding binding : fragment.getBindings() )
+      {
+        registerBinding( binding );
+      }
     }
   }
 
