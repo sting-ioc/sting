@@ -4,7 +4,7 @@ import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
 
-@Injector( includes = DeprecatedProvidesDependencyNodeInjectorModel.MyFragment.class )
+@Injector
 public interface DeprecatedProvidesDependencyNodeInjectorModel
 {
   MyModel getMyModel();

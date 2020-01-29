@@ -21,4 +21,3 @@ interface RecursiveIncludesModel
   MyModel3 getMyModel3();
 
 }
-

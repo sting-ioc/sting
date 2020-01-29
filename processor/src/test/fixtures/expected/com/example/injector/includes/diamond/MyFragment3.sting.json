@@ -1,0 +1,6 @@
+{
+  "schema": "fragment/1",
+  "includes": [
+    "com.example.injector.includes.diamond.MyModel"
+  ]
+}

@@ -37,6 +37,12 @@ public abstract class AbstractStingProcessorTest
   }
 
   @Nonnull
+  final String javaOutput( @Nonnull final String classname )
+  {
+    return toFilename( "expected", classname, "Sting_", ".java" );
+  }
+
+  @Nonnull
   final String jsonGraphOutput( @Nonnull final String classname )
   {
     return toFilename( "expected", classname, "", StingProcessor.GRAPH_SUFFIX );

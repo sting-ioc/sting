@@ -1,6 +1,8 @@
 {
   "schema": "injector/1",
   "includes": [
+    "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1",
+    "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2",
     "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyFragment"
   ],
   "dependencies": [

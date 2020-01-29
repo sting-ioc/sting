@@ -1,0 +1,13 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.includes.ExplicitIncludesOfNestedModel.MyModel",
+      "kind": "INJECTABLE"
+    },
+    {
+      "id": "com.example.injector.includes.ExplicitIncludesOfNestedModel.MyFragment#provideRunnable",
+      "kind": "PROVIDES"
+    }
+  ]
+}

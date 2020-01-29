@@ -3,7 +3,7 @@ package com.example.injector.dependency;
 import sting.Fragment;
 import sting.Injector;
 
-@Injector( includes = PrimitiveDependencyModel.MyFragment.class )
+@Injector
 interface PrimitiveDependencyModel
 {
   boolean getValue1();

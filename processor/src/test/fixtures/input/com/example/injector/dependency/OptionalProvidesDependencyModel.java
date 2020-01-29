@@ -4,7 +4,7 @@ import javax.annotation.Nullable;
 import sting.Fragment;
 import sting.Injector;
 
-@Injector( includes = OptionalProvidesDependencyModel.MyFragment.class )
+@Injector
 interface OptionalProvidesDependencyModel
 {
   @Nullable

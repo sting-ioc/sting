@@ -574,6 +574,27 @@ public final class StingProcessor
         processInjectorDependencyMethod( topLevelDependencies, method );
       }
     }
+    for ( final Element enclosedElement : element.getEnclosedElements() )
+    {
+      if ( enclosedElement.getKind() == ElementKind.INTERFACE &&
+           AnnotationsUtil.hasAnnotationOfType( enclosedElement, Constants.FRAGMENT_CLASSNAME ) )
+      {
+        final DeclaredType type = (DeclaredType) enclosedElement.asType();
+        if ( !includes.contains( type ) )
+        {
+          includes.add( type );
+        }
+      }
+      else if ( enclosedElement.getKind() == ElementKind.CLASS &&
+                AnnotationsUtil.hasAnnotationOfType( enclosedElement, Constants.INJECTABLE_CLASSNAME ) )
+      {
+        final DeclaredType type = (DeclaredType) enclosedElement.asType();
+        if ( !includes.contains( type ) )
+        {
+          includes.add( type );
+        }
+      }
+    }
     final InjectorDescriptor injector = new InjectorDescriptor( element, includes, topLevelDependencies );
     _registry.registerInjector( injector );
     emitInjectorJsonDescriptor( injector );

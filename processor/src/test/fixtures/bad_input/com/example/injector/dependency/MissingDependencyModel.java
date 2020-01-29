@@ -5,8 +5,7 @@ import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
 
-@Injector( includes = { MissingDependencyModel.MyFragment1.class,
-                        MissingDependencyModel.MyFragment2.class } )
+@Injector
 interface MissingDependencyModel
 {
   MyModel1 getMyModel1();

@@ -13,8 +13,6 @@ complete as there is too much un-said.
 * Add a `@Injector.dependencies` parameter that can be used to specify additional dependencies passed into injector.
   These must have `@Dependency.type` specified but other than that they can specify any type
 
-* Any nested `@Fragment` annotated classes in `@Injector` are automagically added to the `@Injector`
-
 * Write integration tests that compare with dagger the following performance characteristics.
   * time to compile the injector
   * time to initialize and access the injector at runtime

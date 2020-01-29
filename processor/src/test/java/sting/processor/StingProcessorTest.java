@@ -117,9 +117,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.dependency.SupplierCollectionDependencyModel" },
         new Object[]{ "com.example.injector.dependency.SupplierDependencyModel" },
 
-        new Object[]{ "com.example.injector.includes.DiamondDependencyIncludesModel" },
-        new Object[]{ "com.example.injector.includes.MultipleIncludesModel" },
-        new Object[]{ "com.example.injector.includes.SingleIncludesModel" }
+        new Object[]{ "com.example.injector.includes.ExplicitIncludesOfNestedModel" }
       };
   }
 
@@ -191,6 +189,57 @@ public final class StingProcessorTest
                                      "com.example.fragment.includes.Included1Model",
                                      "com.example.fragment.includes.Included2Model" ),
                              Collections.singletonList( jsonOutput( classname ) ) );
+  }
+
+  @Test
+  public void singleIncludesInjector()
+    throws Exception
+  {
+    final String pkg = "com.example.injector.includes.single";
+    assertSuccessfulCompile( inputs( pkg + ".SingleIncludesModel",
+                                     pkg + ".MyFragment" ),
+                             Arrays.asList( jsonOutput( pkg + ".SingleIncludesModel" ),
+                                            javaOutput( pkg + ".SingleIncludesModel" ),
+                                            jsonOutput( pkg + ".MyFragment" ),
+                                            javaOutput( pkg + ".MyFragment" ) ) );
+  }
+
+  @Test
+  public void multipleIncludesInjector()
+    throws Exception
+  {
+    final String pkg = "com.example.injector.includes.multiple";
+    assertSuccessfulCompile( inputs( pkg + ".MultipleIncludesModel",
+                                     pkg + ".MyFragment",
+                                     pkg + ".MyModel" ),
+                             Arrays.asList( jsonOutput( pkg + ".MultipleIncludesModel" ),
+                                            javaOutput( pkg + ".MultipleIncludesModel" ),
+                                            jsonOutput( pkg + ".MyFragment" ),
+                                            javaOutput( pkg + ".MyFragment" ),
+                                            jsonOutput( pkg + ".MyModel" ),
+                                            javaOutput( pkg + ".MyModel" ) ) );
+  }
+
+  @Test
+  public void diamondIncludesInjector()
+    throws Exception
+  {
+    final String pkg = "com.example.injector.includes.diamond";
+    assertSuccessfulCompile( inputs( pkg + ".DiamondDependencyIncludesModel",
+                                     pkg + ".MyFragment1",
+                                     pkg + ".MyFragment2",
+                                     pkg + ".MyFragment3",
+                                     pkg + ".MyModel" ),
+                             Arrays.asList( jsonOutput( pkg + ".DiamondDependencyIncludesModel" ),
+                                            javaOutput( pkg + ".DiamondDependencyIncludesModel" ),
+                                            jsonOutput( pkg + ".MyFragment1" ),
+                                            javaOutput( pkg + ".MyFragment1" ),
+                                            jsonOutput( pkg + ".MyFragment2" ),
+                                            javaOutput( pkg + ".MyFragment2" ),
+                                            jsonOutput( pkg + ".MyFragment3" ),
+                                            javaOutput( pkg + ".MyFragment3" ),
+                                            jsonOutput( pkg + ".MyModel" ),
+                                            javaOutput( pkg + ".MyModel" ) ) );
   }
 
   @DataProvider( name = "failedCompiles" )

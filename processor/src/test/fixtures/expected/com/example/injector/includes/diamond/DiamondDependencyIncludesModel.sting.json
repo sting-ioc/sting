@@ -1,0 +1,15 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.includes.diamond.MyModel",
+    "com.example.injector.includes.diamond.MyFragment1",
+    "com.example.injector.includes.diamond.MyFragment2"
+  ],
+  "dependencies": [
+    {
+      "coordinate": {
+        "type": "com.example.injector.includes.diamond.MyModel"
+      }
+    }
+  ]
+}

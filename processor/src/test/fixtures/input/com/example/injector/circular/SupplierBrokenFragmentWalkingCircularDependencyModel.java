@@ -5,7 +5,7 @@ import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
 
-@Injector( includes = SupplierBrokenFragmentWalkingCircularDependencyModel.MyFragment.class )
+@Injector
 interface SupplierBrokenFragmentWalkingCircularDependencyModel
 {
   MyModel1 getMyModel1();

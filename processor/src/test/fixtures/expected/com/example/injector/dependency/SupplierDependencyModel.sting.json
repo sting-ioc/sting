@@ -1,5 +1,8 @@
 {
   "schema": "injector/1",
+  "includes": [
+    "com.example.injector.dependency.SupplierDependencyModel.MyModel"
+  ],
   "dependencies": [
     {
       "type": "SUPPLIER",

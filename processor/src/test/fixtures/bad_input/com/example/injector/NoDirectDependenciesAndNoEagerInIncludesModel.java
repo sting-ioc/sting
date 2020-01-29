@@ -3,7 +3,7 @@ package com.example.injector;
 import sting.Fragment;
 import sting.Injector;
 
-@Injector( includes = NoDirectDependenciesAndNoEagerInIncludesModel.MyFragment.class )
+@Injector
 interface NoDirectDependenciesAndNoEagerInIncludesModel
 {
   @Fragment

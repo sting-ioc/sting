@@ -6,10 +6,7 @@ import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
 
-@Injector( includes = { NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment1.class,
-                        NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment2.class,
-                        NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment3.class,
-                        NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment4.class } )
+@Injector
 interface NullableProvidesWithNonOptionalCollectionDependencyModel
 {
   MyModel1 getMyModel1();

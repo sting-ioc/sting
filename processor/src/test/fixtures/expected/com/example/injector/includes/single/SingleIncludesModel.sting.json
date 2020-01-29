@@ -1,0 +1,13 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.includes.single.MyFragment"
+  ],
+  "dependencies": [
+    {
+      "coordinate": {
+        "type": "java.lang.Runnable"
+      }
+    }
+  ]
+}

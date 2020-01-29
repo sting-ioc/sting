@@ -4,8 +4,7 @@ import sting.Fragment;
 import sting.Injector;
 import sting.Provides;
 
-@Injector( includes = { DuplicateIdInjectorModel.MyFragment1.class,
-                        DuplicateIdInjectorModel.MyFragment2.class } )
+@Injector
 interface DuplicateIdInjectorModel
 {
   Runnable getFooAsRunnable();

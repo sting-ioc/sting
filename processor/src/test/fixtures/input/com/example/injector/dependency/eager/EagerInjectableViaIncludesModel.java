@@ -4,8 +4,7 @@ import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
 
-@Injector( includes = { EagerInjectableViaIncludesModel.MyModel1.class,
-                        EagerInjectableViaIncludesModel.MyFragment1.class } )
+@Injector
 interface EagerInjectableViaIncludesModel
 {
   @Fragment( includes = { MyFragment2.class, MyModel2.class } )

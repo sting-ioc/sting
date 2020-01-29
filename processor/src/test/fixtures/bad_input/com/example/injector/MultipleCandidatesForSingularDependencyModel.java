@@ -3,8 +3,7 @@ package com.example.injector;
 import sting.Fragment;
 import sting.Injector;
 
-@Injector( includes = { MultipleCandidatesForSingularDependencyModel.MyFragment1.class,
-                        MultipleCandidatesForSingularDependencyModel.MyFragment2.class } )
+@Injector
 interface MultipleCandidatesForSingularDependencyModel
 {
   Runnable getRunnable();

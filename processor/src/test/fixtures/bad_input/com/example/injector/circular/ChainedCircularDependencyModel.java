@@ -5,8 +5,7 @@ import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
 
-@Injector( includes = { ChainedCircularDependencyModel.MyFragment1.class,
-                        ChainedCircularDependencyModel.MyFragment2.class } )
+@Injector
 interface ChainedCircularDependencyModel
 {
   MyModel1 getMyModel1();

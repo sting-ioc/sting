@@ -1,5 +1,10 @@
 {
   "schema": "injector/1",
+  "includes": [
+    "com.example.injector.dependency.ComplexDependencyModel.MyModel1",
+    "com.example.injector.dependency.ComplexDependencyModel.MyModel2",
+    "com.example.injector.dependency.ComplexDependencyModel.MyModel3"
+  ],
   "dependencies": [
     {
       "coordinate": {

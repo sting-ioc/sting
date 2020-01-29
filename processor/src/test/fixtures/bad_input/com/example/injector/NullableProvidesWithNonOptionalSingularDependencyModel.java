@@ -5,8 +5,7 @@ import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
 
-@Injector( includes = { NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment1.class,
-                        NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment2.class } )
+@Injector
 interface NullableProvidesWithNonOptionalSingularDependencyModel
 {
   MyModel1 getMyModel1();

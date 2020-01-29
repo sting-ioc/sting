@@ -1,0 +1,19 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.includes.ExplicitIncludesOfNestedModel.MyFragment",
+    "com.example.injector.includes.ExplicitIncludesOfNestedModel.MyModel"
+  ],
+  "dependencies": [
+    {
+      "coordinate": {
+        "type": "java.lang.Runnable"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "com.example.injector.includes.ExplicitIncludesOfNestedModel.MyModel"
+      }
+    }
+  ]
+}

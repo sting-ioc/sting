@@ -3,7 +3,7 @@ package com.example.deprecated;
 import sting.Fragment;
 import sting.Injector;
 
-@Injector( includes = DeprecatedFragmentNodeInjectorModel.MyFragment.class )
+@Injector
 public interface DeprecatedFragmentNodeInjectorModel
 {
   MyModel getMyModel();

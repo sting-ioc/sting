@@ -4,9 +4,7 @@ import java.util.Collection;
 import sting.Fragment;
 import sting.Injector;
 
-@Injector( includes = { CollectionContainingMultipleInstancesDependencyModel.MyFragment1.class,
-                        CollectionContainingMultipleInstancesDependencyModel.MyFragment2.class,
-                        CollectionContainingMultipleInstancesDependencyModel.MyFragment3.class } )
+@Injector
 interface CollectionContainingMultipleInstancesDependencyModel
 {
   Collection<MyModel> getMyModel();

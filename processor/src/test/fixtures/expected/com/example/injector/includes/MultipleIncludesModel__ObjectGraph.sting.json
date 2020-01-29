@@ -1,9 +1,0 @@
-{
-  "schema": "graph/1",
-  "nodes": [
-    {
-      "id": "com.example.injector.includes.MultipleIncludesModel.MyFragment#provideRunnable",
-      "kind": "PROVIDES"
-    }
-  ]
-}
