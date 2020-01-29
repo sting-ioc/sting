@@ -155,13 +155,15 @@ final class InjectorGenerator
             .methodBuilder( node.getName() )
             .addModifiers( Modifier.PRIVATE )
             .returns( getPublicTypeName( node ) );
-        if ( node.isPublicAccess() )
+        final List<TypeMirror> types =
+          Collections.singletonList( node.getBinding().getElement().getEnclosingElement().asType() );
+        final List<String> additionalSuppressions = new ArrayList<>();
+        if ( StingGeneratorUtil.isElementDeprecated( node.getBinding().getElement() ) )
         {
-          SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv,
-                                                              method,
-                                                              Collections.emptyList(),
-                                                              Collections.singletonList( node.getType() ) );
+          additionalSuppressions.add( "deprecation" );
         }
+        SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv, method, additionalSuppressions, types );
+
         final boolean isNonnull = Binding.Type.NULLABLE_PROVIDES != node.getBinding().getBindingType();
         final boolean isNonPrimitive = !node.getType().getKind().isPrimitive();
         if ( isNonPrimitive )

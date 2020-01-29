@@ -160,7 +160,7 @@ final class StingGeneratorUtil
     return method.build();
   }
 
-  private static boolean isElementDeprecated( @Nonnull final Element element )
+  static boolean isElementDeprecated( @Nonnull final Element element )
   {
     return element
       .getAnnotationMirrors()
