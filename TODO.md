@@ -10,9 +10,6 @@ complete as there is too much un-said.
 * Add a `@PostConstruct` hook so that custom code can be run after eager beans are constructed. Probably has to
   be on `@Fragment` types will take as parameters the dependencies on which it operates. The `@PostConstruct` will
   only be invoked if the binding is present. A binding can be made optional by annotating it with `@Nullable`.
-* Add `type` parameter to dependency that indicates the dependency type that must be returned. The actual
-  parameter/return value must be able to be assigned to the specified type. It defaults to the actual type but
-  can be overridden. By definition these are `INSTANCE` dependency types.
 * Add a `@Injector.dependencies` parameter that can be used to specify additional dependencies passed into injector.
   These must have `@Dependency.type` specified but other than that they can specify any type
 

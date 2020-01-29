@@ -29,4 +29,20 @@ public @interface Dependency
    */
   @Nonnull
   String qualifier() default "";
+
+  /**
+   * The type of the dependency required.
+   *
+   * <p>If the {@code @Dependency} annotation is attached to a constructor or method parameter then the
+   * default value of the annotation parameter is the the type of the constructor or method parameter.
+   * If this annotation parameter is explicitly specified then the value MUST be assignable to the type of
+   * the constructor or method parameter.</p>
+   *
+   * <p>If the {@code @Dependency} annotation is attached to a method then the default value of the annotation
+   * parameter is the the return type of the method. If the annotation parameter is explicitly specified then the
+   * value MUST be assignable to the return type of the method.</p>
+   *
+   * @return the type of the dependency required.
+   */
+  Class<?> type() default void.class;
 }

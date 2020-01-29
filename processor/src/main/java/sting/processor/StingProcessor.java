@@ -616,20 +616,30 @@ public final class StingProcessor
     final String qualifier =
       null == annotation ? "" : AnnotationsUtil.getAnnotationValue( annotation, "qualifier" );
 
-    final boolean isDeclaredType = TypeKind.DECLARED == returnType.getKind();
-    final DeclaredType declaredType = isDeclaredType ? (DeclaredType) returnType : null;
+    final TypeMirror specifiedDependencyType = getDependencyType( annotation );
+    if ( null != specifiedDependencyType &&
+         !processingEnv.getTypeUtils().isAssignable( specifiedDependencyType, returnType ) )
+    {
+      throw new ProcessorException( MemberChecks.toSimpleName( Constants.DEPENDENCY_CLASSNAME ) +
+                                    " target specifies a type parameter that is not assignable to the actual type",
+                                    method );
+    }
+    final TypeMirror type = null != specifiedDependencyType ? specifiedDependencyType : returnType;
+
+    final boolean isDeclaredType = TypeKind.DECLARED == type.getKind();
+    final DeclaredType declaredType = isDeclaredType ? (DeclaredType) type : null;
     final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
-    final DependencyDescriptor.Kind type;
+    final DependencyDescriptor.Kind kind;
     final TypeMirror dependencyType;
-    if ( TypeKind.ARRAY == returnType.getKind() )
+    if ( TypeKind.ARRAY == type.getKind() )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME, "return an array type" ),
                                     method );
     }
     else if ( null == declaredType )
     {
-      type = DependencyDescriptor.Kind.INSTANCE;
-      dependencyType = returnType;
+      kind = DependencyDescriptor.Kind.INSTANCE;
+      dependencyType = type;
     }
     else if ( !isParameterizedType )
     {
@@ -657,8 +667,8 @@ public final class StingProcessor
                                                             Collection.class.getCanonicalName() ),
                                       method );
       }
-      type = DependencyDescriptor.Kind.INSTANCE;
-      dependencyType = returnType;
+      kind = DependencyDescriptor.Kind.INSTANCE;
+      dependencyType = type;
     }
     else
     {
@@ -672,7 +682,7 @@ public final class StingProcessor
                                                               " type with a wildcard type parameter" ),
                                         method );
         }
-        type = DependencyDescriptor.Kind.SUPPLIER;
+        kind = DependencyDescriptor.Kind.SUPPLIER;
         dependencyType = typeArgument;
       }
       else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
@@ -716,7 +726,7 @@ public final class StingProcessor
             }
             else
             {
-              type = DependencyDescriptor.Kind.SUPPLIER_COLLECTION;
+              kind = DependencyDescriptor.Kind.SUPPLIER_COLLECTION;
               dependencyType = nestedParameterType;
             }
           }
@@ -729,7 +739,7 @@ public final class StingProcessor
         }
         else
         {
-          type = DependencyDescriptor.Kind.COLLECTION;
+          kind = DependencyDescriptor.Kind.COLLECTION;
           dependencyType = typeArgument;
         }
       }
@@ -744,7 +754,7 @@ public final class StingProcessor
       }
     }
 
-    if ( optional && type.isCollection() )
+    if ( optional && kind.isCollection() )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
                                                           "be annotated with @Nullable and be a collection type" ),
@@ -752,7 +762,17 @@ public final class StingProcessor
     }
 
     final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
-    return new DependencyDescriptor( type, coordinate, optional, method, -1 );
+    return new DependencyDescriptor( kind, coordinate, optional, method, -1 );
+  }
+
+  @Nullable
+  private TypeMirror getDependencyType( final AnnotationMirror annotation )
+  {
+    final TypeMirror declaredDependencyType =
+      null == annotation ? null : AnnotationsUtil.getAnnotationValue( annotation, "type" );
+    return null == annotation ?
+           null :
+           declaredDependencyType.getKind() == TypeKind.VOID ? null : declaredDependencyType;
   }
 
   private void verifyDependencyElements( @Nonnull final RoundEnvironment env,
@@ -995,20 +1015,30 @@ public final class StingProcessor
     final String qualifier =
       null == annotation ? "" : AnnotationsUtil.getAnnotationValue( annotation, "qualifier" );
 
-    final boolean isDeclaredType = TypeKind.DECLARED == parameterType.getKind();
-    final DeclaredType declaredType = isDeclaredType ? (DeclaredType) parameterType : null;
+    final TypeMirror specifiedDependencyType = getDependencyType( annotation );
+    if ( null != specifiedDependencyType &&
+         !processingEnv.getTypeUtils().isAssignable( specifiedDependencyType, parameterType ) )
+    {
+      throw new ProcessorException( MemberChecks.toSimpleName( Constants.DEPENDENCY_CLASSNAME ) +
+                                    " target specifies a type parameter that is not assignable to the actual type",
+                                    parameter );
+    }
+    final TypeMirror type = null != specifiedDependencyType ? specifiedDependencyType : parameterType;
+
+    final boolean isDeclaredType = TypeKind.DECLARED == type.getKind();
+    final DeclaredType declaredType = isDeclaredType ? (DeclaredType) type : null;
     final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
-    final DependencyDescriptor.Kind type;
+    final DependencyDescriptor.Kind kind;
     final TypeMirror dependencyType;
-    if ( TypeKind.ARRAY == parameterType.getKind() )
+    if ( TypeKind.ARRAY == type.getKind() )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME, "be an array type" ),
                                     parameter );
     }
     else if ( null == declaredType )
     {
-      type = DependencyDescriptor.Kind.INSTANCE;
-      dependencyType = parameterType;
+      kind = DependencyDescriptor.Kind.INSTANCE;
+      dependencyType = type;
     }
     else if ( !isParameterizedType )
     {
@@ -1018,8 +1048,8 @@ public final class StingProcessor
                                                             "be a raw parameterized type" ),
                                       parameter );
       }
-      type = DependencyDescriptor.Kind.INSTANCE;
-      dependencyType = parameterType;
+      kind = DependencyDescriptor.Kind.INSTANCE;
+      dependencyType = type;
     }
     else
     {
@@ -1032,7 +1062,7 @@ public final class StingProcessor
                                                               "be a parameterized type with a wildcard type parameter" ),
                                         parameter );
         }
-        type = DependencyDescriptor.Kind.SUPPLIER;
+        kind = DependencyDescriptor.Kind.SUPPLIER;
         dependencyType = typeArgument;
       }
       else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
@@ -1073,7 +1103,7 @@ public final class StingProcessor
             }
             else
             {
-              type = DependencyDescriptor.Kind.SUPPLIER_COLLECTION;
+              kind = DependencyDescriptor.Kind.SUPPLIER_COLLECTION;
               dependencyType = nestedParameterType;
             }
           }
@@ -1086,7 +1116,7 @@ public final class StingProcessor
         }
         else
         {
-          type = DependencyDescriptor.Kind.COLLECTION;
+          kind = DependencyDescriptor.Kind.COLLECTION;
           dependencyType = typeArgument;
         }
       }
@@ -1101,7 +1131,7 @@ public final class StingProcessor
       }
     }
 
-    if ( optional && type.isCollection() )
+    if ( optional && kind.isCollection() )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
                                                           "be annotated with @Nullable and be a collection type" ),
@@ -1109,7 +1139,7 @@ public final class StingProcessor
     }
 
     final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
-    return new DependencyDescriptor( type, coordinate, optional, parameter, parameterIndex );
+    return new DependencyDescriptor( kind, coordinate, optional, parameter, parameterIndex );
   }
 
   private void processInjectable( @Nonnull final TypeElement element )
@@ -1291,20 +1321,30 @@ public final class StingProcessor
     final String qualifier =
       null == annotation ? "" : AnnotationsUtil.getAnnotationValue( annotation, "qualifier" );
 
-    final boolean isDeclaredType = TypeKind.DECLARED == parameterType.getKind();
-    final DeclaredType declaredType = isDeclaredType ? (DeclaredType) parameterType : null;
+    final TypeMirror specifiedDependencyType = getDependencyType( annotation );
+    if ( null != specifiedDependencyType &&
+         !processingEnv.getTypeUtils().isAssignable( specifiedDependencyType, parameterType ) )
+    {
+      throw new ProcessorException( MemberChecks.toSimpleName( Constants.DEPENDENCY_CLASSNAME ) +
+                                    " target specifies a type parameter that is not assignable to the actual type",
+                                    parameter );
+    }
+    final TypeMirror type = null != specifiedDependencyType ? specifiedDependencyType : parameterType;
+
+    final boolean isDeclaredType = TypeKind.DECLARED == type.getKind();
+    final DeclaredType declaredType = isDeclaredType ? (DeclaredType) type : null;
     final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
-    final DependencyDescriptor.Kind type;
+    final DependencyDescriptor.Kind kind;
     final TypeMirror dependencyType;
-    if ( TypeKind.ARRAY == parameterType.getKind() )
+    if ( TypeKind.ARRAY == type.getKind() )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME, "be an array type" ),
                                     parameter );
     }
     else if ( null == declaredType )
     {
-      type = DependencyDescriptor.Kind.INSTANCE;
-      dependencyType = parameterType;
+      kind = DependencyDescriptor.Kind.INSTANCE;
+      dependencyType = type;
     }
     else if ( !isParameterizedType )
     {
@@ -1314,8 +1354,8 @@ public final class StingProcessor
                                                             "be a raw parameterized type" ),
                                       parameter );
       }
-      type = DependencyDescriptor.Kind.INSTANCE;
-      dependencyType = parameterType;
+      kind = DependencyDescriptor.Kind.INSTANCE;
+      dependencyType = type;
     }
     else
     {
@@ -1329,7 +1369,7 @@ public final class StingProcessor
                                                               " type with a wildcard type parameter" ),
                                         parameter );
         }
-        type = DependencyDescriptor.Kind.SUPPLIER;
+        kind = DependencyDescriptor.Kind.SUPPLIER;
         dependencyType = typeArgument;
       }
       else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
@@ -1371,7 +1411,7 @@ public final class StingProcessor
             }
             else
             {
-              type = DependencyDescriptor.Kind.SUPPLIER_COLLECTION;
+              kind = DependencyDescriptor.Kind.SUPPLIER_COLLECTION;
               dependencyType = nestedParameterType;
             }
           }
@@ -1384,7 +1424,7 @@ public final class StingProcessor
         }
         else
         {
-          type = DependencyDescriptor.Kind.COLLECTION;
+          kind = DependencyDescriptor.Kind.COLLECTION;
           dependencyType = typeArgument;
         }
       }
@@ -1398,7 +1438,7 @@ public final class StingProcessor
                                       parameter );
       }
     }
-    if ( optional && type.isCollection() )
+    if ( optional && kind.isCollection() )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
                                                           "be annotated with @Nullable and be a collection type" ),
@@ -1406,7 +1446,7 @@ public final class StingProcessor
     }
 
     final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
-    return new DependencyDescriptor( type, coordinate, optional, parameter, parameterIndex );
+    return new DependencyDescriptor( kind, coordinate, optional, parameter, parameterIndex );
   }
 
   private boolean isDefaultTypes( @Nonnull final List<TypeMirror> types )

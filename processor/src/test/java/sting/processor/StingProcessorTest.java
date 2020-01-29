@@ -230,6 +230,8 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.fragment.provides.dependency.ArrayDependencyModel",
                       "@Dependency target must not be an array type" },
+        new Object[]{ "com.example.fragment.provides.dependency.BadTypeParameterDependencyModel",
+                      "@Dependency target specifies a type parameter that is not assignable to the actual type" },
         new Object[]{ "com.example.fragment.provides.dependency.NullableCollectionDependencyModel",
                       "@Dependency target must not be annotated with @Nullable and be a collection type" },
         new Object[]{ "com.example.fragment.provides.dependency.NullableSupplierCollectionDependencyModel",
@@ -278,6 +280,8 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injectable.dependency.ArrayDependencyModel",
                       "@Dependency target must not be an array type" },
+        new Object[]{ "com.example.injectable.dependency.BadTypeParameterDependencyModel",
+                      "@Dependency target specifies a type parameter that is not assignable to the actual type" },
         new Object[]{ "com.example.injectable.dependency.NullableCollectionDependencyModel",
                       "@Dependency target must not be annotated with @Nullable and be a collection type" },
         new Object[]{ "com.example.injectable.dependency.NullableSupplierCollectionDependencyModel",
@@ -373,6 +377,8 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injector.dependency.ArrayDependencyModel",
                       "@Dependency target must not return an array type" },
+        new Object[]{ "com.example.injector.dependency.BadTypeParameterDependencyModel",
+                      "@Dependency target specifies a type parameter that is not assignable to the actual type" },
         new Object[]{ "com.example.injector.dependency.NullableCollectionDependencyModel",
                       "@Dependency target must not be annotated with @Nullable and be a collection type" },
         new Object[]{ "com.example.injector.dependency.NullableSupplierCollectionDependencyModel",
@@ -465,12 +471,16 @@ public final class StingProcessorTest
         new Object[]{ "com.example.deprecated.DeprecatedProvidesNodeInjectorModel" },
 
         new Object[]{ "com.example.fragment.PackageAccessModel" },
+        new Object[]{ "com.example.fragment.dependency.ExplicitTypeDependencyModel" },
 
         new Object[]{ "com.example.injectable.ExposeTypesModel" },
         new Object[]{ "com.example.injectable.FinalModel" },
         new Object[]{ "com.example.injectable.PackageAccessModel" },
         new Object[]{ "com.example.injectable.SuppressedProtectedConstructorModel" },
-        new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" }
+        new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" },
+        new Object[]{ "com.example.injectable.dependency.ExplicitTypeDependencyModel" },
+
+        new Object[]{ "com.example.injector.dependency.ExplicitTypeDependencyModel" }
       };
   }
 
@@ -521,7 +531,6 @@ public final class StingProcessorTest
     assertEquals( diagnostics.get( 1 ).getMessage( Locale.getDefault() ),
                   "Failed to process the com.example.injector.UnresolvedElementsInjectorModel injector." );
   }
-
 
   @Test
   public void unresolvedFragmentInjectorModel()
@@ -581,11 +590,11 @@ public final class StingProcessorTest
     assertCompilationUnsuccessful( compilation );
     final ImmutableList<Diagnostic<? extends JavaFileObject>> diagnostics = compilation.diagnostics();
     diagnostics
-    .stream()
-    .map( d -> d.getMessage( Locale.getDefault() ) )
-    .filter( d -> d.contains( "Failed to read the Sting descriptor for include: com.example.injector.MyFragment." ) )
-    .findAny()
-    .orElseThrow( AssertionError::new );
+      .stream()
+      .map( d -> d.getMessage( Locale.getDefault() ) )
+      .filter( d -> d.contains( "Failed to read the Sting descriptor for include: com.example.injector.MyFragment." ) )
+      .findAny()
+      .orElseThrow( AssertionError::new );
   }
 
   @Nonnull
