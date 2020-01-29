@@ -480,20 +480,107 @@ public final class StingProcessorTest
   @Test
   public void unresolvedInjector()
   {
+    // This occurs when the actual class itself is unresolved
     final String classname = "com.example.injector.UnresolvedInjectorModel";
-    final JavaFileObject source1 = fixture( toFilename( "unresolved", classname ) );
+    final JavaFileObject source1 = input( "unresolved", classname );
     assertFailedCompileResource( Collections.singletonList( source1 ),
                                  "StingProcessor unable to process com.example.injector.UnresolvedInjectorModel because not all of its dependencies could be resolved. Check for compilation errors or a circular dependency with generated code." );
+  }
 
-    assert_()
-      .about( JavaSourcesSubjectFactory.javaSources() )
-      .that( Collections.singletonList( source1 ) )
-      .withCompilerOptions( "-Xlint:all,-processing",
-                            "-implicit:none",
-                            "-A" + getOptionPrefix() + ".defer.errors=false",
-                            "-A" + getOptionPrefix() + ".defer.unresolved=false" )
-      .processedWith( processors() )
-      .compilesWithoutWarnings();
+  @Test
+  public void unresolvedInjectableInjectorModel()
+    throws Exception
+  {
+    final Path targetDir = compileBindings();
+
+    assertCompilationSuccessful( compileInjector( targetDir ) );
+
+    final Path descriptor =
+      targetDir
+        .resolve( "com" )
+        .resolve( "example" )
+        .resolve( "injector" )
+        .resolve( "MyModel.sbf" );
+
+    Files.delete( descriptor );
+
+    final Compilation compilation = compileInjector( targetDir );
+    assertCompilationUnsuccessful( compilation );
+    final ImmutableList<Diagnostic<? extends JavaFileObject>> diagnostics = compilation.diagnostics();
+    assertEquals( diagnostics.size(), 2 );
+    assertEquals( diagnostics.get( 0 ).getMessage( Locale.getDefault() ),
+                  "StingProcessor failed to process 1 injectors " +
+                  "as not all of their dependencies could be resolved. The java code resolved but the " +
+                  "descriptors were missing or in the incorrect format. Ensure that the included " +
+                  "typed have been compiled with a compatible version of Sting and that the .sbf " +
+                  "descriptors have been packaged with the .class files." );
+
+    assertEquals( diagnostics.get( 1 ).getMessage( Locale.getDefault() ),
+                  "Failed to process the com.example.injector.UnresolvedElementsInjectorModel injector." );
+  }
+
+  @Test
+  public void unresolvedFragmentInjectorModel()
+    throws Exception
+  {
+    final Path targetDir = compileBindings();
+
+    assertCompilationSuccessful( compileInjector( targetDir ) );
+
+    final Path descriptor =
+      targetDir
+        .resolve( "com" )
+        .resolve( "example" )
+        .resolve( "injector" )
+        .resolve( "MyFragment.sbf" );
+
+    Files.delete( descriptor );
+
+    final Compilation compilation = compileInjector( targetDir );
+    assertCompilationUnsuccessful( compilation );
+    final ImmutableList<Diagnostic<? extends JavaFileObject>> diagnostics = compilation.diagnostics();
+    assertEquals( diagnostics.size(), 2 );
+    assertEquals( diagnostics.get( 0 ).getMessage( Locale.getDefault() ),
+                  "StingProcessor failed to process 1 injectors " +
+                  "as not all of their dependencies could be resolved. The java code resolved but the " +
+                  "descriptors were missing or in the incorrect format. Ensure that the included " +
+                  "typed have been compiled with a compatible version of Sting and that the .sbf " +
+                  "descriptors have been packaged with the .class files." );
+
+    assertEquals( diagnostics.get( 1 ).getMessage( Locale.getDefault() ),
+                  "Failed to process the com.example.injector.UnresolvedElementsInjectorModel injector." );
+  }
+
+  @Nonnull
+  private Compilation compileInjector( @Nonnull final Path targetDir )
+  {
+    return compiler()
+      .withClasspath( buildClasspath( targetDir.toFile() ) )
+      .compile( Collections.singletonList( input( "unresolved",
+                                                  "com.example.injector.UnresolvedElementsInjectorModel" ) ) );
+  }
+
+  @Nonnull
+  private Path compileBindings()
+    throws IOException
+  {
+    final Compilation bindingsCompile =
+      compiler()
+        .compile( Arrays.asList( input( "unresolved", "com.example.injector.MyModel" ),
+                                 input( "unresolved", "com.example.injector.MyFragment" ) ) );
+
+    assertCompilationSuccessful( bindingsCompile );
+    final ImmutableList<JavaFileObject> generatedFiles = bindingsCompile.generatedFiles();
+
+    assertEquals( generatedFiles.size(), 10 );
+    assertClassFileCount( generatedFiles, 4L );
+    // 2 binary and 2 json descriptors
+    assertDescriptorCount( generatedFiles, 4L );
+    assertSourceFileCount( generatedFiles, 2L );
+
+    final Path targetDir = Files.createTempDirectory( "sting" );
+    outputFiles( bindingsCompile.generatedFiles(), targetDir );
+    return targetDir;
   }
 
   @Nonnull
