@@ -35,9 +35,8 @@ final class StingGeneratorUtil
 
   static TypeName getDependencyType( @Nonnull final DependencyDescriptor dependency )
   {
-    final TypeMirror valueType = dependency.getCoordinate().getType();
     final DependencyDescriptor.Kind kind = dependency.getKind();
-    final TypeName baseType = TypeName.get( valueType );
+    final TypeName baseType = TypeName.get( dependency.getCoordinate().getType() );
     if ( DependencyDescriptor.Kind.INSTANCE == kind )
     {
       return baseType;
