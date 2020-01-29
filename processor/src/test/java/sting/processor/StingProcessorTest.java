@@ -1,5 +1,6 @@
 package sting.processor;
 
+import com.google.testing.compile.JavaSourcesSubjectFactory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,6 +9,7 @@ import javax.annotation.Nonnull;
 import javax.tools.JavaFileObject;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import static com.google.common.truth.Truth.*;
 
 public final class StingProcessorTest
   extends AbstractStingProcessorTest
@@ -473,6 +475,25 @@ public final class StingProcessorTest
   public void processCompileWithoutWarnings( @Nonnull final String classname )
   {
     assertCompilesWithoutWarnings( classname );
+  }
+
+  @Test
+  public void unresolvedInjector()
+  {
+    final String classname = "com.example.injector.UnresolvedInjectorModel";
+    final JavaFileObject source1 = fixture( toFilename( "unresolved", classname ) );
+    assertFailedCompileResource( Collections.singletonList( source1 ),
+                                 "StingProcessor unable to process com.example.injector.UnresolvedInjectorModel because not all of its dependencies could be resolved. Check for compilation errors or a circular dependency with generated code." );
+
+    assert_()
+      .about( JavaSourcesSubjectFactory.javaSources() )
+      .that( Collections.singletonList( source1 ) )
+      .withCompilerOptions( "-Xlint:all,-processing",
+                            "-implicit:none",
+                            "-A" + getOptionPrefix() + ".defer.errors=false",
+                            "-A" + getOptionPrefix() + ".defer.unresolved=false" )
+      .processedWith( processors() )
+      .compilesWithoutWarnings();
   }
 
   @Nonnull

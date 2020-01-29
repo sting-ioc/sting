@@ -166,6 +166,7 @@ public final class StingProcessor
     processResolvedInjectors( env );
 
     errorIfProcessingOverAndInvalidTypesDetected( env );
+    errorIfProcessingOverAndDeferredTypesUnprocessed( env );
     errorIfProcessingOverAndUnprocessedInjectorDetected( env );
     if ( env.processingOver() || env.errorRaised() )
     {
