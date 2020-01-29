@@ -1,6 +1,6 @@
 {
   "schema": "graph/1",
-  "values": [
+  "nodes": [
     {
       "id": "com.example.injector.dependency.QualifiedDependencyModel.MyModel",
       "kind": "INJECTABLE"

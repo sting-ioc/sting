@@ -1,6 +1,6 @@
 {
   "schema": "graph/1",
-  "values": [
+  "nodes": [
     {
       "id": "com.example.injector.includes.SingleIncludesModel.MyFragment#provideRunnable",
       "kind": "PROVIDES"

@@ -1,6 +1,6 @@
 {
   "schema": "graph/1",
-  "values": [
+  "nodes": [
     {
       "id": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel2",
       "kind": "INJECTABLE",

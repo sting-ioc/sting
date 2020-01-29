@@ -1,6 +1,6 @@
 {
   "schema": "graph/1",
-  "values": [
+  "nodes": [
     {
       "id": "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel.MyFragment3#myModel",
       "kind": "PROVIDES"

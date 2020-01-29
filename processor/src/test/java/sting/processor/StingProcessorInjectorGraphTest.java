@@ -27,23 +27,23 @@ public final class StingProcessorInjectorGraphTest
     final String objectGraphFilename = jsonGraphOutput( classname );
     final List<String> expectedOutputs = Collections.singletonList( objectGraphFilename );
     assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
-    final JsonArray values = readInjectorGraph( objectGraphFilename );
-    assertEager( values, classname, "MyModel0", false );
-    assertEager( values, classname, "MyModel1", true );
-    assertEager( values, classname, "MyModel2", true );
-    assertEager( values, classname, "MyModel3", false );
-    assertEager( values, classname, "MyModel4", true );
-    assertEager( values, classname, "MyModel5", true );
-    assertEager( values, classname, "MyModel6", true );
+    final JsonArray nodes = readInjectorGraph( objectGraphFilename );
+    assertEager( nodes, classname, "MyModel0", false );
+    assertEager( nodes, classname, "MyModel1", true );
+    assertEager( nodes, classname, "MyModel2", true );
+    assertEager( nodes, classname, "MyModel3", false );
+    assertEager( nodes, classname, "MyModel4", true );
+    assertEager( nodes, classname, "MyModel5", true );
+    assertEager( nodes, classname, "MyModel6", true );
 
     // Order is stable and based on inverse of (depth of node from root dependencies + node id)
-    assertIndex( values, classname, "MyModel6", 6 );
-    assertIndex( values, classname, "MyModel4", 5 );
-    assertIndex( values, classname, "MyModel5", 4 );
-    assertIndex( values, classname, "MyModel1", 3 );
-    assertIndex( values, classname, "MyModel2", 2 );
-    assertIndex( values, classname, "MyModel3", 1 );
-    assertIndex( values, classname, "MyModel0", 0 );
+    assertIndex( nodes, classname, "MyModel6", 6 );
+    assertIndex( nodes, classname, "MyModel4", 5 );
+    assertIndex( nodes, classname, "MyModel5", 4 );
+    assertIndex( nodes, classname, "MyModel1", 3 );
+    assertIndex( nodes, classname, "MyModel2", 2 );
+    assertIndex( nodes, classname, "MyModel3", 1 );
+    assertIndex( nodes, classname, "MyModel0", 0 );
   }
 
   @Test
@@ -55,35 +55,35 @@ public final class StingProcessorInjectorGraphTest
     assertSuccessfulCompile( inputs( classname ),
                              Collections.singletonList( objectGraphFilename ),
                              t -> emitInjectorGeneratedFile( classname, t ) );
-    final JsonArray values = readInjectorGraph( objectGraphFilename );
-    assertEager( values, classname, "MyModel1", true );
-    assertValueWithIdNotPresent( values, classname, "MyModel2" );
-    assertEager( values, classname, "MyModel3", true );
+    final JsonArray nodes = readInjectorGraph( objectGraphFilename );
+    assertEager( nodes, classname, "MyModel1", true );
+    assertNodeWithIdNotPresent( nodes, classname, "MyModel2" );
+    assertEager( nodes, classname, "MyModel3", true );
   }
 
   @SuppressWarnings( "SameParameterValue" )
-  private void assertIndex( @Nonnull final JsonArray values,
+  private void assertIndex( @Nonnull final JsonArray nodes,
                             @Nonnull final String classname,
                             @Nonnull final String idSuffix,
                             final int index )
   {
     final String expectedId = classname + "." + idSuffix;
-    assertTrue( values.size() > index,
+    assertTrue( nodes.size() > index,
                 "Attempting to lookup " + expectedId + " at index " + index + " but " +
-                "there is only " + values.size() + " values present." );
-    final String id = values.getJsonObject( index ).getString( "id" );
+                "there is only " + nodes.size() + " nodes present." );
+    final String id = nodes.getJsonObject( index ).getString( "id" );
     assertEquals( id,
                   expectedId,
                   "Attempting to lookup " + expectedId + " at index " + index + " but " +
                   "found id " + id );
   }
 
-  private void assertEager( @Nonnull final JsonArray values,
+  private void assertEager( @Nonnull final JsonArray nodes,
                             @Nonnull final String classname,
                             @Nonnull final String idSuffix,
                             final boolean eager )
   {
-    assertEquals( getValueById( values, classname, idSuffix ).getBoolean( "eager", false ), eager );
+    assertEquals( getNodeById( nodes, classname, idSuffix ).getBoolean( "eager", false ), eager );
   }
 
   @Test
@@ -95,59 +95,59 @@ public final class StingProcessorInjectorGraphTest
     assertSuccessfulCompile( inputs( classname ),
                              Collections.singletonList( objectGraphFilename ),
                              t -> emitInjectorGeneratedFile( classname, t ) );
-    final JsonArray values = readInjectorGraph( objectGraphFilename );
-    assertValueWithIdPresent( values, classname, "MyFragment1#provideRunnable" );
-    assertValueWithIdPresent( values, classname, "MyFragment2#provideRunnable" );
-    assertValueWithIdPresent( values, classname, "MyFragment3#provideRunnable" );
-    assertValueWithIdPresent( values, classname, "MyModel1" );
-    assertValueWithIdPresent( values, classname, "MyModel2" );
-    assertValueWithIdPresent( values, classname, "MyModel3" );
+    final JsonArray nodes = readInjectorGraph( objectGraphFilename );
+    assertNodeWithIdPresent( nodes, classname, "MyFragment1#provideRunnable" );
+    assertNodeWithIdPresent( nodes, classname, "MyFragment2#provideRunnable" );
+    assertNodeWithIdPresent( nodes, classname, "MyFragment3#provideRunnable" );
+    assertNodeWithIdPresent( nodes, classname, "MyModel1" );
+    assertNodeWithIdPresent( nodes, classname, "MyModel2" );
+    assertNodeWithIdPresent( nodes, classname, "MyModel3" );
   }
 
   @SuppressWarnings( "SameParameterValue" )
-  private void assertValueWithIdPresent( @Nonnull final JsonArray values,
-                                         @Nonnull final String classname,
-                                         @Nonnull final String idSuffix )
+  private void assertNodeWithIdPresent( @Nonnull final JsonArray nodes,
+                                        @Nonnull final String classname,
+                                        @Nonnull final String idSuffix )
   {
-    getValueById( values, classname, idSuffix );
+    getNodeById( nodes, classname, idSuffix );
   }
 
   @SuppressWarnings( "SameParameterValue" )
-  private void assertValueWithIdNotPresent( @Nonnull final JsonArray values,
-                                            @Nonnull final String classname,
-                                            @Nonnull final String idSuffix )
+  private void assertNodeWithIdNotPresent( @Nonnull final JsonArray nodes,
+                                           @Nonnull final String classname,
+                                           @Nonnull final String idSuffix )
   {
-    assertNull( findValueById( values, classname, idSuffix ) );
+    assertNull( findNodeById( nodes, classname, idSuffix ) );
   }
 
   @Nonnull
-  private JsonObject getValueById( @Nonnull final JsonArray values,
+  private JsonObject getNodeById( @Nonnull final JsonArray nodes,
+                                  @Nonnull final String classname,
+                                  @Nonnull final String idSuffix )
+  {
+    return getNodeById( nodes, classname + "." + idSuffix );
+  }
+
+  @Nonnull
+  private JsonObject getNodeById( @Nonnull final JsonArray nodes, @Nonnull final String id )
+  {
+    final JsonObject node = findNodeById( nodes, id );
+    assertNotNull( node );
+    return node;
+  }
+
+  @Nullable
+  private JsonObject findNodeById( @Nonnull final JsonArray nodes,
                                    @Nonnull final String classname,
                                    @Nonnull final String idSuffix )
   {
-    return getValueById( values, classname + "." + idSuffix );
-  }
-
-  @Nonnull
-  private JsonObject getValueById( @Nonnull final JsonArray values, @Nonnull final String id )
-  {
-    final JsonObject value = findValueById( values, id );
-    assertNotNull( value );
-    return value;
+    return findNodeById( nodes, classname + "." + idSuffix );
   }
 
   @Nullable
-  private JsonObject findValueById( @Nonnull final JsonArray values,
-                                    @Nonnull final String classname,
-                                    @Nonnull final String idSuffix )
+  private JsonObject findNodeById( @Nonnull final JsonArray nodes, @Nonnull final String id )
   {
-    return findValueById( values, classname + "." + idSuffix );
-  }
-
-  @Nullable
-  private JsonObject findValueById( @Nonnull final JsonArray values, @Nonnull final String id )
-  {
-    return values.stream()
+    return nodes.stream()
       .map( v -> (JsonObject) v )
       .filter( v -> v.getString( "id" ).equals( id ) )
       .findAny()
@@ -160,7 +160,7 @@ public final class StingProcessorInjectorGraphTest
   {
     final JsonObject object = readJsonObject( fixtureDir().resolve( filename ) );
     assertEquals( object.getString( "schema" ), "graph/1" );
-    return object.getJsonArray( "values" );
+    return object.getJsonArray( "nodes" );
   }
 
   @Nonnull

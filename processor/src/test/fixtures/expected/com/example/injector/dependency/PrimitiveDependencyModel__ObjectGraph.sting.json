@@ -1,6 +1,6 @@
 {
   "schema": "graph/1",
-  "values": [
+  "nodes": [
     {
       "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue8",
       "kind": "PROVIDES"

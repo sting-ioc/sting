@@ -187,7 +187,7 @@ final class ObjectGraph
     g.writeStartObject();
     g.write( "schema", "graph/1" );
 
-    g.writeStartArray( "values" );
+    g.writeStartArray( "nodes" );
 
     for ( final Node node : getNodes() )
     {
