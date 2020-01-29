@@ -53,7 +53,7 @@ final class Node
   @Nullable
   private String _name;
   /**
-   * The type of the value provided by the node.
+   * The java type of the value provided by the node.
    * this will be null if _binding is null.
    */
   @Nullable

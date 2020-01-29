@@ -54,7 +54,7 @@ final class Binding
   @Nonnull
   private final ExecutableElement _element;
   /**
-   * The dependencies that need to be supplied when creating the value.
+   * The dependencies that need to be supplied when creating a binding instance.
    */
   @Nonnull
   private final DependencyDescriptor[] _dependencies;

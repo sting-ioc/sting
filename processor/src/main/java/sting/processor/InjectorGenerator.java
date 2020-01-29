@@ -306,7 +306,7 @@ final class InjectorGenerator
   /**
    * Emit the code required to access the specified node.
    *
-   * @param node the node value.
+   * @param node the node.
    * @param code the code template to append to.
    * @param args the args that passed to javapoet template.
    */
