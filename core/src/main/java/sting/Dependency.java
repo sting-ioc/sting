@@ -8,7 +8,8 @@ import java.lang.annotation.Target;
 import javax.annotation.Nonnull;
 
 /**
- * Annotation applied to dependencies that restrict the values that can satisfy the dependency.
+ * Annotation used to describe the dependency.
+ * The annotation parameters restrict the bindings that can satisfy the dependency.
  *
  * <p>This annotation can appear on constructor parameters in a type annotated with {@link Injectable}
  * or it can appear on methods on types annotated by {@link Injector}.
