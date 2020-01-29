@@ -1,15 +1,21 @@
 package sting.processor;
 
-import com.google.testing.compile.JavaSourcesSubjectFactory;
+import com.google.common.collect.ImmutableList;
+import com.google.testing.compile.Compilation;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import javax.annotation.Nonnull;
+import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import static com.google.common.truth.Truth.*;
+import static org.testng.Assert.*;
 
 public final class StingProcessorTest
   extends AbstractStingProcessorTest
@@ -169,11 +175,9 @@ public final class StingProcessorTest
   public void basicIncludesFragment()
     throws Exception
   {
-    final JavaFileObject input1 = fixture( toFilename( "input", "com.example.fragment.includes.BasicIncludesModel" ) );
-    final JavaFileObject input2 = fixture( toFilename( "input", "com.example.fragment.includes.Included1Model" ) );
-    final String output1 =
-      jsonOutput( "com.example.fragment.includes.BasicIncludesModel" );
-    assertSuccessfulCompile( Arrays.asList( input1, input2 ), Collections.singletonList( output1 ) );
+    final String classname = "com.example.fragment.includes.BasicIncludesModel";
+    assertSuccessfulCompile( inputs( classname, "com.example.fragment.includes.Included1Model" ),
+                             Collections.singletonList( jsonOutput( classname ) ) );
   }
 
   @Test
@@ -181,12 +185,10 @@ public final class StingProcessorTest
     throws Exception
   {
     final String classname = "com.example.fragment.includes.MultipleIncludesModel";
-    final JavaFileObject input1 =
-      fixture( toFilename( "input", classname ) );
-    final JavaFileObject input2 = fixture( toFilename( "input", "com.example.fragment.includes.Included1Model" ) );
-    final JavaFileObject input3 = fixture( toFilename( "input", "com.example.fragment.includes.Included2Model" ) );
-    final String output1 = jsonOutput( classname );
-    assertSuccessfulCompile( Arrays.asList( input1, input2, input3 ), Collections.singletonList( output1 ) );
+    assertSuccessfulCompile( inputs( classname,
+                                     "com.example.fragment.includes.Included1Model",
+                                     "com.example.fragment.includes.Included2Model" ),
+                             Collections.singletonList( jsonOutput( classname ) ) );
   }
 
   @DataProvider( name = "failedCompiles" )
