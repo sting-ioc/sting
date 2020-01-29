@@ -149,10 +149,7 @@ final class StingGeneratorUtil
     {
       additionalSuppressions.add( "rawtypes" );
     }
-    SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv,
-                                                        method,
-                                                        additionalSuppressions,
-                                                        typesProcessed );
+    SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv, method, additionalSuppressions, typesProcessed );
     return method.build();
   }
 
