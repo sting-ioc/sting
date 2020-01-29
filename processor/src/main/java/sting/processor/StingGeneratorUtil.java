@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -22,7 +23,7 @@ import org.realityforge.proton.SuppressWarningsUtil;
 final class StingGeneratorUtil
 {
   @Nonnull
-  static final String FRAMEWORK_PREFIX = "$sting$_";
+  private static final String FRAMEWORK_PREFIX = "$sting$_";
   @Nonnull
   private static final ClassName COLLECTION = ClassName.get( Collection.class );
   @Nonnull
@@ -169,5 +170,11 @@ final class StingGeneratorUtil
   static ClassName getGeneratedClassName( @Nonnull final TypeElement element )
   {
     return GeneratorUtil.getGeneratedClassName( element, "Sting_", "" );
+  }
+
+  @Nonnull
+  static String getFragmentProvidesStubName( @Nonnull final ExecutableElement element )
+  {
+    return FRAMEWORK_PREFIX + element.getSimpleName().toString();
   }
 }

@@ -63,7 +63,7 @@ final class FragmentGenerator
 
     final MethodSpec.Builder method =
       MethodSpec
-        .methodBuilder( StingGeneratorUtil.FRAMEWORK_PREFIX + element.getSimpleName().toString() )
+        .methodBuilder( StingGeneratorUtil.getFragmentProvidesStubName( element ) )
         .addModifiers( Modifier.PUBLIC )
         .returns( isPublic ? TypeName.get( returnType ) : TypeName.OBJECT );
     GeneratorUtil.copyWhitelistedAnnotations( element, method );

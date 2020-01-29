@@ -222,7 +222,7 @@ final class InjectorGenerator
     {
       code.append( "$N.$N" );
       args.add( node.getFragment().getName() );
-      args.add( StingGeneratorUtil.FRAMEWORK_PREFIX + node.getBinding().getElement().getSimpleName().toString() );
+      args.add( StingGeneratorUtil.getFragmentProvidesStubName( node.getBinding().getElement() ) );
     }
     else
     {
