@@ -42,10 +42,6 @@ complete as there is too much un-said.
   * Comparison to other technologies (i.e. Dagger/IOC) in terms of functionality and performance.
   * Development process FAQ - just like in Arez but reflective of Stings approach.
 
-* Add tests where `@Fragment` type is deprecated or `@Provides` method is deprecated or `@Dependency` parameter fot `@Provides` method is deprecated.
-
-* Add tests where `@Injector` is deprecated or a dependency method is deprecated.
-
 * Rename `BindingType` to `Binding.Kind` for clarity.
 
 * Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
