@@ -5,7 +5,6 @@ import com.google.testing.compile.Compilation;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import javax.annotation.Nonnull;
 import javax.tools.JavaFileObject;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
@@ -59,20 +58,5 @@ public final class StingProcessorMultiStageCompilesTest
     assertEquals( stage3Output.size(), 3 );
     assertClassFileCount( stage3Output, 2L );
     assertSourceFileCount( stage3Output, 1L );
-  }
-
-  private void assertDescriptorCount( @Nonnull final ImmutableList<JavaFileObject> output, final long count )
-  {
-    assertEquals( output.stream().filter( f -> JavaFileObject.Kind.OTHER == f.getKind() ).count(), count );
-  }
-
-  private void assertSourceFileCount( @Nonnull final ImmutableList<JavaFileObject> output, final long count )
-  {
-    assertEquals( output.stream().filter( f -> JavaFileObject.Kind.SOURCE == f.getKind() ).count(), count );
-  }
-
-  private void assertClassFileCount( @Nonnull final ImmutableList<JavaFileObject> output, final long count )
-  {
-    assertEquals( output.stream().filter( f -> JavaFileObject.Kind.CLASS == f.getKind() ).count(), count );
   }
 }
