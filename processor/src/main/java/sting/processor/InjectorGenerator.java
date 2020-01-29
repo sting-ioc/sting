@@ -19,6 +19,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import org.realityforge.proton.GeneratorUtil;
+import org.realityforge.proton.SuppressWarningsUtil;
 
 final class InjectorGenerator
 {
@@ -42,9 +43,9 @@ final class InjectorGenerator
     builder.addSuperinterface( TypeName.get( element.asType() ) );
 
     emitFragmentFields( builder, graph );
-    emitNodeFields( graph, builder );
+    emitNodeFields( processingEnv, graph, builder );
     emitConstructor( graph, builder );
-    emitNodeAccessorMethod( graph, builder );
+    emitNodeAccessorMethod( processingEnv, graph, builder );
     emitTopLevelDependencyMethods( processingEnv, graph, builder );
 
     return builder.build();
@@ -57,12 +58,16 @@ final class InjectorGenerator
     for ( final Edge edge : graph.getRootNode().getDependsOn() )
     {
       final DependencyDescriptor dependency = edge.getDependency();
+      final ExecutableElement element = (ExecutableElement) dependency.getElement();
       final MethodSpec.Builder method =
-        MethodSpec.overriding( (ExecutableElement) dependency.getElement(),
+        MethodSpec.overriding( element,
                                (DeclaredType) graph.getInjector().getElement().asType(),
                                processingEnv.getTypeUtils() );
-      GeneratorUtil.copyWhitelistedAnnotations( dependency.getElement(), method );
-
+      GeneratorUtil.copyWhitelistedAnnotations( element, method );
+      SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv,
+                                                          method,
+                                                          Collections.emptyList(),
+                                                          Collections.singletonList( element.asType() ) );
       final StringBuilder code = new StringBuilder();
       final ArrayList<Object> args = new ArrayList<>();
       code.append( "return " );
@@ -90,7 +95,8 @@ final class InjectorGenerator
     builder.addMethod( ctor.build() );
   }
 
-  private static void emitNodeFields( @Nonnull final ObjectGraph graph,
+  private static void emitNodeFields( @Nonnull final ProcessingEnvironment processingEnv,
+                                      @Nonnull final ObjectGraph graph,
                                       @Nonnull final TypeSpec.Builder builder )
   {
     for ( final Node node : graph.getNodes() )
@@ -100,6 +106,13 @@ final class InjectorGenerator
         FieldSpec
           .builder( getPublicTypeName( node ), node.getName(), Modifier.PRIVATE )
           .addAnnotation( isNonnull ? GeneratorUtil.NONNULL_CLASSNAME : GeneratorUtil.NULLABLE_CLASSNAME );
+      if ( node.isPublicAccess() )
+      {
+        SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv,
+                                                            field,
+                                                            Collections.emptyList(),
+                                                            Collections.singletonList( node.getType() ) );
+      }
       if ( node.isEager() )
       {
         field.addModifiers( Modifier.FINAL );
@@ -128,7 +141,8 @@ final class InjectorGenerator
     }
   }
 
-  private static void emitNodeAccessorMethod( @Nonnull final ObjectGraph graph,
+  private static void emitNodeAccessorMethod( @Nonnull final ProcessingEnvironment processingEnv,
+                                              @Nonnull final ObjectGraph graph,
                                               @Nonnull final TypeSpec.Builder builder )
   {
     for ( final Node node : graph.getNodes() )
@@ -140,6 +154,13 @@ final class InjectorGenerator
             .methodBuilder( node.getName() )
             .addModifiers( Modifier.PRIVATE )
             .returns( getPublicTypeName( node ) );
+        if ( node.isPublicAccess() )
+        {
+          SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv,
+                                                              method,
+                                                              Collections.emptyList(),
+                                                              Collections.singletonList( node.getType() ) );
+        }
         final boolean isNonnull = Binding.Type.NULLABLE_PROVIDES != node.getBinding().getBindingType();
         final boolean isNonPrimitive = !node.getType().getKind().isPrimitive();
         if ( isNonPrimitive )
