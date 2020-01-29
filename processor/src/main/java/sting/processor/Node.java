@@ -103,10 +103,8 @@ final class Node
     }
     if ( null != _binding )
     {
-      _type =
-        isFromProvides() ?
-        ( (ExecutableElement) binding.getElement() ).getReturnType() :
-        binding.getElement().asType();
+      final ExecutableElement element = binding.getElement();
+      _type = isFromProvides() ? element.getReturnType() : element.getEnclosingElement().asType();
       _public = TypeKind.DECLARED != _type.getKind() ||
                 StingElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) _type ).asElement() );
     }

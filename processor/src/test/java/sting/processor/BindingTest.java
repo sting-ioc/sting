@@ -5,11 +5,9 @@ import java.nio.charset.StandardCharsets;
 import javax.annotation.Nonnull;
 import javax.json.Json;
 import javax.json.stream.JsonGenerator;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
-import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
 import org.realityforge.proton.JsonUtil;
@@ -148,21 +146,15 @@ public class BindingTest
                              @Nonnull final DependencyDescriptor[] dependencies,
                              @Nonnull final String expectedJson )
   {
-    final Element element;
-    if ( Binding.Type.INJECTABLE == bindingType )
+    final ExecutableElement element = mock( ExecutableElement.class );
+    if ( Binding.Type.INJECTABLE != bindingType )
     {
-      element = mock( TypeElement.class );
-    }
-    else
-    {
-      element = mock( ExecutableElement.class );
       final Name name = mock( Name.class );
       when( name.toString() ).thenReturn( "myProviderMethod" );
       when( element.getSimpleName() ).thenReturn( name );
     }
-    when( element.getKind() ).thenReturn( Binding.Type.INJECTABLE == bindingType ?
-                                          ElementKind.CLASS :
-                                          ElementKind.METHOD );
+    when( element.getKind() )
+      .thenReturn( Binding.Type.INJECTABLE == bindingType ? ElementKind.CONSTRUCTOR : ElementKind.METHOD );
     final Binding binding = createBinding( id, bindingType, qualifier, types, eager, element, dependencies );
 
     assertJsonEmitsJson( binding, expectedJson );
@@ -201,7 +193,7 @@ public class BindingTest
                                  @Nonnull final String qualifier,
                                  @Nonnull final TypeMirror[] types,
                                  final boolean eager,
-                                 @Nonnull final Element element,
+                                 @Nonnull final ExecutableElement element,
                                  @Nonnull final DependencyDescriptor[] dependencies )
   {
     final Binding binding = new Binding( bindingType, id, qualifier, types, eager, element, dependencies );

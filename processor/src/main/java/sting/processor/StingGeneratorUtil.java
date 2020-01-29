@@ -58,8 +58,10 @@ final class StingGeneratorUtil
                                          @Nonnull final StringBuilder code,
                                          @Nonnull final List<Object> args,
                                          @Nonnull final TypeMirror typeProduced,
-                                         @Nonnull final DependencyDescriptor[] dependencies )
+                                         @Nonnull final Binding binding )
   {
+    final DependencyDescriptor[] dependencies = binding.getDependencies();
+
     final List<TypeMirror> typesProcessed = new ArrayList<>();
     typesProcessed.add( typeProduced );
 

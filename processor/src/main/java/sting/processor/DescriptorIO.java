@@ -176,34 +176,32 @@ final class DescriptorIO
     final String elementName = dis.readUTF();
     assert "".equals( elementName ) || Binding.Type.INJECTABLE != type;
 
-    final Element element;
-    final Element dependencyElement;
+    final ExecutableElement element;
     if ( Binding.Type.INJECTABLE != type )
     {
       element = enclosingElement.getEnclosedElements()
         .stream()
         .filter( e -> ElementKind.METHOD == e.getKind() && e.getSimpleName().toString().equals( elementName ) )
+        .map( e -> (ExecutableElement) e )
         .findAny()
         .orElse( null );
-      dependencyElement = element;
     }
     else
     {
-      element = enclosingElement;
-      dependencyElement = enclosingElement.getEnclosedElements()
+      element = enclosingElement.getEnclosedElements()
         .stream()
         .filter( e -> ElementKind.CONSTRUCTOR == e.getKind() )
+        .map( e -> (ExecutableElement) e )
         .findAny()
         .orElse( null );
     }
     assert null != element;
-    assert null != dependencyElement;
 
     final short dependencyCount = dis.readShort();
     final DependencyDescriptor[] dependencies = new DependencyDescriptor[ dependencyCount ];
     for ( int i = 0; i < dependencies.length; i++ )
     {
-      dependencies[ i ] = readDependency( dis, dependencyElement );
+      dependencies[ i ] = readDependency( dis, element );
     }
 
     return new Binding( type, id, qualifier, types, eager, element, dependencies );

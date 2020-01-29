@@ -49,7 +49,7 @@ final class InjectableGenerator
                                                                code,
                                                                args,
                                                                returnType,
-                                                               injectable.getBinding().getDependencies() ) );
+                                                               injectable.getBinding() ) );
 
     return builder.build();
   }

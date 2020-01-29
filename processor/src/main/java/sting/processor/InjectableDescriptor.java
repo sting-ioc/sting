@@ -23,7 +23,7 @@ final class InjectableDescriptor
   @Nonnull
   TypeElement getElement()
   {
-    return (TypeElement) _binding.getElement();
+    return (TypeElement) _binding.getElement().getEnclosingElement();
   }
 
   @Nonnull

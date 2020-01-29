@@ -48,7 +48,7 @@ final class FragmentGenerator
   private static MethodSpec buildProvidesStub( @Nonnull final ProcessingEnvironment processingEnv,
                                                @Nonnull final Binding binding )
   {
-    final ExecutableElement element = (ExecutableElement) binding.getElement();
+    final ExecutableElement element = binding.getElement();
     final TypeMirror returnType = element.getReturnType();
     final boolean isPublic =
       TypeKind.DECLARED != returnType.getKind() ||
@@ -66,11 +66,6 @@ final class FragmentGenerator
     code.append( "return $N" );
     args.add( element.getSimpleName().toString() );
 
-    return StingGeneratorUtil.buildBindingCreator( processingEnv,
-                                                   method,
-                                                   code,
-                                                   args,
-                                                   returnType,
-                                                   binding.getDependencies() );
+    return StingGeneratorUtil.buildBindingCreator( processingEnv, method, code, args, returnType, binding );
   }
 }

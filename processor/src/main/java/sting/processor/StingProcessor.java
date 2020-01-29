@@ -425,7 +425,7 @@ public final class StingProcessor
                                                                   "contain multiple nodes with the id '" +
                                                                   id + "'.\nPath:\n" +
                                                                   workEntry.describePathFromRoot() ),
-                                            existing.getBinding().getElement() );
+                                            existing.getBinding().getElement().getEnclosingElement() );
             }
             final Node node = graph.findOrCreateNode( binding );
             nodes.add( node );
@@ -1194,7 +1194,7 @@ public final class StingProcessor
                    qualifier,
                    publishedTypes.toArray( new TypeMirror[ 0 ] ),
                    eager,
-                   element,
+                   constructor,
                    dependencies.toArray( new DependencyDescriptor[ 0 ] ) );
     final InjectableDescriptor injectable = new InjectableDescriptor( binding );
     _registry.registerInjectable( injectable );

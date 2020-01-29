@@ -6,8 +6,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.json.stream.JsonGenerator;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 
@@ -47,12 +47,12 @@ final class Binding
   private final boolean _eager;
   /**
    * The element that created this binding.
-   * The field will be a {@link javax.lang.model.element.TypeElement} for an {@link Type#INJECTABLE} binding
-   * otherwise it will be an {@link javax.lang.model.element.ExecutableElement} for a {@link Type#PROVIDES} binding
-   * or a a {@link Type#NULLABLE_PROVIDES} binding.
+   * The field will be a constructor for an {@link Type#INJECTABLE} binding
+   * otherwise it will be a method for a {@link Type#PROVIDES} binding
+   * or a {@link Type#NULLABLE_PROVIDES} binding.
    */
   @Nonnull
-  private final Element _element;
+  private final ExecutableElement _element;
   /**
    * The dependencies that need to be supplied when creating the value.
    */
@@ -68,10 +68,10 @@ final class Binding
            @Nonnull final String qualifier,
            @Nonnull final TypeMirror[] types,
            final boolean eager,
-           @Nonnull final Element element,
+           @Nonnull final ExecutableElement element,
            @Nonnull final DependencyDescriptor[] dependencies )
   {
-    assert ( Type.INJECTABLE == bindingType && ElementKind.CLASS == element.getKind() ) ||
+    assert ( Type.INJECTABLE == bindingType && ElementKind.CONSTRUCTOR == element.getKind() ) ||
            ( Type.INJECTABLE != bindingType && ElementKind.METHOD == element.getKind() );
     _bindingType = Objects.requireNonNull( bindingType );
     _id = Objects.requireNonNull( id );
@@ -126,7 +126,7 @@ final class Binding
   }
 
   @Nonnull
-  Element getElement()
+  ExecutableElement getElement()
   {
     return _element;
   }
@@ -188,14 +188,15 @@ final class Binding
   @Nonnull
   String describe()
   {
+    final String className = ( (TypeElement) _element.getEnclosingElement() ).getQualifiedName().toString();
     if ( Binding.Type.INJECTABLE == _bindingType )
     {
-      return ( (TypeElement) _element ).getQualifiedName().toString();
+      return className;
     }
     else
     {
       assert Binding.Type.PROVIDES == _bindingType || Binding.Type.NULLABLE_PROVIDES == _bindingType;
-      return ( (TypeElement) _element.getEnclosingElement() ).getQualifiedName() + "." + _element.getSimpleName();
+      return className + "." + _element.getSimpleName();
     }
   }
 
