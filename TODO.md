@@ -46,6 +46,8 @@ complete as there is too much un-said.
 
 * Add tests where `@Injector` is deprecated or a dependency method is deprecated.
 
+* Rename `BindingType` to `Binding.Kind` for clarity.
+
 * Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
   or `Injector` will have their type annotations scanned for matching annotations of which there must be at most
   1. This annotation gives the name pattern for the expected `@Injectable` or `@Fragment` annotated class that
