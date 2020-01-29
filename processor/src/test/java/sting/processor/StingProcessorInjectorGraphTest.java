@@ -90,26 +90,31 @@ public final class StingProcessorInjectorGraphTest
   public void recursiveIncludesAreAllIncluded()
     throws Exception
   {
-    final String classname = "com.example.injector.includes.RecursiveIncludesModel";
+    final String pkg = "com.example.injector.includes.recursive";
+    final String classname = pkg + ".RecursiveIncludesModel";
     final String objectGraphFilename = jsonGraphOutput( classname );
-    assertSuccessfulCompile( inputs( classname ),
+    assertSuccessfulCompile( inputs( classname,
+                                     pkg + ".MyFragment1",
+                                     pkg + ".MyFragment2",
+                                     pkg + ".MyFragment3",
+                                     pkg + ".MyModel1",
+                                     pkg + ".MyModel2",
+                                     pkg + ".MyModel3" ),
                              Collections.singletonList( objectGraphFilename ),
                              t -> emitInjectorGeneratedFile( classname, t ) );
     final JsonArray nodes = readInjectorGraph( objectGraphFilename );
-    assertNodeWithIdPresent( nodes, classname, "MyFragment1#provideRunnable" );
-    assertNodeWithIdPresent( nodes, classname, "MyFragment2#provideRunnable" );
-    assertNodeWithIdPresent( nodes, classname, "MyFragment3#provideRunnable" );
-    assertNodeWithIdPresent( nodes, classname, "MyModel1" );
-    assertNodeWithIdPresent( nodes, classname, "MyModel2" );
-    assertNodeWithIdPresent( nodes, classname, "MyModel3" );
+    assertNodeWithIdPresent( nodes, pkg + ".MyFragment1#provideRunnable" );
+    assertNodeWithIdPresent( nodes, pkg + ".MyFragment2#provideRunnable" );
+    assertNodeWithIdPresent( nodes, pkg + ".MyFragment3#provideRunnable" );
+    assertNodeWithIdPresent( nodes, pkg + ".MyModel1" );
+    assertNodeWithIdPresent( nodes, pkg + ".MyModel2" );
+    assertNodeWithIdPresent( nodes, pkg + ".MyModel3" );
   }
 
-  @SuppressWarnings( "SameParameterValue" )
   private void assertNodeWithIdPresent( @Nonnull final JsonArray nodes,
-                                        @Nonnull final String classname,
-                                        @Nonnull final String idSuffix )
+                                        @Nonnull final String id )
   {
-    getNodeById( nodes, classname, idSuffix );
+    getNodeById( nodes, id );
   }
 
   @SuppressWarnings( "SameParameterValue" )
