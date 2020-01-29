@@ -387,13 +387,16 @@ public final class StingProcessor
         .collect( Collectors.toList() );
       if ( !dependency.isOptional() && !nullableProviders.isEmpty() )
       {
-        throw new ProcessorException( "Injector defined by type '" + injector.getElement().getQualifiedName() +
-                                      "' contains a nullable provides method and a non-optional dependency " +
-                                      coordinate + " with the same coordinate.\n" +
-                                      "Dependency Path:\n" + workEntry.describePathFromRoot() + "\n" +
-                                      "Binding" + ( nullableProviders.size() > 1 ? "s" : "" ) + ":\n" +
-                                      bindingsToString( nullableProviders ),
-                                      dependency.getElement() );
+        final String message =
+          MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                "contain a nullable " +
+                                MemberChecks.toSimpleName( Constants.PROVIDES_CLASSNAME ) +
+                                " method and a non-optional dependency " + coordinate +
+                                " with the same coordinate.\n" +
+                                "Dependency Path:\n" + workEntry.describePathFromRoot() + "\n" +
+                                "Binding" + ( nullableProviders.size() > 1 ? "s" : "" ) + ":\n" +
+                                bindingsToString( nullableProviders ) );
+        throw new ProcessorException( message, dependency.getElement() );
       }
       if ( bindings.isEmpty() )
       {
@@ -403,10 +406,12 @@ public final class StingProcessor
         }
         else
         {
-          throw new ProcessorException( "Injector defined by type '" + injector.getElement().getQualifiedName() +
-                                        "' is unable to satisfy non-optional dependency " + coordinate + ".\n" +
-                                        "Path:\n" + workEntry.describePathFromRoot(),
-                                        dependency.getElement() );
+          final String message =
+            MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                  "contain a non-optional dependency " + coordinate +
+                                  " that can not be satisfied.\n" +
+                                  "Dependency Path:\n" + workEntry.describePathFromRoot() );
+          throw new ProcessorException( message, dependency.getElement() );
         }
       }
       else
@@ -441,13 +446,13 @@ public final class StingProcessor
         {
           //noinspection ConstantConditions
           assert bindings.size() > 1 && !kind.isCollection();
-          throw new ProcessorException( "Injector defined by type '" + injector.getElement().getQualifiedName() +
-                                        "' contains a dependency " + coordinate + " that expects to be satisfied " +
-                                        "by a single node but the injector contains multiple nodes that satisfy " +
-                                        "the dependency.\n\n" +
-                                        "Dependency Path:\n" + workEntry.describePathFromRoot() + "\n" +
-                                        "Bindings:\n" + bindingsToString( bindings ),
-                                        dependency.getElement() );
+          final String message =
+            MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                  "contain a non-collection dependency " + coordinate +
+                                  " that can be satisfied by multiple nodes.\n" +
+                                  "Dependency Path:\n" + workEntry.describePathFromRoot() + "\n" +
+                                  "Candidate Nodes:\n" + bindingsToString( bindings ) );
+          throw new ProcessorException( message, dependency.getElement() );
         }
       }
     }

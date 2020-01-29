@@ -318,18 +318,17 @@ public final class StingProcessorTest
                       "    [Injector]       com.example.injector.DuplicateIdInjectorModel" },
         new Object[]{ "com.example.injector.EnumInjector", "@Injector target must be an interface" },
         new Object[]{ "com.example.injector.MultipleCandidatesForSingularDependencyModel",
-                      "Injector defined by type 'com.example.injector.MultipleCandidatesForSingularDependencyModel' contains a dependency [java.lang.Runnable] that expects to be satisfied by a single node but the injector contains multiple nodes that satisfy the dependency.\n" +
-                      "  \n" +
+                      "@Injector target must not contain a non-collection dependency [java.lang.Runnable] that can be satisfied by multiple nodes.\n" +
                       "  Dependency Path:\n" +
                       "    [Injector]       com.example.injector.MultipleCandidatesForSingularDependencyModel\n" +
                       "  \n" +
-                      "  Bindings:\n" +
+                      "  Candidate Nodes:\n" +
                       "    [Provides]       com.example.injector.MultipleCandidatesForSingularDependencyModel.MyFragment1.provideRunnable1\n" +
                       "    [Provides]       com.example.injector.MultipleCandidatesForSingularDependencyModel.MyFragment2.provideRunnable2" },
         new Object[]{ "com.example.injector.NoDirectDependenciesAndNoEagerInIncludesModel",
                       "@Injector target produced an empty object graph. This means that there are no eager nodes in the includes and there are no dependencies or only unsatisfied optional dependencies defined by the injector" },
         new Object[]{ "com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel",
-                      "Injector defined by type 'com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel' contains a nullable provides method and a non-optional dependency [com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyModel3] with the same coordinate.\n" +
+                      "@Injector target must not contain a nullable @Provides method and a non-optional dependency [com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyModel3] with the same coordinate.\n" +
                       "  Dependency Path:\n" +
                       "    [Injector]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel\n" +
                       "    [Injectable]     com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyModel1\n" +
@@ -339,7 +338,7 @@ public final class StingProcessorTest
                       "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment2.provideMyModel3\n" +
                       "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment4.provideMyModel3" },
         new Object[]{ "com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel",
-                      "Injector defined by type 'com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel' contains a nullable provides method and a non-optional dependency [com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyModel3] with the same coordinate.\n" +
+                      "@Injector target must not contain a nullable @Provides method and a non-optional dependency [com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyModel3] with the same coordinate.\n" +
                       "  Dependency Path:\n" +
                       "    [Injector]       com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel\n" +
                       "    [Injectable]     com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyModel1\n" +
@@ -380,8 +379,8 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.dependency.MethodWithTypeParametersDependencyModel",
                       "@Dependency target must not have any type parameters" },
         new Object[]{ "com.example.injector.dependency.MissingDependencyModel",
-                      "Injector defined by type 'com.example.injector.dependency.MissingDependencyModel' is unable to satisfy non-optional dependency [com.example.injector.dependency.MissingDependencyModel.MyModel4].\n" +
-                      "  Path:\n" +
+                      "@Injector target must not contain a non-optional dependency [com.example.injector.dependency.MissingDependencyModel.MyModel4] that can not be satisfied.\n" +
+                      "  Dependency Path:\n" +
                       "    [Injector]       com.example.injector.dependency.MissingDependencyModel\n" +
                       "    [Injectable]     com.example.injector.dependency.MissingDependencyModel.MyModel1\n" +
                       "    [Provides]       com.example.injector.dependency.MissingDependencyModel.MyFragment1.provideMyModel2\n" +

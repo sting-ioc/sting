@@ -196,7 +196,9 @@ public final class StingProcessorBadDescriptorTest
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
     assertDiagnosticPresent( stage2,
-                             "Injector defined by type 'com.example.bad_descriptors.scenario1.MyInjectorModel' is unable to satisfy non-optional dependency [com.example.bad_descriptors.scenario1.Model1]." );
+                             "@Injector target must not contain a non-optional dependency [com.example.bad_descriptors.scenario1.Model1] that can not be satisfied.\n" +
+                             "  Dependency Path:\n" +
+                             "    [Injector]       com.example.bad_descriptors.scenario1.MyInjectorModel" );
     assertDiagnosticPresent( stage2,
                              "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
