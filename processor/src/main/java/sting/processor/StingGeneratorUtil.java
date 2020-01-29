@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
@@ -152,20 +151,12 @@ final class StingGeneratorUtil
     {
       additionalSuppressions.add( "rawtypes" );
     }
-    if ( isElementDeprecated( binding.getElement() ) )
+    if ( StingElementsUtil.isElementDeprecated( binding.getElement() ) )
     {
       additionalSuppressions.add( "deprecation" );
     }
     SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv, method, additionalSuppressions, typesProcessed );
     return method.build();
-  }
-
-  static boolean isElementDeprecated( @Nonnull final Element element )
-  {
-    return element
-      .getAnnotationMirrors()
-      .stream()
-      .anyMatch( a -> a.getAnnotationType().toString().equals( Deprecated.class.getName() ) );
   }
 
   @Nonnull

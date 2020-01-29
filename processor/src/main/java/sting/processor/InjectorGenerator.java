@@ -158,7 +158,7 @@ final class InjectorGenerator
         final List<TypeMirror> types =
           Collections.singletonList( node.getBinding().getElement().getEnclosingElement().asType() );
         final List<String> additionalSuppressions = new ArrayList<>();
-        if ( StingGeneratorUtil.isElementDeprecated( node.getBinding().getElement() ) )
+        if ( StingElementsUtil.isElementDeprecated( node.getBinding().getElement() ) )
         {
           additionalSuppressions.add( "deprecation" );
         }

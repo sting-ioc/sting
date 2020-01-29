@@ -25,4 +25,13 @@ final class StingElementsUtil
       return ElementKind.PACKAGE == enclosing.getKind() || isEffectivelyPublic( (TypeElement) enclosing );
     }
   }
+
+  //TODO: Move to Proton
+  static boolean isElementDeprecated( @Nonnull final Element element )
+  {
+    return element
+      .getAnnotationMirrors()
+      .stream()
+      .anyMatch( a -> a.getAnnotationType().toString().equals( Deprecated.class.getName() ) );
+  }
 }
