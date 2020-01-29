@@ -270,7 +270,7 @@ public final class StingProcessor
     if ( graph.getNodes().isEmpty() && graph.getRootNode().getDependsOn().isEmpty() )
     {
       throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " target " +
-                                    "produced an empty object graph. This means that there are no eager values " +
+                                    "produced an empty object graph. This means that there are no eager nodes " +
                                     "in the includes and there are no dependencies or only unsatisfied optional " +
                                     "dependencies defined by the injector",
                                     graph.getInjector().getElement() );
@@ -443,7 +443,7 @@ public final class StingProcessor
           assert bindings.size() > 1 && !kind.isCollection();
           throw new ProcessorException( "Injector defined by type '" + injector.getElement().getQualifiedName() +
                                         "' contains a dependency " + coordinate + " that expects to be satisfied " +
-                                        "by a single value but the injector contains multiple values that satisfy " +
+                                        "by a single node but the injector contains multiple nodes that satisfy " +
                                         "the dependency.\n\n" +
                                         "Dependency Path:\n" + workEntry.describePathFromRoot() + "\n" +
                                         "Bindings:\n" + bindingsToString( bindings ),
@@ -1256,7 +1256,7 @@ public final class StingProcessor
     if ( !Arrays.equals( baos1.toByteArray(), baos2.toByteArray() ) )
     {
       throw new ProcessorException( "Failed to emit valid binary descriptor for " + element.getQualifiedName() +
-                                    ". Reading the emitted descriptor did not produce the same value.",
+                                    ". Reading the emitted descriptor did not produce an equivalent descriptor.",
                                     element );
     }
   }
