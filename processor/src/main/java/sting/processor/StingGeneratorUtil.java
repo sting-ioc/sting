@@ -83,8 +83,7 @@ final class StingGeneratorUtil
       final VariableElement parameter = (VariableElement) dependency.getElement();
       final String paramName = parameter.getSimpleName().toString();
 
-      final TypeMirror valueType = dependency.getCoordinate().getType();
-      typesProcessed.add( valueType );
+      typesProcessed.add( dependency.getCoordinate().getType() );
       final boolean isPublic = dependency.isPublic();
       allPublic &= isPublic;
 
