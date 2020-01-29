@@ -19,6 +19,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
+import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
 
@@ -158,7 +159,7 @@ final class InjectorGenerator
         final List<TypeMirror> types =
           Collections.singletonList( node.getBinding().getElement().getEnclosingElement().asType() );
         final List<String> additionalSuppressions = new ArrayList<>();
-        if ( StingElementsUtil.isElementDeprecated( node.getBinding().getElement() ) )
+        if ( ElementsUtil.isElementDeprecated( node.getBinding().getElement() ) )
         {
           additionalSuppressions.add( "deprecation" );
         }

@@ -17,6 +17,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
+import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
 
@@ -156,7 +157,7 @@ final class StingGeneratorUtil
     {
       additionalSuppressions.add( "rawtypes" );
     }
-    if ( StingElementsUtil.isElementDeprecated( binding.getElement() ) )
+    if ( ElementsUtil.isElementDeprecated( binding.getElement() ) )
     {
       additionalSuppressions.add( "deprecation" );
     }

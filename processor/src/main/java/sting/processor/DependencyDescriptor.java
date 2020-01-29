@@ -8,6 +8,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import org.realityforge.proton.ElementsUtil;
 
 final class DependencyDescriptor
 {
@@ -73,7 +74,7 @@ final class DependencyDescriptor
     final TypeMirror type = _coordinate.getType();
     return
       TypeKind.DECLARED != type.getKind() ||
-      StingElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) type ).asElement() );
+      ElementsUtil.isElementDeprecated( (TypeElement) ( (DeclaredType) type ).asElement() );
   }
 
   @Nonnull

@@ -14,6 +14,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
 
@@ -59,7 +60,7 @@ final class FragmentGenerator
     final TypeMirror returnType = element.getReturnType();
     final boolean isPublic =
       TypeKind.DECLARED != returnType.getKind() ||
-      StingElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) returnType ).asElement() );
+      ElementsUtil.isElementDeprecated( (TypeElement) ( (DeclaredType) returnType ).asElement() );
 
     final MethodSpec.Builder method =
       MethodSpec

@@ -14,6 +14,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import org.realityforge.proton.ElementsUtil;
 
 final class Node
 {
@@ -106,7 +107,7 @@ final class Node
       final ExecutableElement element = binding.getElement();
       _type = isFromProvides() ? element.getReturnType() : element.getEnclosingElement().asType();
       _public = TypeKind.DECLARED != _type.getKind() ||
-                StingElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) _type ).asElement() );
+                ElementsUtil.isElementDeprecated( (TypeElement) ( (DeclaredType) _type ).asElement() );
     }
     else
     {
