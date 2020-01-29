@@ -4,7 +4,7 @@ import sting.Dependency;
 
 public class UnclaimedConstructorParameterDependencyModel
 {
-  UnclaimedConstructorParameterDependencyModel( @Dependency( qualifier = "" ) String someValue )
+  UnclaimedConstructorParameterDependencyModel( @Dependency String someValue )
   {
   }
 }

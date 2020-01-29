@@ -6,7 +6,7 @@ import sting.Injectable;
 @Injectable
 public class UnclaimedMethodParameterDependencyModel
 {
-  void myMethod( @Dependency( qualifier = "" ) String someValue )
+  void myMethod( @Dependency String someValue )
   {
   }
 }

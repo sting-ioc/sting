@@ -28,5 +28,5 @@ public @interface Dependency
    * @return an opaque qualifier string.
    */
   @Nonnull
-  String qualifier();
+  String qualifier() default "";
 }
