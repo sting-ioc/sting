@@ -4,6 +4,7 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -14,6 +15,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import org.realityforge.proton.GeneratorUtil;
+import org.realityforge.proton.SuppressWarningsUtil;
 
 final class FragmentGenerator
 {
@@ -32,9 +34,14 @@ final class FragmentGenerator
         .addModifiers( Modifier.PUBLIC, Modifier.FINAL );
     GeneratorUtil.addOriginatingTypes( element, builder );
     GeneratorUtil.copyWhitelistedAnnotations( element, builder );
-    builder.addSuperinterface( TypeName.get( element.asType() ) );
+    final TypeMirror type = element.asType();
+    builder.addSuperinterface( TypeName.get( type ) );
 
     GeneratorUtil.addGeneratedAnnotation( processingEnv, builder, StingProcessor.class.getName() );
+    SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv,
+                                                        builder,
+                                                        Collections.emptyList(),
+                                                        Collections.singletonList( type ) );
 
     for ( final Binding binding : fragment.getBindings() )
     {
