@@ -326,16 +326,8 @@ final class InjectorGenerator
       code.append( "($T) " );
       args.add( dependency.getCoordinate().getType() );
     }
-    if ( node.isEager() )
-    {
-      code.append( "$N" );
-      args.add( node.getName() );
-    }
-    else
-    {
-      code.append( "$N()" );
-      args.add( node.getName() );
-    }
+    code.append( node.isEager() ? "$N" : "$N()" );
+    args.add( node.getName() );
   }
 
   private static void emitFragmentFields( @Nonnull final ProcessingEnvironment processingEnv,
