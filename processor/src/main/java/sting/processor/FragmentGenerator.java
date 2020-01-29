@@ -60,7 +60,7 @@ final class FragmentGenerator
     final TypeMirror returnType = element.getReturnType();
     final boolean isPublic =
       TypeKind.DECLARED != returnType.getKind() ||
-      ElementsUtil.isElementDeprecated( ( (DeclaredType) returnType ).asElement() );
+      ElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) returnType ).asElement() );
 
     final MethodSpec.Builder method =
       MethodSpec

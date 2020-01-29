@@ -107,7 +107,7 @@ final class Node
       final ExecutableElement element = binding.getElement();
       _type = isFromProvides() ? element.getReturnType() : element.getEnclosingElement().asType();
       _public = TypeKind.DECLARED != _type.getKind() ||
-                ElementsUtil.isElementDeprecated( (TypeElement) ( (DeclaredType) _type ).asElement() );
+                ElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) _type ).asElement() );
     }
     else
     {

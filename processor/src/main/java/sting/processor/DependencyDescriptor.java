@@ -14,6 +14,7 @@ final class DependencyDescriptor
 {
   /**
    * The kind of the dependency.
+   *
    * @see Kind
    */
   @Nonnull
@@ -74,7 +75,7 @@ final class DependencyDescriptor
     final TypeMirror type = _coordinate.getType();
     return
       TypeKind.DECLARED != type.getKind() ||
-      ElementsUtil.isElementDeprecated( (TypeElement) ( (DeclaredType) type ).asElement() );
+      ElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) type ).asElement() );
   }
 
   @Nonnull
