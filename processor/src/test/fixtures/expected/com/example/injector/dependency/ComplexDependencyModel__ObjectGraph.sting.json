@@ -3,15 +3,15 @@
   "values": [
     {
       "id": "com.example.injector.dependency.ComplexDependencyModel.MyModel3",
-      "bindingType": "INJECTABLE"
+      "kind": "INJECTABLE"
     },
     {
       "id": "com.example.injector.dependency.ComplexDependencyModel.MyModel2",
-      "bindingType": "INJECTABLE"
+      "kind": "INJECTABLE"
     },
     {
       "id": "com.example.injector.dependency.ComplexDependencyModel.MyModel1",
-      "bindingType": "INJECTABLE"
+      "kind": "INJECTABLE"
     }
   ]
 }

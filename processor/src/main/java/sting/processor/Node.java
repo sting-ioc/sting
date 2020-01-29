@@ -123,8 +123,8 @@ final class Node
     }
     else
     {
-      final Binding.Type bindingType = _binding.getBindingType();
-      return Binding.Type.PROVIDES == bindingType || Binding.Type.NULLABLE_PROVIDES == bindingType;
+      final Binding.Kind kind = _binding.getKind();
+      return Binding.Kind.PROVIDES == kind || Binding.Kind.NULLABLE_PROVIDES == kind;
     }
   }
 
@@ -262,8 +262,8 @@ final class Node
     g.writeStartObject();
     assert null != _binding;
     g.write( "id", _binding.getId() );
-    final Binding.Type type = _binding.getBindingType();
-    g.write( "bindingType", type.name() );
+    final Binding.Kind kind = _binding.getKind();
+    g.write( "kind", kind.name() );
     if ( _eager )
     {
       g.write( "eager", true );

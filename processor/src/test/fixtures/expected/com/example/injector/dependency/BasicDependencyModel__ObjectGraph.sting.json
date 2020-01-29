@@ -3,7 +3,7 @@
   "values": [
     {
       "id": "com.example.injector.dependency.BasicDependencyModel.MyModel",
-      "bindingType": "INJECTABLE"
+      "kind": "INJECTABLE"
     }
   ]
 }

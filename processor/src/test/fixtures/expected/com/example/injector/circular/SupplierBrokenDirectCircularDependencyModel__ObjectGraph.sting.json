@@ -3,7 +3,7 @@
   "values": [
     {
       "id": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel2",
-      "bindingType": "INJECTABLE",
+      "kind": "INJECTABLE",
       "dependencies": [
         {
           "coordinate": {
@@ -17,7 +17,7 @@
     },
     {
       "id": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel1",
-      "bindingType": "INJECTABLE",
+      "kind": "INJECTABLE",
       "dependencies": [
         {
           "coordinate": {

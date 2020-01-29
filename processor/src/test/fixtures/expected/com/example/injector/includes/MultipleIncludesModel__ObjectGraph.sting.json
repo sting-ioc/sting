@@ -3,7 +3,7 @@
   "values": [
     {
       "id": "com.example.injector.includes.MultipleIncludesModel.MyFragment#provideRunnable",
-      "bindingType": "PROVIDES"
+      "kind": "PROVIDES"
     }
   ]
 }

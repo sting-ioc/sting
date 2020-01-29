@@ -102,7 +102,7 @@ final class InjectorGenerator
   {
     for ( final Node node : graph.getNodes() )
     {
-      final boolean isNonnull = node.isEager() && Binding.Type.NULLABLE_PROVIDES != node.getBinding().getBindingType();
+      final boolean isNonnull = node.isEager() && Binding.Kind.NULLABLE_PROVIDES != node.getBinding().getKind();
       final FieldSpec.Builder field =
         FieldSpec
           .builder( getPublicTypeName( node ), node.getName(), Modifier.PRIVATE )
@@ -122,7 +122,7 @@ final class InjectorGenerator
       builder.addField( field.build() );
 
       if ( !node.isEager() &&
-           ( Binding.Type.NULLABLE_PROVIDES == node.getBinding().getBindingType() ||
+           ( Binding.Kind.NULLABLE_PROVIDES == node.getBinding().getKind() ||
              node.getType().getKind().isPrimitive() ) )
       {
         builder.addField( FieldSpec.builder( TypeName.BOOLEAN, getFlagFieldName( node ), Modifier.PRIVATE ).build() );
@@ -164,7 +164,7 @@ final class InjectorGenerator
         }
         SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv, method, additionalSuppressions, types );
 
-        final boolean isNonnull = Binding.Type.NULLABLE_PROVIDES != node.getBinding().getBindingType();
+        final boolean isNonnull = Binding.Kind.NULLABLE_PROVIDES != node.getBinding().getKind();
         final boolean isNonPrimitive = !node.getType().getKind().isPrimitive();
         if ( isNonPrimitive )
         {
@@ -211,7 +211,7 @@ final class InjectorGenerator
   {
     code.append( "$N = " );
     args.add( node.getName() );
-    final boolean isNonnull = Binding.Type.NULLABLE_PROVIDES != node.getBinding().getBindingType();
+    final boolean isNonnull = Binding.Kind.NULLABLE_PROVIDES != node.getBinding().getKind();
     final boolean requireNonNull = isNonnull && !node.getType().getKind().isPrimitive();
     if ( requireNonNull )
     {

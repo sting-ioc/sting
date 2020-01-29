@@ -24,28 +24,28 @@ public class BindingTest
     return new Object[][]
       {
         new Object[]{ "A",
-                      Binding.Type.INJECTABLE,
+                      Binding.Kind.INJECTABLE,
                       "",
                       new TypeMirror[ 0 ],
                       true,
                       new DependencyDescriptor[ 0 ],
                       "{\"id\":\"A\",\"eager\":true}" },
         new Object[]{ "B",
-                      Binding.Type.INJECTABLE,
+                      Binding.Kind.INJECTABLE,
                       "",
                       new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
                       false,
                       new DependencyDescriptor[ 0 ],
                       "{\"id\":\"B\",\"types\":[\"com.biz.MyService\"]}" },
         new Object[]{ "C",
-                      Binding.Type.INJECTABLE,
+                      Binding.Kind.INJECTABLE,
                       "com.biz/MyQualifier",
                       new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
                       false,
                       new DependencyDescriptor[ 0 ],
                       "{\"id\":\"C\",\"qualifier\":\"com.biz/MyQualifier\",\"types\":[\"com.biz.MyService\"]}" },
         new Object[]{ "D",
-                      Binding.Type.INJECTABLE,
+                      Binding.Kind.INJECTABLE,
                       "",
                       new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ),
                                         mockTypeMirror( "com.biz.OtherService" ) },
@@ -53,7 +53,7 @@ public class BindingTest
                       new DependencyDescriptor[ 0 ],
                       "{\"id\":\"D\",\"types\":[\"com.biz.MyService\",\"com.biz.OtherService\"]}" },
         new Object[]{ "E",
-                      Binding.Type.INJECTABLE,
+                      Binding.Kind.INJECTABLE,
                       "",
                       new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
                       false,
@@ -63,7 +63,7 @@ public class BindingTest
                                                               false ) },
                       "{\"id\":\"E\",\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"}}]}" },
         new Object[]{ "F",
-                      Binding.Type.INJECTABLE,
+                      Binding.Kind.INJECTABLE,
                       "",
                       new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
                       false,
@@ -73,7 +73,7 @@ public class BindingTest
                                                               false ) },
                       "{\"id\":\"F\",\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"qualifier\":\"com.biz/MyQualification\",\"type\":\"com.biz.MyDep\"}}]}" },
         new Object[]{ "G",
-                      Binding.Type.INJECTABLE,
+                      Binding.Kind.INJECTABLE,
                       "",
                       new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
                       false,
@@ -83,7 +83,7 @@ public class BindingTest
                                                               true ) },
                       "{\"id\":\"G\",\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"},\"optional\":true}]}" },
         new Object[]{ "H",
-                      Binding.Type.INJECTABLE,
+                      Binding.Kind.INJECTABLE,
                       "",
                       new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
                       false,
@@ -93,7 +93,7 @@ public class BindingTest
                                                               false ) },
                       "{\"id\":\"H\",\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"type\":\"SUPPLIER\",\"coordinate\":{\"type\":\"com.biz.Plugin\"}}]}" },
         new Object[]{ "I",
-                      Binding.Type.INJECTABLE,
+                      Binding.Kind.INJECTABLE,
                       "",
                       new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
                       false,
@@ -107,7 +107,7 @@ public class BindingTest
                                                               false ) },
                       "{\"id\":\"I\",\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"},\"optional\":true},{\"coordinate\":{\"type\":\"com.biz.OtherDep\"}}]}" },
         new Object[]{ "J",
-                      Binding.Type.INJECTABLE,
+                      Binding.Kind.INJECTABLE,
                       "",
                       new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
                       false,
@@ -121,14 +121,14 @@ public class BindingTest
                                                               true ) },
                       "{\"id\":\"J\",\"types\":[\"com.biz.MyService\"],\"dependencies\":[{\"coordinate\":{\"type\":\"com.biz.MyDep\"}},{\"type\":\"SUPPLIER\",\"coordinate\":{\"qualifier\":\"Backend\",\"type\":\"com.biz.Plugin\"},\"optional\":true}]}" },
         new Object[]{ "K",
-                      Binding.Type.PROVIDES,
+                      Binding.Kind.PROVIDES,
                       "",
                       new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
                       false,
                       new DependencyDescriptor[ 0 ],
                       "{\"id\":\"K\",\"providesMethod\":\"myProviderMethod\",\"types\":[\"com.biz.MyService\"]}" },
         new Object[]{ "L",
-                      Binding.Type.NULLABLE_PROVIDES,
+                      Binding.Kind.NULLABLE_PROVIDES,
                       "",
                       new TypeMirror[]{ mockTypeMirror( "com.biz.MyService" ) },
                       false,
@@ -139,7 +139,7 @@ public class BindingTest
 
   @Test( dataProvider = "binding" )
   public void verifyBinding( @Nonnull final String id,
-                             @Nonnull final Binding.Type bindingType,
+                             @Nonnull final Binding.Kind kind,
                              @Nonnull final String qualifier,
                              @Nonnull final TypeMirror[] types,
                              final boolean eager,
@@ -147,15 +147,15 @@ public class BindingTest
                              @Nonnull final String expectedJson )
   {
     final ExecutableElement element = mock( ExecutableElement.class );
-    if ( Binding.Type.INJECTABLE != bindingType )
+    if ( Binding.Kind.INJECTABLE != kind )
     {
       final Name name = mock( Name.class );
       when( name.toString() ).thenReturn( "myProviderMethod" );
       when( element.getSimpleName() ).thenReturn( name );
     }
     when( element.getKind() )
-      .thenReturn( Binding.Type.INJECTABLE == bindingType ? ElementKind.CONSTRUCTOR : ElementKind.METHOD );
-    final Binding binding = createBinding( id, bindingType, qualifier, types, eager, element, dependencies );
+      .thenReturn( Binding.Kind.INJECTABLE == kind ? ElementKind.CONSTRUCTOR : ElementKind.METHOD );
+    final Binding binding = createBinding( id, kind, qualifier, types, eager, element, dependencies );
 
     assertJsonEmitsJson( binding, expectedJson );
   }
@@ -189,15 +189,15 @@ public class BindingTest
 
   @Nonnull
   private Binding createBinding( @Nonnull final String id,
-                                 @Nonnull final Binding.Type bindingType,
+                                 @Nonnull final Binding.Kind kind,
                                  @Nonnull final String qualifier,
                                  @Nonnull final TypeMirror[] types,
                                  final boolean eager,
                                  @Nonnull final ExecutableElement element,
                                  @Nonnull final DependencyDescriptor[] dependencies )
   {
-    final Binding binding = new Binding( bindingType, id, qualifier, types, eager, element, dependencies );
-    assertEquals( binding.getBindingType(), bindingType );
+    final Binding binding = new Binding( kind, id, qualifier, types, eager, element, dependencies );
+    assertEquals( binding.getKind(), kind );
     assertEquals( binding.getQualifier(), qualifier );
     assertEquals( binding.getTypes(), types );
     assertEquals( binding.isEager(), eager );

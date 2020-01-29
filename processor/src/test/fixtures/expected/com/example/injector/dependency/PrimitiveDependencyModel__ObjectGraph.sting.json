@@ -3,35 +3,35 @@
   "values": [
     {
       "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue8",
-      "bindingType": "PROVIDES"
+      "kind": "PROVIDES"
     },
     {
       "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue7",
-      "bindingType": "PROVIDES"
+      "kind": "PROVIDES"
     },
     {
       "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue6",
-      "bindingType": "PROVIDES"
+      "kind": "PROVIDES"
     },
     {
       "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue5",
-      "bindingType": "PROVIDES"
+      "kind": "PROVIDES"
     },
     {
       "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue4",
-      "bindingType": "PROVIDES"
+      "kind": "PROVIDES"
     },
     {
       "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue3",
-      "bindingType": "PROVIDES"
+      "kind": "PROVIDES"
     },
     {
       "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue2",
-      "bindingType": "PROVIDES"
+      "kind": "PROVIDES"
     },
     {
       "id": "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment#provideValue",
-      "bindingType": "PROVIDES"
+      "kind": "PROVIDES"
     }
   ]
 }

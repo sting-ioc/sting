@@ -383,7 +383,7 @@ public final class StingProcessor
       }
 
       final List<Binding> nullableProviders = bindings.stream()
-        .filter( b -> Binding.Type.NULLABLE_PROVIDES == b.getBindingType() )
+        .filter( b -> Binding.Kind.NULLABLE_PROVIDES == b.getKind() )
         .collect( Collectors.toList() );
       if ( !dependency.isOptional() && !nullableProviders.isEmpty() )
       {
@@ -971,7 +971,7 @@ public final class StingProcessor
         } );
 
       final Binding binding =
-        new Binding( nullablePresent ? Binding.Type.NULLABLE_PROVIDES : Binding.Type.PROVIDES,
+        new Binding( nullablePresent ? Binding.Kind.NULLABLE_PROVIDES : Binding.Kind.PROVIDES,
                      id,
                      qualifier,
                      publishedTypes.toArray( new TypeMirror[ 0 ] ),
@@ -1189,7 +1189,7 @@ public final class StingProcessor
                                     element );
     }
     final Binding binding =
-      new Binding( Binding.Type.INJECTABLE,
+      new Binding( Binding.Kind.INJECTABLE,
                    id,
                    qualifier,
                    publishedTypes.toArray( new TypeMirror[ 0 ] ),

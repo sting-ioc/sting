@@ -3,11 +3,11 @@
   "values": [
     {
       "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel0",
-      "bindingType": "INJECTABLE"
+      "kind": "INJECTABLE"
     },
     {
       "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel3",
-      "bindingType": "INJECTABLE",
+      "kind": "INJECTABLE",
       "dependencies": [
         {
           "coordinate": {
@@ -29,17 +29,17 @@
     },
     {
       "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel2",
-      "bindingType": "INJECTABLE",
+      "kind": "INJECTABLE",
       "eager": true
     },
     {
       "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel1",
-      "bindingType": "INJECTABLE",
+      "kind": "INJECTABLE",
       "eager": true
     },
     {
       "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel5",
-      "bindingType": "INJECTABLE",
+      "kind": "INJECTABLE",
       "eager": true,
       "dependencies": [
         {
@@ -70,7 +70,7 @@
     },
     {
       "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel4",
-      "bindingType": "INJECTABLE",
+      "kind": "INJECTABLE",
       "eager": true,
       "dependencies": [
         {
@@ -101,7 +101,7 @@
     },
     {
       "id": "com.example.injector.dependency.eager.BasicEagerDependencyModel.MyModel6",
-      "bindingType": "INJECTABLE",
+      "kind": "INJECTABLE",
       "eager": true,
       "dependencies": [
         {

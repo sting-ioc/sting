@@ -3,11 +3,11 @@
   "values": [
     {
       "id": "com.example.injector.dependency.MultipleDependencyModel.MyModel2",
-      "bindingType": "INJECTABLE"
+      "kind": "INJECTABLE"
     },
     {
       "id": "com.example.injector.dependency.MultipleDependencyModel.MyModel1",
-      "bindingType": "INJECTABLE"
+      "kind": "INJECTABLE"
     }
   ]
 }

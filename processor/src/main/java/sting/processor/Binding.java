@@ -14,10 +14,10 @@ import javax.lang.model.type.TypeMirror;
 final class Binding
 {
   /**
-   * The type of the binding.
+   * The kind of the binding.
    */
   @Nonnull
-  private final Type _bindingType;
+  private final Kind _kind;
   /**
    * A unique identifier for the binding which can be specified by the developer or derived automatically.
    * For an INJECTABLE binding this is the fully qualified name of the class. For other bindings it is
@@ -47,9 +47,9 @@ final class Binding
   private final boolean _eager;
   /**
    * The element that created this binding.
-   * The field will be a constructor for an {@link Type#INJECTABLE} binding
-   * otherwise it will be a method for a {@link Type#PROVIDES} binding
-   * or a {@link Type#NULLABLE_PROVIDES} binding.
+   * The field will be a constructor for an {@link Kind#INJECTABLE} binding
+   * otherwise it will be a method for a {@link Kind#PROVIDES} binding
+   * or a {@link Kind#NULLABLE_PROVIDES} binding.
    */
   @Nonnull
   private final ExecutableElement _element;
@@ -63,7 +63,7 @@ final class Binding
    */
   private Object _owner;
 
-  Binding( @Nonnull final Type bindingType,
+  Binding( @Nonnull final Kind kind,
            @Nonnull final String id,
            @Nonnull final String qualifier,
            @Nonnull final TypeMirror[] types,
@@ -71,9 +71,9 @@ final class Binding
            @Nonnull final ExecutableElement element,
            @Nonnull final DependencyDescriptor[] dependencies )
   {
-    assert ( Type.INJECTABLE == bindingType && ElementKind.CONSTRUCTOR == element.getKind() ) ||
-           ( Type.INJECTABLE != bindingType && ElementKind.METHOD == element.getKind() );
-    _bindingType = Objects.requireNonNull( bindingType );
+    assert ( Kind.INJECTABLE == kind && ElementKind.CONSTRUCTOR == element.getKind() ) ||
+           ( Kind.INJECTABLE != kind && ElementKind.METHOD == element.getKind() );
+    _kind = Objects.requireNonNull( kind );
     _id = Objects.requireNonNull( id );
     _qualifier = Objects.requireNonNull( qualifier );
     _types = Objects.requireNonNull( types );
@@ -91,9 +91,9 @@ final class Binding
   }
 
   @Nonnull
-  Type getBindingType()
+  Kind getKind()
   {
-    return _bindingType;
+    return _kind;
   }
 
   @Nonnull
@@ -140,7 +140,7 @@ final class Binding
   void write( @Nonnull final JsonGenerator g )
   {
     g.write( "id", _id );
-    if ( Type.INJECTABLE != _bindingType )
+    if ( Kind.INJECTABLE != _kind )
     {
       g.write( "providesMethod", _element.getSimpleName().toString() );
     }
@@ -148,7 +148,7 @@ final class Binding
     {
       g.write( "qualifier", _qualifier );
     }
-    if ( Type.NULLABLE_PROVIDES == _bindingType )
+    if ( Kind.NULLABLE_PROVIDES == _kind )
     {
       g.write( "nullable", true );
     }
@@ -179,9 +179,9 @@ final class Binding
   void setOwner( @Nonnull final Object owner )
   {
     assert null == _owner;
-    assert ( owner instanceof InjectableDescriptor && Type.INJECTABLE == _bindingType ) ||
-           ( owner instanceof FragmentDescriptor && Type.PROVIDES == _bindingType ) ||
-           ( owner instanceof FragmentDescriptor && Type.NULLABLE_PROVIDES == _bindingType );
+    assert ( owner instanceof InjectableDescriptor && Kind.INJECTABLE == _kind ) ||
+           ( owner instanceof FragmentDescriptor && Kind.PROVIDES == _kind ) ||
+           ( owner instanceof FragmentDescriptor && Kind.NULLABLE_PROVIDES == _kind );
     _owner = owner;
   }
 
@@ -189,13 +189,13 @@ final class Binding
   String describe()
   {
     final String className = ( (TypeElement) _element.getEnclosingElement() ).getQualifiedName().toString();
-    if ( Binding.Type.INJECTABLE == _bindingType )
+    if ( Kind.INJECTABLE == _kind )
     {
       return className;
     }
     else
     {
-      assert Binding.Type.PROVIDES == _bindingType || Binding.Type.NULLABLE_PROVIDES == _bindingType;
+      assert Kind.PROVIDES == _kind || Kind.NULLABLE_PROVIDES == _kind;
       return className + "." + _element.getSimpleName();
     }
   }
@@ -203,18 +203,18 @@ final class Binding
   @Nonnull
   String getTypeLabel()
   {
-    if ( Binding.Type.INJECTABLE == _bindingType )
+    if ( Kind.INJECTABLE == _kind )
     {
       return "[Injectable] ";
     }
     else
     {
-      assert Binding.Type.PROVIDES == _bindingType || Binding.Type.NULLABLE_PROVIDES == _bindingType;
+      assert Kind.PROVIDES == _kind || Kind.NULLABLE_PROVIDES == _kind;
       return "[Provides]   ";
     }
   }
 
-  enum Type
+  enum Kind
   {
     /// Instances are created by invoking the constructor
     INJECTABLE,

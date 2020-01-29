@@ -139,8 +139,8 @@ final class DescriptorIO
   private void writeBinding( @Nonnull final DataOutputStream dos, @Nonnull final Binding binding )
     throws IOException
   {
-    final Binding.Type bindingType = binding.getBindingType();
-    dos.writeByte( bindingType.ordinal() );
+    final Binding.Kind kind = binding.getKind();
+    dos.writeByte( kind.ordinal() );
     dos.writeUTF( binding.getId() );
     dos.writeUTF( binding.getQualifier() );
     final TypeMirror[] types = binding.getTypes();
@@ -150,7 +150,7 @@ final class DescriptorIO
       dos.writeUTF( toFieldDescriptor( type ) );
     }
     dos.writeBoolean( binding.isEager() );
-    dos.writeUTF( Binding.Type.INJECTABLE == bindingType ? "" : binding.getElement().getSimpleName().toString() );
+    dos.writeUTF( Binding.Kind.INJECTABLE == kind ? "" : binding.getElement().getSimpleName().toString() );
     final DependencyDescriptor[] dependencies = binding.getDependencies();
     dos.writeShort( dependencies.length );
     for ( final DependencyDescriptor dependency : dependencies )
@@ -163,7 +163,7 @@ final class DescriptorIO
   private Binding readBinding( @Nonnull final DataInputStream dis, @Nonnull final TypeElement enclosingElement )
     throws IOException
   {
-    final Binding.Type type = Binding.Type.values()[ dis.readByte() ];
+    final Binding.Kind kind = Binding.Kind.values()[ dis.readByte() ];
     final String id = dis.readUTF();
     final String qualifier = dis.readUTF();
     final short typeCount = dis.readShort();
@@ -174,10 +174,10 @@ final class DescriptorIO
     }
     final boolean eager = dis.readBoolean();
     final String elementName = dis.readUTF();
-    assert "".equals( elementName ) || Binding.Type.INJECTABLE != type;
+    assert "".equals( elementName ) || Binding.Kind.INJECTABLE != kind;
 
     final ExecutableElement element;
-    if ( Binding.Type.INJECTABLE != type )
+    if ( Binding.Kind.INJECTABLE != kind )
     {
       element = enclosingElement.getEnclosedElements()
         .stream()
@@ -204,7 +204,7 @@ final class DescriptorIO
       dependencies[ i ] = readDependency( dis, element );
     }
 
-    return new Binding( type, id, qualifier, types, eager, element, dependencies );
+    return new Binding( kind, id, qualifier, types, eager, element, dependencies );
   }
 
   private void writeDependency( @Nonnull final DataOutputStream dos, @Nonnull final DependencyDescriptor dependency )

@@ -3,7 +3,7 @@
   "values": [
     {
       "id": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyFragment#provideMyModel2",
-      "bindingType": "PROVIDES",
+      "kind": "PROVIDES",
       "dependencies": [
         {
           "coordinate": {
@@ -17,7 +17,7 @@
     },
     {
       "id": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2",
-      "bindingType": "INJECTABLE",
+      "kind": "INJECTABLE",
       "dependencies": [
         {
           "coordinate": {
@@ -31,7 +31,7 @@
     },
     {
       "id": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1",
-      "bindingType": "INJECTABLE",
+      "kind": "INJECTABLE",
       "dependencies": [
         {
           "coordinate": {
