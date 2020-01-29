@@ -3,6 +3,7 @@ package sting.processor;
 import com.google.common.collect.ImmutableList;
 import com.google.testing.compile.Compilation;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -552,6 +553,39 @@ public final class StingProcessorTest
 
     assertEquals( diagnostics.get( 1 ).getMessage( Locale.getDefault() ),
                   "Failed to process the com.example.injector.UnresolvedElementsInjectorModel injector." );
+  }
+
+  @Test
+  public void unresolvedDueToBadDiscriptorInjectorModel()
+    throws Exception
+  {
+    final Path targetDir = compileBindings();
+
+    assertCompilationSuccessful( compileInjector( targetDir ) );
+
+    final Path descriptor =
+      targetDir
+        .resolve( "com" )
+        .resolve( "example" )
+        .resolve( "injector" )
+        .resolve( "MyFragment.sbf" );
+
+    final RandomAccessFile file = new RandomAccessFile( descriptor.toFile().getAbsolutePath(), "rw" );
+
+    // This is incorrect header
+    file.seek( 0 );
+    file.writeInt( 0x666 );
+    file.close();
+
+    final Compilation compilation = compileInjector( targetDir );
+    assertCompilationUnsuccessful( compilation );
+    final ImmutableList<Diagnostic<? extends JavaFileObject>> diagnostics = compilation.diagnostics();
+    diagnostics
+    .stream()
+    .map( d -> d.getMessage( Locale.getDefault() ) )
+    .filter( d -> d.contains( "Failed to read the Sting descriptor for include: com.example.injector.MyFragment." ) )
+    .findAny()
+    .orElseThrow( AssertionError::new );
   }
 
   @Nonnull
