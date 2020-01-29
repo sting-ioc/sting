@@ -18,6 +18,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeMirror;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
 
@@ -42,7 +43,7 @@ final class InjectorGenerator
 
     builder.addSuperinterface( TypeName.get( element.asType() ) );
 
-    emitFragmentFields( builder, graph );
+    emitFragmentFields( processingEnv, builder, graph );
     emitNodeFields( processingEnv, graph, builder );
     emitConstructor( graph, builder );
     emitNodeAccessorMethod( processingEnv, graph, builder );
@@ -335,17 +336,20 @@ final class InjectorGenerator
     }
   }
 
-  private static void emitFragmentFields( @Nonnull final TypeSpec.Builder builder, @Nonnull final ObjectGraph graph )
+  private static void emitFragmentFields( @Nonnull final ProcessingEnvironment processingEnv,
+                                          @Nonnull final TypeSpec.Builder builder,
+                                          @Nonnull final ObjectGraph graph )
   {
     for ( final FragmentNode node : graph.getFragments() )
     {
       final TypeName type = StingGeneratorUtil.getGeneratedClassName( node.getFragment().getElement() );
-      builder.addField( FieldSpec
-                          .builder( type, node.getName(), Modifier.PRIVATE, Modifier.FINAL )
-                          .addAnnotation( GeneratorUtil.NONNULL_CLASSNAME )
-                          .initializer( "new $T()", type )
-                          .build() );
-
+      final FieldSpec.Builder field = FieldSpec
+        .builder( type, node.getName(), Modifier.PRIVATE, Modifier.FINAL )
+        .addAnnotation( GeneratorUtil.NONNULL_CLASSNAME )
+        .initializer( "new $T()", type );
+      final List<TypeMirror> types = Collections.singletonList( node.getFragment().getElement().asType() );
+      SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv, field, Collections.emptyList(), types );
+      builder.addField( field.build() );
     }
   }
 }
