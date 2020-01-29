@@ -51,7 +51,6 @@ import org.realityforge.proton.IOUtil;
 import org.realityforge.proton.JsonUtil;
 import org.realityforge.proton.MemberChecks;
 import org.realityforge.proton.ProcessorException;
-import org.realityforge.proton.SuperficialValidation;
 
 /**
  * Annotation processor that analyzes sting annotated source and generates dependency injection container.
@@ -515,43 +514,38 @@ public final class StingProcessor
 
   private boolean isResolved( @Nonnull final TypeElement originator, @Nonnull final Collection<DeclaredType> includes )
   {
+    // By the time we get here we can guarantee that the java types are correctly resolved
+    // so we only have to check that the descriptors are present and valid in this method
     for ( final DeclaredType include : includes )
     {
-      if ( !SuperficialValidation.validateType( processingEnv, include ) )
+      final TypeElement element = (TypeElement) include.asElement();
+      final String classname = element.getQualifiedName().toString();
+      if ( null == _registry.findFragmentByClassName( classname ) &&
+           null == _registry.findInjectableByClassName( classname ) )
       {
-        return false;
-      }
-      else
-      {
-        final TypeElement element = (TypeElement) include.asElement();
-        final String classname = element.getQualifiedName().toString();
-        if ( null == _registry.findFragmentByClassName( classname ) &&
-             null == _registry.findInjectableByClassName( classname ) )
+        final byte[] data = tryLoadDescriptorData( element );
+        if ( null == data )
         {
-          final byte[] data = tryLoadDescriptorData( element );
-          if ( null == data )
+          return false;
+        }
+        try
+        {
+          final Object descriptor = loadDescriptor( classname, data );
+          if ( descriptor instanceof FragmentDescriptor )
           {
-            return false;
+            _registry.registerFragment( (FragmentDescriptor) descriptor );
           }
-          try
+          else
           {
-            final Object descriptor = loadDescriptor( classname, data );
-            if ( descriptor instanceof FragmentDescriptor )
-            {
-              _registry.registerFragment( (FragmentDescriptor) descriptor );
-            }
-            else
-            {
-              _registry.registerInjectable( (InjectableDescriptor) descriptor );
-            }
+            _registry.registerInjectable( (InjectableDescriptor) descriptor );
           }
-          catch ( final IOException e )
-          {
-            throw new ProcessorException( "Failed to read the Sting descriptor for " +
-                                          "include: " + classname + ". " +
-                                          "Error: " + e,
-                                          originator );
-          }
+        }
+        catch ( final IOException e )
+        {
+          throw new ProcessorException( "Failed to read the Sting descriptor for " +
+                                        "include: " + classname + ". " +
+                                        "Error: " + e,
+                                        originator );
         }
       }
     }
