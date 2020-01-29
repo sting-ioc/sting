@@ -48,12 +48,14 @@ complete as there is too much un-said.
 * Figure out terminology. Currently it is a mixed bag derived from various injector frameworks that it has
   been inspired from. Terms that are misused and should be cleaned up. This would involved cleaning up lots
   of code, tests and javadocs so should be done sooner rather than later.
-  * Binding = a source of a value that could contribute to the object graph
-  * Coordinate = the combination of type+qualifier used to address a Binding
-  * Dependency = The declaration by a binding of values that must be injected into Binding for it to be valid
-  * Value = very imprecise usage but often means the actual inclusion of a Binding in an object graph.
-  * Node = very similar to Value but a little more precise
-  * Edge = the actual between two nodes
+  * `Type` = the java type that a service consumes or publishes.
+  * `Qualifier` = an arbitrary user-supplied string that is used to distinguish between services
+    that have the same `Type` but different semantics.
+  * `Coordinate` = the combination of `Type`+`Qualifier` used to address a service
+  * `Binding` = a mechanism for creating a value that can contribute to the object graph.
+  * `Dependency` = a declaration by a binding that indicates the services that it consumes.
+  * `Node` = the inclusion of a `Binding` in an object graph
+  * `Edge` = a list of nodes that provide a service to a `Node` to satisfy a `Dependency`
 
 * Generate a [.dot](https://en.wikipedia.org/wiki/DOT_(graph_description_language) formatted version of
   object graph so that it can be fed into graphviz
