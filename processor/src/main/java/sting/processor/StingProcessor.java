@@ -186,15 +186,16 @@ public final class StingProcessor
           .getMessager()
           .printMessage( Diagnostic.Kind.ERROR,
                          getClass().getSimpleName() + " failed to process " + injectors.size() + " injectors " +
-                         "as not all of their dependencies could be resolved. Check for compilation errors or a " +
-                         "circular dependency with generated code." );
+                         "as not all of their dependencies could be resolved. The java code resolved but the " +
+                         "descriptors were missing or in the incorrect format. Ensure that the included " +
+                         "typed have been compiled with a compatible version of Sting and that the .sbf " +
+                         "descriptors have been packaged with the .class files." );
         for ( final InjectorDescriptor injector : injectors )
         {
           processingEnv
             .getMessager()
             .printMessage( Diagnostic.Kind.ERROR,
-                           "Failed to process " + injector.getElement().getQualifiedName() + " injector " +
-                           "as not all of the dependencies could be resolved." );
+                           "Failed to process the " + injector.getElement().getQualifiedName() + " injector." );
         }
       }
     }
