@@ -6,8 +6,10 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
@@ -21,6 +23,10 @@ final class StingGeneratorUtil
 {
   @Nonnull
   static final String FRAMEWORK_PREFIX = "$sting$_";
+  @Nonnull
+  private static final ClassName COLLECTION = ClassName.get( Collection.class );
+  @Nonnull
+  private static final ClassName SUPPLIER = ClassName.get( Supplier.class );
 
   private StingGeneratorUtil()
   {
@@ -37,17 +43,17 @@ final class StingGeneratorUtil
     }
     else if ( DependencyDescriptor.Kind.SUPPLIER == kind )
     {
-      return ParameterizedTypeName.get( StingTypeNames.SUPPLIER, baseType );
+      return ParameterizedTypeName.get( SUPPLIER, baseType );
     }
     else if ( DependencyDescriptor.Kind.COLLECTION == kind )
     {
-      return ParameterizedTypeName.get( StingTypeNames.COLLECTION, baseType );
+      return ParameterizedTypeName.get( COLLECTION, baseType );
     }
     else
     {
       assert DependencyDescriptor.Kind.SUPPLIER_COLLECTION == kind;
-      return ParameterizedTypeName.get( StingTypeNames.COLLECTION,
-                                        ParameterizedTypeName.get( StingTypeNames.SUPPLIER, baseType ) );
+      return ParameterizedTypeName.get( COLLECTION,
+                                        ParameterizedTypeName.get( SUPPLIER, baseType ) );
     }
   }
 
@@ -97,18 +103,18 @@ final class StingGeneratorUtil
       else if ( DependencyDescriptor.Kind.SUPPLIER == kind )
       {
         anyNonPublicNonInstance = true;
-        paramType = StingTypeNames.SUPPLIER;
+        paramType = SUPPLIER;
       }
       else if ( DependencyDescriptor.Kind.COLLECTION == kind )
       {
         anyNonPublicNonInstance = true;
-        paramType = StingTypeNames.COLLECTION;
+        paramType = COLLECTION;
       }
       else
       {
         assert DependencyDescriptor.Kind.SUPPLIER_COLLECTION == kind;
         anyNonPublicNonInstance = true;
-        paramType = StingTypeNames.COLLECTION;
+        paramType = COLLECTION;
       }
       final ParameterSpec.Builder param = ParameterSpec.builder( paramType, paramName, Modifier.FINAL );
       GeneratorUtil.copyWhitelistedAnnotations( parameter, param );
