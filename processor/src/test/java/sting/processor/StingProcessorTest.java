@@ -521,6 +521,7 @@ public final class StingProcessorTest
                   "Failed to process the com.example.injector.UnresolvedElementsInjectorModel injector." );
   }
 
+
   @Test
   public void unresolvedFragmentInjectorModel()
     throws Exception
