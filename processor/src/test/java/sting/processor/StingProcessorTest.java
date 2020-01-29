@@ -446,6 +446,10 @@ public final class StingProcessorTest
       {
         new Object[]{ "NoPackageModel" },
 
+        new Object[]{ "com.example.deprecated.DeprecatedConstructorInjectableModel" },
+        new Object[]{ "com.example.deprecated.DeprecatedDependencyInjectableModel" },
+        new Object[]{ "com.example.deprecated.DeprecatedInjectableModel" },
+
         new Object[]{ "com.example.fragment.PackageAccessModel" },
 
         new Object[]{ "com.example.injectable.ExposeTypesModel" },

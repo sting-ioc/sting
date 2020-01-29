@@ -44,8 +44,6 @@ complete as there is too much un-said.
 
 * Add tests where `@Fragment` type is deprecated or `@Provides` method is deprecated or `@Dependency` parameter fot `@Provides` method is deprecated.
 
-* Add tests where `@Injectable` is deprecated or the constructor is deprecated or one of the ctor parameters is deprecated.
-
 * Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
   or `Injector` will have their type annotations scanned for matching annotations of which there must be at most
   1. This annotation gives the name pattern for the expected `@Injectable` or `@Fragment` annotated class that
