@@ -98,6 +98,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel" },
         new Object[]{ "com.example.injector.dependency.CollectionDependencyModel" },
         new Object[]{ "com.example.injector.dependency.ComplexDependencyModel" },
+        new Object[]{ "com.example.injector.dependency.EmptyCollectionDependencyModel" },
         new Object[]{ "com.example.injector.dependency.MultipleDependencyModel" },
         new Object[]{ "com.example.injector.dependency.OptionalDependencyModel" },
         new Object[]{ "com.example.injector.dependency.OptionalMissingDependencyModel" },

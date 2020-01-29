@@ -32,7 +32,7 @@ final class Edge
 
   void setSatisfiedBy( @Nonnull final Collection<Node> satisfiedBy )
   {
-    assert !satisfiedBy.isEmpty() || _dependency.isOptional();
+    assert !satisfiedBy.isEmpty() || _dependency.isOptional() || _dependency.getKind().isCollection();
     _satisfiedBy = satisfiedBy;
     for ( final Node node : satisfiedBy )
     {
@@ -57,7 +57,7 @@ final class Edge
   Collection<Node> getSatisfiedBy()
   {
     assert null != _satisfiedBy;
-    assert !_satisfiedBy.isEmpty() || _dependency.isOptional();
+    assert !_satisfiedBy.isEmpty() || _dependency.isOptional() || _dependency.getKind().isCollection();
     return _satisfiedBy;
   }
 }
