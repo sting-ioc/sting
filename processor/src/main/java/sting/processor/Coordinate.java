@@ -59,19 +59,9 @@ final class Coordinate
   @Override
   public boolean equals( final Object o )
   {
-    if ( this == o )
-    {
-      return true;
-    }
-    else if ( o instanceof Coordinate )
-    {
-      final Coordinate coordinate = (Coordinate) o;
-      return _qualifier.equals( coordinate._qualifier ) && _type.equals( coordinate._type );
-    }
-    else
-    {
-      return false;
-    }
+    assert o instanceof Coordinate;
+    final Coordinate coordinate = (Coordinate) o;
+    return _qualifier.equals( coordinate._qualifier ) && _type.equals( coordinate._type );
   }
 
   @Override
