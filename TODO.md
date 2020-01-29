@@ -12,7 +12,6 @@ complete as there is too much un-said.
   only be invoked if the binding is present. A binding can be made optional by annotating it with `@Nullable`.
 * Add test for unresolved `@Injector`. Add a separate test for unresolved include and another for
   unresolved dependency.
-* Change the `Coordinate._type` to a fully qualified classname rather than a `TypeMirror`.
 * Add `type` parameter to dependency that indicates the dependency type that must be returned. The actual
   parameter/return value must be able to be assigned to the specified type. It defaults to the actual type but
   can be overridden. By definition these are `INSTANCE` dependency types.
