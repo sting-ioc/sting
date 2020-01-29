@@ -9,6 +9,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.type.TypeMirror;
 import org.realityforge.proton.GeneratorUtil;
 
 final class InjectableGenerator
@@ -31,23 +32,23 @@ final class InjectableGenerator
 
     builder.addMethod( MethodSpec.constructorBuilder().addModifiers( Modifier.PRIVATE ).build() );
 
-    final TypeName returnType = TypeName.get( element.asType() );
+    final TypeMirror returnType = element.asType();
     final MethodSpec.Builder creator =
       MethodSpec
         .methodBuilder( "create" )
         .addModifiers( Modifier.PUBLIC, Modifier.STATIC )
         .addAnnotation( GeneratorUtil.NONNULL_CLASSNAME )
-        .returns( returnType );
+        .returns( TypeName.get( returnType ) );
     final StringBuilder code = new StringBuilder();
     final List<Object> args = new ArrayList<>();
     code.append( "return new $T" );
-    args.add( element.asType() );
+    args.add( returnType );
 
     builder.addMethod( StingGeneratorUtil.buildBindingCreator( processingEnv,
                                                                creator,
                                                                code,
                                                                args,
-                                                               element.asType(),
+                                                               returnType,
                                                                injectable.getBinding().getDependencies() ) );
 
     return builder.build();
