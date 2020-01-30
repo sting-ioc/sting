@@ -3,7 +3,7 @@
   "includes": [
     "com.example.injector.dependency.BasicDependencyModel.MyModel"
   ],
-  "dependencies": [
+  "outputs": [
     {
       "coordinate": {
         "type": "com.example.injector.dependency.BasicDependencyModel.MyModel"

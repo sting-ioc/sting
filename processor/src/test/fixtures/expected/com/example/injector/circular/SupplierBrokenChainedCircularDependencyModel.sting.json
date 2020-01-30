@@ -5,7 +5,7 @@
     "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel.MyModel2",
     "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel.MyModel3"
   ],
-  "dependencies": [
+  "outputs": [
     {
       "coordinate": {
         "type": "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel.MyModel1"

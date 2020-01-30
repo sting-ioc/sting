@@ -4,7 +4,7 @@
     "com.example.injector.includes.multiple.MyFragment",
     "com.example.injector.includes.multiple.MyModel"
   ],
-  "dependencies": [
+  "outputs": [
     {
       "coordinate": {
         "type": "java.lang.Runnable"

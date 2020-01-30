@@ -3,7 +3,7 @@
   "includes": [
     "com.example.injector.includes.single.MyFragment"
   ],
-  "dependencies": [
+  "outputs": [
     {
       "coordinate": {
         "type": "java.lang.Runnable"

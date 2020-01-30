@@ -3,7 +3,7 @@
   "includes": [
     "com.example.injector.dependency.QualifiedDependencyModel.MyModel"
   ],
-  "dependencies": [
+  "outputs": [
     {
       "coordinate": {
         "qualifier": "Foo",

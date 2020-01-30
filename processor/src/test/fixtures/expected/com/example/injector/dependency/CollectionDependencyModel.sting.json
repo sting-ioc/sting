@@ -3,7 +3,7 @@
   "includes": [
     "com.example.injector.dependency.CollectionDependencyModel.MyModel"
   ],
-  "dependencies": [
+  "outputs": [
     {
       "type": "COLLECTION",
       "coordinate": {

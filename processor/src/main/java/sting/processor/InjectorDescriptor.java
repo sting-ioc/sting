@@ -22,18 +22,18 @@ final class InjectorDescriptor
   @Nonnull
   private final Collection<DeclaredType> _includes;
   /**
-   * The collection of dependencies declared by the injector intended to be used by Injector clients.
+   * The collection of services made available from the injector.
    */
   @Nonnull
-  private final List<DependencyDescriptor> _topLevelDependencies;
+  private final List<DependencyDescriptor> _outputs;
 
   InjectorDescriptor( @Nonnull final TypeElement element,
                       @Nonnull final Collection<DeclaredType> includes,
-                      @Nonnull final List<DependencyDescriptor> topLevelDependencies )
+                      @Nonnull final List<DependencyDescriptor> outputs )
   {
     _element = Objects.requireNonNull( element );
     _includes = Objects.requireNonNull( includes );
-    _topLevelDependencies = Objects.requireNonNull( topLevelDependencies );
+    _outputs = Objects.requireNonNull( outputs );
   }
 
   @Nonnull
@@ -49,9 +49,9 @@ final class InjectorDescriptor
   }
 
   @Nonnull
-  List<DependencyDescriptor> getTopLevelDependencies()
+  List<DependencyDescriptor> getOutputs()
   {
-    return _topLevelDependencies;
+    return _outputs;
   }
 
   void write( final JsonGenerator g )
@@ -67,10 +67,10 @@ final class InjectorDescriptor
       }
       g.writeEnd();
     }
-    if ( !_topLevelDependencies.isEmpty() )
+    if ( !_outputs.isEmpty() )
     {
-      g.writeStartArray( "dependencies" );
-      for ( final DependencyDescriptor dependency : _topLevelDependencies )
+      g.writeStartArray( "outputs" );
+      for ( final DependencyDescriptor dependency : _outputs )
       {
         dependency.write( g );
       }

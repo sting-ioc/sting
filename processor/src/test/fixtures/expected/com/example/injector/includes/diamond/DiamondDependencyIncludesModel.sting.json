@@ -5,7 +5,7 @@
     "com.example.injector.includes.diamond.MyFragment1",
     "com.example.injector.includes.diamond.MyFragment2"
   ],
-  "dependencies": [
+  "outputs": [
     {
       "coordinate": {
         "type": "com.example.injector.includes.diamond.MyModel"

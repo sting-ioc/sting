@@ -5,7 +5,7 @@
     "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel.MyFragment2",
     "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel.MyFragment3"
   ],
-  "dependencies": [
+  "outputs": [
     {
       "type": "COLLECTION",
       "coordinate": {

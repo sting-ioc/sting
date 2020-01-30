@@ -79,7 +79,7 @@ final class Node
   {
     this( objectGraph,
           null,
-          objectGraph.getInjector().getTopLevelDependencies().toArray( new DependencyDescriptor[ 0 ] ) );
+          objectGraph.getInjector().getOutputs().toArray( new DependencyDescriptor[ 0 ] ) );
   }
 
   /**

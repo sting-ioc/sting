@@ -48,14 +48,14 @@ final class InjectorGenerator
     emitNodeFields( processingEnv, graph, builder );
     emitConstructor( graph, builder );
     emitNodeAccessorMethod( processingEnv, graph, builder );
-    emitTopLevelDependencyMethods( processingEnv, graph, builder );
+    emitOutputMethods( processingEnv, graph, builder );
 
     return builder.build();
   }
 
-  private static void emitTopLevelDependencyMethods( @Nonnull final ProcessingEnvironment processingEnv,
-                                                     @Nonnull final ObjectGraph graph,
-                                                     @Nonnull final TypeSpec.Builder builder )
+  private static void emitOutputMethods( @Nonnull final ProcessingEnvironment processingEnv,
+                                         @Nonnull final ObjectGraph graph,
+                                         @Nonnull final TypeSpec.Builder builder )
   {
     for ( final Edge edge : graph.getRootNode().getDependsOn() )
     {

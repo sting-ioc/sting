@@ -5,7 +5,7 @@
     "com.example.injector.dependency.ComplexDependencyModel.MyModel2",
     "com.example.injector.dependency.ComplexDependencyModel.MyModel3"
   ],
-  "dependencies": [
+  "outputs": [
     {
       "coordinate": {
         "type": "com.example.injector.dependency.ComplexDependencyModel.MyModel1"

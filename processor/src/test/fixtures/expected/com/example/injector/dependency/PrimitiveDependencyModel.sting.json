@@ -3,7 +3,7 @@
   "includes": [
     "com.example.injector.dependency.PrimitiveDependencyModel.MyFragment"
   ],
-  "dependencies": [
+  "outputs": [
     {
       "coordinate": {
         "type": "boolean"

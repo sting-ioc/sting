@@ -4,7 +4,7 @@
     "com.example.injector.includes.ExplicitIncludesOfNestedModel.MyFragment",
     "com.example.injector.includes.ExplicitIncludesOfNestedModel.MyModel"
   ],
-  "dependencies": [
+  "outputs": [
     {
       "coordinate": {
         "type": "java.lang.Runnable"

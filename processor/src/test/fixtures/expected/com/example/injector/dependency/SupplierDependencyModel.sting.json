@@ -3,7 +3,7 @@
   "includes": [
     "com.example.injector.dependency.SupplierDependencyModel.MyModel"
   ],
-  "dependencies": [
+  "outputs": [
     {
       "type": "SUPPLIER",
       "coordinate": {

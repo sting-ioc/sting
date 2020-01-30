@@ -1,6 +1,6 @@
 {
   "schema": "injector/1",
-  "dependencies": [
+  "outputs": [
     {
       "type": "COLLECTION",
       "coordinate": {
