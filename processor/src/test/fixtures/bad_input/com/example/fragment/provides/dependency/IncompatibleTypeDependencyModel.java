@@ -4,7 +4,7 @@ import sting.Dependency;
 import sting.Fragment;
 
 @Fragment
-public interface BadTypeParameterDependencyModel
+public interface IncompatibleTypeDependencyModel
 {
   default String provideX( @Dependency( type = Runnable.class ) String dep )
   {

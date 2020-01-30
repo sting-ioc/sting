@@ -5,7 +5,7 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface BadTypeParameterDependencyModel
+interface IncompatibleTypeDependencyModel
 {
   @Dependency( type = Runnable.class )
   MyModel1 getMyModel1();

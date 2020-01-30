@@ -17,8 +17,6 @@ complete as there is too much un-said.
   services can fit. It identifies either inputs or outputs. Maybe we could split into `@Input` and `@Output`
   or use a more generic term like `@Slot`.
 
-* Rename test classes of form `*.dependency.BadTypeParameterDependencyModel` to `*.dependency.IncompatibleTypeDependencyModel`
-
 * Consider adding a `optional=OPTIONAL/REQUIRED/AUTODETETCT` and make sure the `@Nullable` annotation aligns with it.
 
 * A null produced by an optional binding should not be added to a collection? Then how do we deal with optional `Supplier` inputs?

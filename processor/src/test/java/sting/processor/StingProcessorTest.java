@@ -280,7 +280,7 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.fragment.provides.dependency.ArrayDependencyModel",
                       "@Dependency target must not be an array type" },
-        new Object[]{ "com.example.fragment.provides.dependency.BadTypeParameterDependencyModel",
+        new Object[]{ "com.example.fragment.provides.dependency.IncompatibleTypeDependencyModel",
                       "@Dependency target specifies a type parameter that is not assignable to the actual type" },
         new Object[]{ "com.example.fragment.provides.dependency.NullableCollectionDependencyModel",
                       "@Dependency target must not be annotated with @Nullable and be a collection type" },
@@ -330,7 +330,7 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injectable.dependency.ArrayDependencyModel",
                       "@Dependency target must not be an array type" },
-        new Object[]{ "com.example.injectable.dependency.BadTypeParameterDependencyModel",
+        new Object[]{ "com.example.injectable.dependency.IncompatibleTypeDependencyModel",
                       "@Dependency target specifies a type parameter that is not assignable to the actual type" },
         new Object[]{ "com.example.injectable.dependency.NullableCollectionDependencyModel",
                       "@Dependency target must not be annotated with @Nullable and be a collection type" },
@@ -427,7 +427,7 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injector.dependency.ArrayDependencyModel",
                       "@Dependency target must not return an array type" },
-        new Object[]{ "com.example.injector.dependency.BadTypeParameterDependencyModel",
+        new Object[]{ "com.example.injector.dependency.IncompatibleTypeDependencyModel",
                       "@Dependency target specifies a type parameter that is not assignable to the actual type" },
         new Object[]{ "com.example.injector.dependency.NullableCollectionDependencyModel",
                       "@Dependency target must not be annotated with @Nullable and be a collection type" },
