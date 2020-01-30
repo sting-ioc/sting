@@ -13,6 +13,18 @@ complete as there is too much un-said.
 * Add a `@Injector.dependencies` parameter that can be used to specify additional dependencies passed into injector.
   These must have `@Dependency.type` specified but other than that they can specify any type
 
+* `@Dependency` seems like the wrong name for the annotation. It describes a slot or socket in which
+  services can fit. It identifies either inputs or outputs. Maybe we could split into `@Input` and `@Output`
+  or use a more generic term like `@Slot`.
+
+* Rename test classes of form `*.dependency.BadTypeParameterDependencyModel` to `*.dependency.IncompatibleTypeDependencyModel`
+
+* Consider adding a `optional=OPTIONAL/REQUIRED/AUTODETETCT` and make sure the `@Nullable` annotation aligns with it.
+
+* A null produced by an optional binding should not be added to a collection? Then how do we deal with optional `Supplier` inputs?
+
+* Rename `Node.isPublicAccess()` to `Node.isPublic()`
+
 * Write integration tests that compare with dagger the following performance characteristics.
   * time to compile the injector
   * time to initialize and access the injector at runtime
