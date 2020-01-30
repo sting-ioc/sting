@@ -1,4 +1,4 @@
-package com.example.fragment.id;
+package com.example.fragment.provides.id;
 
 import sting.Fragment;
 import sting.Provides;

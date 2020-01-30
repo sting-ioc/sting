@@ -254,9 +254,6 @@ public final class StingProcessorTest
                       "@Fragment target must contain one or more methods or one or more includes" },
         new Object[]{ "com.example.fragment.ParameterizedModel", "@Fragment target must not have type parameters" },
 
-        new Object[]{ "com.example.fragment.id.DuplicateIdModel",
-                      "@Provides target must have a unique id but it has the same id as the method named runnable2" },
-
         new Object[]{ "com.example.fragment.includes.BadTypesInIncludesModel",
                       "@Fragment target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment or @Injectable" },
 
@@ -305,6 +302,9 @@ public final class StingProcessorTest
                       "@Provides target must have a default modifier" },
         new Object[]{ "com.example.fragment.provides.VoidReturnTypeProvidesModel",
                       "@Provides target must return a value" },
+
+        new Object[]{ "com.example.fragment.provides.id.DuplicateIdModel",
+                      "@Provides target must have a unique id but it has the same id as the method named runnable2" },
 
         new Object[]{ "com.example.fragment.provides.types.BadType1Model",
                       "@Provides target has a type parameter containing the value java.lang.Runnable that is not assignable to the return type of the method" },
