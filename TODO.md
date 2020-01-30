@@ -17,7 +17,22 @@ complete as there is too much un-said.
   services can fit. It identifies either inputs or outputs. Maybe we could split into `@Input` and `@Output`
   or use a more generic term like `@Slot`.
 
+* Maybe `@Input` could contain `type` and `qualifier` and `optional` parameters.
+
+* Maybe `@Output` could contain `type` and `qualifier`. `@Injectable` and `@Provides` could have an array
+  of outputs via `@Injectable(outputs={@Output(qualifier="X"),@Output(qualifier="Y")}`. We could
+  also potentially another parameter like `@Injectable(types={SomeType.class,OtherType.class}` that is
+  incompatible withoutputs but is effectively equivalent to
+  `@Injectable(outputs={@Output(type=SomeType.class),@Output(type=OtherType.class)}`. This maintains
+  flexibility when absolutley needed but simplicity for common cases.
+
 * Consider adding a `optional=OPTIONAL/REQUIRED/AUTODETETCT` and make sure the `@Nullable` annotation aligns with it.
+
+* Add the mechanisms for overriding bindings already added to object graph. Perhaps by adding an
+  `override=ENABLE|DISABLE|AUTODETECT` parameter which indicates whether the binding can override
+  existing bindings. Order in `includes` matters in this scenario. This will default to `AUTODETECT`
+  which will evaluate to `DISABLE` all scenarios except when the binding is from a descriptor declared
+  as nested class of the injector. Overrides can either be by id or published types.
 
 * A null produced by an optional binding should not be added to a collection? Then how do we deal with optional `Supplier` inputs?
 
