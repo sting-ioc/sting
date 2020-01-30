@@ -1,11 +1,11 @@
-package com.example.injector.dependency;
+package com.example.injector.inputs;
 
 import java.util.Collection;
 import java.util.List;
 import sting.Injector;
 
 @Injector
-public interface ParameterizedCollectionDependencyModel
+public interface ParameterizedCollectionInputModel
 {
   Collection<List<String>> getMyThing();
 }

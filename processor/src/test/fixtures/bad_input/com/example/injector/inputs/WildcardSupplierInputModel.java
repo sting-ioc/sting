@@ -1,10 +1,10 @@
-package com.example.injector.dependency;
+package com.example.injector.inputs;
 
 import java.util.function.Supplier;
 import sting.Injector;
 
 @Injector
-public interface WildcardSupplierDependencyModel
+public interface WildcardSupplierInputModel
 {
   Supplier<?> getMyThing();
 }

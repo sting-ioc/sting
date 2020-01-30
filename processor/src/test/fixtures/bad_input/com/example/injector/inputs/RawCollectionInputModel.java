@@ -1,10 +1,10 @@
-package com.example.injector.dependency;
+package com.example.injector.inputs;
 
 import java.util.Collection;
 import sting.Injector;
 
 @Injector
-public interface RawCollectionDependencyModel
+public interface RawCollectionInputModel
 {
   @SuppressWarnings( "rawtypes" )
   Collection getMyThing();

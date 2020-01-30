@@ -1,11 +1,11 @@
-package com.example.injector.dependency;
+package com.example.injector.inputs;
 
 import sting.Dependency;
 import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface IncompatibleTypeDependencyModel
+interface IncompatibleTypeInputModel
 {
   @Dependency( type = Runnable.class )
   MyModel1 getMyModel1();

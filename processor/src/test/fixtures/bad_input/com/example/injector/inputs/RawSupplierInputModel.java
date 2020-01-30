@@ -1,10 +1,10 @@
-package com.example.injector.dependency;
+package com.example.injector.inputs;
 
 import java.util.function.Supplier;
 import sting.Injector;
 
 @Injector
-public interface RawSupplierDependencyModel
+public interface RawSupplierInputModel
 {
   @SuppressWarnings( "rawtypes" )
   Supplier getMyThing();
