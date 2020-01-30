@@ -1,10 +1,10 @@
-package com.example.fragment.provides.dependency;
+package com.example.fragment.inputs;
 
 import java.util.Collection;
 import sting.Fragment;
 
 @Fragment
-public interface RawCollectionDependencyModel
+public interface RawCollectionInputModel
 {
   @SuppressWarnings( "rawtypes" )
   default String provideX( Collection collection )

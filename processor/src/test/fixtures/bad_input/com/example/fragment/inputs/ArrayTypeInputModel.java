@@ -1,9 +1,9 @@
-package com.example.fragment.provides.dependency;
+package com.example.fragment.inputs;
 
 import sting.Fragment;
 
 @Fragment
-public interface ArrayDependencyModel
+public interface ArrayTypeInputModel
 {
   default String provideX( String[] dep )
   {

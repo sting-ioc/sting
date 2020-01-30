@@ -1,11 +1,11 @@
-package com.example.fragment.provides.dependency;
+package com.example.fragment.inputs;
 
 import java.util.Collection;
 import javax.annotation.Nullable;
 import sting.Fragment;
 
 @Fragment
-public interface NullableCollectionDependencyModel
+public interface NullableCollectionInputModel
 {
   default String provideX( @Nullable Collection<String> collection )
   {

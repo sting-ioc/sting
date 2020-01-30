@@ -1,10 +1,10 @@
-package com.example.fragment.provides.dependency;
+package com.example.fragment.inputs;
 
 import java.util.function.Supplier;
 import sting.Fragment;
 
 @Fragment
-public interface RawSupplierDependencyModel
+public interface RawSupplierInputModel
 {
   @SuppressWarnings( "rawtypes" )
   default String provideX( Supplier supplier )

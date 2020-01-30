@@ -1,10 +1,10 @@
-package com.example.fragment.provides.dependency;
+package com.example.fragment.inputs;
 
 import java.util.function.Supplier;
 import sting.Fragment;
 
 @Fragment
-public interface WildcardSupplierDependencyModel
+public interface WildcardSupplierInputModel
 {
   default String provideX( Supplier<?> supplier )
   {

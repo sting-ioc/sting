@@ -1,10 +1,10 @@
-package com.example.fragment.provides.dependency;
+package com.example.fragment.inputs;
 
 import sting.Dependency;
 import sting.Fragment;
 
 @Fragment
-public interface IncompatibleTypeDependencyModel
+public interface IncompatibleTypeInputModel
 {
   default String provideX( @Dependency( type = Runnable.class ) String dep )
   {

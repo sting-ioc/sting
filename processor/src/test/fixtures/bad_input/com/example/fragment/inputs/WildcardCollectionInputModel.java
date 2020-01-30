@@ -1,10 +1,10 @@
-package com.example.fragment.provides.dependency;
+package com.example.fragment.inputs;
 
 import java.util.Collection;
 import sting.Fragment;
 
 @Fragment
-public interface WildcardCollectionDependencyModel
+public interface WildcardCollectionInputModel
 {
   default String provideX( Collection<?> collection )
   {
