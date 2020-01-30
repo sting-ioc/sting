@@ -133,14 +133,7 @@ final class InjectorGenerator
 
   private static TypeName getPublicTypeName( @Nonnull final Node node )
   {
-    if ( node.isPublicAccess() )
-    {
-      return TypeName.get( node.getType() );
-    }
-    else
-    {
-      return TypeName.OBJECT;
-    }
+    return node.isPublicAccess() ? TypeName.get( node.getType() ) : TypeName.OBJECT;
   }
 
   private static void emitNodeAccessorMethod( @Nonnull final ProcessingEnvironment processingEnv,
