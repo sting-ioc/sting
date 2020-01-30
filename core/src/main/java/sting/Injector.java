@@ -46,7 +46,7 @@ import java.lang.annotation.Target;
  *   }
  * }</code></pre>
  *
-
+ *
  * <p>If a nested interface named Factory does not exist then it is assumed that the component
  * is self-contained and the generated component will have a factory method {@code create()}.</p>
  *
