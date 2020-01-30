@@ -269,14 +269,16 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.fragment.provides.AbstractMethodProvidesModel",
                       "@Provides target must have a default modifier" },
-        new Object[]{ "com.example.fragment.provides.VoidReturnTypeProvidesModel",
-                      "@Provides target must return a value" },
+        new Object[]{ "com.example.fragment.provides.IncompatibleReturnTypeProvidesModel",
+                      "@Provides target has a type parameter containing the value java.lang.Boolean that is not assignable to the return type of the method" },
         new Object[]{ "com.example.fragment.provides.NullablePrimitiveReturnTypeProvidesModel",
                       "@Provides target is incorrectly annotated with @Nullable as the return type is a primitive" },
         new Object[]{ "com.example.fragment.provides.ParameterizedProvidesModel",
                       "@Provides target must not have any type parameters" },
         new Object[]{ "com.example.fragment.provides.StaticMethodProvidesModel",
                       "@Provides target must have a default modifier" },
+        new Object[]{ "com.example.fragment.provides.VoidReturnTypeProvidesModel",
+                      "@Provides target must return a value" },
 
         new Object[]{ "com.example.fragment.provides.dependency.ArrayDependencyModel",
                       "@Dependency target must not be an array type" },
