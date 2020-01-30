@@ -148,7 +148,7 @@ final class Node
     return _type;
   }
 
-  boolean isPublicAccess()
+  boolean isPublic()
   {
     return _public;
   }

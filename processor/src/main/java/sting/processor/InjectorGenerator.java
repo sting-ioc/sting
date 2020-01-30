@@ -108,7 +108,7 @@ final class InjectorGenerator
         FieldSpec
           .builder( getPublicTypeName( node ), node.getName(), Modifier.PRIVATE )
           .addAnnotation( isNonnull ? GeneratorUtil.NONNULL_CLASSNAME : GeneratorUtil.NULLABLE_CLASSNAME );
-      if ( node.isPublicAccess() )
+      if ( node.isPublic() )
       {
         SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv,
                                                             field,
@@ -133,7 +133,7 @@ final class InjectorGenerator
 
   private static TypeName getPublicTypeName( @Nonnull final Node node )
   {
-    return node.isPublicAccess() ? TypeName.get( node.getType() ) : TypeName.OBJECT;
+    return node.isPublic() ? TypeName.get( node.getType() ) : TypeName.OBJECT;
   }
 
   private static void emitNodeAccessorMethod( @Nonnull final ProcessingEnvironment processingEnv,

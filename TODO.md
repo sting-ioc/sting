@@ -23,8 +23,6 @@ complete as there is too much un-said.
 
 * A null produced by an optional binding should not be added to a collection? Then how do we deal with optional `Supplier` inputs?
 
-* Rename `Node.isPublicAccess()` to `Node.isPublic()`
-
 * Write integration tests that compare with dagger the following performance characteristics.
   * time to compile the injector
   * time to initialize and access the injector at runtime
