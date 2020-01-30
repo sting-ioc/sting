@@ -1,4 +1,4 @@
-package com.example.dependency;
+package com.example.unclaimed;
 
 import sting.Dependency;
 import sting.Injectable;

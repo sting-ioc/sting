@@ -247,13 +247,6 @@ public final class StingProcessorTest
   {
     return new Object[][]
       {
-        new Object[]{ "com.example.dependency.UnclaimedConstructorParameterDependencyModel",
-                      "@Dependency target must only be present on a parameter of a constructor if the enclosing type is annotated with @Injectable" },
-        new Object[]{ "com.example.dependency.UnclaimedMethodDependencyModel",
-                      "@Dependency target must not be a method unless present in a type annotated with @Injector" },
-        new Object[]{ "com.example.dependency.UnclaimedMethodParameterDependencyModel",
-                      "@Dependency target must only be present on a parameter of a method if the enclosing type is annotated with @Fragment" },
-
         new Object[]{ "com.example.fragment.ClassModel", "@Fragment target must be an interface" },
         new Object[]{ "com.example.fragment.FragmentExtendsSuperinterfaceModel",
                       "@Fragment target must not extend any interfaces" },
@@ -474,7 +467,14 @@ public final class StingProcessorTest
                       "@Dependency target must not return a java.util.function.Supplier type with a wildcard type parameter" },
 
         new Object[]{ "com.example.injector.includes.BadTypesInIncludesModel",
-                      "@Injector target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment or @Injectable" }
+                      "@Injector target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment or @Injectable" },
+
+        new Object[]{ "com.example.unclaimed.UnclaimedConstructorInputModel",
+                      "@Dependency target must only be present on a parameter of a constructor if the enclosing type is annotated with @Injectable" },
+        new Object[]{ "com.example.unclaimed.UnclaimedMethodDependencyModel",
+                      "@Dependency target must not be a method unless present in a type annotated with @Injector" },
+        new Object[]{ "com.example.unclaimed.UnclaimedMethodInputModel",
+                      "@Dependency target must only be present on a parameter of a method if the enclosing type is annotated with @Fragment" }
       };
   }
 
