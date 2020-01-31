@@ -34,6 +34,8 @@ complete as there is too much un-said.
   which will evaluate to `DISABLE` all scenarios except when the binding is from a descriptor declared
   as nested class of the injector. Overrides can either be by id or published types.
 
+* Consider renaming `@Provides` to `@Factory` or `@ObjectFactory`
+
 * A null produced by an optional binding should not be added to a collection? Then how do we deal with optional `Supplier` inputs?
 
 * Write integration tests that compare with dagger the following performance characteristics.
