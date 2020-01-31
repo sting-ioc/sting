@@ -1,0 +1,15 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.eager.EagerInjectableViaIncludesModel.MyModel3",
+      "kind": "INJECTABLE",
+      "eager": true
+    },
+    {
+      "id": "com.example.injector.eager.EagerInjectableViaIncludesModel.MyModel1",
+      "kind": "INJECTABLE",
+      "eager": true
+    }
+  ]
+}

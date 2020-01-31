@@ -23,7 +23,7 @@ public final class StingProcessorInjectorGraphTest
   public void eagerFlagPropagationInInjectors()
     throws Exception
   {
-    final String classname = "com.example.injector.dependency.eager.BasicEagerDependencyModel";
+    final String classname = "com.example.injector.eager.BasicEagerDependencyModel";
     final String objectGraphFilename = jsonGraphOutput( classname );
     final List<String> expectedOutputs = Collections.singletonList( objectGraphFilename );
     assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
@@ -50,7 +50,7 @@ public final class StingProcessorInjectorGraphTest
   public void eagerInjectablesAddedWhenAddedViaIncludes()
     throws Exception
   {
-    final String classname = "com.example.injector.dependency.eager.EagerInjectableViaIncludesModel";
+    final String classname = "com.example.injector.eager.EagerInjectableViaIncludesModel";
     final String objectGraphFilename = jsonGraphOutput( classname );
     assertSuccessfulCompile( inputs( classname ),
                              Collections.singletonList( objectGraphFilename ),

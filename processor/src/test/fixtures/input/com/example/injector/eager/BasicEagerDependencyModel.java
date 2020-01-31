@@ -1,4 +1,4 @@
-package com.example.injector.dependency.eager;
+package com.example.injector.eager;
 
 import java.util.function.Supplier;
 import sting.Injectable;
