@@ -1,4 +1,4 @@
-package com.example.injector.inputs;
+package com.example.injector.outputs;
 
 import javax.annotation.Nullable;
 import sting.Fragment;
@@ -6,7 +6,7 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface MissingInputModel
+interface MissingOutputModel
 {
   MyModel1 getMyModel1();
 

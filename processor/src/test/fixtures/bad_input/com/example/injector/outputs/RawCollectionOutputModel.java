@@ -1,10 +1,10 @@
-package com.example.injector.inputs;
+package com.example.injector.outputs;
 
 import java.util.Collection;
 import sting.Injector;
 
 @Injector
-public interface RawCollectionInputModel
+public interface RawCollectionOutputModel
 {
   @SuppressWarnings( "rawtypes" )
   Collection getMyThing();

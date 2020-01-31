@@ -1,11 +1,11 @@
-package com.example.injector.inputs;
+package com.example.injector.outputs;
 
 import java.util.Collection;
 import java.util.function.Supplier;
 import sting.Injector;
 
 @Injector
-public interface WildcardSupplierCollectionInputModel
+public interface WildcardSupplierCollectionOutputModel
 {
   Collection<Supplier<?>> getMyThing();
 }

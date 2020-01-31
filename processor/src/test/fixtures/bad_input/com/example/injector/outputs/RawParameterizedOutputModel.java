@@ -1,10 +1,10 @@
-package com.example.injector.inputs;
+package com.example.injector.outputs;
 
 import java.util.function.Consumer;
 import sting.Injector;
 
 @Injector
-public interface RawParameterizedInputModel
+public interface RawParameterizedOutputModel
 {
   @SuppressWarnings( "rawtypes" )
   Consumer getMyThing();
