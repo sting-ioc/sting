@@ -1,0 +1,11 @@
+{
+  "schema": "injector/1",
+  "outputs": [
+    {
+      "type": "COLLECTION",
+      "coordinate": {
+        "type": "com.example.injector.outputs.EmptyCollectionOutputModel.MyModel"
+      }
+    }
+  ]
+}

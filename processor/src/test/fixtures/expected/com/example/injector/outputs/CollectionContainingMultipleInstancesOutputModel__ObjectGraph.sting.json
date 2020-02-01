@@ -1,0 +1,17 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment3#myModel",
+      "kind": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment2#myModel",
+      "kind": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment1#myModel",
+      "kind": "PROVIDES"
+    }
+  ]
+}

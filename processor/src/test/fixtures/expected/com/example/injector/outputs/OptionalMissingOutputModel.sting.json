@@ -1,0 +1,19 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.OptionalMissingOutputModel.MyModel2"
+  ],
+  "outputs": [
+    {
+      "coordinate": {
+        "type": "com.example.injector.outputs.OptionalMissingOutputModel.MyModel1"
+      },
+      "optional": true
+    },
+    {
+      "coordinate": {
+        "type": "com.example.injector.outputs.OptionalMissingOutputModel.MyModel2"
+      }
+    }
+  ]
+}

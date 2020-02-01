@@ -1,0 +1,37 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue8",
+      "kind": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue7",
+      "kind": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue6",
+      "kind": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue5",
+      "kind": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue4",
+      "kind": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue3",
+      "kind": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue2",
+      "kind": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue",
+      "kind": "PROVIDES"
+    }
+  ]
+}

@@ -103,21 +103,21 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel" },
         new Object[]{ "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel" },
 
-        new Object[]{ "com.example.injector.dependency.BasicDependencyModel" },
-        new Object[]{ "com.example.injector.dependency.CollectionContainingMultipleInstancesDependencyModel" },
-        new Object[]{ "com.example.injector.dependency.CollectionDependencyModel" },
-        new Object[]{ "com.example.injector.dependency.ComplexDependencyModel" },
-        new Object[]{ "com.example.injector.dependency.EmptyCollectionDependencyModel" },
-        new Object[]{ "com.example.injector.dependency.MultipleDependencyModel" },
-        new Object[]{ "com.example.injector.dependency.OptionalDependencyModel" },
-        new Object[]{ "com.example.injector.dependency.OptionalMissingDependencyModel" },
-        new Object[]{ "com.example.injector.dependency.OptionalProvidesDependencyModel" },
-        new Object[]{ "com.example.injector.dependency.PrimitiveDependencyModel" },
-        new Object[]{ "com.example.injector.dependency.QualifiedDependencyModel" },
-        new Object[]{ "com.example.injector.dependency.SupplierCollectionDependencyModel" },
-        new Object[]{ "com.example.injector.dependency.SupplierDependencyModel" },
+        new Object[]{ "com.example.injector.includes.ExplicitIncludesOfNestedModel" },
 
-        new Object[]{ "com.example.injector.includes.ExplicitIncludesOfNestedModel" }
+        new Object[]{ "com.example.injector.outputs.BasicOutputModel" },
+        new Object[]{ "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel" },
+        new Object[]{ "com.example.injector.outputs.CollectionOutputModel" },
+        new Object[]{ "com.example.injector.outputs.ComplexOutputModel" },
+        new Object[]{ "com.example.injector.outputs.EmptyCollectionOutputModel" },
+        new Object[]{ "com.example.injector.outputs.MultipleOutputModel" },
+        new Object[]{ "com.example.injector.outputs.OptionalOutputModel" },
+        new Object[]{ "com.example.injector.outputs.OptionalMissingOutputModel" },
+        new Object[]{ "com.example.injector.outputs.OptionalProvidesOutputModel" },
+        new Object[]{ "com.example.injector.outputs.PrimitiveOutputModel" },
+        new Object[]{ "com.example.injector.outputs.QualifiedOutputModel" },
+        new Object[]{ "com.example.injector.outputs.SupplierCollectionOutputModel" },
+        new Object[]{ "com.example.injector.outputs.SupplierOutputModel" }
       };
   }
 
@@ -534,7 +534,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" },
         new Object[]{ "com.example.injectable.dependency.ExplicitTypeDependencyModel" },
 
-        new Object[]{ "com.example.injector.dependency.ExplicitTypeDependencyModel" }
+        new Object[]{ "com.example.injector.outputs.ExplicitTypeOutputModel" }
       };
   }
 

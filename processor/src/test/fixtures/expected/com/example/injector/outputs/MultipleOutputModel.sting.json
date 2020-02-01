@@ -1,0 +1,20 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.MultipleOutputModel.MyModel1",
+    "com.example.injector.outputs.MultipleOutputModel.MyModel2"
+  ],
+  "outputs": [
+    {
+      "coordinate": {
+        "type": "com.example.injector.outputs.MultipleOutputModel.MyModel1"
+      }
+    },
+    {
+      "type": "SUPPLIER",
+      "coordinate": {
+        "type": "com.example.injector.outputs.MultipleOutputModel.MyModel2"
+      }
+    }
+  ]
+}

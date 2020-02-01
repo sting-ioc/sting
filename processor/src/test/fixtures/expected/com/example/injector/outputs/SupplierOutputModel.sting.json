@@ -1,0 +1,14 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.SupplierOutputModel.MyModel"
+  ],
+  "outputs": [
+    {
+      "type": "SUPPLIER",
+      "coordinate": {
+        "type": "com.example.injector.outputs.SupplierOutputModel.MyModel"
+      }
+    }
+  ]
+}

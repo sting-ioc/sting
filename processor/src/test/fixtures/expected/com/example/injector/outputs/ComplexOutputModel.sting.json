@@ -1,0 +1,35 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.ComplexOutputModel.MyModel1",
+    "com.example.injector.outputs.ComplexOutputModel.MyModel2",
+    "com.example.injector.outputs.ComplexOutputModel.MyModel3"
+  ],
+  "outputs": [
+    {
+      "coordinate": {
+        "type": "com.example.injector.outputs.ComplexOutputModel.MyModel1"
+      }
+    },
+    {
+      "type": "SUPPLIER",
+      "coordinate": {
+        "type": "com.example.injector.outputs.ComplexOutputModel.MyModel2"
+      },
+      "optional": true
+    },
+    {
+      "type": "SUPPLIER",
+      "coordinate": {
+        "qualifier": "foo",
+        "type": "com.example.injector.outputs.ComplexOutputModel.MyModel3"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "com.example.injector.outputs.ComplexOutputModel.MyModel4"
+      },
+      "optional": true
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.PrimitiveOutputModel.MyFragment"
+  ],
+  "outputs": [
+    {
+      "coordinate": {
+        "type": "boolean"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "char"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "byte"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "short"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "int"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "long"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "float"
+      }
+    },
+    {
+      "coordinate": {
+        "type": "double"
+      }
+    }
+  ]
+}

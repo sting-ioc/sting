@@ -1,0 +1,14 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.CollectionOutputModel.MyModel"
+  ],
+  "outputs": [
+    {
+      "type": "COLLECTION",
+      "coordinate": {
+        "type": "com.example.injector.outputs.CollectionOutputModel.MyModel"
+      }
+    }
+  ]
+}

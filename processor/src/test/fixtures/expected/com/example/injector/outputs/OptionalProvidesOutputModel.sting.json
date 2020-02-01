@@ -1,0 +1,14 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.OptionalProvidesOutputModel.MyFragment"
+  ],
+  "outputs": [
+    {
+      "coordinate": {
+        "type": "com.example.injector.outputs.OptionalProvidesOutputModel.MyModel"
+      },
+      "optional": true
+    }
+  ]
+}
