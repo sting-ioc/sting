@@ -134,7 +134,9 @@ public final class StingProcessorTest
   {
     final int index = classname.lastIndexOf( "." );
     final String simpleClassName = -1 == index ? classname : classname.substring( index + 1 );
-    return JavaFileObject.Kind.SOURCE == target.getKind() ||
+    final long lastModified = target.getLastModified();
+    return 0 != lastModified &&
+           JavaFileObject.Kind.SOURCE == target.getKind() ||
            target.getName().endsWith( simpleClassName + StingProcessor.JSON_SUFFIX ) ||
            target.getName().endsWith( simpleClassName + StingProcessor.GRAPH_SUFFIX );
   }
