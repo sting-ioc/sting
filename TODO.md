@@ -34,7 +34,7 @@ complete as there is too much un-said.
   which will evaluate to `DISABLE` all scenarios except when the binding is from a descriptor declared
   as nested class of the injector. Overrides can either be by id or published types.
 
-* Consider renaming `@Provides` to `@Factory` or `@ObjectFactory`
+* Consider renaming `@Provides` to `@Creator`, `@ServiceCreator`, `@Factory` or `@ServiceFactory`
 
 * A null produced by an optional binding should not be added to a collection? Then how do we deal with optional `Supplier` inputs?
 
@@ -66,6 +66,7 @@ complete as there is too much un-said.
 * Figure out terminology. Currently it is a mixed bag derived from various injector frameworks that it has
   been inspired from. Terms that are misused and should be cleaned up. This would involved cleaning up lots
   of code, tests and javadocs so should be done sooner rather than later.
+  * `Service` = the instances present in the object?
   * `Type` = the java type that a service consumes or publishes.
   * `Qualifier` = an arbitrary user-supplied string that is used to distinguish between services
     that have the same `Type` but different semantics.
