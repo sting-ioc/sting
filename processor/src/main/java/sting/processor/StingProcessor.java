@@ -564,14 +564,14 @@ public final class StingProcessor
 
     final List<DeclaredType> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
 
-    final List<DependencyDescriptor> topLevelDependencies = new ArrayList<>();
+    final List<DependencyDescriptor> outputs = new ArrayList<>();
     final List<ExecutableElement> methods =
       ElementsUtil.getMethods( element, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
     for ( final ExecutableElement method : methods )
     {
       if ( method.getModifiers().contains( Modifier.ABSTRACT ) )
       {
-        processInjectorDependencyMethod( topLevelDependencies, method );
+        processInjectorOutputMethod( outputs, method );
       }
     }
     for ( final Element enclosedElement : element.getEnclosedElements() )
@@ -595,7 +595,7 @@ public final class StingProcessor
         }
       }
     }
-    final InjectorDescriptor injector = new InjectorDescriptor( element, includes, topLevelDependencies );
+    final InjectorDescriptor injector = new InjectorDescriptor( element, includes, outputs );
     _registry.registerInjector( injector );
     emitInjectorJsonDescriptor( injector );
   }
@@ -611,18 +611,18 @@ public final class StingProcessor
     }
   }
 
-  private void processInjectorDependencyMethod( @Nonnull final List<DependencyDescriptor> topLevelDependencies,
-                                                @Nonnull final ExecutableElement method )
+  private void processInjectorOutputMethod( @Nonnull final List<DependencyDescriptor> outputs,
+                                            @Nonnull final ExecutableElement method )
   {
     assert method.getModifiers().contains( Modifier.ABSTRACT );
     MemberChecks.mustReturnAValue( Constants.DEPENDENCY_CLASSNAME, method );
     MemberChecks.mustNotHaveAnyParameters( Constants.DEPENDENCY_CLASSNAME, method );
     MemberChecks.mustNotHaveAnyTypeParameters( Constants.DEPENDENCY_CLASSNAME, method );
-    topLevelDependencies.add( processDependencyMethod( method ) );
+    outputs.add( processOutputMethod( method ) );
   }
 
   @Nonnull
-  private DependencyDescriptor processDependencyMethod( @Nonnull final ExecutableElement method )
+  private DependencyDescriptor processOutputMethod( @Nonnull final ExecutableElement method )
   {
     final TypeMirror returnType = method.getReturnType();
     final boolean optional =
