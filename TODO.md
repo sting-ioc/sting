@@ -60,7 +60,8 @@ complete as there is too much un-said.
   or `Injector` will have their type annotations scanned for matching annotations of which there must be at most
   1. This annotation gives the name pattern for the expected `@Injectable` or `@Fragment` annotated class that
   provides the type. The annotation flag may also indicate whether the peer SHOULD be present (i.e. generates a
-  warning if not) or whether a missing peer is just a no-op.
+  warning if not) or whether a missing peer is just a no-op. It should also have mechanisms to work with names
+  of classes for nested types. We should also scan nested types of injectors and add them as appropriate.
 
 * Figure out terminology. Currently it is a mixed bag derived from various injector frameworks that it has
   been inspired from. Terms that are misused and should be cleaned up. This would involved cleaning up lots
