@@ -7,9 +7,6 @@ complete as there is too much un-said.
 * Consider generating warnings if `@Fragment` types will not resolve unless the user supplies an explicit
   `incomplete` parameter. By resolve it means that every component should have all of it's dependencies
   present.
-* Add a `@PostConstruct` hook so that custom code can be run after eager beans are constructed. Probably has to
-  be on `@Fragment` types will take as parameters the dependencies on which it operates. The `@PostConstruct` will
-  only be invoked if the binding is present. A binding can be made optional by annotating it with `@Nullable`.
 * Add a `@Injector.dependencies` parameter that can be used to specify additional dependencies passed into injector.
   These must have `@Dependency.type` specified but other than that they can specify any type
 
@@ -90,8 +87,6 @@ The significant differences from Dagger:
 * No scopes supported, a single instance of each binding is in the `Injector`.
 * `Eager` and `Lazy` beans are supported with `Lazy` being the default.
 * `Typed` is used to shape the possible edges in graph.
-* Add the ability for modules to define a hook method that is invoked post-Object-graph construction.
-  (i.e. to link into react runtime or to cache values in statics as in Rose)
 * Constructor injection the only form supported. No field or method injection.
 * Qualifiers are represented as a single string which is empty.
 * `@Nullable` provider will provide for `@Nullable` dependency but a null will also be provided to dependency if it
