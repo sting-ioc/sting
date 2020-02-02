@@ -29,6 +29,7 @@ import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
+import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
@@ -563,6 +564,7 @@ public final class StingProcessor
     }
 
     final List<DeclaredType> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
+    final List<DependencyDescriptor> inputs = extractInputs( element );
 
     final List<DependencyDescriptor> outputs = new ArrayList<>();
     final List<ExecutableElement> methods =
@@ -595,7 +597,7 @@ public final class StingProcessor
         }
       }
     }
-    final InjectorDescriptor injector = new InjectorDescriptor( element, includes, outputs );
+    final InjectorDescriptor injector = new InjectorDescriptor( element, includes, inputs, outputs );
     _registry.registerInjector( injector );
     emitInjectorJsonDescriptor( injector );
   }
@@ -877,6 +879,56 @@ public final class StingProcessor
     }
     final FragmentDescriptor fragment = new FragmentDescriptor( element, includes, bindings.values() );
     _registry.registerFragment( fragment );
+  }
+
+  @SuppressWarnings( "unchecked" )
+  @Nonnull
+  private List<DependencyDescriptor> extractInputs( @Nonnull final TypeElement element )
+  {
+    final List<DependencyDescriptor> results = new ArrayList<>();
+    final AnnotationMirror annotation = AnnotationsUtil.getAnnotationByType( element, Constants.INJECTOR_CLASSNAME );
+    final AnnotationValue inputsAnnotationValue = AnnotationsUtil.findAnnotationValue( annotation, "inputs" );
+    assert null != inputsAnnotationValue;
+    final List<AnnotationMirror> inputs = (List<AnnotationMirror>) inputsAnnotationValue.getValue();
+
+    final int size = inputs.size();
+    for ( int i = 0; i < size; i++ )
+    {
+      final AnnotationMirror input = inputs.get( i );
+      final String qualifier = AnnotationsUtil.getAnnotationValueValue( input, "qualifier" );
+      final AnnotationValue typeAnnotationValue = AnnotationsUtil.findAnnotationValue( input, "type" );
+      assert null != typeAnnotationValue;
+      final TypeMirror type = (TypeMirror) typeAnnotationValue.getValue();
+      if ( TypeKind.ARRAY == type.getKind() )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.DEPENDENCY_CLASSNAME ) +
+                                      " must not specify an array type for the type parameter",
+                                      element,
+                                      input,
+                                      typeAnnotationValue );
+      }
+      else if ( TypeKind.VOID == type.getKind() )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.DEPENDENCY_CLASSNAME ) +
+                                      " must specify a non-void type for the type parameter",
+                                      element,
+                                      input,
+                                      typeAnnotationValue );
+      }
+      else if ( TypeKind.DECLARED == type.getKind() &&
+                !( (TypeElement) ( (DeclaredType) type ).asElement() ).getTypeParameters().isEmpty() )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.DEPENDENCY_CLASSNAME ) +
+                                      " must not specify a parameterized type for the type parameter",
+                                      element,
+                                      input,
+                                      typeAnnotationValue );
+      }
+      final Coordinate coordinate = new Coordinate( qualifier, type );
+      final boolean optional = false;
+      results.add( new DependencyDescriptor( DependencyDescriptor.Kind.INSTANCE, coordinate, optional, element, i ) );
+    }
+    return results;
   }
 
   @Nonnull

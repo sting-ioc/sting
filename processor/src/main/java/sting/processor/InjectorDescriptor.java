@@ -22,6 +22,11 @@ final class InjectorDescriptor
   @Nonnull
   private final Collection<DeclaredType> _includes;
   /**
+   * The collection of services that must be supplied to the injector during creation.
+   */
+  @Nonnull
+  private final List<DependencyDescriptor> _inputs;
+  /**
    * The collection of services made available from the injector.
    */
   @Nonnull
@@ -29,10 +34,12 @@ final class InjectorDescriptor
 
   InjectorDescriptor( @Nonnull final TypeElement element,
                       @Nonnull final Collection<DeclaredType> includes,
+                      @Nonnull final List<DependencyDescriptor> inputs,
                       @Nonnull final List<DependencyDescriptor> outputs )
   {
     _element = Objects.requireNonNull( element );
     _includes = Objects.requireNonNull( includes );
+    _inputs = Objects.requireNonNull( inputs );
     _outputs = Objects.requireNonNull( outputs );
   }
 
@@ -46,6 +53,12 @@ final class InjectorDescriptor
   Collection<DeclaredType> getIncludes()
   {
     return _includes;
+  }
+
+  @Nonnull
+  List<DependencyDescriptor> getInputs()
+  {
+    return _inputs;
   }
 
   @Nonnull
@@ -64,6 +77,15 @@ final class InjectorDescriptor
       for ( final DeclaredType include : _includes )
       {
         g.write( include.toString() );
+      }
+      g.writeEnd();
+    }
+    if ( !_inputs.isEmpty() )
+    {
+      g.writeStartArray( "inputs" );
+      for ( final DependencyDescriptor dependency : _inputs )
+      {
+        dependency.write( g );
       }
       g.writeEnd();
     }

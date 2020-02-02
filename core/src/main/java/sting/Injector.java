@@ -85,4 +85,14 @@ public @interface Injector
    * @return a list of types that contribute to the injectors object graph.
    */
   Class<?>[] includes() default {};
+
+  /**
+   * A list of services that must be passed into the injector.
+   * The annotation processor will generate a constructor with one parameter for every input. Each input
+   * value MUST specify the type parameter otherwise the annotation processor is unable to determine the
+   * type of the binding.
+   *
+   * @return a list of services that must be passed into the injector.
+   */
+  Dependency[] inputs() default {};
 }

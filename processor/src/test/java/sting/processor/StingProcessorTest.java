@@ -118,6 +118,9 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.outputs.QualifiedOutputModel" },
         new Object[]{ "com.example.injector.outputs.SupplierCollectionOutputModel" },
         new Object[]{ "com.example.injector.outputs.SupplierOutputModel" }
+
+        //TODO: new Object[]{ "com.example.injector.inputs.MultipleInputInjectorModel" },
+        //TODO: new Object[]{ "com.example.injector.inputs.SingleInputInjectorModel" }
       };
   }
 
@@ -424,6 +427,13 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injector.includes.BadTypesInIncludesModel",
                       "@Injector target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment or @Injectable" },
+
+        new Object[]{ "com.example.injector.inputs.ArrayTypeInputModel",
+                      "@Dependency must not specify an array type for the type parameter" },
+        new Object[]{ "com.example.injector.inputs.RawParameterizedTypeInputModel",
+                      "@Dependency must not specify a parameterized type for the type parameter" },
+        new Object[]{ "com.example.injector.inputs.VoidTypeInputModel",
+                      "@Dependency must specify a non-void type for the type parameter" },
 
         new Object[]{ "com.example.injector.outputs.ArrayTypeOutputModel",
                       "@Dependency target must not return an array type" },
