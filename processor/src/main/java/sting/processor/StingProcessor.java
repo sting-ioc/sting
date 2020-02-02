@@ -632,7 +632,7 @@ public final class StingProcessor
     final AnnotationMirror annotation =
       AnnotationsUtil.findAnnotationByType( method, Constants.DEPENDENCY_CLASSNAME );
     final String qualifier =
-      null == annotation ? "" : AnnotationsUtil.getAnnotationValue( annotation, "qualifier" );
+      null == annotation ? "" : getQualifier( annotation );
 
     final TypeMirror specifiedDependencyType = getDependencyType( annotation );
     if ( null != specifiedDependencyType &&
@@ -787,7 +787,7 @@ public final class StingProcessor
   private TypeMirror getDependencyType( final AnnotationMirror annotation )
   {
     final TypeMirror declaredDependencyType =
-      null == annotation ? null : AnnotationsUtil.getAnnotationValue( annotation, "type" );
+      null == annotation ? null : AnnotationsUtil.getAnnotationValueValue( annotation, "type" );
     return null == annotation ?
            null :
            declaredDependencyType.getKind() == TypeKind.VOID ? null : declaredDependencyType;
@@ -895,7 +895,7 @@ public final class StingProcessor
     for ( int i = 0; i < size; i++ )
     {
       final AnnotationMirror input = inputs.get( i );
-      final String qualifier = AnnotationsUtil.getAnnotationValueValue( input, "qualifier" );
+      final String qualifier = getQualifier( input );
       final AnnotationValue typeAnnotationValue = AnnotationsUtil.findAnnotationValue( input, "type" );
       assert null != typeAnnotationValue;
       final TypeMirror type = (TypeMirror) typeAnnotationValue.getValue();
@@ -1080,8 +1080,7 @@ public final class StingProcessor
       AnnotationsUtil.hasAnnotationOfType( parameter, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
     final AnnotationMirror annotation =
       AnnotationsUtil.findAnnotationByType( parameter, Constants.DEPENDENCY_CLASSNAME );
-    final String qualifier =
-      null == annotation ? "" : AnnotationsUtil.getAnnotationValue( annotation, "qualifier" );
+    final String qualifier = null == annotation ? "" : getQualifier( annotation );
 
     final TypeMirror specifiedDependencyType = getDependencyType( annotation );
     if ( null != specifiedDependencyType &&
@@ -1387,7 +1386,7 @@ public final class StingProcessor
     final AnnotationMirror annotation =
       AnnotationsUtil.findAnnotationByType( parameter, Constants.DEPENDENCY_CLASSNAME );
     final String qualifier =
-      null == annotation ? "" : AnnotationsUtil.getAnnotationValue( annotation, "qualifier" );
+      null == annotation ? "" : getQualifier( annotation );
 
     final TypeMirror specifiedDependencyType = getDependencyType( annotation );
     if ( null != specifiedDependencyType &&
@@ -1515,6 +1514,12 @@ public final class StingProcessor
 
     final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
     return new DependencyDescriptor( kind, coordinate, optional, parameter, parameterIndex );
+  }
+
+  @Nonnull
+  private String getQualifier( @Nonnull final AnnotationMirror annotation )
+  {
+    return AnnotationsUtil.getAnnotationValueValue( annotation, "qualifier" );
   }
 
   private boolean isDefaultTypes( @Nonnull final List<TypeMirror> types )
