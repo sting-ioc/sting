@@ -10,23 +10,15 @@ complete as there is too much un-said.
 * Add a `@Injector.dependencies` parameter that can be used to specify additional dependencies passed into injector.
   These must have `@Dependency.type` specified but other than that they can specify any type
 
-* `@Dependency` seems like the wrong name for the annotation. It describes a slot or socket in which
-  services can fit. It identifies either inputs or outputs. Maybe we could split into `@Input` and `@Output`
-  or use a more generic term like `@Slot`.
+* Rename `@Dependency` to `@ServiceSpec`.
+
+* Refactor `@Injectable` and `@Provides` to have an array of outputs such as
+  `@Injectable(outputs={@ServiceSpec(qualifier="X"),@ServiceSpec(qualifier="Y")}`.
+
+* Add a `optional=OPTIONAL/REQUIRED/AUTODETETCT` parameter to `@Dependency` and make sure the `@Nullable` annotation aligns with it.
 
 * Improve error messages for `@Dependency` to differentiate between when an explicit type has
   been specified and and it is the type of the parameter.
-
-* Maybe `@Input` could contain `type` and `qualifier` and `optional` parameters.
-
-* Maybe `@Output` could contain `type` and `qualifier`. `@Injectable` and `@Provides` could have an array
-  of outputs via `@Injectable(outputs={@Output(qualifier="X"),@Output(qualifier="Y")}`. We could
-  also potentially another parameter like `@Injectable(types={SomeType.class,OtherType.class}` that is
-  incompatible withoutputs but is effectively equivalent to
-  `@Injectable(outputs={@Output(type=SomeType.class),@Output(type=OtherType.class)}`. This maintains
-  flexibility when absolutley needed but simplicity for common cases.
-
-* Consider adding a `optional=OPTIONAL/REQUIRED/AUTODETETCT` and make sure the `@Nullable` annotation aligns with it.
 
 * Add the mechanisms for overriding bindings already added to object graph. Perhaps by adding an
   `override=ENABLE|DISABLE|AUTODETECT` parameter which indicates whether the binding can override
