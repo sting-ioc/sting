@@ -1,0 +1,13 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.ExplicitRequiredOutputModel.MyModel"
+  ],
+  "outputs": [
+    {
+      "coordinate": {
+        "type": "com.example.injector.outputs.ExplicitRequiredOutputModel.MyModel"
+      }
+    }
+  ]
+}

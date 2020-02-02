@@ -15,8 +15,7 @@
       "type": "SUPPLIER",
       "coordinate": {
         "type": "com.example.injector.outputs.ComplexOutputModel.MyModel2"
-      },
-      "optional": true
+      }
     },
     {
       "type": "SUPPLIER",

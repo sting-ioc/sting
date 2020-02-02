@@ -11,7 +11,6 @@ interface ComplexOutputModel
 {
   MyModel1 getMyModel1();
 
-  @Nullable
   Supplier<MyModel2> getMyModel2Supplier();
 
   @Dependency( qualifier = "foo" )

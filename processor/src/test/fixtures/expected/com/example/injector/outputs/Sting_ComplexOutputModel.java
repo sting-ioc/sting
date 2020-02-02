@@ -53,7 +53,6 @@ final class Sting_ComplexOutputModel implements ComplexOutputModel {
   }
 
   @Override
-  @Nullable
   public Supplier<ComplexOutputModel.MyModel2> getMyModel2Supplier() {
     return () -> (ComplexOutputModel.MyModel2) node2();
   }

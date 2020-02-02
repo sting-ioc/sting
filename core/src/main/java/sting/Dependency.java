@@ -45,4 +45,12 @@ public @interface Dependency
    * @return the type of the dependency required.
    */
   Class<?> type() default void.class;
+
+  /**
+   * A parameter indicating whether the service is required or optional.
+   *
+   * @return a parameter indicating whether the service is required or optional.
+   */
+  @Nonnull
+  NecessityType necessity() default NecessityType.AUTODETECT;
 }

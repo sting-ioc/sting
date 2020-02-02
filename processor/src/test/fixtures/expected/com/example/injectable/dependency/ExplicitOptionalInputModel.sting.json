@@ -1,0 +1,15 @@
+{
+  "schema": "injectable/1",
+  "id": "com.example.injectable.dependency.ExplicitOptionalInputModel",
+  "types": [
+    "com.example.injectable.dependency.ExplicitOptionalInputModel"
+  ],
+  "dependencies": [
+    {
+      "coordinate": {
+        "type": "java.lang.Runnable"
+      },
+      "optional": true
+    }
+  ]
+}

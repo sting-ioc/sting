@@ -1,0 +1,20 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.fragment.dependency.ExplicitOptionalInputModel#provideRunnable",
+      "providesMethod": "provideRunnable",
+      "types": [
+        "java.lang.Runnable"
+      ],
+      "dependencies": [
+        {
+          "coordinate": {
+            "type": "java.lang.String"
+          },
+          "optional": true
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.outputs.ExplicitAutodetectNecessityOutputModel.MyModel",
+      "kind": "INJECTABLE"
+    }
+  ]
+}

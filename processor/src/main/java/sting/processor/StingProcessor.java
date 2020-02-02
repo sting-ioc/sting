@@ -627,12 +627,8 @@ public final class StingProcessor
   private DependencyDescriptor processOutputMethod( @Nonnull final ExecutableElement method )
   {
     final TypeMirror returnType = method.getReturnType();
-    final boolean optional =
-      AnnotationsUtil.hasAnnotationOfType( method, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
-    final AnnotationMirror annotation =
-      AnnotationsUtil.findAnnotationByType( method, Constants.DEPENDENCY_CLASSNAME );
-    final String qualifier =
-      null == annotation ? "" : getQualifier( annotation );
+    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( method, Constants.DEPENDENCY_CLASSNAME );
+    final String qualifier = null == annotation ? "" : getQualifier( annotation );
 
     final TypeMirror specifiedDependencyType = getDependencyType( annotation );
     if ( null != specifiedDependencyType &&
@@ -772,15 +768,88 @@ public final class StingProcessor
       }
     }
 
-    if ( optional && kind.isCollection() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
-                                                          "be annotated with @Nullable and be a collection type" ),
-                                    method );
-    }
+    final boolean optional = deriveOptional( method, type, kind );
 
     final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
     return new DependencyDescriptor( kind, coordinate, optional, method, -1 );
+  }
+
+  private boolean deriveOptional( @Nonnull final Element element,
+                                  @Nonnull final TypeMirror type,
+                                  @Nonnull final DependencyDescriptor.Kind kind )
+  {
+    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( element, Constants.DEPENDENCY_CLASSNAME );
+    final AnnotationValue optionalAnnotationValue =
+      null != annotation ?
+      AnnotationsUtil.findAnnotationValue( annotation, "necessity" ) :
+      null;
+
+    final String optionalValue =
+      null != optionalAnnotationValue ?
+      ( (VariableElement) optionalAnnotationValue.getValue() ).getSimpleName().toString() :
+      "AUTODETECT";
+
+    boolean optional = false;
+    if ( "AUTODETECT".equals( optionalValue ) )
+    {
+      final boolean nullableAnnotation =
+        AnnotationsUtil.hasAnnotationOfType( element, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
+      if ( nullableAnnotation && !type.getKind().isPrimitive() && !kind.isCollection() && !kind.isSupplier() )
+      {
+        optional = true;
+      }
+    }
+
+    if ( optional || "OPTIONAL".equals( optionalValue ) )
+    {
+      if ( kind.isCollection() )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                            "be optional and be a collection type" ),
+                                      element,
+                                      annotation,
+                                      optionalAnnotationValue );
+      }
+      else if ( kind.isSupplier() )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                            "be optional and be a supplier type" ),
+                                      element,
+                                      annotation,
+                                      optionalAnnotationValue );
+      }
+      else if ( type.getKind().isPrimitive() )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                            "be optional and be a primitive type" ),
+                                      element,
+                                      annotation,
+                                      optionalAnnotationValue );
+      }
+      else if ( AnnotationsUtil.hasAnnotationOfType( element, GeneratorUtil.NONNULL_ANNOTATION_CLASSNAME ) )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                            "be optional and be annotated by " +
+                                                            MemberChecks.toSimpleName( GeneratorUtil.NONNULL_ANNOTATION_CLASSNAME ) ),
+                                      element,
+                                      annotation,
+                                      optionalAnnotationValue );
+      }
+      optional = true;
+    }
+    else
+    {
+      if ( AnnotationsUtil.hasAnnotationOfType( element, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                                                            "be required and be annotated by " +
+                                                            MemberChecks.toSimpleName( GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) ),
+                                      element,
+                                      annotation,
+                                      optionalAnnotationValue );
+      }
+    }
+    return optional;
   }
 
   @Nullable
@@ -1076,8 +1145,6 @@ public final class StingProcessor
                                                                    @Nonnull final TypeMirror parameterType,
                                                                    final int parameterIndex )
   {
-    final boolean optional =
-      AnnotationsUtil.hasAnnotationOfType( parameter, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
     final AnnotationMirror annotation =
       AnnotationsUtil.findAnnotationByType( parameter, Constants.DEPENDENCY_CLASSNAME );
     final String qualifier = null == annotation ? "" : getQualifier( annotation );
@@ -1197,14 +1264,7 @@ public final class StingProcessor
                                       parameter );
       }
     }
-
-    if ( optional && kind.isCollection() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
-                                                          "be annotated with @Nullable and be a collection type" ),
-                                    parameter );
-    }
-
+    final boolean optional = deriveOptional( parameter, type, kind );
     final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
     return new DependencyDescriptor( kind, coordinate, optional, parameter, parameterIndex );
   }
@@ -1381,8 +1441,6 @@ public final class StingProcessor
                                                            @Nonnull final TypeMirror parameterType,
                                                            final int parameterIndex )
   {
-    final boolean optional =
-      AnnotationsUtil.hasAnnotationOfType( parameter, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
     final AnnotationMirror annotation =
       AnnotationsUtil.findAnnotationByType( parameter, Constants.DEPENDENCY_CLASSNAME );
     final String qualifier =
@@ -1505,13 +1563,8 @@ public final class StingProcessor
                                       parameter );
       }
     }
-    if ( optional && kind.isCollection() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
-                                                          "be annotated with @Nullable and be a collection type" ),
-                                    parameter );
-    }
 
+    final boolean optional = deriveOptional( parameter, type, kind );
     final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
     return new DependencyDescriptor( kind, coordinate, optional, parameter, parameterIndex );
   }

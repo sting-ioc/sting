@@ -1,0 +1,15 @@
+{
+  "schema": "injectable/1",
+  "id": "com.example.injectable.dependency.ExplicitAutodetectNecessityNullableInputModel",
+  "types": [
+    "com.example.injectable.dependency.ExplicitAutodetectNecessityNullableInputModel"
+  ],
+  "dependencies": [
+    {
+      "coordinate": {
+        "type": "java.lang.Runnable"
+      },
+      "optional": true
+    }
+  ]
+}

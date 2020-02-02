@@ -15,8 +15,6 @@ complete as there is too much un-said.
 * Refactor `@Injectable` and `@Provides` to have an array of outputs such as
   `@Injectable(outputs={@ServiceSpec(qualifier="X"),@ServiceSpec(qualifier="Y")}`.
 
-* Add a `optional=OPTIONAL/REQUIRED/AUTODETETCT` parameter to `@Dependency` and make sure the `@Nullable` annotation aligns with it.
-
 * Improve error messages for `@Dependency` to differentiate between when an explicit type has
   been specified and and it is the type of the parameter.
 

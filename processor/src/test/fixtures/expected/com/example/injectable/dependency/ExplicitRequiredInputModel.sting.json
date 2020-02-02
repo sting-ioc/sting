@@ -1,0 +1,14 @@
+{
+  "schema": "injectable/1",
+  "id": "com.example.injectable.dependency.ExplicitRequiredInputModel",
+  "types": [
+    "com.example.injectable.dependency.ExplicitRequiredInputModel"
+  ],
+  "dependencies": [
+    {
+      "coordinate": {
+        "type": "java.lang.Runnable"
+      }
+    }
+  ]
+}
