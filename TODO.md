@@ -20,6 +20,8 @@ complete as there is too much un-said.
 
 * Add support for `Supplier<Optional<T>>` and `Collection<Supplier<Optional<T>>>` for optional inputs
 
+* Add support for optional input contributing to a collection - they are just not added to the collection.
+
 * Add the mechanisms for overriding bindings already added to object graph. Perhaps by adding an
   `override=ENABLE|DISABLE|AUTODETECT` parameter which indicates whether the binding can override
   existing bindings. Order in `includes` matters in this scenario. This will default to `AUTODETECT`
