@@ -14,6 +14,9 @@ complete as there is too much un-said.
   services can fit. It identifies either inputs or outputs. Maybe we could split into `@Input` and `@Output`
   or use a more generic term like `@Slot`.
 
+* Improve error messages for `@Dependency` to differentiate between when an explicit type has
+  been specified and and it is the type of the parameter.
+
 * Maybe `@Input` could contain `type` and `qualifier` and `optional` parameters.
 
 * Maybe `@Output` could contain `type` and `qualifier`. `@Injectable` and `@Provides` could have an array
