@@ -18,6 +18,8 @@ complete as there is too much un-said.
 * Improve error messages for `@Dependency` to differentiate between when an explicit type has
   been specified and and it is the type of the parameter.
 
+* Add support for `Supplier<Optional<T>>` and `Collection<Supplier<Optional<T>>>` for optional inputs
+
 * Add the mechanisms for overriding bindings already added to object graph. Perhaps by adding an
   `override=ENABLE|DISABLE|AUTODETECT` parameter which indicates whether the binding can override
   existing bindings. Order in `includes` matters in this scenario. This will default to `AUTODETECT`
