@@ -57,7 +57,7 @@ final class Binding
    * The dependencies that need to be supplied when creating a binding instance.
    */
   @Nonnull
-  private final DependencyDescriptor[] _dependencies;
+  private final ServiceDescriptor[] _dependencies;
   /**
    * The descriptor that created the binding.
    */
@@ -69,7 +69,7 @@ final class Binding
            @Nonnull final TypeMirror[] types,
            final boolean eager,
            @Nonnull final ExecutableElement element,
-           @Nonnull final DependencyDescriptor[] dependencies )
+           @Nonnull final ServiceDescriptor[] dependencies )
   {
     assert ( Kind.INJECTABLE == kind && ElementKind.CONSTRUCTOR == element.getKind() ) ||
            ( Kind.INJECTABLE != kind && ElementKind.METHOD == element.getKind() );
@@ -132,7 +132,7 @@ final class Binding
   }
 
   @Nonnull
-  DependencyDescriptor[] getDependencies()
+  ServiceDescriptor[] getDependencies()
   {
     return _dependencies;
   }
@@ -168,7 +168,7 @@ final class Binding
     if ( _dependencies.length > 0 )
     {
       g.writeStartArray( "dependencies" );
-      for ( final DependencyDescriptor dependency : _dependencies )
+      for ( final ServiceDescriptor dependency : _dependencies )
       {
         dependency.write( g );
       }

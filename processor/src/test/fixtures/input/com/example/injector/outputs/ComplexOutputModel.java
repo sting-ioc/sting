@@ -2,7 +2,7 @@ package com.example.injector.outputs;
 
 import java.util.function.Supplier;
 import javax.annotation.Nullable;
-import sting.Dependency;
+import sting.Service;
 import sting.Injectable;
 import sting.Injector;
 
@@ -13,7 +13,7 @@ interface ComplexOutputModel
 
   Supplier<MyModel2> getMyModel2Supplier();
 
-  @Dependency( qualifier = "foo" )
+  @Service( qualifier = "foo" )
   Supplier<MyModel3> getMyModel3Supplier();
 
   @Nullable

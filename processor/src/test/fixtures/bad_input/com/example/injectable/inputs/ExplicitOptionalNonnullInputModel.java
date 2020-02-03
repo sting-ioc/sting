@@ -1,14 +1,14 @@
 package com.example.injectable.inputs;
 
 import javax.annotation.Nonnull;
-import sting.Dependency;
+import sting.Service;
 import sting.Injectable;
 import sting.NecessityType;
 
 @Injectable
 public class ExplicitOptionalNonnullInputModel
 {
-  ExplicitOptionalNonnullInputModel( @Dependency( necessity = NecessityType.OPTIONAL ) @Nonnull String someValue )
+  ExplicitOptionalNonnullInputModel( @Service( necessity = NecessityType.OPTIONAL ) @Nonnull String someValue )
   {
   }
 }

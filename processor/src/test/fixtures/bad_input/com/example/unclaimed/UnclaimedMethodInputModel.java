@@ -1,12 +1,12 @@
 package com.example.unclaimed;
 
-import sting.Dependency;
+import sting.Service;
 import sting.Injectable;
 
 @Injectable
 public class UnclaimedMethodInputModel
 {
-  void myMethod( @Dependency String someValue )
+  void myMethod( @Service String someValue )
   {
   }
 }

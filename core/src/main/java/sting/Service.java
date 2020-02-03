@@ -28,7 +28,7 @@ import javax.annotation.Nonnull;
 @Target( { ElementType.PARAMETER, ElementType.METHOD } )
 @Retention( RetentionPolicy.RUNTIME )
 @Documented
-public @interface Dependency
+public @interface Service
 {
   /**
    * An opaque string that qualifies the service.

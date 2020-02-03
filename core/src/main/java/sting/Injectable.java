@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
  *
  * <b>Qualified Dependencies</b>
  *
- * <p>A parameter may can also be annotated with the {@link Dependency @Dependency} annotation with the qualifier
+ * <p>A parameter may can also be annotated with the {@link Service @ServiceSpec} annotation with the qualifier
  * parameter specified. To satisfy the dependency the provided value must be declared with the same qualifier.</p>
  *
  * <h3>Circular Dependencies</h3>
@@ -33,7 +33,7 @@ import javax.annotation.Nullable;
  * instead of {@code OtherType} and then calling {@link Supplier#get() get()} on the supplier when access
  * to the dependency is needed.</p>
  *
- * @see Dependency @Dependency
+ * @see Service @Dependency
  * @see Supplier
  */
 @Target( ElementType.TYPE )

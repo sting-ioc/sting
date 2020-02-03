@@ -1,12 +1,12 @@
 package com.example.injectable.dependency;
 
-import sting.Dependency;
+import sting.Service;
 import sting.Injectable;
 
 @Injectable
 public class QualifiedDependencyModel
 {
-  QualifiedDependencyModel( @Dependency( qualifier = "lively" ) Runnable runnable )
+  QualifiedDependencyModel( @Service( qualifier = "lively" ) Runnable runnable )
   {
   }
 }

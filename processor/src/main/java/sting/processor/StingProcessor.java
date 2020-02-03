@@ -54,13 +54,13 @@ import org.realityforge.proton.MemberChecks;
 import org.realityforge.proton.ProcessorException;
 
 /**
- * Annotation processor that analyzes sting annotated source and generates dependency injection container.
+ * Annotation processor that analyzes Sting annotated source code and generates source to support the Sting elements.
  */
 @SuppressWarnings( "DuplicatedCode" )
 @SupportedAnnotationTypes( { Constants.INJECTOR_CLASSNAME,
                              Constants.INJECTABLE_CLASSNAME,
                              Constants.FRAGMENT_CLASSNAME,
-                             Constants.DEPENDENCY_CLASSNAME } )
+                             Constants.SERVICE_CLASSNAME } )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
 @SupportedOptions( { "sting.defer.unresolved",
                      "sting.defer.errors",
@@ -150,9 +150,9 @@ public final class StingProcessor
                                             this::processFragment ) );
 
     annotations.stream()
-      .filter( a -> a.getQualifiedName().toString().equals( Constants.DEPENDENCY_CLASSNAME ) )
+      .filter( a -> a.getQualifiedName().toString().equals( Constants.SERVICE_CLASSNAME ) )
       .findAny()
-      .ifPresent( a -> verifyDependencyElements( env, env.getElementsAnnotatedWith( a ) ) );
+      .ifPresent( a -> verifyServiceElements( env, env.getElementsAnnotatedWith( a ) ) );
 
     annotations.stream()
       .filter( a -> a.getQualifiedName().toString().equals( Constants.INJECTOR_CLASSNAME ) )
@@ -335,8 +335,8 @@ public final class StingProcessor
       final WorkEntry workEntry = workList.pop();
       final Edge edge = workEntry.getEntry().getEdge();
       assert null != edge;
-      final DependencyDescriptor dependency = edge.getDependency();
-      final Coordinate coordinate = dependency.getCoordinate();
+      final ServiceDescriptor service = edge.getService();
+      final Coordinate coordinate = service.getCoordinate();
       final List<Binding> bindings = new ArrayList<>( graph.findAllBindingsByCoordinate( coordinate ) );
 
       if ( bindings.isEmpty() )
@@ -382,7 +382,7 @@ public final class StingProcessor
       final List<Binding> nullableProviders = bindings.stream()
         .filter( b -> Binding.Kind.NULLABLE_PROVIDES == b.getKind() )
         .collect( Collectors.toList() );
-      if ( !dependency.isOptional() && !nullableProviders.isEmpty() )
+      if ( !service.isOptional() && !nullableProviders.isEmpty() )
       {
         final String message =
           MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
@@ -393,11 +393,11 @@ public final class StingProcessor
                                 "Dependency Path:\n" + workEntry.describePathFromRoot() + "\n" +
                                 "Binding" + ( nullableProviders.size() > 1 ? "s" : "" ) + ":\n" +
                                 bindingsToString( nullableProviders ) );
-        throw new ProcessorException( message, dependency.getElement() );
+        throw new ProcessorException( message, service.getElement() );
       }
       if ( bindings.isEmpty() )
       {
-        if ( dependency.isOptional() || dependency.getKind().isCollection() )
+        if ( service.isOptional() || service.getKind().isCollection() )
         {
           edge.setSatisfiedBy( Collections.emptyList() );
         }
@@ -408,12 +408,12 @@ public final class StingProcessor
                                   "contain a non-optional dependency " + coordinate +
                                   " that can not be satisfied.\n" +
                                   "Dependency Path:\n" + workEntry.describePathFromRoot() );
-          throw new ProcessorException( message, dependency.getElement() );
+          throw new ProcessorException( message, service.getElement() );
         }
       }
       else
       {
-        final DependencyDescriptor.Kind kind = dependency.getKind();
+        final ServiceDescriptor.Kind kind = service.getKind();
         if ( 1 == bindings.size() || kind.isCollection() )
         {
           final List<Node> nodes = new ArrayList<>();
@@ -449,7 +449,7 @@ public final class StingProcessor
                                   " that can be satisfied by multiple nodes.\n" +
                                   "Dependency Path:\n" + workEntry.describePathFromRoot() + "\n" +
                                   "Candidate Nodes:\n" + bindingsToString( bindings ) );
-          throw new ProcessorException( message, dependency.getElement() );
+          throw new ProcessorException( message, service.getElement() );
         }
       }
     }
@@ -564,9 +564,9 @@ public final class StingProcessor
     }
 
     final List<DeclaredType> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
-    final List<DependencyDescriptor> inputs = extractInputs( element );
+    final List<ServiceDescriptor> inputs = extractInputs( element );
 
-    final List<DependencyDescriptor> outputs = new ArrayList<>();
+    final List<ServiceDescriptor> outputs = new ArrayList<>();
     final List<ExecutableElement> methods =
       ElementsUtil.getMethods( element, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
     for ( final ExecutableElement method : methods )
@@ -613,53 +613,53 @@ public final class StingProcessor
     }
   }
 
-  private void processInjectorOutputMethod( @Nonnull final List<DependencyDescriptor> outputs,
+  private void processInjectorOutputMethod( @Nonnull final List<ServiceDescriptor> outputs,
                                             @Nonnull final ExecutableElement method )
   {
     assert method.getModifiers().contains( Modifier.ABSTRACT );
-    MemberChecks.mustReturnAValue( Constants.DEPENDENCY_CLASSNAME, method );
-    MemberChecks.mustNotHaveAnyParameters( Constants.DEPENDENCY_CLASSNAME, method );
-    MemberChecks.mustNotHaveAnyTypeParameters( Constants.DEPENDENCY_CLASSNAME, method );
+    MemberChecks.mustReturnAValue( Constants.SERVICE_CLASSNAME, method );
+    MemberChecks.mustNotHaveAnyParameters( Constants.SERVICE_CLASSNAME, method );
+    MemberChecks.mustNotHaveAnyTypeParameters( Constants.SERVICE_CLASSNAME, method );
     outputs.add( processOutputMethod( method ) );
   }
 
   @Nonnull
-  private DependencyDescriptor processOutputMethod( @Nonnull final ExecutableElement method )
+  private ServiceDescriptor processOutputMethod( @Nonnull final ExecutableElement method )
   {
     final TypeMirror returnType = method.getReturnType();
-    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( method, Constants.DEPENDENCY_CLASSNAME );
+    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( method, Constants.SERVICE_CLASSNAME );
     final String qualifier = null == annotation ? "" : getQualifier( annotation );
 
-    final TypeMirror specifiedDependencyType = getDependencyType( annotation );
-    if ( null != specifiedDependencyType &&
-         !processingEnv.getTypeUtils().isAssignable( specifiedDependencyType, returnType ) )
+    final TypeMirror specifiedServiceType = getServiceType( annotation );
+    if ( null != specifiedServiceType &&
+         !processingEnv.getTypeUtils().isAssignable( specifiedServiceType, returnType ) )
     {
-      throw new ProcessorException( MemberChecks.toSimpleName( Constants.DEPENDENCY_CLASSNAME ) +
-                                    " target specifies a type parameter that is not assignable to the actual type",
+      throw new ProcessorException( MemberChecks.toSimpleName( Constants.SERVICE_CLASSNAME ) +
+                                    " target specifies a type element that is not assignable to the actual type",
                                     method );
     }
-    final TypeMirror type = null != specifiedDependencyType ? specifiedDependencyType : returnType;
+    final TypeMirror type = null != specifiedServiceType ? specifiedServiceType : returnType;
 
     final boolean isDeclaredType = TypeKind.DECLARED == type.getKind();
     final DeclaredType declaredType = isDeclaredType ? (DeclaredType) type : null;
     final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
-    final DependencyDescriptor.Kind kind;
-    final TypeMirror dependencyType;
+    final ServiceDescriptor.Kind kind;
+    final TypeMirror serviceType;
     if ( TypeKind.ARRAY == type.getKind() )
     {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME, "return an array type" ),
+      throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME, "return an array type" ),
                                     method );
     }
     else if ( null == declaredType )
     {
-      kind = DependencyDescriptor.Kind.INSTANCE;
-      dependencyType = type;
+      kind = ServiceDescriptor.Kind.INSTANCE;
+      serviceType = type;
     }
     else if ( !isParameterizedType )
     {
       if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                             "return a raw " +
                                                             Supplier.class.getCanonicalName() +
                                                             " type" ),
@@ -667,22 +667,22 @@ public final class StingProcessor
       }
       else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                             "return a a raw " +
                                                             Collection.class.getCanonicalName() + " type" ),
                                       method );
       }
       else if ( !( (TypeElement) declaredType.asElement() ).getTypeParameters().isEmpty() )
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                             "return a raw parameterized type. Parameterized " +
                                                             "types are only permitted for specific types such as " +
                                                             Supplier.class.getCanonicalName() + " and " +
                                                             Collection.class.getCanonicalName() ),
                                       method );
       }
-      kind = DependencyDescriptor.Kind.INSTANCE;
-      dependencyType = type;
+      kind = ServiceDescriptor.Kind.INSTANCE;
+      serviceType = type;
     }
     else
     {
@@ -691,20 +691,20 @@ public final class StingProcessor
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
         if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                               "return a " + Supplier.class.getCanonicalName() +
                                                               " type with a wildcard type parameter" ),
                                         method );
         }
-        kind = DependencyDescriptor.Kind.SUPPLIER;
-        dependencyType = typeArgument;
+        kind = ServiceDescriptor.Kind.SUPPLIER;
+        serviceType = typeArgument;
       }
       else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
         if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                               "return a " + Collection.class.getCanonicalName() +
                                                               " type with a wildcard type parameter" ),
                                         method );
@@ -716,7 +716,7 @@ public final class StingProcessor
           final List<? extends TypeMirror> nestedTypeArguments = supplierType.getTypeArguments();
           if ( nestedTypeArguments.isEmpty() )
           {
-            throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+            throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                                 "return a supplier collection parameter that " +
                                                                 "contains a raw " +
                                                                 Supplier.class.getCanonicalName() + " type" ),
@@ -727,39 +727,39 @@ public final class StingProcessor
             final TypeMirror nestedParameterType = nestedTypeArguments.get( 0 );
             if ( TypeKind.WILDCARD == nestedParameterType.getKind() )
             {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+              throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                                   "return a supplier collection parameter with a wildcard type parameter" ),
                                             method );
             }
             else if ( TypeKind.DECLARED == nestedParameterType.getKind() &&
                       isParameterized( (DeclaredType) nestedParameterType ) )
             {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+              throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                                   "return a a supplier collection type that contains a parameterized type" ),
                                             method );
             }
             else
             {
-              kind = DependencyDescriptor.Kind.SUPPLIER_COLLECTION;
-              dependencyType = nestedParameterType;
+              kind = ServiceDescriptor.Kind.SUPPLIER_COLLECTION;
+              serviceType = nestedParameterType;
             }
           }
         }
         else if ( TypeKind.DECLARED == typeArgument.getKind() && isParameterized( (DeclaredType) typeArgument ) )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                               "return a collection type that contains a parameterized type" ),
                                         method );
         }
         else
         {
-          kind = DependencyDescriptor.Kind.COLLECTION;
-          dependencyType = typeArgument;
+          kind = ServiceDescriptor.Kind.COLLECTION;
+          serviceType = typeArgument;
         }
       }
       else
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                             "return a value that is a parameterized type. " +
                                                             "This is only permitted for specific types such as " +
                                                             Supplier.class.getCanonicalName() + " and " +
@@ -770,15 +770,15 @@ public final class StingProcessor
 
     final boolean optional = deriveOptional( method, type, kind );
 
-    final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
-    return new DependencyDescriptor( kind, coordinate, optional, method, -1 );
+    final Coordinate coordinate = new Coordinate( qualifier, serviceType );
+    return new ServiceDescriptor( kind, coordinate, optional, method, -1 );
   }
 
   private boolean deriveOptional( @Nonnull final Element element,
                                   @Nonnull final TypeMirror type,
-                                  @Nonnull final DependencyDescriptor.Kind kind )
+                                  @Nonnull final ServiceDescriptor.Kind kind )
   {
-    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( element, Constants.DEPENDENCY_CLASSNAME );
+    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( element, Constants.SERVICE_CLASSNAME );
     final AnnotationValue optionalAnnotationValue =
       null != annotation ?
       AnnotationsUtil.findAnnotationValue( annotation, "necessity" ) :
@@ -804,7 +804,7 @@ public final class StingProcessor
     {
       if ( kind.isCollection() )
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                             "be optional and be a collection type" ),
                                       element,
                                       annotation,
@@ -812,7 +812,7 @@ public final class StingProcessor
       }
       else if ( kind.isSupplier() )
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                             "be optional and be a supplier type" ),
                                       element,
                                       annotation,
@@ -820,7 +820,7 @@ public final class StingProcessor
       }
       else if ( type.getKind().isPrimitive() )
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                             "be optional and be a primitive type" ),
                                       element,
                                       annotation,
@@ -828,7 +828,7 @@ public final class StingProcessor
       }
       else if ( AnnotationsUtil.hasAnnotationOfType( element, GeneratorUtil.NONNULL_ANNOTATION_CLASSNAME ) )
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                             "be optional and be annotated by " +
                                                             MemberChecks.toSimpleName( GeneratorUtil.NONNULL_ANNOTATION_CLASSNAME ) ),
                                       element,
@@ -841,7 +841,7 @@ public final class StingProcessor
     {
       if ( AnnotationsUtil.hasAnnotationOfType( element, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) )
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                             "be required and be annotated by " +
                                                             MemberChecks.toSimpleName( GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) ),
                                       element,
@@ -853,17 +853,14 @@ public final class StingProcessor
   }
 
   @Nullable
-  private TypeMirror getDependencyType( final AnnotationMirror annotation )
+  private TypeMirror getServiceType( @Nullable final AnnotationMirror annotation )
   {
-    final TypeMirror declaredDependencyType =
-      null == annotation ? null : AnnotationsUtil.getAnnotationValueValue( annotation, "type" );
-    return null == annotation ?
-           null :
-           declaredDependencyType.getKind() == TypeKind.VOID ? null : declaredDependencyType;
+    final TypeMirror type = null == annotation ? null : AnnotationsUtil.getAnnotationValueValue( annotation, "type" );
+    return null == annotation ? null : type.getKind() == TypeKind.VOID ? null : type;
   }
 
-  private void verifyDependencyElements( @Nonnull final RoundEnvironment env,
-                                         @Nonnull final Set<? extends Element> elements )
+  private void verifyServiceElements( @Nonnull final RoundEnvironment env,
+                                      @Nonnull final Set<? extends Element> elements )
   {
     for ( final Element element : elements )
     {
@@ -879,7 +876,7 @@ public final class StingProcessor
         if ( !injectableType && ElementKind.CONSTRUCTOR == executableKind )
         {
           reportError( env,
-                       MemberChecks.must( Constants.DEPENDENCY_CLASSNAME,
+                       MemberChecks.must( Constants.SERVICE_CLASSNAME,
                                           "only be present on a parameter of a constructor " +
                                           "if the enclosing type is annotated with " +
                                           MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) ),
@@ -888,7 +885,7 @@ public final class StingProcessor
         else if ( !isFragmentType && ElementKind.METHOD == executableKind )
         {
           reportError( env,
-                       MemberChecks.must( Constants.DEPENDENCY_CLASSNAME,
+                       MemberChecks.must( Constants.SERVICE_CLASSNAME,
                                           "only be present on a parameter of a method " +
                                           "if the enclosing type is annotated with " +
                                           MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
@@ -906,7 +903,7 @@ public final class StingProcessor
         if ( !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.INJECTOR_CLASSNAME ) )
         {
           reportError( env,
-                       MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+                       MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                              "be a method unless present in a type annotated with " +
                                              MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) ),
                        element );
@@ -952,9 +949,9 @@ public final class StingProcessor
 
   @SuppressWarnings( "unchecked" )
   @Nonnull
-  private List<DependencyDescriptor> extractInputs( @Nonnull final TypeElement element )
+  private List<ServiceDescriptor> extractInputs( @Nonnull final TypeElement element )
   {
-    final List<DependencyDescriptor> results = new ArrayList<>();
+    final List<ServiceDescriptor> results = new ArrayList<>();
     final AnnotationMirror annotation = AnnotationsUtil.getAnnotationByType( element, Constants.INJECTOR_CLASSNAME );
     final AnnotationValue inputsAnnotationValue = AnnotationsUtil.findAnnotationValue( annotation, "inputs" );
     assert null != inputsAnnotationValue;
@@ -970,7 +967,7 @@ public final class StingProcessor
       final TypeMirror type = (TypeMirror) typeAnnotationValue.getValue();
       if ( TypeKind.ARRAY == type.getKind() )
       {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.DEPENDENCY_CLASSNAME ) +
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.SERVICE_CLASSNAME ) +
                                       " must not specify an array type for the type parameter",
                                       element,
                                       input,
@@ -978,7 +975,7 @@ public final class StingProcessor
       }
       else if ( TypeKind.VOID == type.getKind() )
       {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.DEPENDENCY_CLASSNAME ) +
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.SERVICE_CLASSNAME ) +
                                       " must specify a non-void type for the type parameter",
                                       element,
                                       input,
@@ -987,7 +984,7 @@ public final class StingProcessor
       else if ( TypeKind.DECLARED == type.getKind() &&
                 !( (TypeElement) ( (DeclaredType) type ).asElement() ).getTypeParameters().isEmpty() )
       {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.DEPENDENCY_CLASSNAME ) +
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.SERVICE_CLASSNAME ) +
                                       " must not specify a parameterized type for the type parameter",
                                       element,
                                       input,
@@ -995,7 +992,7 @@ public final class StingProcessor
       }
       final Coordinate coordinate = new Coordinate( qualifier, type );
       final boolean optional = false;
-      results.add( new DependencyDescriptor( DependencyDescriptor.Kind.INSTANCE, coordinate, optional, element, i ) );
+      results.add( new ServiceDescriptor( ServiceDescriptor.Kind.INSTANCE, coordinate, optional, element, i ) );
     }
     return results;
   }
@@ -1101,12 +1098,12 @@ public final class StingProcessor
         "";
       final String id = declaredId.isEmpty() ? element.getQualifiedName() + "#" + method.getSimpleName() : declaredId;
 
-      final List<DependencyDescriptor> dependencies = new ArrayList<>();
+      final List<ServiceDescriptor> dependencies = new ArrayList<>();
       int index = 0;
       final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) method.asType() ).getParameterTypes();
       for ( final VariableElement parameter : method.getParameters() )
       {
-        dependencies.add( processFragmentDependencyParameter( parameter, parameterTypes.get( index ), index ) );
+        dependencies.add( processFragmentServiceParameter( parameter, parameterTypes.get( index ), index ) );
         index++;
       }
       if ( publishedTypes.isEmpty() && !eager )
@@ -1135,55 +1132,54 @@ public final class StingProcessor
                      publishedTypes.toArray( new TypeMirror[ 0 ] ),
                      eager,
                      method,
-                     dependencies.toArray( new DependencyDescriptor[ 0 ] ) );
+                     dependencies.toArray( new ServiceDescriptor[ 0 ] ) );
       bindings.put( method, binding );
     }
   }
 
   @Nonnull
-  private DependencyDescriptor processFragmentDependencyParameter( @Nonnull final VariableElement parameter,
-                                                                   @Nonnull final TypeMirror parameterType,
-                                                                   final int parameterIndex )
+  private ServiceDescriptor processFragmentServiceParameter( @Nonnull final VariableElement parameter,
+                                                             @Nonnull final TypeMirror parameterType,
+                                                             final int parameterIndex )
   {
-    final AnnotationMirror annotation =
-      AnnotationsUtil.findAnnotationByType( parameter, Constants.DEPENDENCY_CLASSNAME );
+    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( parameter, Constants.SERVICE_CLASSNAME );
     final String qualifier = null == annotation ? "" : getQualifier( annotation );
 
-    final TypeMirror specifiedDependencyType = getDependencyType( annotation );
-    if ( null != specifiedDependencyType &&
-         !processingEnv.getTypeUtils().isAssignable( specifiedDependencyType, parameterType ) )
+    final TypeMirror specifiedServiceType = getServiceType( annotation );
+    if ( null != specifiedServiceType &&
+         !processingEnv.getTypeUtils().isAssignable( specifiedServiceType, parameterType ) )
     {
-      throw new ProcessorException( MemberChecks.toSimpleName( Constants.DEPENDENCY_CLASSNAME ) +
-                                    " target specifies a type parameter that is not assignable to the actual type",
+      throw new ProcessorException( MemberChecks.toSimpleName( Constants.SERVICE_CLASSNAME ) +
+                                    " target specifies a type element that is not assignable to the actual type",
                                     parameter );
     }
-    final TypeMirror type = null != specifiedDependencyType ? specifiedDependencyType : parameterType;
+    final TypeMirror type = null != specifiedServiceType ? specifiedServiceType : parameterType;
 
     final boolean isDeclaredType = TypeKind.DECLARED == type.getKind();
     final DeclaredType declaredType = isDeclaredType ? (DeclaredType) type : null;
     final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
-    final DependencyDescriptor.Kind kind;
-    final TypeMirror dependencyType;
+    final ServiceDescriptor.Kind kind;
+    final TypeMirror serviceType;
     if ( TypeKind.ARRAY == type.getKind() )
     {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME, "be an array type" ),
+      throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME, "be an array type" ),
                                     parameter );
     }
     else if ( null == declaredType )
     {
-      kind = DependencyDescriptor.Kind.INSTANCE;
-      dependencyType = type;
+      kind = ServiceDescriptor.Kind.INSTANCE;
+      serviceType = type;
     }
     else if ( !isParameterizedType )
     {
       if ( !( (TypeElement) declaredType.asElement() ).getTypeParameters().isEmpty() )
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                             "be a raw parameterized type" ),
                                       parameter );
       }
-      kind = DependencyDescriptor.Kind.INSTANCE;
-      dependencyType = type;
+      kind = ServiceDescriptor.Kind.INSTANCE;
+      serviceType = type;
     }
     else
     {
@@ -1192,19 +1188,19 @@ public final class StingProcessor
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
         if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                               "be a parameterized type with a wildcard type parameter" ),
                                         parameter );
         }
-        kind = DependencyDescriptor.Kind.SUPPLIER;
-        dependencyType = typeArgument;
+        kind = ServiceDescriptor.Kind.SUPPLIER;
+        serviceType = typeArgument;
       }
       else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
         if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                               "be a parameterized type with a wildcard type parameter" ),
                                         parameter );
         }
@@ -1215,7 +1211,7 @@ public final class StingProcessor
           final List<? extends TypeMirror> nestedTypeArguments = supplierType.getTypeArguments();
           if ( nestedTypeArguments.isEmpty() )
           {
-            throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+            throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                                 "be a raw supplier collection type" ),
                                           parameter );
           }
@@ -1224,39 +1220,39 @@ public final class StingProcessor
             final TypeMirror nestedParameterType = nestedTypeArguments.get( 0 );
             if ( TypeKind.WILDCARD == nestedParameterType.getKind() )
             {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+              throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                                   "be a supplier collection with a wildcard type parameter" ),
                                             parameter );
             }
             else if ( TypeKind.DECLARED == nestedParameterType.getKind() &&
                       isParameterized( (DeclaredType) nestedParameterType ) )
             {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+              throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                                   "be a supplier collection with a parameterized type as the type parameter" ),
                                             parameter );
             }
             else
             {
-              kind = DependencyDescriptor.Kind.SUPPLIER_COLLECTION;
-              dependencyType = nestedParameterType;
+              kind = ServiceDescriptor.Kind.SUPPLIER_COLLECTION;
+              serviceType = nestedParameterType;
             }
           }
         }
         else if ( TypeKind.DECLARED == typeArgument.getKind() && isParameterized( (DeclaredType) typeArgument ) )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                               "be a collection parameter that contains a parameterized type as the type parameter" ),
                                         parameter );
         }
         else
         {
-          kind = DependencyDescriptor.Kind.COLLECTION;
-          dependencyType = typeArgument;
+          kind = ServiceDescriptor.Kind.COLLECTION;
+          serviceType = typeArgument;
         }
       }
       else
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                             "be a parameterized type other than the special " +
                                                             "types known by the framework such as " +
                                                             Supplier.class.getCanonicalName() + " and " +
@@ -1265,8 +1261,8 @@ public final class StingProcessor
       }
     }
     final boolean optional = deriveOptional( parameter, type, kind );
-    final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
-    return new DependencyDescriptor( kind, coordinate, optional, parameter, parameterIndex );
+    final Coordinate coordinate = new Coordinate( qualifier, serviceType );
+    return new ServiceDescriptor( kind, coordinate, optional, parameter, parameterIndex );
   }
 
   private void processInjectable( @Nonnull final TypeElement element )
@@ -1332,7 +1328,7 @@ public final class StingProcessor
     final boolean eager =
       (boolean) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTABLE_CLASSNAME, "eager" ).getValue();
 
-    final List<DependencyDescriptor> dependencies = new ArrayList<>();
+    final List<ServiceDescriptor> dependencies = new ArrayList<>();
     int index = 0;
     final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) constructor.asType() ).getParameterTypes();
     for ( final VariableElement parameter : constructor.getParameters() )
@@ -1353,7 +1349,7 @@ public final class StingProcessor
                    publishedTypes.toArray( new TypeMirror[ 0 ] ),
                    eager,
                    constructor,
-                   dependencies.toArray( new DependencyDescriptor[ 0 ] ) );
+                   dependencies.toArray( new ServiceDescriptor[ 0 ] ) );
     final InjectableDescriptor injectable = new InjectableDescriptor( binding );
     _registry.registerInjectable( injectable );
   }
@@ -1437,50 +1433,49 @@ public final class StingProcessor
   }
 
   @Nonnull
-  private DependencyDescriptor handleConstructorParameter( @Nonnull final VariableElement parameter,
-                                                           @Nonnull final TypeMirror parameterType,
-                                                           final int parameterIndex )
+  private ServiceDescriptor handleConstructorParameter( @Nonnull final VariableElement parameter,
+                                                        @Nonnull final TypeMirror parameterType,
+                                                        final int parameterIndex )
   {
     final AnnotationMirror annotation =
-      AnnotationsUtil.findAnnotationByType( parameter, Constants.DEPENDENCY_CLASSNAME );
-    final String qualifier =
-      null == annotation ? "" : getQualifier( annotation );
+      AnnotationsUtil.findAnnotationByType( parameter, Constants.SERVICE_CLASSNAME );
+    final String qualifier = null == annotation ? "" : getQualifier( annotation );
 
-    final TypeMirror specifiedDependencyType = getDependencyType( annotation );
-    if ( null != specifiedDependencyType &&
-         !processingEnv.getTypeUtils().isAssignable( specifiedDependencyType, parameterType ) )
+    final TypeMirror specifiedServiceType = getServiceType( annotation );
+    if ( null != specifiedServiceType &&
+         !processingEnv.getTypeUtils().isAssignable( specifiedServiceType, parameterType ) )
     {
-      throw new ProcessorException( MemberChecks.toSimpleName( Constants.DEPENDENCY_CLASSNAME ) +
-                                    " target specifies a type parameter that is not assignable to the actual type",
+      throw new ProcessorException( MemberChecks.toSimpleName( Constants.SERVICE_CLASSNAME ) +
+                                    " target specifies a type element that is not assignable to the actual type",
                                     parameter );
     }
-    final TypeMirror type = null != specifiedDependencyType ? specifiedDependencyType : parameterType;
+    final TypeMirror type = null != specifiedServiceType ? specifiedServiceType : parameterType;
 
     final boolean isDeclaredType = TypeKind.DECLARED == type.getKind();
     final DeclaredType declaredType = isDeclaredType ? (DeclaredType) type : null;
     final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
-    final DependencyDescriptor.Kind kind;
-    final TypeMirror dependencyType;
+    final ServiceDescriptor.Kind kind;
+    final TypeMirror serviceType;
     if ( TypeKind.ARRAY == type.getKind() )
     {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME, "be an array type" ),
+      throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME, "be an array type" ),
                                     parameter );
     }
     else if ( null == declaredType )
     {
-      kind = DependencyDescriptor.Kind.INSTANCE;
-      dependencyType = type;
+      kind = ServiceDescriptor.Kind.INSTANCE;
+      serviceType = type;
     }
     else if ( !isParameterizedType )
     {
       if ( !( (TypeElement) declaredType.asElement() ).getTypeParameters().isEmpty() )
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                             "be a raw parameterized type" ),
                                       parameter );
       }
-      kind = DependencyDescriptor.Kind.INSTANCE;
-      dependencyType = type;
+      kind = ServiceDescriptor.Kind.INSTANCE;
+      serviceType = type;
     }
     else
     {
@@ -1489,20 +1484,20 @@ public final class StingProcessor
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
         if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                               "be a " + Supplier.class.getCanonicalName() +
                                                               " type with a wildcard type parameter" ),
                                         parameter );
         }
-        kind = DependencyDescriptor.Kind.SUPPLIER;
-        dependencyType = typeArgument;
+        kind = ServiceDescriptor.Kind.SUPPLIER;
+        serviceType = typeArgument;
       }
       else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
       {
         final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
         if ( TypeKind.WILDCARD == typeArgument.getKind() )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                               "be a " + Collection.class.getCanonicalName() +
                                                               " type with a wildcard type parameter" ),
                                         parameter );
@@ -1514,7 +1509,7 @@ public final class StingProcessor
           final List<? extends TypeMirror> nestedTypeArguments = supplierType.getTypeArguments();
           if ( nestedTypeArguments.isEmpty() )
           {
-            throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+            throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                                 "be a raw parameterized type" ),
                                           parameter );
           }
@@ -1523,39 +1518,39 @@ public final class StingProcessor
             final TypeMirror nestedParameterType = nestedTypeArguments.get( 0 );
             if ( TypeKind.WILDCARD == nestedParameterType.getKind() )
             {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+              throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                                   "be a supplier collection parameter with a wildcard type parameter" ),
                                             parameter );
             }
             else if ( TypeKind.DECLARED == nestedParameterType.getKind() &&
                       isParameterized( (DeclaredType) nestedParameterType ) )
             {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+              throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                                   "be a supplier collection parameter that contains a parameterized type" ),
                                             parameter );
             }
             else
             {
-              kind = DependencyDescriptor.Kind.SUPPLIER_COLLECTION;
-              dependencyType = nestedParameterType;
+              kind = ServiceDescriptor.Kind.SUPPLIER_COLLECTION;
+              serviceType = nestedParameterType;
             }
           }
         }
         else if ( TypeKind.DECLARED == typeArgument.getKind() && isParameterized( (DeclaredType) typeArgument ) )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                               "be a collection parameter that contains a parameterized type" ),
                                         parameter );
         }
         else
         {
-          kind = DependencyDescriptor.Kind.COLLECTION;
-          dependencyType = typeArgument;
+          kind = ServiceDescriptor.Kind.COLLECTION;
+          serviceType = typeArgument;
         }
       }
       else
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.DEPENDENCY_CLASSNAME,
+        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
                                                             "be a parameterized type other than the special " +
                                                             "types known by the framework such as " +
                                                             Supplier.class.getCanonicalName() + " and " +
@@ -1565,8 +1560,8 @@ public final class StingProcessor
     }
 
     final boolean optional = deriveOptional( parameter, type, kind );
-    final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
-    return new DependencyDescriptor( kind, coordinate, optional, parameter, parameterIndex );
+    final Coordinate coordinate = new Coordinate( qualifier, serviceType );
+    return new ServiceDescriptor( kind, coordinate, optional, parameter, parameterIndex );
   }
 
   @Nonnull

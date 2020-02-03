@@ -1,13 +1,13 @@
 package com.example.injector.outputs;
 
-import sting.Dependency;
+import sting.Service;
 import sting.Injectable;
 import sting.Injector;
 
 @Injector
 interface QualifiedOutputModel
 {
-  @Dependency( qualifier = "Foo" )
+  @Service( qualifier = "Foo" )
   MyModel getMyModel();
 
   @Injectable( qualifier = "Foo" )

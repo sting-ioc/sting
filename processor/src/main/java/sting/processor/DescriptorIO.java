@@ -151,11 +151,11 @@ final class DescriptorIO
     }
     dos.writeBoolean( binding.isEager() );
     dos.writeUTF( Binding.Kind.INJECTABLE == kind ? "" : binding.getElement().getSimpleName().toString() );
-    final DependencyDescriptor[] dependencies = binding.getDependencies();
+    final ServiceDescriptor[] dependencies = binding.getDependencies();
     dos.writeShort( dependencies.length );
-    for ( final DependencyDescriptor dependency : dependencies )
+    for ( final ServiceDescriptor dependency : dependencies )
     {
-      writeDependency( dos, dependency );
+      writeService( dos, dependency );
     }
   }
 
@@ -198,34 +198,33 @@ final class DescriptorIO
     assert null != element;
 
     final short dependencyCount = dis.readShort();
-    final DependencyDescriptor[] dependencies = new DependencyDescriptor[ dependencyCount ];
+    final ServiceDescriptor[] dependencies = new ServiceDescriptor[ dependencyCount ];
     for ( int i = 0; i < dependencies.length; i++ )
     {
-      dependencies[ i ] = readDependency( dis, element );
+      dependencies[ i ] = readService( dis, element );
     }
 
     return new Binding( kind, id, qualifier, types, eager, element, dependencies );
   }
 
-  private void writeDependency( @Nonnull final DataOutputStream dos, @Nonnull final DependencyDescriptor dependency )
+  private void writeService( @Nonnull final DataOutputStream dos, @Nonnull final ServiceDescriptor service )
     throws IOException
   {
-    dos.writeByte( dependency.getKind().ordinal() );
-    writeCoordinate( dos, dependency.getCoordinate() );
-    dos.writeBoolean( dependency.isOptional() );
-    assert ElementKind.PARAMETER == dependency.getElement().getKind();
+    dos.writeByte( service.getKind().ordinal() );
+    writeCoordinate( dos, service.getCoordinate() );
+    dos.writeBoolean( service.isOptional() );
+    assert ElementKind.PARAMETER == service.getElement().getKind();
     // parameter of @Provides method on @Fragment type or parameter of constructor on @Injectable type
     // we are not expected to emit binary descriptors for @Injector annotated typed and thus do need
-    // to handle when "ElementKind.METHOD == dependency.getElement().getKind()"
-    dos.writeShort( dependency.getParameterIndex() );
+    // to handle when "ElementKind.METHOD == service.getElement().getKind()"
+    dos.writeShort( service.getParameterIndex() );
   }
 
   @Nonnull
-  private DependencyDescriptor readDependency( @Nonnull final DataInputStream dis,
-                                               @Nonnull final Element enclosingElement )
+  private ServiceDescriptor readService( @Nonnull final DataInputStream dis, @Nonnull final Element enclosingElement )
     throws IOException
   {
-    final DependencyDescriptor.Kind type = DependencyDescriptor.Kind.values()[ dis.readByte() ];
+    final ServiceDescriptor.Kind type = ServiceDescriptor.Kind.values()[ dis.readByte() ];
     final Coordinate coordinate = readCoordinate( dis );
     final boolean optional = dis.readBoolean();
     final short parameterIndex = dis.readShort();
@@ -233,7 +232,7 @@ final class DescriptorIO
     final Element element = ( (ExecutableElement) enclosingElement ).getParameters().get( parameterIndex );
     assert null != element;
 
-    return new DependencyDescriptor( type, coordinate, optional, element, parameterIndex );
+    return new ServiceDescriptor( type, coordinate, optional, element, parameterIndex );
   }
 
   private void writeCoordinate( @Nonnull final DataOutputStream dos, @Nonnull final Coordinate coordinate )

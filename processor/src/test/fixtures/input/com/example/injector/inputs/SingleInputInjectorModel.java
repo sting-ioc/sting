@@ -1,9 +1,9 @@
 package com.example.injector.inputs;
 
-import sting.Dependency;
+import sting.Service;
 import sting.Injector;
 
-@Injector( inputs = @Dependency( type = Runnable.class ) )
+@Injector( inputs = @Service( type = Runnable.class ) )
 interface SingleInputInjectorModel
 {
   Runnable getRunnable();

@@ -1,13 +1,13 @@
 package com.example.injector.outputs;
 
-import sting.Dependency;
+import sting.Service;
 import sting.Injectable;
 import sting.Injector;
 
 @Injector
 interface ExplicitTypeOutputModel
 {
-  @Dependency( type = MyModel.class )
+  @Service( type = MyModel.class )
   Runnable getMyModel();
 
   @Injectable

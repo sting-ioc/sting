@@ -1,6 +1,6 @@
 package com.example.injector.outputs;
 
-import sting.Dependency;
+import sting.Service;
 import sting.Injectable;
 import sting.Injector;
 import sting.NecessityType;
@@ -8,7 +8,7 @@ import sting.NecessityType;
 @Injector
 interface ExplicitAutodetectNecessityOutputModel
 {
-  @Dependency( necessity = NecessityType.AUTODETECT )
+  @Service( necessity = NecessityType.AUTODETECT )
   MyModel getMyModel();
 
   @Injectable

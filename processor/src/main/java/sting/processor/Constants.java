@@ -11,7 +11,7 @@ final class Constants
   @Nonnull
   static final String INJECTOR_CLASSNAME = "sting.Injector";
   @Nonnull
-  static final String DEPENDENCY_CLASSNAME = "sting.Dependency";
+  static final String SERVICE_CLASSNAME = "sting.Service";
   @Nonnull
   static final String PROVIDES_CLASSNAME = "sting.Provides";
   @Nonnull

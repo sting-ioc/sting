@@ -6,17 +6,17 @@ import javax.json.stream.JsonGenerator;
 import javax.lang.model.type.TypeMirror;
 
 /**
- * The mechanism for identifying a dependency.
+ * The mechanism for identifying a service.
  */
 final class Coordinate
 {
   /**
-   * An opaque string used to restrict the requests that match a binding.
+   * An opaque string used to restrict the services that match a coordinate.
    */
   @Nonnull
   private final String _qualifier;
   /**
-   * The type that must be matched.
+   * The java type of the service.
    */
   @Nonnull
   private final TypeMirror _type;

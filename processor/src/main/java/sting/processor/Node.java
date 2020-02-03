@@ -33,14 +33,14 @@ final class Node
    * The edges to nodes that this node depends upon.
    */
   @Nonnull
-  private final Map<DependencyDescriptor, Edge> _dependsOn = new LinkedHashMap<>();
+  private final Map<ServiceDescriptor, Edge> _dependsOn = new LinkedHashMap<>();
   /**
    * The edges to nodes that use this node.
    */
   @Nonnull
   private final Set<Edge> _usedBy = new HashSet<>();
   /**
-   * True if Node is explicitly from an eager binding or implicitly eager by being
+   * True if the node is explicitly from an eager binding or implicitly eager by being
    * a (transitive) dependency of an eager binding.
    */
   private boolean _eager;
@@ -79,7 +79,7 @@ final class Node
   {
     this( objectGraph,
           null,
-          objectGraph.getInjector().getOutputs().toArray( new DependencyDescriptor[ 0 ] ) );
+          objectGraph.getInjector().getOutputs().toArray( new ServiceDescriptor[ 0 ] ) );
   }
 
   /**
@@ -94,11 +94,11 @@ final class Node
 
   private Node( @Nonnull final ObjectGraph objectGraph,
                 @Nullable final Binding binding,
-                @Nonnull final DependencyDescriptor[] dependencies )
+                @Nonnull final ServiceDescriptor[] dependencies )
   {
     _objectGraph = Objects.requireNonNull( objectGraph );
     _binding = binding;
-    for ( final DependencyDescriptor dependency : dependencies )
+    for ( final ServiceDescriptor dependency : dependencies )
     {
       _dependsOn.put( dependency, new Edge( this, dependency ) );
     }
@@ -164,11 +164,11 @@ final class Node
     {
       _eager = true;
       // Propagate eager flag to all nodes that this node uses unless
-      // the dependency is a Supplier style dependency. Those can be non-eager
+      // the service is a Supplier style service. Those can be non-eager
       // as they do not need to be created until they are accessed
       for ( final Edge edge : _dependsOn.values() )
       {
-        if ( !edge.getDependency().getKind().isSupplier() )
+        if ( !edge.getService().getKind().isSupplier() )
         {
           edge.getSatisfiedBy().forEach( Node::markNodeAndUpstreamAsEager );
         }
@@ -275,7 +275,7 @@ final class Node
       for ( final Edge edge : _dependsOn.values() )
       {
         g.writeStartObject();
-        edge.getDependency().getCoordinate().write( g );
+        edge.getService().getCoordinate().write( g );
         g.writeStartArray( "supportedBy" );
         for ( final Node node : edge.getSatisfiedBy() )
         {

@@ -94,5 +94,5 @@ public @interface Injector
    *
    * @return a list of services that must be passed into the injector.
    */
-  Dependency[] inputs() default {};
+  Service[] inputs() default {};
 }

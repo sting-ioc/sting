@@ -1,13 +1,13 @@
 package com.example.fragment.dependency;
 
-import sting.Dependency;
+import sting.Service;
 import sting.Fragment;
 import sting.Injectable;
 
 @Fragment
 public interface ExplicitTypeDependencyModel
 {
-  default Runnable provideRunnable( @Dependency( type = MyModel.class ) Runnable runnable )
+  default Runnable provideRunnable( @Service( type = MyModel.class ) Runnable runnable )
   {
     return null;
   }

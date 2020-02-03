@@ -1,12 +1,12 @@
 package com.example.injectable.dependency;
 
-import sting.Dependency;
+import sting.Service;
 import sting.Injectable;
 
 @Injectable
 public class ExplicitTypeDependencyModel
 {
-  ExplicitTypeDependencyModel( @Dependency( type = MyModel.class ) Runnable runnable )
+  ExplicitTypeDependencyModel( @Service( type = MyModel.class ) Runnable runnable )
   {
   }
 

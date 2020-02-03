@@ -10,8 +10,6 @@ complete as there is too much un-said.
 * Add a `@Injector.dependencies` parameter that can be used to specify additional dependencies passed into injector.
   These must have `@Dependency.type` specified but other than that they can specify any type
 
-* Rename `@Dependency` to `@ServiceSpec`.
-
 * Refactor `@Injectable` and `@Provides` to have an array of outputs such as
   `@Injectable(outputs={@ServiceSpec(qualifier="X"),@ServiceSpec(qualifier="Y")}`.
 

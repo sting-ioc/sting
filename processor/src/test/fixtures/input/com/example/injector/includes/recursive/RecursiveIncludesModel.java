@@ -1,6 +1,6 @@
 package com.example.injector.includes.recursive;
 
-import sting.Dependency;
+import sting.Service;
 import sting.Injector;
 
 @Injector( includes = { MyFragment1.class, MyModel1.class } )
@@ -8,10 +8,10 @@ interface RecursiveIncludesModel
 {
   Runnable getRunnable1();
 
-  @Dependency( qualifier = "Fragment2" )
+  @Service( qualifier = "Fragment2" )
   Runnable getRunnable2();
 
-  @Dependency( qualifier = "Fragment3" )
+  @Service( qualifier = "Fragment3" )
   Runnable getRunnable3();
 
   MyModel1 getMyModel1();

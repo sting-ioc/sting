@@ -8,8 +8,8 @@ public enum NecessityType
   /**
    * The service is required.
    *
-   * <p>If the {@link Dependency} annotation is describing an input into the service and the injector can
-   * not supply it then compilation of the injector should fail. If the {@link Dependency} annotation is
+   * <p>If the {@link Service} annotation is describing an input into the service and the injector can
+   * not supply it then compilation of the injector should fail. If the {@link Service} annotation is
    * describing a service provided then the service is always provided.</p>
    *
    * <p>The associated parameter or method may be annotated with {@link javax.annotation.Nonnull}
@@ -20,8 +20,8 @@ public enum NecessityType
   /**
    * The service is optional.
    *
-   * <p>If the {@link Dependency} annotation is describing a service provided then the {@link Provides}
-   * method may return a null. If the {@link Dependency} annotation is describing an input into a service
+   * <p>If the {@link Service} annotation is describing a service provided then the {@link Provides}
+   * method may return a null. If the {@link Service} annotation is describing an input into a service
    * then the input may be null. The value must not be a nullable value (i.e. not a primitive).</p>
    *
    * <p>The associated parameter or method should be annotated with {@link javax.annotation.Nullable}

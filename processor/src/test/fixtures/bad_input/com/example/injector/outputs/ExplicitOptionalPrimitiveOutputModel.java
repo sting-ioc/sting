@@ -1,12 +1,12 @@
 package com.example.injector.outputs;
 
-import sting.Dependency;
+import sting.Service;
 import sting.Injector;
 import sting.NecessityType;
 
 @Injector
 public interface ExplicitOptionalPrimitiveOutputModel
 {
-  @Dependency( necessity = NecessityType.OPTIONAL )
+  @Service( necessity = NecessityType.OPTIONAL )
   int getMyThing();
 }

@@ -10,41 +10,44 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import org.realityforge.proton.ElementsUtil;
 
-final class DependencyDescriptor
+final class ServiceDescriptor
 {
   /**
-   * The kind of the dependency.
-   *
-   * @see Kind
+   * The kind of the service request.
    */
   @Nonnull
   private final Kind _kind;
   /**
-   * The coordinate of the dependency to match.
+   * The coordinate of the service to match.
    */
   @Nonnull
   private final Coordinate _coordinate;
   /**
-   * Is the dependency optional.
+   * Is the service optional.
    */
   private final boolean _optional;
   /**
-   * The element that declares this dependency.
-   * The parameter will either be a parameter on a @Provides annotated method, a parameter of
-   * the constructor in an @Injectable annotated type or a ExecutableElement for a dependency on an @Injector.
+   * The element that declares the service.
+   * The element will either be:
+    *<ul>
+    *   <li>a parameter (of type {@link javax.lang.model.element.VariableElement}) on a @Provides annotated method</li>
+    *   <li>a parameter (of type {@link javax.lang.model.element.VariableElement}) of the constructor in an @Injectable annotated type</li>
+    *   <li>a {@link javax.lang.model.element.ExecutableElement} for a service exposed via a method on the @Injector annotated type</li>
+    *   <li>a {@link TypeElement} for a service declared by @Injector.inputs</li>
+    *</ul>
    */
   @Nonnull
   private final Element _element;
   /**
-   * Index of the parameter unless the dependency comes from an @Injector in which case this is -1.
+   * The index of the parameter if the service is defined by a constructor or method parameter or -1 if not.
    */
   private final int _parameterIndex;
 
-  DependencyDescriptor( @Nonnull final Kind kind,
-                        @Nonnull final Coordinate coordinate,
-                        final boolean optional,
-                        @Nonnull final Element element,
-                        final int parameterIndex )
+  ServiceDescriptor( @Nonnull final Kind kind,
+                     @Nonnull final Coordinate coordinate,
+                     final boolean optional,
+                     @Nonnull final Element element,
+                     final int parameterIndex )
   {
     _kind = Objects.requireNonNull( kind );
     _coordinate = Objects.requireNonNull( coordinate );
@@ -107,13 +110,13 @@ final class DependencyDescriptor
 
   enum Kind
   {
-    /// A request for an instance of the dependency type T
+    /// A request for an instance of type T
     INSTANCE( false, false ),
-    /// A request for Supplier<T> that produces the dependency type T
+    /// A request for an instance of Supplier<T>
     SUPPLIER( true, false ),
     /// A request for a collection of instance of type T. i.e. Collection<T>
     COLLECTION( false, true ),
-    /// A request for a collection of suppliers that produce the dependency of type T. i.e. Collection<Supplier<T>>
+    /// A request for a collection of suppliers that produce instances of type T. i.e. Collection<Supplier<T>>
     SUPPLIER_COLLECTION( true, true );
     private final boolean _supplier;
     private final boolean _collection;

@@ -34,25 +34,25 @@ final class StingGeneratorUtil
   {
   }
 
-  static TypeName getDependencyType( @Nonnull final DependencyDescriptor dependency )
+  static TypeName getServiceType( @Nonnull final ServiceDescriptor service )
   {
-    final DependencyDescriptor.Kind kind = dependency.getKind();
-    final TypeName baseType = TypeName.get( dependency.getCoordinate().getType() );
-    if ( DependencyDescriptor.Kind.INSTANCE == kind )
+    final ServiceDescriptor.Kind kind = service.getKind();
+    final TypeName baseType = TypeName.get( service.getCoordinate().getType() );
+    if ( ServiceDescriptor.Kind.INSTANCE == kind )
     {
       return baseType;
     }
-    else if ( DependencyDescriptor.Kind.SUPPLIER == kind )
+    else if ( ServiceDescriptor.Kind.SUPPLIER == kind )
     {
       return ParameterizedTypeName.get( SUPPLIER, baseType );
     }
-    else if ( DependencyDescriptor.Kind.COLLECTION == kind )
+    else if ( ServiceDescriptor.Kind.COLLECTION == kind )
     {
       return ParameterizedTypeName.get( COLLECTION, baseType );
     }
     else
     {
-      assert DependencyDescriptor.Kind.SUPPLIER_COLLECTION == kind;
+      assert ServiceDescriptor.Kind.SUPPLIER_COLLECTION == kind;
       return ParameterizedTypeName.get( COLLECTION,
                                         ParameterizedTypeName.get( SUPPLIER, baseType ) );
     }
@@ -66,7 +66,7 @@ final class StingGeneratorUtil
                                          @Nonnull final TypeMirror typeProduced,
                                          @Nonnull final Binding binding )
   {
-    final DependencyDescriptor[] dependencies = binding.getDependencies();
+    final ServiceDescriptor[] dependencies = binding.getDependencies();
 
     final List<TypeMirror> typesProcessed = new ArrayList<>();
     typesProcessed.add( typeProduced );
@@ -79,40 +79,40 @@ final class StingGeneratorUtil
     boolean allPublic = true;
     boolean anyNonPublicNonInstance = false;
     boolean firstParam = true;
-    for ( final DependencyDescriptor dependency : dependencies )
+    for ( final ServiceDescriptor service : dependencies )
     {
-      final VariableElement parameter = (VariableElement) dependency.getElement();
+      final VariableElement parameter = (VariableElement) service.getElement();
       final String paramName = parameter.getSimpleName().toString();
 
-      typesProcessed.add( dependency.getCoordinate().getType() );
-      final boolean isPublic = dependency.isPublic();
+      typesProcessed.add( service.getCoordinate().getType() );
+      final boolean isPublic = service.isPublic();
       allPublic &= isPublic;
 
-      final TypeName actualTypeName = getDependencyType( dependency );
+      final TypeName actualTypeName = getServiceType( service );
 
-      final DependencyDescriptor.Kind kind = dependency.getKind();
+      final ServiceDescriptor.Kind kind = service.getKind();
       final TypeName paramType;
       if ( isPublic )
       {
         paramType = actualTypeName;
       }
-      else if ( DependencyDescriptor.Kind.INSTANCE == kind )
+      else if ( ServiceDescriptor.Kind.INSTANCE == kind )
       {
         paramType = TypeName.OBJECT;
       }
-      else if ( DependencyDescriptor.Kind.SUPPLIER == kind )
+      else if ( ServiceDescriptor.Kind.SUPPLIER == kind )
       {
         anyNonPublicNonInstance = true;
         paramType = SUPPLIER;
       }
-      else if ( DependencyDescriptor.Kind.COLLECTION == kind )
+      else if ( ServiceDescriptor.Kind.COLLECTION == kind )
       {
         anyNonPublicNonInstance = true;
         paramType = COLLECTION;
       }
       else
       {
-        assert DependencyDescriptor.Kind.SUPPLIER_COLLECTION == kind;
+        assert ServiceDescriptor.Kind.SUPPLIER_COLLECTION == kind;
         anyNonPublicNonInstance = true;
         paramType = COLLECTION;
       }
@@ -124,7 +124,7 @@ final class StingGeneratorUtil
         code.append( ", " );
       }
       firstParam = false;
-      final boolean requireNonNull = !dependency.isOptional() && !typeProduced.getKind().isPrimitive();
+      final boolean requireNonNull = !service.isOptional() && !typeProduced.getKind().isPrimitive();
       if ( requireNonNull )
       {
         code.append( "$T.requireNonNull( " );

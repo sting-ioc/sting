@@ -1,13 +1,13 @@
 package com.example.injectable.dependency;
 
-import sting.Dependency;
+import sting.Service;
 import sting.Injectable;
 import sting.NecessityType;
 
 @Injectable
 public class ExplicitAutodetectNecessityInputModel
 {
-  ExplicitAutodetectNecessityInputModel( @Dependency( necessity = NecessityType.AUTODETECT ) Runnable runnable )
+  ExplicitAutodetectNecessityInputModel( @Service( necessity = NecessityType.AUTODETECT ) Runnable runnable )
   {
   }
 }

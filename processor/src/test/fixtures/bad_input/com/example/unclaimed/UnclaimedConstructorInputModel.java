@@ -1,10 +1,10 @@
 package com.example.unclaimed;
 
-import sting.Dependency;
+import sting.Service;
 
 public class UnclaimedConstructorInputModel
 {
-  UnclaimedConstructorInputModel( @Dependency String someValue )
+  UnclaimedConstructorInputModel( @Service String someValue )
   {
   }
 }

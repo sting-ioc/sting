@@ -59,8 +59,8 @@ final class InjectorGenerator
   {
     for ( final Edge edge : graph.getRootNode().getDependsOn() )
     {
-      final DependencyDescriptor dependency = edge.getDependency();
-      final ExecutableElement element = (ExecutableElement) dependency.getElement();
+      final ServiceDescriptor service = edge.getService();
+      final ExecutableElement element = (ExecutableElement) service.getElement();
       final MethodSpec.Builder method =
         MethodSpec.overriding( element,
                                (DeclaredType) graph.getInjector().getElement().asType(),
@@ -73,7 +73,7 @@ final class InjectorGenerator
       final StringBuilder code = new StringBuilder();
       final ArrayList<Object> args = new ArrayList<>();
       code.append( "return " );
-      emitDependencyValue( edge, true, code, args );
+      emitServiceValue( edge, true, code, args );
       method.addStatement( code.toString(), args.toArray() );
       builder.addMethod( method.build() );
     }
@@ -236,7 +236,7 @@ final class InjectorGenerator
       {
         firstParam = false;
       }
-      emitDependencyValue( edge, false, code, args );
+      emitServiceValue( edge, false, code, args );
     }
     code.append( ')' );
     if ( requireNonNull )
@@ -245,14 +245,14 @@ final class InjectorGenerator
     }
   }
 
-  private static void emitDependencyValue( @Nonnull final Edge edge,
-                                           final boolean emitCasts,
-                                           @Nonnull final StringBuilder code,
-                                           @Nonnull final List<Object> args )
+  private static void emitServiceValue( @Nonnull final Edge edge,
+                                        final boolean emitCasts,
+                                        @Nonnull final StringBuilder code,
+                                        @Nonnull final List<Object> args )
   {
     final Collection<Node> satisfiedBy = edge.getSatisfiedBy();
-    final DependencyDescriptor dependency = edge.getDependency();
-    final DependencyDescriptor.Kind kind = dependency.getKind();
+    final ServiceDescriptor service = edge.getService();
+    final ServiceDescriptor.Kind kind = service.getKind();
     if ( !kind.isCollection() )
     {
       if ( satisfiedBy.isEmpty() )
@@ -261,7 +261,7 @@ final class InjectorGenerator
       }
       else
       {
-        emitNodeAccessor( dependency, satisfiedBy.iterator().next(), emitCasts, code, args );
+        emitNodeAccessor( service, satisfiedBy.iterator().next(), emitCasts, code, args );
       }
     }
     else
@@ -276,7 +276,7 @@ final class InjectorGenerator
       {
         code.append( "$T.singletonList( " );
         args.add( Collections.class );
-        emitNodeAccessor( dependency, satisfiedBy.iterator().next(), emitCasts, code, args );
+        emitNodeAccessor( service, satisfiedBy.iterator().next(), emitCasts, code, args );
         code.append( " )" );
       }
       else
@@ -290,7 +290,7 @@ final class InjectorGenerator
           {
             code.append( ", " );
           }
-          emitNodeAccessor( dependency, iterator.next(), emitCasts, code, args );
+          emitNodeAccessor( service, iterator.next(), emitCasts, code, args );
         }
         code.append( " )" );
       }
@@ -304,21 +304,21 @@ final class InjectorGenerator
    * @param code the code template to append to.
    * @param args the args that passed to javapoet template.
    */
-  private static void emitNodeAccessor( @Nonnull final DependencyDescriptor dependency,
+  private static void emitNodeAccessor( @Nonnull final ServiceDescriptor service,
                                         @Nonnull final Node node,
                                         final boolean emitCasts,
                                         @Nonnull final StringBuilder code,
                                         @Nonnull final List<Object> args )
   {
-    final DependencyDescriptor.Kind kind = dependency.getKind();
+    final ServiceDescriptor.Kind kind = service.getKind();
     if ( kind.isSupplier() )
     {
       code.append( "() -> " );
     }
-    if ( emitCasts && !dependency.isPublic() )
+    if ( emitCasts && !service.isPublic() )
     {
       code.append( "($T) " );
-      args.add( dependency.getCoordinate().getType() );
+      args.add( service.getCoordinate().getType() );
     }
     code.append( node.isEager() ? "$N" : "$N()" );
     args.add( node.getName() );
