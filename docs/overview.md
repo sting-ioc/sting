@@ -9,7 +9,7 @@ components to consume.
 
 Sting performs builds a directed graph of components at compile time, linking components via services
 so that there is a component that publishes a service if another component requires a service. The
-compiler analyzes the graph to ensure that is well formed and contains no cycles. If analysis is
+compiler analyzes the graph to ensure that is well formed and contains no cycles. If the analysis is
 successful then Sting will generate java source code to implement the injector.
 
 Sting can create components directly if they are annotated with the {@api_url: Injectable} annotation
