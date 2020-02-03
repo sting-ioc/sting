@@ -9,12 +9,21 @@ import javax.annotation.Nonnull;
 
 /**
  * Annotation to specify a service.
+ * The annotation can be used to declare the service that is consumed or published by a component.
  *
- * <p>This annotation can appear on constructor parameters in a type annotated with {@link Injectable}
- * or it can appear on methods on types annotated by {@link Injector}.
- * If a dependency is annotated with {@code @Dependency} then the dependency is only satisfied by an
- * {@link Injectable} annotated type or a {@link Provides} annotated method with matching qualifier
- * attribute and a matching dependency type.
+ * <p>If the annotation is used to declare a service that a component consumes it can either be used to
+ * annotate a constructor parameter for {@link Injectable} components or to annotate a method parameter
+ * for {@link Provides} components. The default value for the {@link #type()} element is the type of the
+ * parameter.</p>
+ *
+ * <p>The annotation can also be used to declare a service that is required by an injector and is
+ * expected to be made available to other components to consume within the injector component graph.
+ * In this scenario, the service is added to the {@link Injector#inputs()} element. There is no default
+ * value for the {@link #type()} element and the compiler will generate an error if it is not supplied.</p>
+ *
+ * <p>
+ *   TODO: Implement, document and describe how to publish a service spec.
+ * </p>
  */
 @Target( { ElementType.PARAMETER, ElementType.METHOD } )
 @Retention( RetentionPolicy.RUNTIME )
@@ -34,14 +43,9 @@ public @interface Dependency
   /**
    * The java type of the service.
    *
-   * <p>If the {@code @Dependency} annotation is attached to a constructor or method parameter then the
-   * default value of the annotation parameter is the the type of the constructor or method parameter.
-   * If this annotation parameter is explicitly specified then the value MUST be assignable to the type of
-   * the constructor or method parameter.</p>
-   *
-   * <p>If the {@code @Dependency} annotation is attached to a method then the default value of the annotation
-   * parameter is the the return type of the method. If the annotation parameter is explicitly specified then the
-   * value MUST be assignable to the return type of the method.</p>
+   * <p>The default value for this element is derived according to the heuristics documented
+   * at the class level. If the user specifies a type for this element then instances of the
+   * type MUST be assignable to the type that would be derived using the above mentioned heuristics.</p>
    *
    * <p>Sting does not support classes defined with type parameters.</p>
    *
