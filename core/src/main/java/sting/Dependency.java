@@ -8,8 +8,7 @@ import java.lang.annotation.Target;
 import javax.annotation.Nonnull;
 
 /**
- * Annotation used to describe the dependency.
- * The annotation parameters restrict the bindings that can satisfy the dependency.
+ * Annotation to specify a service.
  *
  * <p>This annotation can appear on constructor parameters in a type annotated with {@link Injectable}
  * or it can appear on methods on types annotated by {@link Injector}.
@@ -23,7 +22,9 @@ import javax.annotation.Nonnull;
 public @interface Dependency
 {
   /**
-   * An opaque string that qualifies the dependency.
+   * An opaque string that qualifies the service.
+   * The string is user-supplied and used to distinguish two different services with the same {@link #type()}
+   * but different semantics.
    *
    * @return an opaque qualifier string.
    */
@@ -31,7 +32,7 @@ public @interface Dependency
   String qualifier() default "";
 
   /**
-   * The type of the dependency required.
+   * The java type of the service.
    *
    * <p>If the {@code @Dependency} annotation is attached to a constructor or method parameter then the
    * default value of the annotation parameter is the the type of the constructor or method parameter.
@@ -42,7 +43,9 @@ public @interface Dependency
    * parameter is the the return type of the method. If the annotation parameter is explicitly specified then the
    * value MUST be assignable to the return type of the method.</p>
    *
-   * @return the type of the dependency required.
+   * <p>Sting does not support classes defined with type parameters.</p>
+   *
+   * @return the java type of the service.
    */
   Class<?> type() default void.class;
 
