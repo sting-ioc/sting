@@ -5,36 +5,15 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.function.Supplier;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
- * Identifies an injectable type.
- * Types annotated with this are expected to be created by an injector.
- * The type must be concrete and must have a single package-access constructor. The constructor can accept zero or
- * more dependencies as arguments.
- *
- * <b>Optional Dependencies</b>
- *
- * <p>A non-primitive parameter can be marked as optional by annotating it with the
- * {@linkplain Nullable @Nullable} annotation. If the injector can not find a value to satisfy the dependency
- * then the injector may pass null for the parameter.</p>
- *
- * <b>Qualified Dependencies</b>
- *
- * <p>A parameter may can also be annotated with the {@link Service @ServiceSpec} annotation with the qualifier
- * parameter specified. To satisfy the dependency the provided value must be declared with the same qualifier.</p>
- *
- * <h3>Circular Dependencies</h3>
- *
- * <p>Circular dependencies are disallowed by the injector and are rejected during the compilation phase.
- * The developer can break the circular dependency by injecting {@link Supplier Supplier&lt;OtherType>}
- * instead of {@code OtherType} and then calling {@link Supplier#get() get()} on the supplier when access
- * to the dependency is needed.</p>
- *
- * @see Service @Dependency
- * @see Supplier
+ * Identify a component type that Sting can create by invoking the constructor.
+ * The type must be concrete and should have a single package-access constructor.
+ * The constructor can accept zero or more services as arguments. The constructor parameters
+ * can be explicitly annotated with a {@link Service} annotation otherwise the compiler will
+ * treat the parameter as if it was annotated with a {@link Service} annotation with default
+ * values for all the elements.
  */
 @Target( ElementType.TYPE )
 @Retention( RetentionPolicy.RUNTIME )
@@ -42,19 +21,19 @@ import javax.annotation.Nullable;
 public @interface Injectable
 {
   /**
-   * A unique identifier representing this binding.
-   * If not identified then this will be derived as "[Qualified Classname]".
-   * This is primarily used so that inherited {@link Injector} annotated types can override specific bindings.
+   * A unique identifier representing the component.
+   * If not specified then the avlue of this element default to "[Qualified Classname]".
+   * This element is primarily used so that specific components can be overridden.
    *
-   * @return a unique identifier representing this binding..
+   * @return a unique identifier representing the component.
    */
   @Nonnull
   String id() default "";
 
   /**
-   * A flag indicating whether the instance should be instantiated when the Injector is created.
+   * A flag indicating whether the component should be eagerly instantiated when the {@link Injector} is created.
    *
-   * @return a flag indicating whether the instance should be instantiated when the Injector is created.
+   * @return a flag indicating whether the component should be eagerly instantiated when the {@link Injector} is created.
    */
   boolean eager() default false;
 
