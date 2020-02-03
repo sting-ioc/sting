@@ -3,7 +3,7 @@ title: Overview
 ---
 
 Sting models the application as a set of components. The application is defined by an injector
-which is responsible for constructing and linking components together.Components are linked to
+which is responsible for constructing and linking components together. Components are linked to
 other components by services. A component can consume services and/or publish services for other
 components to consume.
 
