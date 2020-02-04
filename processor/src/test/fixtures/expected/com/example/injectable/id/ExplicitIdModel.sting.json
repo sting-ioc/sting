@@ -1,7 +1,9 @@
 {
   "schema": "injectable/1",
   "id": "theGloriousIdModel",
-  "types": [
-    "com.example.injectable.id.ExplicitIdModel"
+  "publishedServices": [
+    {
+      "type": "com.example.injectable.id.ExplicitIdModel"
+    }
   ]
 }

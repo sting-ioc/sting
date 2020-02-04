@@ -4,11 +4,19 @@
     {
       "id": "com.example.fragment.types.BasicTypesModel#provideMyModel",
       "providesMethod": "provideMyModel",
-      "types": [
-        "java.lang.Runnable",
-        "java.util.EventListener",
-        "java.lang.Object",
-        "java.util.Properties"
+      "publishedServices": [
+        {
+          "type": "java.lang.Runnable"
+        },
+        {
+          "type": "java.util.EventListener"
+        },
+        {
+          "type": "java.lang.Object"
+        },
+        {
+          "type": "java.util.Properties"
+        }
       ]
     }
   ]

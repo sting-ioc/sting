@@ -4,59 +4,59 @@
     {
       "id": "com.example.fragment.dependency.PackageAccessDependencyModel#provideMyType1",
       "providesMethod": "provideMyType1",
-      "types": [
-        "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType1"
+      "publishedServices": [
+        {
+          "type": "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType1"
+        }
       ],
       "dependencies": [
         {
-          "coordinate": {
-            "type": "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType2"
-          }
+          "type": "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType2"
         }
       ]
     },
     {
       "id": "com.example.fragment.dependency.PackageAccessDependencyModel#provideMyType2",
       "providesMethod": "provideMyType2",
-      "types": [
-        "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType2"
+      "publishedServices": [
+        {
+          "type": "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType2"
+        }
       ],
       "dependencies": [
         {
           "type": "SUPPLIER",
-          "coordinate": {
-            "type": "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType3"
-          }
+          "type": "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType3"
         }
       ]
     },
     {
       "id": "com.example.fragment.dependency.PackageAccessDependencyModel#provideMyType3",
       "providesMethod": "provideMyType3",
-      "types": [
-        "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType3"
+      "publishedServices": [
+        {
+          "type": "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType3"
+        }
       ],
       "dependencies": [
         {
           "type": "COLLECTION",
-          "coordinate": {
-            "type": "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType4"
-          }
+          "type": "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType4"
         }
       ]
     },
     {
       "id": "com.example.fragment.dependency.PackageAccessDependencyModel#provideMyType4",
       "providesMethod": "provideMyType4",
-      "types": [
-        "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType4"
+      "publishedServices": [
+        {
+          "type": "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType4"
+        }
       ],
       "dependencies": [
         {
           "type": "SUPPLIER_COLLECTION",
-          "coordinate": {
-            "type": "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType5"
-          }
+          "type": "com.example.fragment.dependency.PackageAccessDependencyModel.T.MyType5"
         }
       ]
     }

@@ -1,8 +1,10 @@
 {
   "schema": "injectable/1",
   "id": "com.example.injectable.qualifier.NonStandardQualifierModel",
-  "qualifier": "‎🎉 Tada!",
-  "types": [
-    "com.example.injectable.qualifier.NonStandardQualifierModel"
+  "publishedServices": [
+    {
+      "qualifier": "‎🎉 Tada!",
+      "type": "com.example.injectable.qualifier.NonStandardQualifierModel"
+    }
   ]
 }

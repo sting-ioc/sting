@@ -5,8 +5,11 @@
       "id": "com.example.fragment.NullableProvidesModel#provideRunnable",
       "providesMethod": "provideRunnable",
       "nullable": true,
-      "types": [
-        "java.lang.Runnable"
+      "publishedServices": [
+        {
+          "type": "java.lang.Runnable",
+          "optional": true
+        }
       ]
     }
   ]

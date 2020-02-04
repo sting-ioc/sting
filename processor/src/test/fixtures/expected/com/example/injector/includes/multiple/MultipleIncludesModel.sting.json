@@ -6,9 +6,7 @@
   ],
   "outputs": [
     {
-      "coordinate": {
-        "type": "java.lang.Runnable"
-      }
+      "type": "java.lang.Runnable"
     }
   ]
 }

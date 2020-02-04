@@ -1,49 +1,35 @@
 {
   "schema": "injectable/1",
   "id": "com.example.injectable.dependency.PrimitiveDependencyModel",
-  "types": [
-    "com.example.injectable.dependency.PrimitiveDependencyModel"
+  "publishedServices": [
+    {
+      "type": "com.example.injectable.dependency.PrimitiveDependencyModel"
+    }
   ],
   "dependencies": [
     {
-      "coordinate": {
-        "type": "boolean"
-      }
+      "type": "boolean"
     },
     {
-      "coordinate": {
-        "type": "char"
-      }
+      "type": "char"
     },
     {
-      "coordinate": {
-        "type": "byte"
-      }
+      "type": "byte"
     },
     {
-      "coordinate": {
-        "type": "short"
-      }
+      "type": "short"
     },
     {
-      "coordinate": {
-        "type": "int"
-      }
+      "type": "int"
     },
     {
-      "coordinate": {
-        "type": "long"
-      }
+      "type": "long"
     },
     {
-      "coordinate": {
-        "type": "float"
-      }
+      "type": "float"
     },
     {
-      "coordinate": {
-        "type": "double"
-      }
+      "type": "double"
     }
   ]
 }

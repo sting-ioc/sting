@@ -4,15 +4,15 @@
     {
       "id": "com.example.fragment.dependency.QualifiedDependencyModel#provideRunnable",
       "providesMethod": "provideRunnable",
-      "types": [
-        "java.lang.Runnable"
+      "publishedServices": [
+        {
+          "type": "java.lang.Runnable"
+        }
       ],
       "dependencies": [
         {
-          "coordinate": {
-            "qualifier": "threadName",
-            "type": "java.lang.String"
-          }
+          "qualifier": "threadName",
+          "type": "java.lang.String"
         }
       ]
     }

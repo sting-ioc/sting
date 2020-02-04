@@ -1,15 +1,15 @@
 {
   "schema": "injectable/1",
   "id": "com.example.injectable.dependency.QualifiedDependencyModel",
-  "types": [
-    "com.example.injectable.dependency.QualifiedDependencyModel"
+  "publishedServices": [
+    {
+      "type": "com.example.injectable.dependency.QualifiedDependencyModel"
+    }
   ],
   "dependencies": [
     {
-      "coordinate": {
-        "qualifier": "lively",
-        "type": "java.lang.Runnable"
-      }
+      "qualifier": "lively",
+      "type": "java.lang.Runnable"
     }
   ]
 }

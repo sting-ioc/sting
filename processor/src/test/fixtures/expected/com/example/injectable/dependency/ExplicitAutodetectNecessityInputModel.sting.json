@@ -1,14 +1,14 @@
 {
   "schema": "injectable/1",
   "id": "com.example.injectable.dependency.ExplicitAutodetectNecessityInputModel",
-  "types": [
-    "com.example.injectable.dependency.ExplicitAutodetectNecessityInputModel"
+  "publishedServices": [
+    {
+      "type": "com.example.injectable.dependency.ExplicitAutodetectNecessityInputModel"
+    }
   ],
   "dependencies": [
     {
-      "coordinate": {
-        "type": "java.lang.Runnable"
-      }
+      "type": "java.lang.Runnable"
     }
   ]
 }

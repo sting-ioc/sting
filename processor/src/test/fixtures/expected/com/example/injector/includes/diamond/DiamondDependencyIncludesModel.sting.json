@@ -7,9 +7,7 @@
   ],
   "outputs": [
     {
-      "coordinate": {
-        "type": "com.example.injector.includes.diamond.MyModel"
-      }
+      "type": "com.example.injector.includes.diamond.MyModel"
     }
   ]
 }

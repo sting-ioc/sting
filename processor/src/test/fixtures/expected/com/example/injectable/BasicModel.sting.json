@@ -1,7 +1,9 @@
 {
   "schema": "injectable/1",
   "id": "com.example.injectable.BasicModel",
-  "types": [
-    "com.example.injectable.BasicModel"
+  "publishedServices": [
+    {
+      "type": "com.example.injectable.BasicModel"
+    }
   ]
 }

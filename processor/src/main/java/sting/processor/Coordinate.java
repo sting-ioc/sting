@@ -41,13 +41,11 @@ final class Coordinate
 
   void write( @Nonnull final JsonGenerator g )
   {
-    g.writeStartObject( "coordinate" );
     if ( !_qualifier.isEmpty() )
     {
       g.write( "qualifier", _qualifier );
     }
     g.write( "type", _type.toString() );
-    g.writeEnd();
   }
 
   @Override

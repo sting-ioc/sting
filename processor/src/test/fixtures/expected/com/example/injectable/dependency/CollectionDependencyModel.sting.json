@@ -1,15 +1,15 @@
 {
   "schema": "injectable/1",
   "id": "com.example.injectable.dependency.CollectionDependencyModel",
-  "types": [
-    "com.example.injectable.dependency.CollectionDependencyModel"
+  "publishedServices": [
+    {
+      "type": "com.example.injectable.dependency.CollectionDependencyModel"
+    }
   ],
   "dependencies": [
     {
       "type": "COLLECTION",
-      "coordinate": {
-        "type": "java.lang.Runnable"
-      }
+      "type": "java.lang.Runnable"
     }
   ]
 }

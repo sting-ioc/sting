@@ -2,14 +2,11 @@ package sting.processor;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 
 final class Binding
 {
@@ -25,21 +22,6 @@ final class Binding
    */
   @Nonnull
   private final String _id;
-  /**
-   * An opaque string used to restrict the requests that match this binding.
-   */
-  @Nonnull
-  private final String _qualifier;
-  /**
-   * The types that are exposed via this binding.
-   */
-  @Nonnull
-  private final TypeMirror[] _types;
-  /**
-   * The coordinates for binding.
-   */
-  @Nonnull
-  private final List<Coordinate> _coordinates;
   /**
    * Is the binding eager or lazy. Eager bindings are instantiated after the injector is instantiated
    * and before it is made accessible to user-code.
@@ -59,14 +41,18 @@ final class Binding
   @Nonnull
   private final ServiceDescriptor[] _dependencies;
   /**
+   * The service specifications published by this binding.
+   */
+  @Nonnull
+  private final List<ServiceSpec> _publishedServices;
+  /**
    * The descriptor that created the binding.
    */
   private Object _owner;
 
   Binding( @Nonnull final Kind kind,
            @Nonnull final String id,
-           @Nonnull final String qualifier,
-           @Nonnull final TypeMirror[] types,
+           @Nonnull final List<ServiceSpec> publishedServices,
            final boolean eager,
            @Nonnull final ExecutableElement element,
            @Nonnull final ServiceDescriptor[] dependencies )
@@ -75,9 +61,7 @@ final class Binding
            ( Kind.INJECTABLE != kind && ElementKind.METHOD == element.getKind() );
     _kind = Objects.requireNonNull( kind );
     _id = Objects.requireNonNull( id );
-    _qualifier = Objects.requireNonNull( qualifier );
-    _types = Objects.requireNonNull( types );
-    _coordinates = Stream.of( _types ).map( t -> new Coordinate( qualifier, t ) ).collect( Collectors.toList() );
+    _publishedServices = Objects.requireNonNull( publishedServices );
     _eager = eager;
     _element = Objects.requireNonNull( element );
     _dependencies = Objects.requireNonNull( dependencies );
@@ -103,21 +87,9 @@ final class Binding
   }
 
   @Nonnull
-  String getQualifier()
+  List<ServiceSpec> getPublishedServices()
   {
-    return _qualifier;
-  }
-
-  @Nonnull
-  TypeMirror[] getTypes()
-  {
-    return _types;
-  }
-
-  @Nonnull
-  List<Coordinate> getCoordinates()
-  {
-    return _coordinates;
+    return _publishedServices;
   }
 
   boolean isEager()
@@ -144,20 +116,23 @@ final class Binding
     {
       g.write( "providesMethod", _element.getSimpleName().toString() );
     }
-    if ( !_qualifier.isEmpty() )
-    {
-      g.write( "qualifier", _qualifier );
-    }
     if ( Kind.NULLABLE_PROVIDES == _kind )
     {
       g.write( "nullable", true );
     }
-    if ( _types.length > 0 )
+    if ( !_publishedServices.isEmpty() )
     {
-      g.writeStartArray( "types" );
-      for ( final TypeMirror type : _types )
+      g.writeStartArray( "publishedServices" );
+      for ( final ServiceSpec spec : _publishedServices )
       {
-        g.write( type.toString() );
+        g.writeStartObject();
+        spec.getCoordinate().write( g );
+        final boolean optional = spec.isOptional();
+        if ( optional )
+        {
+          g.write( "optional", optional );
+        }
+        g.writeEnd();
       }
       g.writeEnd();
     }

@@ -1,19 +1,17 @@
 {
   "schema": "injectable/1",
   "id": "com.example.injectable.dependency.MultipleDependencyModel",
-  "types": [
-    "com.example.injectable.dependency.MultipleDependencyModel"
+  "publishedServices": [
+    {
+      "type": "com.example.injectable.dependency.MultipleDependencyModel"
+    }
   ],
   "dependencies": [
     {
-      "coordinate": {
-        "type": "java.lang.Runnable"
-      }
+      "type": "java.lang.Runnable"
     },
     {
-      "coordinate": {
-        "type": "java.util.EventListener"
-      }
+      "type": "java.util.EventListener"
     }
   ]
 }

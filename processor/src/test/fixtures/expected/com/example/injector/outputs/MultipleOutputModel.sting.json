@@ -6,15 +6,11 @@
   ],
   "outputs": [
     {
-      "coordinate": {
-        "type": "com.example.injector.outputs.MultipleOutputModel.MyModel1"
-      }
+      "type": "com.example.injector.outputs.MultipleOutputModel.MyModel1"
     },
     {
       "type": "SUPPLIER",
-      "coordinate": {
-        "type": "com.example.injector.outputs.MultipleOutputModel.MyModel2"
-      }
+      "type": "com.example.injector.outputs.MultipleOutputModel.MyModel2"
     }
   ]
 }

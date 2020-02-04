@@ -6,14 +6,10 @@
   ],
   "outputs": [
     {
-      "coordinate": {
-        "type": "java.lang.Runnable"
-      }
+      "type": "java.lang.Runnable"
     },
     {
-      "coordinate": {
-        "type": "com.example.injector.includes.ExplicitIncludesOfNestedModel.MyModel"
-      }
+      "type": "com.example.injector.includes.ExplicitIncludesOfNestedModel.MyModel"
     }
   ]
 }

@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.Element;
@@ -51,15 +52,17 @@ final class DescriptorIO
     final TypeElement typeElement = _elements.getTypeElement( classname );
     assert null != typeElement;
     final byte tag = dis.readByte();
+    final Object descriptor;
     if ( FRAGMENT_TAG == tag )
     {
-      return readFragment( dis, typeElement );
+      descriptor = readFragment( dis, typeElement );
     }
     else
     {
       assert INJECTABLE_TAG == tag;
-      return readInjectable( dis, typeElement );
+      descriptor = readInjectable( dis, typeElement );
     }
+    return descriptor;
   }
 
   void write( @Nonnull final DataOutputStream dos, @Nonnull final Object descriptor )
@@ -142,12 +145,14 @@ final class DescriptorIO
     final Binding.Kind kind = binding.getKind();
     dos.writeByte( kind.ordinal() );
     dos.writeUTF( binding.getId() );
-    dos.writeUTF( binding.getQualifier() );
-    final TypeMirror[] types = binding.getTypes();
-    dos.writeShort( types.length );
-    for ( final TypeMirror type : types )
+    final List<ServiceSpec> services = binding.getPublishedServices();
+    dos.writeShort( services.size() );
+    for ( final ServiceSpec service : services )
     {
-      dos.writeUTF( toFieldDescriptor( type ) );
+      final Coordinate coordinate = service.getCoordinate();
+      dos.writeUTF( coordinate.getQualifier() );
+      dos.writeUTF( toFieldDescriptor( coordinate.getType() ) );
+      dos.writeBoolean( service.isOptional() );
     }
     dos.writeBoolean( binding.isEager() );
     dos.writeUTF( Binding.Kind.INJECTABLE == kind ? "" : binding.getElement().getSimpleName().toString() );
@@ -165,12 +170,11 @@ final class DescriptorIO
   {
     final Binding.Kind kind = Binding.Kind.values()[ dis.readByte() ];
     final String id = dis.readUTF();
-    final String qualifier = dis.readUTF();
     final short typeCount = dis.readShort();
-    final TypeMirror[] types = new TypeMirror[ typeCount ];
+    final ServiceSpec[] specs = new ServiceSpec[ typeCount ];
     for ( int i = 0; i < typeCount; i++ )
     {
-      types[ i ] = fromFieldDescriptor( dis.readUTF() );
+      specs[ i ] = new ServiceSpec( readCoordinate( dis ), dis.readBoolean() );
     }
     final boolean eager = dis.readBoolean();
     final String elementName = dis.readUTF();
@@ -204,7 +208,7 @@ final class DescriptorIO
       dependencies[ i ] = readService( dis, element );
     }
 
-    return new Binding( kind, id, qualifier, types, eager, element, dependencies );
+    return new Binding( kind, id, Arrays.asList( specs ), eager, element, dependencies );
   }
 
   private void writeService( @Nonnull final DataOutputStream dos, @Nonnull final ServiceDescriptor service )

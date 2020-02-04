@@ -1,10 +1,18 @@
 {
   "schema": "injectable/1",
   "id": "com.example.injectable.types.BasicTypesModel",
-  "types": [
-    "java.lang.Runnable",
-    "java.util.EventListener",
-    "java.lang.Object",
-    "java.util.Properties"
+  "publishedServices": [
+    {
+      "type": "java.lang.Runnable"
+    },
+    {
+      "type": "java.util.EventListener"
+    },
+    {
+      "type": "java.lang.Object"
+    },
+    {
+      "type": "java.util.Properties"
+    }
   ]
 }

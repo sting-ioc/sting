@@ -6,14 +6,10 @@
   ],
   "outputs": [
     {
-      "coordinate": {
-        "type": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel1"
-      }
+      "type": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel1"
     },
     {
-      "coordinate": {
-        "type": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel2"
-      }
+      "type": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel2"
     }
   ]
 }

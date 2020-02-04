@@ -5,10 +5,8 @@
   ],
   "outputs": [
     {
-      "coordinate": {
-        "qualifier": "Foo",
-        "type": "com.example.injector.outputs.QualifiedOutputModel.MyModel"
-      }
+      "qualifier": "Foo",
+      "type": "com.example.injector.outputs.QualifiedOutputModel.MyModel"
     }
   ]
 }

@@ -1,8 +1,10 @@
 {
   "schema": "injectable/1",
   "id": "com.example.injector.includes.diamond.MyModel",
-  "types": [
-    "com.example.injector.includes.diamond.MyModel"
+  "publishedServices": [
+    {
+      "type": "com.example.injector.includes.diamond.MyModel"
+    }
   ],
   "eager": true
 }

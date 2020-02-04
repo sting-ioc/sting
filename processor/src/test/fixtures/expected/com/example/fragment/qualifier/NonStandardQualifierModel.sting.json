@@ -4,9 +4,11 @@
     {
       "id": "com.example.fragment.qualifier.NonStandardQualifierModel#provideRunnable",
       "providesMethod": "provideRunnable",
-      "qualifier": "‎🎉 Tada!",
-      "types": [
-        "java.lang.Runnable"
+      "publishedServices": [
+        {
+          "qualifier": "‎🎉 Tada!",
+          "type": "java.lang.Runnable"
+        }
       ]
     }
   ]

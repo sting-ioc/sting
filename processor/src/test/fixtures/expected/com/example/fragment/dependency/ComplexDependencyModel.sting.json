@@ -4,25 +4,21 @@
     {
       "id": "com.example.fragment.dependency.ComplexDependencyModel#provideRunnable",
       "providesMethod": "provideRunnable",
-      "types": [
-        "java.lang.Runnable"
+      "publishedServices": [
+        {
+          "type": "java.lang.Runnable"
+        }
       ],
       "dependencies": [
         {
-          "coordinate": {
-            "qualifier": "threadName",
-            "type": "java.lang.String"
-          }
+          "qualifier": "threadName",
+          "type": "java.lang.String"
         },
         {
-          "coordinate": {
-            "type": "int"
-          }
+          "type": "int"
         },
         {
-          "coordinate": {
-            "type": "java.util.EventListener"
-          },
+          "type": "java.util.EventListener",
           "optional": true
         }
       ]

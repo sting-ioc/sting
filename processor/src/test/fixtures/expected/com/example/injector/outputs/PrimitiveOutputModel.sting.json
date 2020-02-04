@@ -5,44 +5,28 @@
   ],
   "outputs": [
     {
-      "coordinate": {
-        "type": "boolean"
-      }
+      "type": "boolean"
     },
     {
-      "coordinate": {
-        "type": "char"
-      }
+      "type": "char"
     },
     {
-      "coordinate": {
-        "type": "byte"
-      }
+      "type": "byte"
     },
     {
-      "coordinate": {
-        "type": "short"
-      }
+      "type": "short"
     },
     {
-      "coordinate": {
-        "type": "int"
-      }
+      "type": "int"
     },
     {
-      "coordinate": {
-        "type": "long"
-      }
+      "type": "long"
     },
     {
-      "coordinate": {
-        "type": "float"
-      }
+      "type": "float"
     },
     {
-      "coordinate": {
-        "type": "double"
-      }
+      "type": "double"
     }
   ]
 }

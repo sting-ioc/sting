@@ -4,8 +4,10 @@
     {
       "id": "com.example.fragment.eager.EagerModel#provideRunnable",
       "providesMethod": "provideRunnable",
-      "types": [
-        "java.lang.Runnable"
+      "publishedServices": [
+        {
+          "type": "java.lang.Runnable"
+        }
       ],
       "eager": true
     }

@@ -6,9 +6,7 @@
   "outputs": [
     {
       "type": "COLLECTION",
-      "coordinate": {
-        "type": "com.example.injector.outputs.CollectionOutputModel.MyModel"
-      }
+      "type": "com.example.injector.outputs.CollectionOutputModel.MyModel"
     }
   ]
 }

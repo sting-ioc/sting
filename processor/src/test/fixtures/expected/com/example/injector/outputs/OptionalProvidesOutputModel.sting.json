@@ -5,9 +5,7 @@
   ],
   "outputs": [
     {
-      "coordinate": {
-        "type": "com.example.injector.outputs.OptionalProvidesOutputModel.MyModel"
-      },
+      "type": "com.example.injector.outputs.OptionalProvidesOutputModel.MyModel",
       "optional": true
     }
   ]

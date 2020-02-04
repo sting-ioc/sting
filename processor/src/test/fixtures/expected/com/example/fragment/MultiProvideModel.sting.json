@@ -4,22 +4,28 @@
     {
       "id": "com.example.fragment.MultiProvideModel#provideRunnable",
       "providesMethod": "provideRunnable",
-      "types": [
-        "java.lang.Runnable"
+      "publishedServices": [
+        {
+          "type": "java.lang.Runnable"
+        }
       ]
     },
     {
       "id": "com.example.fragment.MultiProvideModel#provideEventListener",
       "providesMethod": "provideEventListener",
-      "types": [
-        "java.util.EventListener"
+      "publishedServices": [
+        {
+          "type": "java.util.EventListener"
+        }
       ]
     },
     {
       "id": "com.example.fragment.MultiProvideModel#provideSerializable",
       "providesMethod": "provideSerializable",
-      "types": [
-        "java.io.Serializable"
+      "publishedServices": [
+        {
+          "type": "java.io.Serializable"
+        }
       ]
     }
   ]

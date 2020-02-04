@@ -6,9 +6,7 @@
   "outputs": [
     {
       "type": "SUPPLIER",
-      "coordinate": {
-        "type": "com.example.injector.outputs.SupplierOutputModel.MyModel"
-      }
+      "type": "com.example.injector.outputs.SupplierOutputModel.MyModel"
     }
   ]
 }

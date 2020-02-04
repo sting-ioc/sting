@@ -4,19 +4,17 @@
     {
       "id": "com.example.fragment.dependency.MultipleDependencyModel#provideRunnable",
       "providesMethod": "provideRunnable",
-      "types": [
-        "java.lang.Runnable"
+      "publishedServices": [
+        {
+          "type": "java.lang.Runnable"
+        }
       ],
       "dependencies": [
         {
-          "coordinate": {
-            "type": "java.lang.String"
-          }
+          "type": "java.lang.String"
         },
         {
-          "coordinate": {
-            "type": "int"
-          }
+          "type": "int"
         }
       ]
     }

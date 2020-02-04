@@ -1,7 +1,9 @@
 {
   "schema": "injectable/1",
   "id": "com.example.injectable.eager.LazyModel",
-  "types": [
-    "com.example.injectable.eager.LazyModel"
+  "publishedServices": [
+    {
+      "type": "com.example.injectable.eager.LazyModel"
+    }
   ]
 }

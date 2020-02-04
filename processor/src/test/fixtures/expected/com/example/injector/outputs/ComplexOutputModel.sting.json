@@ -7,27 +7,19 @@
   ],
   "outputs": [
     {
-      "coordinate": {
-        "type": "com.example.injector.outputs.ComplexOutputModel.MyModel1"
-      }
+      "type": "com.example.injector.outputs.ComplexOutputModel.MyModel1"
     },
     {
       "type": "SUPPLIER",
-      "coordinate": {
-        "type": "com.example.injector.outputs.ComplexOutputModel.MyModel2"
-      }
+      "type": "com.example.injector.outputs.ComplexOutputModel.MyModel2"
     },
     {
       "type": "SUPPLIER",
-      "coordinate": {
-        "qualifier": "foo",
-        "type": "com.example.injector.outputs.ComplexOutputModel.MyModel3"
-      }
+      "qualifier": "foo",
+      "type": "com.example.injector.outputs.ComplexOutputModel.MyModel3"
     },
     {
-      "coordinate": {
-        "type": "com.example.injector.outputs.ComplexOutputModel.MyModel4"
-      },
+      "type": "com.example.injector.outputs.ComplexOutputModel.MyModel4",
       "optional": true
     }
   ]

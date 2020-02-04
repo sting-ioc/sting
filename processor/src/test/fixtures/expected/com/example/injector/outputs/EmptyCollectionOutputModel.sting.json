@@ -3,9 +3,7 @@
   "outputs": [
     {
       "type": "COLLECTION",
-      "coordinate": {
-        "type": "com.example.injector.outputs.EmptyCollectionOutputModel.MyModel"
-      }
+      "type": "com.example.injector.outputs.EmptyCollectionOutputModel.MyModel"
     }
   ]
 }

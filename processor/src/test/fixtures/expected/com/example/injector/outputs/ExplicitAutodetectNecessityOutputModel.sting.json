@@ -5,9 +5,7 @@
   ],
   "outputs": [
     {
-      "coordinate": {
-        "type": "com.example.injector.outputs.ExplicitAutodetectNecessityOutputModel.MyModel"
-      }
+      "type": "com.example.injector.outputs.ExplicitAutodetectNecessityOutputModel.MyModel"
     }
   ]
 }

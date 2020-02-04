@@ -6,9 +6,7 @@
       "kind": "INJECTABLE",
       "dependencies": [
         {
-          "coordinate": {
-            "type": "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel.MyModel1"
-          },
+          "type": "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel.MyModel1",
           "supportedBy": [
             "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel.MyModel1"
           ]
@@ -20,9 +18,7 @@
       "kind": "INJECTABLE",
       "dependencies": [
         {
-          "coordinate": {
-            "type": "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel.MyModel3"
-          },
+          "type": "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel.MyModel3",
           "supportedBy": [
             "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel.MyModel3"
           ]
@@ -34,9 +30,7 @@
       "kind": "INJECTABLE",
       "dependencies": [
         {
-          "coordinate": {
-            "type": "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel.MyModel2"
-          },
+          "type": "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel.MyModel2",
           "supportedBy": [
             "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel.MyModel2"
           ]

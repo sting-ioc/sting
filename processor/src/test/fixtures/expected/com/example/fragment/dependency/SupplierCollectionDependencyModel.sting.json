@@ -4,15 +4,15 @@
     {
       "id": "com.example.fragment.dependency.SupplierCollectionDependencyModel#provideRunnable",
       "providesMethod": "provideRunnable",
-      "types": [
-        "java.lang.Runnable"
+      "publishedServices": [
+        {
+          "type": "java.lang.Runnable"
+        }
       ],
       "dependencies": [
         {
           "type": "SUPPLIER_COLLECTION",
-          "coordinate": {
-            "type": "java.lang.String"
-          }
+          "type": "java.lang.String"
         }
       ]
     }

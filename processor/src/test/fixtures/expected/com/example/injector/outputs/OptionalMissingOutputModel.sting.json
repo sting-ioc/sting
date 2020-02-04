@@ -5,15 +5,11 @@
   ],
   "outputs": [
     {
-      "coordinate": {
-        "type": "com.example.injector.outputs.OptionalMissingOutputModel.MyModel1"
-      },
+      "type": "com.example.injector.outputs.OptionalMissingOutputModel.MyModel1",
       "optional": true
     },
     {
-      "coordinate": {
-        "type": "com.example.injector.outputs.OptionalMissingOutputModel.MyModel2"
-      }
+      "type": "com.example.injector.outputs.OptionalMissingOutputModel.MyModel2"
     }
   ]
 }

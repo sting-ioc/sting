@@ -157,8 +157,10 @@ final class ObjectGraph
    */
   private void registerBinding( @Nonnull final Binding binding )
   {
-    binding.getCoordinates()
-      .forEach( coordinate -> _publishedTypes.computeIfAbsent( coordinate, c -> new ArrayList<>() ).add( binding ) );
+    for ( final ServiceSpec service : binding.getPublishedServices() )
+    {
+      _publishedTypes.computeIfAbsent( service.getCoordinate(), c -> new ArrayList<>() ).add( binding );
+    }
   }
 
   @Nonnull

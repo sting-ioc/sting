@@ -7,19 +7,13 @@
   ],
   "outputs": [
     {
-      "coordinate": {
-        "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1"
-      }
+      "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1"
     },
     {
-      "coordinate": {
-        "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2"
-      }
+      "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2"
     },
     {
-      "coordinate": {
-        "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3"
-      }
+      "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3"
     }
   ]
 }

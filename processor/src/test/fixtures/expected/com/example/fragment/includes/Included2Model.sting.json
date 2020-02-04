@@ -1,7 +1,9 @@
 {
   "schema": "injectable/1",
   "id": "com.example.fragment.includes.Included2Model",
-  "types": [
-    "com.example.fragment.includes.Included2Model"
+  "publishedServices": [
+    {
+      "type": "com.example.fragment.includes.Included2Model"
+    }
   ]
 }

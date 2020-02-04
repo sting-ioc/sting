@@ -4,9 +4,11 @@
     {
       "id": "com.example.fragment.qualifier.BasicQualifierModel#provideRunnable",
       "providesMethod": "provideRunnable",
-      "qualifier": "com.bix/SomeQualifier",
-      "types": [
-        "java.lang.Runnable"
+      "publishedServices": [
+        {
+          "qualifier": "com.bix/SomeQualifier",
+          "type": "java.lang.Runnable"
+        }
       ]
     }
   ]

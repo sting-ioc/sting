@@ -1,32 +1,26 @@
 {
   "schema": "injectable/1",
   "id": "com.example.injectable.dependency.ComplexDependencyModel",
-  "types": [
-    "com.example.injectable.dependency.ComplexDependencyModel"
+  "publishedServices": [
+    {
+      "type": "com.example.injectable.dependency.ComplexDependencyModel"
+    }
   ],
   "dependencies": [
     {
-      "coordinate": {
-        "qualifier": "lively",
-        "type": "java.lang.Runnable"
-      }
+      "qualifier": "lively",
+      "type": "java.lang.Runnable"
     },
     {
-      "coordinate": {
-        "type": "java.util.EventListener"
-      },
+      "type": "java.util.EventListener",
       "optional": true
     },
     {
-      "coordinate": {
-        "type": "java.io.Serializable"
-      }
+      "type": "java.io.Serializable"
     },
     {
-      "coordinate": {
-        "qualifier": "countDown",
-        "type": "int"
-      }
+      "qualifier": "countDown",
+      "type": "int"
     }
   ]
 }

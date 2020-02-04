@@ -1,8 +1,10 @@
 {
   "schema": "injectable/1",
   "id": "com.example.injectable.qualifier.BasicQualifierModel",
-  "qualifier": "com.biz/SomeQualifier",
-  "types": [
-    "com.example.injectable.qualifier.BasicQualifierModel"
+  "publishedServices": [
+    {
+      "qualifier": "com.biz/SomeQualifier",
+      "type": "com.example.injectable.qualifier.BasicQualifierModel"
+    }
   ]
 }

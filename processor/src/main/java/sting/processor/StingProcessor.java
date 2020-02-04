@@ -343,7 +343,11 @@ public final class StingProcessor
       {
         final String classname = coordinate.getType().toString();
         final InjectableDescriptor injectable = _registry.findInjectableByClassName( classname );
-        if ( null != injectable && injectable.getBinding().getCoordinates().contains( coordinate ) )
+        if ( null != injectable &&
+             injectable.getBinding()
+               .getPublishedServices()
+               .stream()
+               .anyMatch( s -> coordinate.equals( s.getCoordinate() ) ) )
         {
           bindings.add( injectable.getBinding() );
         }
@@ -1125,11 +1129,15 @@ public final class StingProcessor
 
         } );
 
+      final ServiceSpec[] specs = new ServiceSpec[ publishedTypes.size() ];
+      for ( int i = 0; i < specs.length; i++ )
+      {
+        specs[ i ] = new ServiceSpec( new Coordinate( qualifier, publishedTypes.get( i ) ), nullablePresent );
+      }
       final Binding binding =
         new Binding( nullablePresent ? Binding.Kind.NULLABLE_PROVIDES : Binding.Kind.PROVIDES,
                      id,
-                     qualifier,
-                     publishedTypes.toArray( new TypeMirror[ 0 ] ),
+                     Arrays.asList( specs ),
                      eager,
                      method,
                      dependencies.toArray( new ServiceDescriptor[ 0 ] ) );
@@ -1342,11 +1350,15 @@ public final class StingProcessor
                                                        "have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" ),
                                     element );
     }
+    final ServiceSpec[] specs = new ServiceSpec[ publishedTypes.size() ];
+    for ( int i = 0; i < specs.length; i++ )
+    {
+      specs[ i ] = new ServiceSpec( new Coordinate( qualifier, publishedTypes.get( i ) ), false );
+    }
     final Binding binding =
       new Binding( Binding.Kind.INJECTABLE,
                    id,
-                   qualifier,
-                   publishedTypes.toArray( new TypeMirror[ 0 ] ),
+                   Arrays.asList( specs ),
                    eager,
                    constructor,
                    dependencies.toArray( new ServiceDescriptor[ 0 ] ) );

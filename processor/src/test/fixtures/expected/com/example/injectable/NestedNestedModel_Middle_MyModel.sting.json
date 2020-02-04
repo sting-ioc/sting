@@ -1,7 +1,9 @@
 {
   "schema": "injectable/1",
   "id": "com.example.injectable.NestedNestedModel.Middle.MyModel",
-  "types": [
-    "com.example.injectable.NestedNestedModel.Middle.MyModel"
+  "publishedServices": [
+    {
+      "type": "com.example.injectable.NestedNestedModel.Middle.MyModel"
+    }
   ]
 }

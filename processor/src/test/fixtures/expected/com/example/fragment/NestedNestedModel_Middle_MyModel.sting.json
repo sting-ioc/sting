@@ -4,8 +4,10 @@
     {
       "id": "com.example.fragment.NestedNestedModel.Middle.MyModel#provideRunnable",
       "providesMethod": "provideRunnable",
-      "types": [
-        "java.lang.Runnable"
+      "publishedServices": [
+        {
+          "type": "java.lang.Runnable"
+        }
       ]
     }
   ]

@@ -8,9 +8,7 @@
   "outputs": [
     {
       "type": "COLLECTION",
-      "coordinate": {
-        "type": "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyModel"
-      }
+      "type": "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyModel"
     }
   ]
 }
