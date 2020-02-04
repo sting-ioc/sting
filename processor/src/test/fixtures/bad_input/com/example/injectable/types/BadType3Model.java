@@ -1,6 +1,7 @@
 package com.example.injectable.types;
 
 import sting.Injectable;
+import sting.Service;
 
 public class BadType3Model
 {
@@ -14,7 +15,7 @@ public class BadType3Model
   }
 
   // Does not implement MyOuterInterface!
-  @Injectable( types = { MyBaseInterface.class, MyOuterInterface.class } )
+  @Injectable( services = { @Service( type = MyBaseInterface.class ), @Service( type = MyOuterInterface.class ) } )
   public static class MyOuter
     implements MyBaseInterface
   {

@@ -390,13 +390,13 @@ public final class StingProcessorTest
                       "@Service target must not be a java.util.function.Supplier type with a wildcard type parameter" },
 
         new Object[]{ "com.example.injectable.types.BadType1Model",
-                      "@Injectable target has a type parameter containing the value java.lang.Runnable that is not assignable to the declaring type" },
+                      "@Injectable target has a declared a service with a type parameter that is not assignable to the declaring type" },
         new Object[]{ "com.example.injectable.types.BadType2Model",
-                      "@Injectable target has a type parameter containing the value java.util.concurrent.Callable that is not assignable to the declaring type" },
+                      "@Injectable target has a declared a service with a type parameter that is not assignable to the declaring type" },
         new Object[]{ "com.example.injectable.types.BadType3Model",
-                      "@Injectable target has a type parameter containing the value com.example.injectable.types.BadType3Model.MyOuterInterface that is not assignable to the declaring type" },
+                      "@Injectable target has a declared a service with a type parameter that is not assignable to the declaring type" },
         new Object[]{ "com.example.injectable.types.NoTypesAndLazyModel",
-                      "@Injectable target must have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" },
+                      "@Injectable target must have one or more services specified or must specify eager = true otherwise the binding will never be used by the injector" },
 
         new Object[]{ "com.example.injector.ClassInjector", "@Injector target must be an interface" },
         new Object[]{ "com.example.injector.DuplicateIdInjectorModel",

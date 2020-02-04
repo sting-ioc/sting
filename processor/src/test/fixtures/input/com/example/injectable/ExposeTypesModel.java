@@ -1,6 +1,7 @@
 package com.example.injectable;
 
 import sting.Injectable;
+import sting.Service;
 
 public class ExposeTypesModel
 {
@@ -32,14 +33,13 @@ public class ExposeTypesModel
     }
   }
 
-  @Injectable( types = { Object.class,
-                         MyBase.class,
-                         MyMarkerInterface.class,
-                         MyMiddle.class,
-                         Runnable.class,
-                         MyOuter.class,
-                         MyBaseInterface.class,
-                         MyOuterInterface.class } )
+  @Injectable( services = { @Service( type = Object.class ),
+                            @Service( type = MyMarkerInterface.class ),
+                            @Service( type = MyMiddle.class ),
+                            @Service( type = Runnable.class ),
+                            @Service( type = MyOuter.class ),
+                            @Service( type = MyBaseInterface.class ),
+                            @Service( type = MyOuterInterface.class ) } )
   public static class MyOuter
     extends MyMiddle
     implements MyOuterInterface

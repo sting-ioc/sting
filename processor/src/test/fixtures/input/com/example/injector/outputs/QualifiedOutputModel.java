@@ -10,7 +10,7 @@ interface QualifiedOutputModel
   @Service( qualifier = "Foo" )
   MyModel getMyModel();
 
-  @Injectable( qualifier = "Foo" )
+  @Injectable( services = @Service( qualifier = "Foo" ) )
   class MyModel
   {
   }

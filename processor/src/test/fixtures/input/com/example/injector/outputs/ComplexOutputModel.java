@@ -29,7 +29,7 @@ interface ComplexOutputModel
   {
   }
 
-  @Injectable( qualifier = "foo" )
+  @Injectable( services = @Service( qualifier = "foo" ) )
   class MyModel3
   {
   }

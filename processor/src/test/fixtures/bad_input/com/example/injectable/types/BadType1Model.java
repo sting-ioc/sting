@@ -1,8 +1,9 @@
 package com.example.injectable.types;
 
 import sting.Injectable;
+import sting.Service;
 
-@Injectable( types = Runnable.class )
+@Injectable( services = @Service( type = Runnable.class ) )
 public class BadType1Model
 {
   BadType1Model()

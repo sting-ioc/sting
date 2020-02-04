@@ -38,21 +38,9 @@ public @interface Injectable
   boolean eager() default false;
 
   /**
-   * An opaque string that qualifies this type.
-   * This can be any arbitrary string and is used to restrict the dependencies that this type can satisfy.
+   * The services published by this component.
    *
-   * @return an opaque qualifier string.
+   * @return the services published by this component.
    */
-  @Nonnull
-  String qualifier() default "";
-
-  /**
-   * The types of dependency that this binding can satisfy.
-   * By default the binding will match the type that is annotated.
-   * If specified, the binding will only match the types specified and
-   * every type must be assignable from the type that is annotated.
-   *
-   * @return the types of dependency that this binding can satisfy.
-   */
-  Class<?>[] types() default void.class;
+  Service[] services() default { @Service };
 }

@@ -1296,27 +1296,6 @@ public final class StingProcessor
       throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME, "have type parameters" ),
                                     element );
     }
-    final List<TypeMirror> types =
-      AnnotationsUtil.getTypeMirrorsAnnotationParameter( element, Constants.INJECTABLE_CLASSNAME, "types" );
-    final List<TypeMirror> publishedTypes;
-    if ( isDefaultTypes( types ) )
-    {
-      publishedTypes = Collections.singletonList( element.asType() );
-    }
-    else
-    {
-      for ( final TypeMirror type : types )
-      {
-        if ( !processingEnv.getTypeUtils().isAssignable( element.asType(), type ) )
-        {
-          throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                        " target has a type parameter containing the value " + type +
-                                        " that is not assignable to the declaring type",
-                                        element );
-        }
-      }
-      publishedTypes = types;
-    }
     final List<ExecutableElement> constructors = ElementsUtil.getConstructors( element );
     final ExecutableElement constructor = constructors.get( 0 );
     if ( constructors.size() > 1 )
@@ -1331,8 +1310,6 @@ public final class StingProcessor
     final String declaredId =
       (String) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTABLE_CLASSNAME, "id" ).getValue();
     final String id = declaredId.isEmpty() ? element.getQualifiedName().toString() : declaredId;
-    final String qualifier =
-      (String) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTABLE_CLASSNAME, "qualifier" ).getValue();
     final boolean eager =
       (boolean) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTABLE_CLASSNAME, "eager" ).getValue();
 
@@ -1344,17 +1321,42 @@ public final class StingProcessor
       dependencies.add( handleConstructorParameter( parameter, parameterTypes.get( index ), index ) );
       index++;
     }
-    if ( publishedTypes.isEmpty() && !eager )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.INJECTABLE_CLASSNAME,
-                                                       "have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" ),
-                                    element );
-    }
-    final ServiceSpec[] specs = new ServiceSpec[ publishedTypes.size() ];
+
+    final AnnotationMirror annotation = AnnotationsUtil.getAnnotationByType( element, Constants.INJECTABLE_CLASSNAME );
+    final List<AnnotationMirror> services = AnnotationsUtil.getAnnotationValueValue( annotation, "services" );
+
+    final ServiceSpec[] specs = new ServiceSpec[ services.size() ];
     for ( int i = 0; i < specs.length; i++ )
     {
-      specs[ i ] = new ServiceSpec( new Coordinate( qualifier, publishedTypes.get( i ) ), false );
+      final AnnotationMirror serviceAnnotation = services.get( i );
+      final String qualifier = AnnotationsUtil.getAnnotationValueValue( serviceAnnotation, "qualifier" );
+      final TypeMirror declaredType = AnnotationsUtil.getAnnotationValueValue( serviceAnnotation, "type" );
+      final TypeMirror type;
+      if ( TypeKind.VOID == declaredType.getKind() )
+      {
+        type = element.asType();
+      }
+      else
+      {
+        if ( !processingEnv.getTypeUtils().isAssignable( element.asType(), declaredType ) )
+        {
+          throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                        " target has a declared a service with a type parameter that is not assignable to the declaring type",
+                                        element,
+                                        annotation );
+        }
+        type = declaredType;
+      }
+      specs[ i ] = new ServiceSpec( new Coordinate( qualifier, type ), false );
     }
+
+    if ( 0 == specs.length && !eager )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.INJECTABLE_CLASSNAME,
+                                                       "have one or more services specified or must specify eager = true otherwise the binding will never be used by the injector" ),
+                                    element );
+    }
+
     final Binding binding =
       new Binding( Binding.Kind.INJECTABLE,
                    id,
