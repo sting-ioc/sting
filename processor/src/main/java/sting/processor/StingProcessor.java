@@ -1347,6 +1347,15 @@ public final class StingProcessor
         }
         type = declaredType;
       }
+      final VariableElement necessity = AnnotationsUtil.getAnnotationValueValue( serviceAnnotation, "necessity" );
+      if ( "OPTIONAL".equals( necessity.toString() ) )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                      " target has a declared a service with a necessity element set to OPTIONAL",
+                                      element,
+                                      annotation );
+
+      }
       specs[ i ] = new ServiceSpec( new Coordinate( qualifier, type ), false );
     }
 

@@ -346,6 +346,8 @@ public final class StingProcessorTest
                       "@Injectable target must not have multiple constructors" },
         new Object[]{ "com.example.injectable.NonStaticNestedModel",
                       "@Injectable target must not be a non-static nested class" },
+        new Object[]{ "com.example.injectable.OptionalServiceModel",
+                      "@Injectable target has a declared a service with a necessity element set to OPTIONAL" },
         new Object[]{ "com.example.injectable.ParameterizedModel", "@Injectable target must not have type parameters" },
 
         new Object[]{ "com.example.injectable.inputs.ArrayTypeInputModel",
