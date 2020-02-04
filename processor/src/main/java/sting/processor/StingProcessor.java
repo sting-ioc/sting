@@ -1341,7 +1341,7 @@ public final class StingProcessor
         if ( !processingEnv.getTypeUtils().isAssignable( element.asType(), declaredType ) )
         {
           throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                        " target has a declared a service with a type parameter that is not assignable to the declaring type",
+                                        " target has a declared a service with a type element that is not assignable to the declaring type",
                                         element,
                                         annotation );
         }
