@@ -38,9 +38,9 @@ public @interface Injectable
   boolean eager() default false;
 
   /**
-   * The services published by this component.
+   * The services published by the component.
    *
-   * @return the services published by this component.
+   * @return the services published by the component.
    */
   Service[] services() default { @Service };
 }
