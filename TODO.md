@@ -16,6 +16,8 @@ complete as there is too much un-said.
 * Improve error messages for `@Dependency` to differentiate between when an explicit type has
   been specified and and it is the type of the parameter.
 
+* The `Service.necessity` element should be moved back to `@Provides.necessity`
+
 * Add support for `Supplier<Optional<T>>` and `Collection<Supplier<Optional<T>>>` for optional inputs
 
 * Add support for optional input contributing to a collection - they are just not added to the collection.
