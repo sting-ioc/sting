@@ -68,7 +68,7 @@ public final class MultiplePublishedTypesDependenciesIntegrationTest
   @Fragment
   public interface MyFragment
   {
-    @Provides( types = { Model3.class, Object.class } )
+    @Provides( services = { @Service( type = Model3.class ), @Service( type = Object.class ) } )
     default Model3 provideModel3( @Nonnull final MyService2 model1, @Nonnull final MyService3 model2 )
     {
       return new Model3( model1, model2 );

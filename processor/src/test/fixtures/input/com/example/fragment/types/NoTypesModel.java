@@ -10,7 +10,7 @@ public interface NoTypesModel
   {
   }
 
-  @Provides( types = {}, eager = true )
+  @Provides( services = {}, eager = true )
   default MyModel provideMyModel()
   {
     return null;

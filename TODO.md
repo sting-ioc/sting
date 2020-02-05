@@ -10,9 +10,6 @@ complete as there is too much un-said.
 * Add a `@Injector.dependencies` parameter that can be used to specify additional dependencies passed into injector.
   These must have `@Dependency.type` specified but other than that they can specify any type
 
-* Refactor `@Provides` to have an array of services such as
-  `@Provides(services={@Service(qualifier="X"),@Service(qualifier="Y")}`.
-
 * Improve error messages for `@Dependency` to differentiate between when an explicit type has
   been specified and and it is the type of the parameter.
 

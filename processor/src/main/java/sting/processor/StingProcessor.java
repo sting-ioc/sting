@@ -1065,34 +1065,7 @@ public final class StingProcessor
                                       " as the return type is a primitive",
                                       method );
       }
-      final List<TypeMirror> types =
-        providesPresent ?
-        AnnotationsUtil.getTypeMirrorsAnnotationParameter( method, Constants.PROVIDES_CLASSNAME, "types" ) :
-        Collections.emptyList();
-      final List<TypeMirror> publishedTypes;
-      if ( !providesPresent || isDefaultTypes( types ) )
-      {
-        publishedTypes = Collections.singletonList( method.getReturnType() );
-      }
-      else
-      {
-        for ( final TypeMirror type : types )
-        {
-          if ( !processingEnv.getTypeUtils().isAssignable( method.getReturnType(), type ) )
-          {
-            throw new ProcessorException( MemberChecks.toSimpleName( Constants.PROVIDES_CLASSNAME ) +
-                                          " target has a type parameter containing the value " + type +
-                                          " that is not assignable to the return type of the method",
-                                          method );
-          }
-        }
-        publishedTypes = types;
-      }
-      final String qualifier =
-        providesPresent ?
-        (String) AnnotationsUtil.getAnnotationValue( method, Constants.PROVIDES_CLASSNAME, "qualifier" )
-          .getValue() :
-        "";
+
       final boolean eager =
         providesPresent &&
         (boolean) AnnotationsUtil.getAnnotationValue( method, Constants.PROVIDES_CLASSNAME, "eager" ).getValue();
@@ -1110,12 +1083,6 @@ public final class StingProcessor
         dependencies.add( processFragmentServiceParameter( parameter, parameterTypes.get( index ), index ) );
         index++;
       }
-      if ( publishedTypes.isEmpty() && !eager )
-      {
-        throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME,
-                                                         "have one or more types specified or must specify eager = true otherwise the binding will never be used by the injector" ),
-                                      element );
-      }
       bindings.entrySet()
         .stream()
         .filter( e -> e.getValue().getId().equals( id ) )
@@ -1129,10 +1096,48 @@ public final class StingProcessor
 
         } );
 
-      final ServiceSpec[] specs = new ServiceSpec[ publishedTypes.size() ];
-      for ( int i = 0; i < specs.length; i++ )
+      final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( method, Constants.PROVIDES_CLASSNAME );
+      final List<AnnotationMirror> services =
+        null == annotation ? null : AnnotationsUtil.getAnnotationValueValue( annotation, "services" );
+
+      final ServiceSpec[] specs = new ServiceSpec[ null == services ? 1 : services.size() ];
+      if ( null == services )
       {
-        specs[ i ] = new ServiceSpec( new Coordinate( qualifier, publishedTypes.get( i ) ), nullablePresent );
+        specs[ 0 ] = new ServiceSpec( new Coordinate( "", method.getReturnType() ), nullablePresent );
+      }
+      else
+      {
+        for ( int i = 0; i < specs.length; i++ )
+        {
+          final AnnotationMirror serviceAnnotation = services.get( i );
+          final String qualifier = AnnotationsUtil.getAnnotationValueValue( serviceAnnotation, "qualifier" );
+
+          final TypeMirror declaredType = AnnotationsUtil.getAnnotationValueValue( serviceAnnotation, "type" );
+          final TypeMirror type;
+          if ( TypeKind.VOID == declaredType.getKind() )
+          {
+            type = method.getReturnType();
+          }
+          else
+          {
+            if ( !processingEnv.getTypeUtils().isAssignable( method.getReturnType(), declaredType ) )
+            {
+              throw new ProcessorException( MemberChecks.toSimpleName( Constants.PROVIDES_CLASSNAME ) +
+                                            " target has declared a service with a 'type' parameter that is not assignable to the return type of the method",
+                                            element,
+                                            annotation );
+            }
+            type = declaredType;
+          }
+          specs[ i ] = new ServiceSpec( new Coordinate( qualifier, type ), nullablePresent );
+        }
+      }
+
+      if ( 0 == specs.length && !eager )
+      {
+        throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME,
+                                                         "have one or more services specified or must specify eager = true otherwise the binding will never be used by the injector" ),
+                                      element );
       }
       final Binding binding =
         new Binding( nullablePresent ? Binding.Kind.NULLABLE_PROVIDES : Binding.Kind.PROVIDES,
@@ -1158,7 +1163,7 @@ public final class StingProcessor
          !processingEnv.getTypeUtils().isAssignable( specifiedServiceType, parameterType ) )
     {
       throw new ProcessorException( MemberChecks.toSimpleName( Constants.SERVICE_CLASSNAME ) +
-                                    " target specifies a type element that is not assignable to the actual type",
+                                    " target specifies a 'type' parameter that is not assignable to the actual type",
                                     parameter );
     }
     final TypeMirror type = null != specifiedServiceType ? specifiedServiceType : parameterType;
@@ -1341,7 +1346,7 @@ public final class StingProcessor
         if ( !processingEnv.getTypeUtils().isAssignable( element.asType(), declaredType ) )
         {
           throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                        " target has a declared a service with a type element that is not assignable to the declaring type",
+                                        " target has declared a service with a 'type' parameter that is not assignable to the declaring type",
                                         element,
                                         annotation );
         }
@@ -1351,7 +1356,7 @@ public final class StingProcessor
       if ( "OPTIONAL".equals( necessity.toString() ) )
       {
         throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                      " target has a declared a service with a necessity element set to OPTIONAL",
+                                      " target has declared a service with a necessity element set to OPTIONAL",
                                       element,
                                       annotation );
 
@@ -1469,7 +1474,7 @@ public final class StingProcessor
          !processingEnv.getTypeUtils().isAssignable( specifiedServiceType, parameterType ) )
     {
       throw new ProcessorException( MemberChecks.toSimpleName( Constants.SERVICE_CLASSNAME ) +
-                                    " target specifies a type element that is not assignable to the actual type",
+                                    " target specifies a 'type' parameter that is not assignable to the actual type",
                                     parameter );
     }
     final TypeMirror type = null != specifiedServiceType ? specifiedServiceType : parameterType;
@@ -1591,11 +1596,6 @@ public final class StingProcessor
   private String getQualifier( @Nonnull final AnnotationMirror annotation )
   {
     return AnnotationsUtil.getAnnotationValueValue( annotation, "qualifier" );
-  }
-
-  private boolean isDefaultTypes( @Nonnull final List<TypeMirror> types )
-  {
-    return 1 == types.size() && TypeKind.VOID == types.get( 0 ).getKind();
   }
 
   private void injectableConstructorMustNotBePublic( @Nonnull final ExecutableElement constructor )

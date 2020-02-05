@@ -7,7 +7,7 @@ import sting.Provides;
 public interface NoTypesAndLazyModel
 {
   @SuppressWarnings( "DefaultAnnotationParam" )
-  @Provides( types = {}, eager = false )
+  @Provides( services = {}, eager = false )
   default String provideX()
   {
     return "";
