@@ -340,7 +340,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.provides.types.NoTypesAndLazyModel",
                       "@Provides target must have one or more services specified or must specify eager = true otherwise the binding will never be used by the injector" },
         new Object[]{ "com.example.fragment.provides.types.ParameterizedServiceModel",
-                      "@Provides target must not declare a 'type' parameter that is a a parameterized type" },
+                      "@Provides target must not declared a service with a 'type' parameter that is a a parameterized type" },
 
         new Object[]{ "com.example.injectable.AbstractModel", "@Injectable target must not be abstract" },
         new Object[]{ "com.example.injectable.InterfaceModel", "@Injectable target must be a class" },

@@ -1130,7 +1130,7 @@ public final class StingProcessor
             else if ( TypeKind.DECLARED == declaredType.getKind() && isParameterized( (DeclaredType) declaredType ) )
             {
               throw new ProcessorException( MemberChecks.mustNot( Constants.PROVIDES_CLASSNAME,
-                                                                  "declare a 'type' parameter that is a a parameterized type" ),
+                                                                  "declared a service with a 'type' parameter that is a a parameterized type" ),
                                             element,
                                             annotation );
             }
