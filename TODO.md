@@ -49,6 +49,7 @@ complete as there is too much un-said.
   * Recipe style examples for how to solve specific problems.
   * Comparison to other technologies (i.e. Dagger/IOC) in terms of functionality and performance.
   * Development process FAQ - just like in Arez but reflective of Stings approach.
+  * Maybe terminology should be (more) inspired by OSGI service ala https://www.osgi.org/developer/architecture/
 
 * Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
   or `Injector` will have their type annotations scanned for matching annotations of which there must be at most
