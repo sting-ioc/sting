@@ -1127,6 +1127,13 @@ public final class StingProcessor
                                             element,
                                             annotation );
             }
+            else if ( TypeKind.DECLARED == declaredType.getKind() && isParameterized( (DeclaredType) declaredType ) )
+            {
+              throw new ProcessorException( MemberChecks.mustNot( Constants.PROVIDES_CLASSNAME,
+                                                                  "declare a 'type' parameter that is a a parameterized type" ),
+                                            element,
+                                            annotation );
+            }
             type = declaredType;
           }
           specs[ i ] = new ServiceSpec( new Coordinate( qualifier, type ), nullablePresent );
@@ -1347,6 +1354,13 @@ public final class StingProcessor
         {
           throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
                                         " target has declared a service with a 'type' parameter that is not assignable to the declaring type",
+                                        element,
+                                        annotation );
+        }
+        else if ( TypeKind.DECLARED == declaredType.getKind() && isParameterized( (DeclaredType) declaredType ) )
+        {
+          throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                              "declare a 'type' parameter that is a a parameterized type" ),
                                         element,
                                         annotation );
         }
