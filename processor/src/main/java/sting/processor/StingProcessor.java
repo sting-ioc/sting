@@ -1125,14 +1125,14 @@ public final class StingProcessor
               throw new ProcessorException( MemberChecks.toSimpleName( Constants.PROVIDES_CLASSNAME ) +
                                             " target has declared a service with a 'type' parameter that is not assignable to the return type of the method",
                                             element,
-                                            annotation );
+                                            serviceAnnotation );
             }
             else if ( TypeKind.DECLARED == declaredType.getKind() && isParameterized( (DeclaredType) declaredType ) )
             {
               throw new ProcessorException( MemberChecks.mustNot( Constants.PROVIDES_CLASSNAME,
                                                                   "declared a service with a 'type' parameter that is a a parameterized type" ),
                                             element,
-                                            annotation );
+                                            serviceAnnotation );
             }
             type = declaredType;
           }
