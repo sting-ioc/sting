@@ -16,8 +16,6 @@ complete as there is too much un-said.
 * Add `types` parameter to `@Injectable` and `@Provides` that is a simpler variant than the `services` parameter
   and is incompatible with the `services` parameter.
 
-* The `Service.necessity` element should be moved back to `@Provides.necessity`
-
 * Add support for `Supplier<Optional<T>>` and `Collection<Supplier<Optional<T>>>` for optional inputs
 
 * Add support for optional input contributing to a collection - they are just not added to the collection.
