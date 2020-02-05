@@ -1,4 +1,4 @@
 /**
- * This package contains annotations used by the annotation processor to generate the DI container.
+ * The package containing annotations used by Sting to define a dependency injection container.
  */
 package sting;
