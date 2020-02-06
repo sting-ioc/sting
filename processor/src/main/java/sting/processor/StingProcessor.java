@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -60,6 +59,7 @@ import org.realityforge.proton.ProcessorException;
 @SupportedAnnotationTypes( { Constants.INJECTOR_CLASSNAME,
                              Constants.INJECTABLE_CLASSNAME,
                              Constants.FRAGMENT_CLASSNAME,
+                             Constants.NAMED_CLASSNAME,
                              Constants.SERVICE_CLASSNAME } )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
 @SupportedOptions( { "sting.defer.unresolved",
@@ -630,152 +630,52 @@ public final class StingProcessor
   @Nonnull
   private ServiceDescriptor processOutputMethod( @Nonnull final ExecutableElement method )
   {
-    final TypeMirror returnType = method.getReturnType();
-    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( method, Constants.SERVICE_CLASSNAME );
-    final String qualifier = getQualifier( method );
-
-    final TypeMirror specifiedServiceType = getServiceType( annotation );
-    if ( null != specifiedServiceType &&
-         !processingEnv.getTypeUtils().isAssignable( specifiedServiceType, returnType ) )
+    final TypeMirror type = method.getReturnType();
+    if ( StingTypesUtil.containsArrayType( type ) )
     {
-      throw new ProcessorException( MemberChecks.toSimpleName( Constants.SERVICE_CLASSNAME ) +
-                                    " target specifies a type element that is not assignable to the actual type",
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                                          "contain a method with a return type that contains an array type" ),
                                     method );
     }
-    final TypeMirror type = null != specifiedServiceType ? specifiedServiceType : returnType;
-
-    final boolean isDeclaredType = TypeKind.DECLARED == type.getKind();
-    final DeclaredType declaredType = isDeclaredType ? (DeclaredType) type : null;
-    final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
-    final ServiceDescriptor.Kind kind;
-    final TypeMirror serviceType;
-    if ( TypeKind.ARRAY == type.getKind() )
+    else if ( StingTypesUtil.containsWildcard( type ) )
     {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME, "return an array type" ),
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                                          "contain a method with a return type that contains a wildcard type parameter" ),
                                     method );
     }
-    else if ( null == declaredType )
+    else if ( StingTypesUtil.containsRawType( type ) )
     {
-      kind = ServiceDescriptor.Kind.INSTANCE;
-      serviceType = type;
-    }
-    else if ( !isParameterizedType )
-    {
-      if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                            "return a raw " +
-                                                            Supplier.class.getCanonicalName() +
-                                                            " type" ),
-                                      method );
-      }
-      else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                            "return a a raw " +
-                                                            Collection.class.getCanonicalName() + " type" ),
-                                      method );
-      }
-      else if ( !( (TypeElement) declaredType.asElement() ).getTypeParameters().isEmpty() )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                            "return a raw parameterized type. Parameterized " +
-                                                            "types are only permitted for specific types such as " +
-                                                            Supplier.class.getCanonicalName() + " and " +
-                                                            Collection.class.getCanonicalName() ),
-                                      method );
-      }
-      kind = ServiceDescriptor.Kind.INSTANCE;
-      serviceType = type;
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                                          "contain a method with a return type that contains a raw type" ),
+                                    method );
     }
     else
     {
-      if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
+      TypeMirror dependencyType = null;
+      ServiceDescriptor.Kind kind = null;
+      for ( final ServiceDescriptor.Kind candidate : ServiceDescriptor.Kind.values() )
       {
-        final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
-        if ( TypeKind.WILDCARD == typeArgument.getKind() )
+        dependencyType = candidate.extractType( type );
+        if ( null != dependencyType )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                              "return a " + Supplier.class.getCanonicalName() +
-                                                              " type with a wildcard type parameter" ),
-                                        method );
+          kind = candidate;
+          break;
         }
-        kind = ServiceDescriptor.Kind.SUPPLIER;
-        serviceType = typeArgument;
       }
-      else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
+      if ( null == kind )
       {
-        final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
-        if ( TypeKind.WILDCARD == typeArgument.getKind() )
-        {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                              "return a " + Collection.class.getCanonicalName() +
-                                                              " type with a wildcard type parameter" ),
-                                        method );
-        }
-        else if ( TypeKind.DECLARED == typeArgument.getKind() &&
-                  Supplier.class.getCanonicalName().equals( getClassname( (DeclaredType) typeArgument ) ) )
-        {
-          final DeclaredType supplierType = (DeclaredType) typeArgument;
-          final List<? extends TypeMirror> nestedTypeArguments = supplierType.getTypeArguments();
-          if ( nestedTypeArguments.isEmpty() )
-          {
-            throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                                "return a supplier collection parameter that " +
-                                                                "contains a raw " +
-                                                                Supplier.class.getCanonicalName() + " type" ),
-                                          method );
-          }
-          else
-          {
-            final TypeMirror nestedParameterType = nestedTypeArguments.get( 0 );
-            if ( TypeKind.WILDCARD == nestedParameterType.getKind() )
-            {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                                  "return a supplier collection parameter with a wildcard type parameter" ),
-                                            method );
-            }
-            else if ( TypeKind.DECLARED == nestedParameterType.getKind() &&
-                      isParameterized( (DeclaredType) nestedParameterType ) )
-            {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                                  "return a a supplier collection type that contains a parameterized type" ),
-                                            method );
-            }
-            else
-            {
-              kind = ServiceDescriptor.Kind.SUPPLIER_COLLECTION;
-              serviceType = nestedParameterType;
-            }
-          }
-        }
-        else if ( TypeKind.DECLARED == typeArgument.getKind() && isParameterized( (DeclaredType) typeArgument ) )
-        {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                              "return a collection type that contains a parameterized type" ),
-                                        method );
-        }
-        else
-        {
-          kind = ServiceDescriptor.Kind.COLLECTION;
-          serviceType = typeArgument;
-        }
+        throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                                            "contain a method with a return type that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" ),
+                                      method );
       }
       else
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                            "return a value that is a parameterized type. " +
-                                                            "This is only permitted for specific types such as " +
-                                                            Supplier.class.getCanonicalName() + " and " +
-                                                            Collection.class.getCanonicalName() ),
-                                      method );
+        final boolean optional = deriveOptional( method, type, kind );
+        final String qualifier = getQualifier( method );
+        final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
+        return new ServiceDescriptor( kind, coordinate, optional, method, -1 );
       }
     }
-
-    final boolean optional = deriveOptional( method, type, kind );
-
-    final Coordinate coordinate = new Coordinate( qualifier, serviceType );
-    return new ServiceDescriptor( kind, coordinate, optional, method, -1 );
   }
 
   private boolean deriveOptional( @Nonnull final Element element,
@@ -854,13 +754,6 @@ public final class StingProcessor
       }
     }
     return optional;
-  }
-
-  @Nullable
-  private TypeMirror getServiceType( @Nullable final AnnotationMirror annotation )
-  {
-    final TypeMirror type = null == annotation ? null : AnnotationsUtil.getAnnotationValueValue( annotation, "type" );
-    return null == annotation ? null : type.getKind() == TypeKind.VOID ? null : type;
   }
 
   private void verifyServiceElements( @Nonnull final RoundEnvironment env,
@@ -1159,130 +1052,54 @@ public final class StingProcessor
 
   @Nonnull
   private ServiceDescriptor processFragmentServiceParameter( @Nonnull final VariableElement parameter,
-                                                             @Nonnull final TypeMirror parameterType,
+                                                             @Nonnull final TypeMirror type,
                                                              final int parameterIndex )
   {
-    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( parameter, Constants.SERVICE_CLASSNAME );
-    final String qualifier = getQualifier( parameter );
-
-    final TypeMirror specifiedServiceType = getServiceType( annotation );
-    if ( null != specifiedServiceType &&
-         !processingEnv.getTypeUtils().isAssignable( specifiedServiceType, parameterType ) )
+    if ( StingTypesUtil.containsArrayType( type ) )
     {
-      throw new ProcessorException( MemberChecks.toSimpleName( Constants.SERVICE_CLASSNAME ) +
-                                    " target specifies a 'type' parameter that is not assignable to the actual type",
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                          "contain a method with a parameter that contains an array type" ),
                                     parameter );
     }
-    final TypeMirror type = null != specifiedServiceType ? specifiedServiceType : parameterType;
-
-    final boolean isDeclaredType = TypeKind.DECLARED == type.getKind();
-    final DeclaredType declaredType = isDeclaredType ? (DeclaredType) type : null;
-    final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
-    final ServiceDescriptor.Kind kind;
-    final TypeMirror serviceType;
-    if ( TypeKind.ARRAY == type.getKind() )
+    else if ( StingTypesUtil.containsWildcard( type ) )
     {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME, "be an array type" ),
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                          "contain a method with a parameter that contains a wildcard type parameter" ),
                                     parameter );
     }
-    else if ( null == declaredType )
+    else if ( StingTypesUtil.containsRawType( type ) )
     {
-      kind = ServiceDescriptor.Kind.INSTANCE;
-      serviceType = type;
-    }
-    else if ( !isParameterizedType )
-    {
-      if ( !( (TypeElement) declaredType.asElement() ).getTypeParameters().isEmpty() )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                            "be a raw parameterized type" ),
-                                      parameter );
-      }
-      kind = ServiceDescriptor.Kind.INSTANCE;
-      serviceType = type;
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                          "contain a method with a parameter that contains a raw type" ),
+                                    parameter );
     }
     else
     {
-      if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
+      TypeMirror dependencyType = null;
+      ServiceDescriptor.Kind kind = null;
+      for ( final ServiceDescriptor.Kind candidate : ServiceDescriptor.Kind.values() )
       {
-        final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
-        if ( TypeKind.WILDCARD == typeArgument.getKind() )
+        dependencyType = candidate.extractType( type );
+        if ( null != dependencyType )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                              "be a parameterized type with a wildcard type parameter" ),
-                                        parameter );
+          kind = candidate;
+          break;
         }
-        kind = ServiceDescriptor.Kind.SUPPLIER;
-        serviceType = typeArgument;
       }
-      else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
+      if ( null == kind )
       {
-        final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
-        if ( TypeKind.WILDCARD == typeArgument.getKind() )
-        {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                              "be a parameterized type with a wildcard type parameter" ),
-                                        parameter );
-        }
-        else if ( TypeKind.DECLARED == typeArgument.getKind() &&
-                  Supplier.class.getCanonicalName().equals( getClassname( (DeclaredType) typeArgument ) ) )
-        {
-          final DeclaredType supplierType = (DeclaredType) typeArgument;
-          final List<? extends TypeMirror> nestedTypeArguments = supplierType.getTypeArguments();
-          if ( nestedTypeArguments.isEmpty() )
-          {
-            throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                                "be a raw supplier collection type" ),
-                                          parameter );
-          }
-          else
-          {
-            final TypeMirror nestedParameterType = nestedTypeArguments.get( 0 );
-            if ( TypeKind.WILDCARD == nestedParameterType.getKind() )
-            {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                                  "be a supplier collection with a wildcard type parameter" ),
-                                            parameter );
-            }
-            else if ( TypeKind.DECLARED == nestedParameterType.getKind() &&
-                      isParameterized( (DeclaredType) nestedParameterType ) )
-            {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                                  "be a supplier collection with a parameterized type as the type parameter" ),
-                                            parameter );
-            }
-            else
-            {
-              kind = ServiceDescriptor.Kind.SUPPLIER_COLLECTION;
-              serviceType = nestedParameterType;
-            }
-          }
-        }
-        else if ( TypeKind.DECLARED == typeArgument.getKind() && isParameterized( (DeclaredType) typeArgument ) )
-        {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                              "be a collection parameter that contains a parameterized type as the type parameter" ),
-                                        parameter );
-        }
-        else
-        {
-          kind = ServiceDescriptor.Kind.COLLECTION;
-          serviceType = typeArgument;
-        }
+        throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                            "contain a method with a parameter that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" ),
+                                      parameter );
       }
       else
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                            "be a parameterized type other than the special " +
-                                                            "types known by the framework such as " +
-                                                            Supplier.class.getCanonicalName() + " and " +
-                                                            Collection.class.getCanonicalName() ),
-                                      parameter );
+        final boolean optional = deriveOptional( parameter, type, kind );
+        final String qualifier = getQualifier( parameter );
+        final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
+        return new ServiceDescriptor( kind, coordinate, optional, parameter, parameterIndex );
       }
     }
-    final boolean optional = deriveOptional( parameter, type, kind );
-    final Coordinate coordinate = new Coordinate( qualifier, serviceType );
-    return new ServiceDescriptor( kind, coordinate, optional, parameter, parameterIndex );
   }
 
   private void processInjectable( @Nonnull final TypeElement element )
@@ -1476,133 +1293,54 @@ public final class StingProcessor
 
   @Nonnull
   private ServiceDescriptor handleConstructorParameter( @Nonnull final VariableElement parameter,
-                                                        @Nonnull final TypeMirror parameterType,
+                                                        @Nonnull final TypeMirror type,
                                                         final int parameterIndex )
   {
-    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( parameter, Constants.SERVICE_CLASSNAME );
-    final String qualifier = getQualifier( parameter );
-
-    final TypeMirror specifiedServiceType = getServiceType( annotation );
-    if ( null != specifiedServiceType &&
-         !processingEnv.getTypeUtils().isAssignable( specifiedServiceType, parameterType ) )
+    if ( StingTypesUtil.containsArrayType( type ) )
     {
-      throw new ProcessorException( MemberChecks.toSimpleName( Constants.SERVICE_CLASSNAME ) +
-                                    " target specifies a 'type' parameter that is not assignable to the actual type",
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                          "contain a constructor with a parameter that contains an array type" ),
                                     parameter );
     }
-    final TypeMirror type = null != specifiedServiceType ? specifiedServiceType : parameterType;
-
-    final boolean isDeclaredType = TypeKind.DECLARED == type.getKind();
-    final DeclaredType declaredType = isDeclaredType ? (DeclaredType) type : null;
-    final boolean isParameterizedType = isDeclaredType && !declaredType.getTypeArguments().isEmpty();
-    final ServiceDescriptor.Kind kind;
-    final TypeMirror serviceType;
-    if ( TypeKind.ARRAY == type.getKind() )
+    else if ( StingTypesUtil.containsWildcard( type ) )
     {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME, "be an array type" ),
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                          "contain a constructor with a parameter that contains a wildcard type parameter" ),
                                     parameter );
     }
-    else if ( null == declaredType )
+    else if ( StingTypesUtil.containsRawType( type ) )
     {
-      kind = ServiceDescriptor.Kind.INSTANCE;
-      serviceType = type;
-    }
-    else if ( !isParameterizedType )
-    {
-      if ( !( (TypeElement) declaredType.asElement() ).getTypeParameters().isEmpty() )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                            "be a raw parameterized type" ),
-                                      parameter );
-      }
-      kind = ServiceDescriptor.Kind.INSTANCE;
-      serviceType = type;
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                          "contain a constructor with a parameter that contains a raw type" ),
+                                    parameter );
     }
     else
     {
-      if ( Supplier.class.getCanonicalName().equals( getClassname( declaredType ) ) )
+      TypeMirror dependencyType = null;
+      ServiceDescriptor.Kind kind = null;
+      for ( final ServiceDescriptor.Kind candidate : ServiceDescriptor.Kind.values() )
       {
-        final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
-        if ( TypeKind.WILDCARD == typeArgument.getKind() )
+        dependencyType = candidate.extractType( type );
+        if ( null != dependencyType )
         {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                              "be a " + Supplier.class.getCanonicalName() +
-                                                              " type with a wildcard type parameter" ),
-                                        parameter );
+          kind = candidate;
+          break;
         }
-        kind = ServiceDescriptor.Kind.SUPPLIER;
-        serviceType = typeArgument;
       }
-      else if ( Collection.class.getCanonicalName().equals( getClassname( declaredType ) ) )
+      if ( null == kind )
       {
-        final TypeMirror typeArgument = declaredType.getTypeArguments().get( 0 );
-        if ( TypeKind.WILDCARD == typeArgument.getKind() )
-        {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                              "be a " + Collection.class.getCanonicalName() +
-                                                              " type with a wildcard type parameter" ),
-                                        parameter );
-        }
-        else if ( TypeKind.DECLARED == typeArgument.getKind() &&
-                  Supplier.class.getCanonicalName().equals( getClassname( (DeclaredType) typeArgument ) ) )
-        {
-          final DeclaredType supplierType = (DeclaredType) typeArgument;
-          final List<? extends TypeMirror> nestedTypeArguments = supplierType.getTypeArguments();
-          if ( nestedTypeArguments.isEmpty() )
-          {
-            throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                                "be a raw parameterized type" ),
-                                          parameter );
-          }
-          else
-          {
-            final TypeMirror nestedParameterType = nestedTypeArguments.get( 0 );
-            if ( TypeKind.WILDCARD == nestedParameterType.getKind() )
-            {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                                  "be a supplier collection parameter with a wildcard type parameter" ),
-                                            parameter );
-            }
-            else if ( TypeKind.DECLARED == nestedParameterType.getKind() &&
-                      isParameterized( (DeclaredType) nestedParameterType ) )
-            {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                                  "be a supplier collection parameter that contains a parameterized type" ),
-                                            parameter );
-            }
-            else
-            {
-              kind = ServiceDescriptor.Kind.SUPPLIER_COLLECTION;
-              serviceType = nestedParameterType;
-            }
-          }
-        }
-        else if ( TypeKind.DECLARED == typeArgument.getKind() && isParameterized( (DeclaredType) typeArgument ) )
-        {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                              "be a collection parameter that contains a parameterized type" ),
-                                        parameter );
-        }
-        else
-        {
-          kind = ServiceDescriptor.Kind.COLLECTION;
-          serviceType = typeArgument;
-        }
+        throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                            "contain a constructor with a parameter that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" ),
+                                      parameter );
       }
       else
       {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                            "be a parameterized type other than the special " +
-                                                            "types known by the framework such as " +
-                                                            Supplier.class.getCanonicalName() + " and " +
-                                                            Collection.class.getCanonicalName() ),
-                                      parameter );
+        final boolean optional = deriveOptional( parameter, type, kind );
+        final String qualifier = getQualifier( parameter );
+        final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
+        return new ServiceDescriptor( kind, coordinate, optional, parameter, parameterIndex );
       }
     }
-
-    final boolean optional = deriveOptional( parameter, type, kind );
-    final Coordinate coordinate = new Coordinate( qualifier, serviceType );
-    return new ServiceDescriptor( kind, coordinate, optional, parameter, parameterIndex );
   }
 
   @Nonnull
@@ -1637,12 +1375,6 @@ public final class StingProcessor
         MemberChecks.suppressedBy( Constants.WARNING_PROTECTED_CONSTRUCTOR );
       processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, constructor );
     }
-  }
-
-  @Nonnull
-  private String getClassname( @Nonnull final DeclaredType declaredType )
-  {
-    return ( (TypeElement) declaredType.asElement() ).getQualifiedName().toString();
   }
 
   /**
