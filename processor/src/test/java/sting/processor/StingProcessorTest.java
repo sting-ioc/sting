@@ -284,8 +284,6 @@ public final class StingProcessorTest
                       "@Service target must not be optional and be a supplier type" },
         new Object[]{ "com.example.fragment.inputs.ExplicitOptionalNonnullInputModel",
                       "@Service target must not be optional and be annotated by @Nonnull" },
-        new Object[]{ "com.example.fragment.inputs.IncompatibleTypeInputModel",
-                      "@Service target specifies a 'type' parameter that is not assignable to the actual type" },
         new Object[]{ "com.example.fragment.inputs.NullableCollectionInputModel",
                       "@Service target must not be required and be annotated by @Nullable" },
         new Object[]{ "com.example.fragment.inputs.NullableSupplierCollectionInputModel",
@@ -317,8 +315,6 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.fragment.provides.AbstractMethodProvidesModel",
                       "@Provides target must have a default modifier" },
-        new Object[]{ "com.example.fragment.provides.IncompatibleReturnTypeProvidesModel",
-                      "@Provides target has declared a service with a 'type' parameter that is not assignable to the return type of the method" },
         new Object[]{ "com.example.fragment.provides.NullablePrimitiveReturnTypeProvidesModel",
                       "@Provides target is incorrectly annotated with @Nullable as the return type is a primitive" },
         new Object[]{ "com.example.fragment.provides.ParameterizedProvidesModel",
@@ -362,8 +358,6 @@ public final class StingProcessorTest
                       "@Service target must not be optional and be a supplier type" },
         new Object[]{ "com.example.injectable.inputs.ExplicitOptionalNonnullInputModel",
                       "@Service target must not be optional and be annotated by @Nonnull" },
-        new Object[]{ "com.example.injectable.inputs.IncompatibleTypeInputModel",
-                      "@Service target specifies a 'type' parameter that is not assignable to the actual type" },
         new Object[]{ "com.example.injectable.inputs.NullableCollectionInputModel",
                       "@Service target must not be required and be annotated by @Nullable" },
         new Object[]{ "com.example.injectable.inputs.NullableSupplierCollectionInputModel",
@@ -479,8 +473,6 @@ public final class StingProcessorTest
                       "@Service target must not be optional and be a supplier type" },
         new Object[]{ "com.example.injector.outputs.ExplicitOptionalWithNonnullOutputModel",
                       "@Service target must not be optional and be annotated by @Nonnull" },
-        new Object[]{ "com.example.injector.outputs.IncompatibleTypeOutputModel",
-                      "@Service target specifies a type element that is not assignable to the actual type" },
         new Object[]{ "com.example.injector.outputs.NullableCollectionOutputModel",
                       "@Service target must not be required and be annotated by @Nullable" },
         new Object[]{ "com.example.injector.outputs.NullableSupplierCollectionOutputModel",
@@ -577,16 +569,12 @@ public final class StingProcessorTest
         new Object[]{ "com.example.deprecated.DeprecatedProvidesNodeInjectorModel" },
 
         new Object[]{ "com.example.fragment.PackageAccessModel" },
-        new Object[]{ "com.example.fragment.dependency.ExplicitTypeDependencyModel" },
 
         new Object[]{ "com.example.injectable.ExposeTypesModel" },
         new Object[]{ "com.example.injectable.FinalModel" },
         new Object[]{ "com.example.injectable.PackageAccessModel" },
         new Object[]{ "com.example.injectable.SuppressedProtectedConstructorModel" },
-        new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" },
-        new Object[]{ "com.example.injectable.dependency.ExplicitTypeDependencyModel" },
-
-        new Object[]{ "com.example.injector.outputs.ExplicitTypeOutputModel" }
+        new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" }
       };
   }
 
