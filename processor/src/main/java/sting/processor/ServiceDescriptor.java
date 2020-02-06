@@ -29,12 +29,12 @@ final class ServiceDescriptor
   /**
    * The element that declares the service.
    * The element will either be:
-    *<ul>
-    *   <li>a parameter (of type {@link javax.lang.model.element.VariableElement}) on a @Provides annotated method</li>
-    *   <li>a parameter (of type {@link javax.lang.model.element.VariableElement}) of the constructor in an @Injectable annotated type</li>
-    *   <li>a {@link javax.lang.model.element.ExecutableElement} for a service exposed via a method on the @Injector annotated type</li>
-    *   <li>a {@link TypeElement} for a service declared by @Injector.inputs</li>
-    *</ul>
+   * <ul>
+   *   <li>a parameter (of type {@link javax.lang.model.element.VariableElement}) on a @Provides annotated method</li>
+   *   <li>a parameter (of type {@link javax.lang.model.element.VariableElement}) of the constructor in an @Injectable annotated type</li>
+   *   <li>a {@link javax.lang.model.element.ExecutableElement} for a service exposed via a method on the @Injector annotated type</li>
+   *   <li>a {@link TypeElement} for a service declared by @Injector.inputs</li>
+   * </ul>
    */
   @Nonnull
   private final Element _element;
