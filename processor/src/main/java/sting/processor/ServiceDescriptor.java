@@ -1,7 +1,11 @@
 package sting.processor;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
@@ -135,6 +139,80 @@ final class ServiceDescriptor
     boolean isCollection()
     {
       return _collection;
+    }
+
+    /**
+     * Extract the type of value to be injected for the current kind if possible, null otherwise.
+     * If this kind does not match the type supplied then return null.
+     */
+    @Nullable
+    TypeMirror extractType( @Nonnull final TypeMirror type )
+    {
+      if ( TypeKind.DECLARED != type.getKind() )
+      {
+        return !_collection && !_supplier ? type : null;
+      }
+      else
+      {
+        final DeclaredType declaredTypeL1 = (DeclaredType) type;
+        final String classnameL1 = getClassname( declaredTypeL1 );
+        final List<? extends TypeMirror> typeArgumentsL1 = declaredTypeL1.getTypeArguments();
+        if ( Collection.class.getName().equals( classnameL1 ) )
+        {
+          if ( !_collection )
+          {
+            return null;
+          }
+          else
+          {
+            final TypeMirror typeL2 = typeArgumentsL1.get( 0 );
+            if ( TypeKind.DECLARED != typeL2.getKind() )
+            {
+              return !_supplier ? extractDependencyType( typeL2 ) : null;
+            }
+            else
+            {
+              final DeclaredType declaredTypeL2 = (DeclaredType) typeL2;
+              final String classnameL2 = getClassname( declaredTypeL2 );
+              if ( Supplier.class.getName().equals( classnameL2 ) )
+              {
+                return _supplier ? extractDependencyType( declaredTypeL2.getTypeArguments().get( 0 ) ) : null;
+              }
+              else
+              {
+                return extractDependencyType( typeL2 );
+              }
+            }
+          }
+        }
+        else if ( Supplier.class.getName().equals( classnameL1 ) )
+        {
+          if ( _collection || !_supplier )
+          {
+            return null;
+          }
+          else
+          {
+            return extractDependencyType( typeArgumentsL1.get( 0 ) );
+          }
+        }
+        else
+        {
+          return extractDependencyType( declaredTypeL1 );
+        }
+      }
+    }
+
+    @Nullable
+    private TypeMirror extractDependencyType( @Nonnull final TypeMirror type )
+    {
+      return TypeKind.DECLARED == type.getKind() && !( (DeclaredType) type ).getTypeArguments().isEmpty() ? null : type;
+    }
+
+    @Nonnull
+    private String getClassname( @Nonnull final DeclaredType declaredType )
+    {
+      return ( (TypeElement) declaredType.asElement() ).getQualifiedName().toString();
     }
   }
 }
