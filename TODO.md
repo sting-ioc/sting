@@ -22,6 +22,12 @@ complete as there is too much un-said.
 
 * Add support for `Supplier<Optional<T>>` and `Collection<Supplier<Optional<T>>>` for optional inputs
 
+* Add code to verify `@Named` never appears in a context where it does not make sense. (i.e. `@Injectable` type,
+  parameters of `@Injectable` constructor, `@Provides` method, parameters of `@Provides` method or method in
+  `@Injector`). Do same for `@Eager` and `@Typed`
+
+* Add `@Eager` annotation and ditch `@Provides` annotation.
+
 * Add support for optional input contributing to a collection - they are just not added to the collection.
 
 * Add the mechanisms for overriding bindings already added to object graph. Perhaps by adding an
