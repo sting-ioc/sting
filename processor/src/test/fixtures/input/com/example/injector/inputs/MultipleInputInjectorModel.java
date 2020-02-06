@@ -1,5 +1,6 @@
 package com.example.injector.inputs;
 
+import sting.Named;
 import sting.Service;
 import sting.Injectable;
 import sting.Injector;
@@ -10,7 +11,7 @@ interface MultipleInputInjectorModel
 {
   MyModel getMyModel();
 
-  @Service( qualifier = "hostname" )
+  @Named( "hostname" )
   String getHostname();
 
   @Injectable

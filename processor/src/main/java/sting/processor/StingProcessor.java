@@ -632,7 +632,7 @@ public final class StingProcessor
   {
     final TypeMirror returnType = method.getReturnType();
     final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( method, Constants.SERVICE_CLASSNAME );
-    final String qualifier = null == annotation ? "" : getQualifier( annotation );
+    final String qualifier = getQualifier( method );
 
     final TypeMirror specifiedServiceType = getServiceType( annotation );
     if ( null != specifiedServiceType &&
@@ -965,7 +965,7 @@ public final class StingProcessor
     for ( int i = 0; i < size; i++ )
     {
       final AnnotationMirror input = inputs.get( i );
-      final String qualifier = getQualifier( input );
+      final String qualifier = AnnotationsUtil.getAnnotationValueValue( input, "qualifier" );
       final AnnotationValue typeAnnotationValue = AnnotationsUtil.findAnnotationValue( input, "type" );
       assert null != typeAnnotationValue;
       final TypeMirror type = (TypeMirror) typeAnnotationValue.getValue();
@@ -1163,7 +1163,7 @@ public final class StingProcessor
                                                              final int parameterIndex )
   {
     final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( parameter, Constants.SERVICE_CLASSNAME );
-    final String qualifier = null == annotation ? "" : getQualifier( annotation );
+    final String qualifier = getQualifier( parameter );
 
     final TypeMirror specifiedServiceType = getServiceType( annotation );
     if ( null != specifiedServiceType &&
@@ -1479,9 +1479,8 @@ public final class StingProcessor
                                                         @Nonnull final TypeMirror parameterType,
                                                         final int parameterIndex )
   {
-    final AnnotationMirror annotation =
-      AnnotationsUtil.findAnnotationByType( parameter, Constants.SERVICE_CLASSNAME );
-    final String qualifier = null == annotation ? "" : getQualifier( annotation );
+    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( parameter, Constants.SERVICE_CLASSNAME );
+    final String qualifier = getQualifier( parameter );
 
     final TypeMirror specifiedServiceType = getServiceType( annotation );
     if ( null != specifiedServiceType &&
@@ -1607,9 +1606,10 @@ public final class StingProcessor
   }
 
   @Nonnull
-  private String getQualifier( @Nonnull final AnnotationMirror annotation )
+  private String getQualifier( @Nonnull final Element element )
   {
-    return AnnotationsUtil.getAnnotationValueValue( annotation, "qualifier" );
+    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( element, Constants.NAMED_CLASSNAME );
+    return null == annotation ? "" : AnnotationsUtil.getAnnotationValueValue( annotation, "value" );
   }
 
   private void injectableConstructorMustNotBePublic( @Nonnull final ExecutableElement constructor )

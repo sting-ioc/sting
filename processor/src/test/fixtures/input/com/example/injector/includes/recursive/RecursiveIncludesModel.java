@@ -1,17 +1,17 @@
 package com.example.injector.includes.recursive;
 
 import sting.Injector;
-import sting.Service;
+import sting.Named;
 
 @Injector( includes = { MyFragment1.class, MyModel1.class } )
 interface RecursiveIncludesModel
 {
   Runnable getRunnable1();
 
-  @Service( qualifier = "Fragment2" )
+  @Named( "Fragment2" )
   Runnable getRunnable2();
 
-  @Service( qualifier = "Fragment3" )
+  @Named( "Fragment3" )
   Runnable getRunnable3();
 
   MyModel1 getMyModel1();

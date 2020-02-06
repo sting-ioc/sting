@@ -1,12 +1,12 @@
 package com.example.fragment.dependency;
 
-import sting.Service;
 import sting.Fragment;
+import sting.Named;
 
 @Fragment
 public interface QualifiedDependencyModel
 {
-  default Runnable provideRunnable( @Service( qualifier = "threadName" ) String name )
+  default Runnable provideRunnable( @Named( "threadName" ) String name )
   {
     return null;
   }
