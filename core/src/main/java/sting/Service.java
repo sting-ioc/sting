@@ -7,14 +7,9 @@ import javax.annotation.Nonnull;
 
 /**
  * A service specification.
- * The annotation can be used to declare a service that is consumed or published by a component and/or an injector.
+ * The annotation can be used to declare a service that is published by a component or consumed by an injector.
  *
- * <p>If the annotation is used to declare a service that a component consumes it can either annotate a
- * constructor parameter for {@link Injectable} components or annotate a method parameter for
- * {@link Provides} components. The default value for the {@link #type()} element is the type of the
- * parameter.</p>
- *
- * <p>The annotation can also be used to declare a service that is required by an injector and is
+ * <p>The annotation can be used to declare a service that is required by an injector and is
  * expected to be made available to other components to consume within the injectors component graph.
  * In this scenario, the service is added to the {@link Injector#inputs()} element. There is no default
  * value for the {@link #type()} element and the compiler will generate an error if it is not supplied.</p>
