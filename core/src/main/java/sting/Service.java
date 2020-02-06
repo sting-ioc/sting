@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
  * the {@link Injectable#services()} element or the {@link Provides#services()} element. The default value of the
  * {@link #type()} element for services declared in the {@link Injectable#services()} element is the type of the
  * class that is annotated with the {@link Injectable} annotation. The default value of the {@link #type()} element
- * for services declared in the {@link Provides#services()} element is the return type of the methdod that is
+ * for services declared in the {@link Provides#services()} element is the return type of the method that is
  * annotated with the {@link Provides} annotation.
  * </p>
  */
