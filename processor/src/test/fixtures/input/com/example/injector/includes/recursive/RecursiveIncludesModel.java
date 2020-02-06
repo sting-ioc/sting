@@ -1,7 +1,7 @@
 package com.example.injector.includes.recursive;
 
-import sting.Service;
 import sting.Injector;
+import sting.Service;
 
 @Injector( includes = { MyFragment1.class, MyModel1.class } )
 interface RecursiveIncludesModel
@@ -19,5 +19,4 @@ interface RecursiveIncludesModel
   MyModel2 getMyModel2();
 
   MyModel3 getMyModel3();
-
 }
