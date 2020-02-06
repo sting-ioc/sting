@@ -1,8 +1,10 @@
 package com.example.injectable.types;
 
+import sting.Eager;
 import sting.Injectable;
 
-@Injectable( services = {}, eager = true )
+@Eager
+@Injectable( services = {} )
 public class NoTypesModel
 {
 }

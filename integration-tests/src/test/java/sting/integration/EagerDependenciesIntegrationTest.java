@@ -2,6 +2,7 @@ package sting.integration;
 
 import javax.annotation.Nonnull;
 import org.testng.annotations.Test;
+import sting.Eager;
 import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
@@ -10,7 +11,8 @@ import static org.testng.Assert.*;
 public final class EagerDependenciesIntegrationTest
   extends AbstractIntegrationTest
 {
-  @Injectable( eager = true )
+  @Eager
+  @Injectable
   public static class Model1
     extends BaseModel
   {
@@ -35,7 +37,8 @@ public final class EagerDependenciesIntegrationTest
     }
   }
 
-  @Injectable( eager = true )
+  @Eager
+  @Injectable
   public static class Model4
     extends BaseModel
   {

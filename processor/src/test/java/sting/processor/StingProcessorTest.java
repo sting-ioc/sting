@@ -520,7 +520,14 @@ public final class StingProcessorTest
         new Object[]{ "com.example.unclaimed.UnclaimedMethodDependencyModel",
                       "@Service target must not be a method unless present in a type annotated with @Injector" },
         new Object[]{ "com.example.unclaimed.UnclaimedMethodInputModel",
-                      "@Service target must only be present on a parameter of a method if the enclosing type is annotated with @Fragment" }
+                      "@Service target must only be present on a parameter of a method if the enclosing type is annotated with @Fragment" },
+
+        new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerAnnotationModel", "@Eager target is not valid" },
+        new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerEnumModel", "@Eager target is not valid" },
+        new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerMethodModel",
+                      "@Eager target must only be present on a method if the method is enclosed in a type annotated with @Fragment" },
+        new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerTypeModel",
+                      "@Eager target must only be present on a type if the type is annotated with @Injectable" }
       };
   }
 

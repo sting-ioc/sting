@@ -1,5 +1,6 @@
 package com.example.injector.eager;
 
+import sting.Eager;
 import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
@@ -12,7 +13,8 @@ interface EagerInjectableViaIncludesModel
   {
   }
 
-  @Injectable( eager = true )
+  @Eager
+  @Injectable
   class MyModel1
   {
   }
@@ -27,7 +29,8 @@ interface EagerInjectableViaIncludesModel
   {
   }
 
-  @Injectable( eager = true )
+  @Eager
+  @Injectable
   class MyModel3
   {
   }

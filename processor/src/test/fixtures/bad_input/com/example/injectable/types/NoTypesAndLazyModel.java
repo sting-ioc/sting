@@ -2,8 +2,7 @@ package com.example.injectable.types;
 
 import sting.Injectable;
 
-@SuppressWarnings( "DefaultAnnotationParam" )
-@Injectable( services = {}, eager = false )
+@Injectable( services = {} )
 public class NoTypesAndLazyModel
 {
 }

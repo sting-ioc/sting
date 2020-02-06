@@ -21,9 +21,9 @@ complete as there is too much un-said.
 
 * Add code to verify `@Named` never appears in a context where it does not make sense. (i.e. `@Injectable` type,
   parameters of `@Injectable` constructor, `@Provides` method, parameters of `@Provides` method or method in
-  `@Injector`). Do same for `@Eager` and `@Typed`
+  `@Injector`). Do same for `@Typed`
 
-* Add `@Eager` annotation and ditch `@Provides` annotation.
+* Ditch `@Provides` annotation.
 
 * Add support for optional input contributing to a collection - they are just not added to the collection.
 

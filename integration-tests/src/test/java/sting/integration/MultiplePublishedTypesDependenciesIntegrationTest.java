@@ -4,6 +4,7 @@ import java.util.Collection;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import org.testng.annotations.Test;
+import sting.Eager;
 import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
@@ -30,7 +31,8 @@ public final class MultiplePublishedTypesDependenciesIntegrationTest
   {
   }
 
-  @Injectable( eager = true, services = { @Service( type = MyService1.class ), @Service( type = MyService2.class ) } )
+  @Eager
+  @Injectable( services = { @Service( type = MyService1.class ), @Service( type = MyService2.class ) } )
   public static class Model1
     extends BaseModel
     implements MyService1, MyService2
@@ -59,7 +61,8 @@ public final class MultiplePublishedTypesDependenciesIntegrationTest
     }
   }
 
-  @Injectable( eager = true, services = {} )
+  @Eager
+  @Injectable( services = {} )
   public static class Model4
     extends BaseModel
   {

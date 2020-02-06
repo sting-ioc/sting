@@ -1,8 +1,10 @@
 package com.example.injectable.eager;
 
+import sting.Eager;
 import sting.Injectable;
 
-@Injectable( eager = true )
+@Injectable
+@Eager
 public class EagerModel
 {
 }

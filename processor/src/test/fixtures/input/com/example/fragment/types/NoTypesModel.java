@@ -1,5 +1,6 @@
 package com.example.fragment.types;
 
+import sting.Eager;
 import sting.Fragment;
 import sting.Provides;
 
@@ -10,7 +11,8 @@ public interface NoTypesModel
   {
   }
 
-  @Provides( services = {}, eager = true )
+  @Eager
+  @Provides( services = {} )
   default MyModel provideMyModel()
   {
     return null;

@@ -1,6 +1,7 @@
 package com.example.injector.eager;
 
 import java.util.function.Supplier;
+import sting.Eager;
 import sting.Injectable;
 import sting.Injector;
 
@@ -54,7 +55,8 @@ interface BasicEagerDependencyModel
     }
   }
 
-  @Injectable( eager = true )
+  @Eager
+  @Injectable
   class MyModel6
   {
     MyModel6( MyModel4 modelA, MyModel5 modelB )

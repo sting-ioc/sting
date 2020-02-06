@@ -59,6 +59,7 @@ import org.realityforge.proton.ProcessorException;
 @SupportedAnnotationTypes( { Constants.INJECTOR_CLASSNAME,
                              Constants.INJECTABLE_CLASSNAME,
                              Constants.FRAGMENT_CLASSNAME,
+                             Constants.EAGER_CLASSNAME,
                              Constants.NAMED_CLASSNAME,
                              Constants.SERVICE_CLASSNAME } )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
@@ -153,6 +154,11 @@ public final class StingProcessor
       .filter( a -> a.getQualifiedName().toString().equals( Constants.SERVICE_CLASSNAME ) )
       .findAny()
       .ifPresent( a -> verifyServiceElements( env, env.getElementsAnnotatedWith( a ) ) );
+
+    annotations.stream()
+      .filter( a -> a.getQualifiedName().toString().equals( Constants.EAGER_CLASSNAME ) )
+      .findAny()
+      .ifPresent( a -> verifyEagerElements( env, env.getElementsAnnotatedWith( a ) ) );
 
     annotations.stream()
       .filter( a -> a.getQualifiedName().toString().equals( Constants.INJECTOR_CLASSNAME ) )
@@ -809,6 +815,42 @@ public final class StingProcessor
     }
   }
 
+  private void verifyEagerElements( @Nonnull final RoundEnvironment env,
+                                    @Nonnull final Set<? extends Element> elements )
+  {
+    for ( final Element element : elements )
+    {
+      if ( ElementKind.CLASS == element.getKind() )
+      {
+        if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+        {
+          reportError( env,
+                       MemberChecks.must( Constants.EAGER_CLASSNAME,
+                                          "only be present on a type if the type is annotated with " +
+                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) ),
+                       element );
+        }
+      }
+      else if ( ElementKind.METHOD == element.getKind() )
+      {
+        if ( !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME ) )
+        {
+          reportError( env,
+                       MemberChecks.must( Constants.EAGER_CLASSNAME,
+                                          "only be present on a method if the method is enclosed in a type annotated with " +
+                                          MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
+                       element );
+        }
+      }
+      else
+      {
+        reportError( env,
+                     MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) + " target is not valid",
+                     element );
+      }
+    }
+  }
+
   private void processFragment( @Nonnull final TypeElement element )
   {
     if ( ElementKind.INTERFACE != element.getKind() )
@@ -959,9 +1001,7 @@ public final class StingProcessor
                                       method );
       }
 
-      final boolean eager =
-        providesPresent &&
-        (boolean) AnnotationsUtil.getAnnotationValue( method, Constants.PROVIDES_CLASSNAME, "eager" ).getValue();
+      final boolean eager = AnnotationsUtil.hasAnnotationOfType( method, Constants.EAGER_CLASSNAME );
       final String declaredId =
         providesPresent ?
         (String) AnnotationsUtil.getAnnotationValue( method, Constants.PROVIDES_CLASSNAME, "id" ).getValue() :
@@ -1139,8 +1179,7 @@ public final class StingProcessor
     final String declaredId =
       (String) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTABLE_CLASSNAME, "id" ).getValue();
     final String id = declaredId.isEmpty() ? element.getQualifiedName().toString() : declaredId;
-    final boolean eager =
-      (boolean) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTABLE_CLASSNAME, "eager" ).getValue();
+    final boolean eager = AnnotationsUtil.hasAnnotationOfType( element, Constants.EAGER_CLASSNAME );
 
     final List<ServiceDescriptor> dependencies = new ArrayList<>();
     int index = 0;

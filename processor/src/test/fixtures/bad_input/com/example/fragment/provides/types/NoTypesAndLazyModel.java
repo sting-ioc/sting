@@ -6,8 +6,7 @@ import sting.Provides;
 @Fragment
 public interface NoTypesAndLazyModel
 {
-  @SuppressWarnings( "DefaultAnnotationParam" )
-  @Provides( services = {}, eager = false )
+  @Provides( services = {} )
   default String provideX()
   {
     return "";

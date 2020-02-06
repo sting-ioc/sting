@@ -56,13 +56,6 @@ public @interface Provides
   String id() default "";
 
   /**
-   * A flag indicating whether the instance should be instantiated when the Injector is created.
-   *
-   * @return a flag indicating whether the instance should be instantiated when the Injector is created.
-   */
-  boolean eager() default false;
-
-  /**
    * The services published by the component.
    *
    * @return the services published by the component.

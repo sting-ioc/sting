@@ -31,13 +31,6 @@ public @interface Injectable
   String id() default "";
 
   /**
-   * A flag indicating whether the component should be eagerly instantiated when the {@link Injector} is created.
-   *
-   * @return a flag indicating whether the component should be eagerly instantiated when the {@link Injector} is created.
-   */
-  boolean eager() default false;
-
-  /**
    * The services published by the component.
    *
    * @return the services published by the component.

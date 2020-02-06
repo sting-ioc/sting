@@ -1,8 +1,10 @@
 package com.example.injector.includes.diamond;
 
+import sting.Eager;
 import sting.Injectable;
 
-@Injectable( eager = true )
+@Eager
+@Injectable
 class MyModel
 {
 }

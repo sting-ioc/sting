@@ -1,12 +1,12 @@
 package com.example.fragment.eager;
 
+import sting.Eager;
 import sting.Fragment;
-import sting.Provides;
 
 @Fragment
 public interface EagerModel
 {
-  @Provides( eager = true )
+  @Eager
   default Runnable provideRunnable()
   {
     return null;
