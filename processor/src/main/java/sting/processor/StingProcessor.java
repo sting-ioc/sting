@@ -151,9 +151,9 @@ public final class StingProcessor
                                             this::processFragment ) );
 
     annotations.stream()
-      .filter( a -> a.getQualifiedName().toString().equals( Constants.SERVICE_CLASSNAME ) )
+      .filter( a -> a.getQualifiedName().toString().equals( Constants.NAMED_CLASSNAME ) )
       .findAny()
-      .ifPresent( a -> verifyServiceElements( env, env.getElementsAnnotatedWith( a ) ) );
+      .ifPresent( a -> verifyNamedElements( env, env.getElementsAnnotatedWith( a ) ) );
 
     annotations.stream()
       .filter( a -> a.getQualifiedName().toString().equals( Constants.EAGER_CLASSNAME ) )
@@ -762,8 +762,8 @@ public final class StingProcessor
     return optional;
   }
 
-  private void verifyServiceElements( @Nonnull final RoundEnvironment env,
-                                      @Nonnull final Set<? extends Element> elements )
+  private void verifyNamedElements( @Nonnull final RoundEnvironment env,
+                                    @Nonnull final Set<? extends Element> elements )
   {
     for ( final Element element : elements )
     {
@@ -779,18 +779,16 @@ public final class StingProcessor
         if ( !injectableType && ElementKind.CONSTRUCTOR == executableKind )
         {
           reportError( env,
-                       MemberChecks.must( Constants.SERVICE_CLASSNAME,
-                                          "only be present on a parameter of a constructor " +
-                                          "if the enclosing type is annotated with " +
+                       MemberChecks.must( Constants.NAMED_CLASSNAME,
+                                          "only be present on a constructor parameter if the constructor is enclosed in a type annotated with " +
                                           MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) ),
                        element );
         }
         else if ( !isFragmentType && ElementKind.METHOD == executableKind )
         {
           reportError( env,
-                       MemberChecks.must( Constants.SERVICE_CLASSNAME,
-                                          "only be present on a parameter of a method " +
-                                          "if the enclosing type is annotated with " +
+                       MemberChecks.must( Constants.NAMED_CLASSNAME,
+                                          "only be present on a method parameter if the method is enclosed in a type annotated with " +
                                           MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
                        element );
         }
@@ -800,17 +798,35 @@ public final class StingProcessor
                  ( isFragmentType && ElementKind.METHOD == executableKind );
         }
       }
-      else
+      else if ( ElementKind.CLASS == element.getKind() )
       {
-        assert ElementKind.METHOD == element.getKind();
-        if ( !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.INJECTOR_CLASSNAME ) )
+        if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
         {
           reportError( env,
-                       MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                             "be a method unless present in a type annotated with " +
+                       MemberChecks.must( Constants.NAMED_CLASSNAME,
+                                          "only be present on a type if the type is annotated with " +
+                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) ),
+                       element );
+        }
+      }
+      else if ( ElementKind.METHOD == element.getKind() )
+      {
+        if ( !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME ) &&
+             !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.INJECTOR_CLASSNAME ) )
+        {
+          reportError( env,
+                       MemberChecks.mustNot( Constants.NAMED_CLASSNAME,
+                                             "be a method unless the method is enclosed in a type annotated with " +
+                                             MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " or " +
                                              MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) ),
                        element );
         }
+      }
+      else
+      {
+        reportError( env,
+                     MemberChecks.toSimpleName( Constants.NAMED_CLASSNAME ) + " target is not valid",
+                     element );
       }
     }
   }
