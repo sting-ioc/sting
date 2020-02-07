@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 
 /**
  * A service specification.
- * The annotation can be used to declare a service that is published by a component or consumed by an injector.
+ * The annotation can be used to declare a service that is supplied to an injector during construction.
  *
  * <p>The annotation can be used to declare a service that is required by an injector and is
  * expected to be made available to other components to consume within the injectors component graph.
