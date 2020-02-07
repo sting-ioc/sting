@@ -5,7 +5,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import javax.annotation.Nonnull;
 
 /**
  * Identify a component type that Sting can create by invoking the constructor.
@@ -20,13 +19,4 @@ import javax.annotation.Nonnull;
 @Documented
 public @interface Injectable
 {
-  /**
-   * A unique identifier representing the component.
-   * If not specified then the avlue of this element default to "[Qualified Classname]".
-   * This element is primarily used so that specific components can be overridden.
-   *
-   * @return a unique identifier representing the component.
-   */
-  @Nonnull
-  String id() default "";
 }

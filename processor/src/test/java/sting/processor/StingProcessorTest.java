@@ -50,8 +50,6 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.eager.EagerModel" },
         new Object[]{ "com.example.fragment.eager.LazyModel" },
 
-        new Object[]{ "com.example.fragment.id.ExplicitIdModel" },
-
         new Object[]{ "com.example.fragment.qualifier.BasicQualifierModel" },
         new Object[]{ "com.example.fragment.qualifier.EmptyQualifierModel" },
         new Object[]{ "com.example.fragment.qualifier.NonStandardQualifierModel" },
@@ -80,8 +78,6 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injectable.eager.EagerModel" },
         new Object[]{ "com.example.injectable.eager.LazyModel" },
-
-        new Object[]{ "com.example.injectable.id.ExplicitIdModel" },
 
         new Object[]{ "com.example.injectable.qualifier.BasicQualifierModel" },
         new Object[]{ "com.example.injectable.qualifier.EmptyQualifierModel" },
@@ -324,9 +320,6 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.provides.VoidReturnTypeProvidesModel",
                       "@Provides target must return a value" },
 
-        new Object[]{ "com.example.fragment.provides.id.DuplicateIdModel",
-                      "@Provides target must have a unique id but it has the same id as the method named runnable2" },
-
         new Object[]{ "com.example.fragment.provides.types.BadType1Model",
                       "@Typed specified a type that is not assignable to the return type of the method" },
         new Object[]{ "com.example.fragment.provides.types.BadType2Model",
@@ -397,10 +390,6 @@ public final class StingProcessorTest
                       "@Typed specified a type that is a a parameterized type" },
 
         new Object[]{ "com.example.injector.ClassInjector", "@Injector target must be an interface" },
-        new Object[]{ "com.example.injector.DuplicateIdInjectorModel",
-                      "@Injector target must not contain multiple nodes with the id 'foo'.\n" +
-                      "  Path:\n" +
-                      "    [Injector]       com.example.injector.DuplicateIdInjectorModel" },
         new Object[]{ "com.example.injector.EnumInjector", "@Injector target must be an interface" },
         new Object[]{ "com.example.injector.MultipleCandidatesForSingularDependencyModel",
                       "@Injector target must not contain a non-collection dependency [java.lang.Runnable] that can be satisfied by multiple nodes.\n" +

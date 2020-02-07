@@ -45,13 +45,4 @@ import javax.annotation.Nonnull;
 @Retention( RetentionPolicy.RUNTIME )
 public @interface Provides
 {
-  /**
-   * A unique identifier representing this binding.
-   * If not identified then this will be derived as "[Qualified Classname]#[Method Name]".
-   * This is primarily used so that inherited {@link Injector} annotated types can override specific bindings.
-   *
-   * @return a unique identifier representing this binding..
-   */
-  @Nonnull
-  String id() default "";
 }

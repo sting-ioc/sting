@@ -1048,7 +1048,6 @@ public final class StingProcessor
     }
     else
     {
-      final boolean providesPresent = AnnotationsUtil.hasAnnotationOfType( method, Constants.PROVIDES_CLASSNAME );
       final boolean nullablePresent =
         AnnotationsUtil.hasAnnotationOfType( method, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
 
@@ -1062,11 +1061,6 @@ public final class StingProcessor
       }
 
       final boolean eager = AnnotationsUtil.hasAnnotationOfType( method, Constants.EAGER_CLASSNAME );
-      final String declaredId =
-        providesPresent ?
-        (String) AnnotationsUtil.getAnnotationValue( method, Constants.PROVIDES_CLASSNAME, "id" ).getValue() :
-        "";
-      final String id = declaredId.isEmpty() ? element.getQualifiedName() + "#" + method.getSimpleName() : declaredId;
 
       final List<ServiceDescriptor> dependencies = new ArrayList<>();
       int index = 0;
@@ -1076,18 +1070,6 @@ public final class StingProcessor
         dependencies.add( processFragmentServiceParameter( parameter, parameterTypes.get( index ), index ) );
         index++;
       }
-      bindings.entrySet()
-        .stream()
-        .filter( e -> e.getValue().getId().equals( id ) )
-        .map( Map.Entry::getKey )
-        .findAny()
-        .ifPresent( matchingMethod -> {
-          throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME,
-                                                           "have a unique id but it has the same id as the method named " +
-                                                           matchingMethod.getSimpleName() ),
-                                        element );
-
-        } );
 
       final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( method, Constants.TYPED_CLASSNAME );
       final AnnotationValue value =
@@ -1138,7 +1120,7 @@ public final class StingProcessor
       }
       final Binding binding =
         new Binding( nullablePresent ? Binding.Kind.NULLABLE_PROVIDES : Binding.Kind.PROVIDES,
-                     id,
+                     element.getQualifiedName() + "#" + method.getSimpleName(),
                      Arrays.asList( specs ),
                      eager,
                      method,
@@ -1233,9 +1215,6 @@ public final class StingProcessor
     injectableConstructorMustNotBeProtected( constructor );
     injectableConstructorMustNotBePublic( constructor );
 
-    final String declaredId =
-      (String) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTABLE_CLASSNAME, "id" ).getValue();
-    final String id = declaredId.isEmpty() ? element.getQualifiedName().toString() : declaredId;
     final boolean eager = AnnotationsUtil.hasAnnotationOfType( element, Constants.EAGER_CLASSNAME );
 
     final List<ServiceDescriptor> dependencies = new ArrayList<>();
@@ -1298,7 +1277,7 @@ public final class StingProcessor
 
     final Binding binding =
       new Binding( Binding.Kind.INJECTABLE,
-                   id,
+                   element.getQualifiedName().toString(),
                    Arrays.asList( specs ),
                    eager,
                    constructor,

@@ -21,8 +21,6 @@ complete as there is too much un-said.
 
 * Ditch `@Provides` annotation.
 
-* Remove id parameter from `@Provides` and `@Injectable`
-
 * Add verification to `@Fragment` and `@Injectable` to verify that we never used the `javax.inject.Named` or
   `javax.enterprise.inject.Typed` annotations on these classes.
 
