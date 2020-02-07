@@ -19,8 +19,6 @@ complete as there is too much un-said.
 
 * Add support for `Supplier<Optional<T>>` and `Collection<Supplier<Optional<T>>>` for optional inputs
 
-* Ditch `@Provides` annotation.
-
 * Add verification to `@Fragment` and `@Injectable` to verify that we never used the `javax.inject.Named` or
   `javax.enterprise.inject.Typed` annotations on these classes.
 
@@ -31,8 +29,6 @@ complete as there is too much un-said.
   existing bindings. Order in `includes` matters in this scenario. This will default to `AUTODETECT`
   which will evaluate to `DISABLE` all scenarios except when the binding is from a descriptor declared
   as nested class of the injector. Overrides can either be by id or published types.
-
-* Consider renaming `@Provides` to `@Creator`, `@ServiceCreator`, `@Factory` or `@ServiceFactory`
 
 * A null produced by an optional binding should not be added to a collection? Then how do we deal with optional `Supplier` inputs?
 

@@ -20,7 +20,7 @@ public enum NecessityType
   /**
    * The service is optional.
    *
-   * <p>If the {@link Service} annotation is describing a service provided then the {@link Provides}
+   * <p>If the {@link Service} annotation is describing a service provided then thefactory
    * method may return a null. If the {@link Service} annotation is describing an input into a service
    * then the input may be null. The value must not be a nullable value (i.e. not a primitive).</p>
    *

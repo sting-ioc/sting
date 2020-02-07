@@ -20,7 +20,7 @@ import java.util.function.Supplier;
  * <p>Every type annotated with {@code @Injector} must contain at least one abstract component
  * method. Every abstract method must return a type provided by the object graph and must not
  * have any parameters. The dependency should be provisioned by a {@link Injectable @Injectable}
- * annotated type or a {@link Provides @Provides} annotated method.
+ * annotated type or a factory method in a {@link Fragment @Fragment} annotated type.
  *
  * <a name="instantiation"></a>
  * <h2>Instantiation</h2>
