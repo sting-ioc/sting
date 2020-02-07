@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotates an interface that contributes to the object graph.
+ * Identify an interface that can contribute to a component graph.
  * The interface is expected to declare 1 or more default methods and/or
  * include 1 or more types in the {@link #includes() includes} parameter.
  */
@@ -17,13 +17,12 @@ import java.lang.annotation.Target;
 public @interface Fragment
 {
   /**
-   * A list of types that contribute to the object graph.
-   * These types can be {@code @Fragment}-annotated interfaces or {@link Injectable @Injectable}-annotated classes.
-   * The de-duplicated contributions of the {@code @Fragment}-annotated interfaces in the
-   * {@code includes}, and of their inclusions recursively, are all contributed
-   * to the object graph.
+   * A list of types that can contribute to the component graph.
+   * The types can be {@link Injectable}-annotated classes or {@link Fragment}-annotated interfaces.
+   * The {@link Fragment}-annotated interfaces contributions are added recursively and contributions are
+   * de-duplicated before they are resolved.
    *
-   * @return a list of types that contribute to the fragments object graph.
+   * @return a list of types that contribute to the fragments component graph.
    */
   Class<?>[] includes() default {};
 }
