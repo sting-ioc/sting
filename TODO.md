@@ -10,9 +10,7 @@ complete as there is too much un-said.
 * Add a `@Injector.dependencies` parameter that can be used to specify additional dependencies passed into injector.
   These must have `@Dependency.type` specified but other than that they can specify any type
 
-* Consider breaking up `@Service` into one side for consuming side and one side for publishing side.
-  The publishing side would not have Optional flag. Should the consuming side should be `@Inject` to follow
-  suite with other frameworks? An alternative maybe to go back to `@Named()` and `@Typed()` where appropriate.
+* Refactor `@Service` to be specific for consuming by the injector.
 
 * Add support for `Supplier<Optional<T>>` and `Collection<Supplier<Optional<T>>>` for optional inputs
 
