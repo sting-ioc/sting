@@ -13,14 +13,6 @@ import javax.annotation.Nonnull;
  * expected to be made available to other components to consume within the injectors component graph.
  * In this scenario, the service is added to the {@link Injector#inputs()} element. There is no default
  * value for the {@link #type()} element and the compiler will generate an error if it is not supplied.</p>
- *
- * <p>If the annotation is used to declare a service that is published by a component then it is declared in
- * the {@link Injectable#services()} element or the {@link Provides#services()} element. The default value of the
- * {@link #type()} element for services declared in the {@link Injectable#services()} element is the type of the
- * class that is annotated with the {@link Injectable} annotation. The default value of the {@link #type()} element
- * for services declared in the {@link Provides#services()} element is the return type of the method that is
- * annotated with the {@link Provides} annotation.
- * </p>
  */
 @Retention( RetentionPolicy.RUNTIME )
 @Documented

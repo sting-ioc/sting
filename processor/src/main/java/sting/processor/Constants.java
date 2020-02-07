@@ -19,6 +19,8 @@ final class Constants
   @Nonnull
   static final String EAGER_CLASSNAME = "sting.Eager";
   @Nonnull
+  static final String TYPED_CLASSNAME = "sting.Typed";
+  @Nonnull
   static final String WARNING_PROTECTED_CONSTRUCTOR = "Sting:ProtectedConstructor";
   @Nonnull
   static final String WARNING_PUBLIC_CONSTRUCTOR = "Sting:PublicConstructor";

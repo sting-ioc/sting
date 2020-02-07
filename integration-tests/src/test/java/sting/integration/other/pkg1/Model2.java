@@ -2,13 +2,12 @@ package sting.integration.other.pkg1;
 
 import java.util.function.Supplier;
 import sting.Injectable;
-import sting.Service;
+import sting.Typed;
 import sting.integration.AbstractIntegrationTest;
 import sting.integration.other.pkg2.MyService3;
 
-@Injectable( services = { @Service( type = Object.class ),
-                          @Service( type = Model2.class ),
-                          @Service( type = MyService1.class ) } )
+@Injectable
+@Typed( { Object.class, Model2.class, MyService1.class } )
 public class Model2
   extends AbstractIntegrationTest.BaseModel
   implements MyService1

@@ -60,6 +60,7 @@ import org.realityforge.proton.ProcessorException;
                              Constants.INJECTABLE_CLASSNAME,
                              Constants.FRAGMENT_CLASSNAME,
                              Constants.EAGER_CLASSNAME,
+                             Constants.TYPED_CLASSNAME,
                              Constants.NAMED_CLASSNAME,
                              Constants.SERVICE_CLASSNAME } )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
@@ -154,6 +155,11 @@ public final class StingProcessor
       .filter( a -> a.getQualifiedName().toString().equals( Constants.NAMED_CLASSNAME ) )
       .findAny()
       .ifPresent( a -> verifyNamedElements( env, env.getElementsAnnotatedWith( a ) ) );
+
+    annotations.stream()
+      .filter( a -> a.getQualifiedName().toString().equals( Constants.TYPED_CLASSNAME ) )
+      .findAny()
+      .ifPresent( a -> verifyTypedElements( env, env.getElementsAnnotatedWith( a ) ) );
 
     annotations.stream()
       .filter( a -> a.getQualifiedName().toString().equals( Constants.EAGER_CLASSNAME ) )
@@ -831,6 +837,44 @@ public final class StingProcessor
     }
   }
 
+  private void verifyTypedElements( @Nonnull final RoundEnvironment env,
+                                    @Nonnull final Set<? extends Element> elements )
+  {
+    for ( final Element element : elements )
+    {
+      if ( ElementKind.CLASS == element.getKind() )
+      {
+        if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+        {
+          reportError( env,
+                       MemberChecks.must( Constants.TYPED_CLASSNAME,
+                                          "only be present on a type if the type is annotated with " +
+                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) ),
+                       element );
+        }
+      }
+      else if ( ElementKind.METHOD == element.getKind() )
+      {
+        if ( !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME ) &&
+             !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.INJECTOR_CLASSNAME ) )
+        {
+          reportError( env,
+                       MemberChecks.mustNot( Constants.TYPED_CLASSNAME,
+                                             "be a method unless the method is enclosed in a type annotated with " +
+                                             MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " or " +
+                                             MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) ),
+                       element );
+        }
+      }
+      else
+      {
+        reportError( env,
+                     MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) + " target is not valid",
+                     element );
+      }
+    }
+  }
+
   private void verifyEagerElements( @Nonnull final RoundEnvironment env,
                                     @Nonnull final Set<? extends Element> elements )
   {
@@ -1045,54 +1089,51 @@ public final class StingProcessor
 
         } );
 
-      final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( method, Constants.PROVIDES_CLASSNAME );
-      final List<AnnotationMirror> services =
-        null == annotation ? null : AnnotationsUtil.getAnnotationValueValue( annotation, "services" );
+      final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( method, Constants.TYPED_CLASSNAME );
+      final AnnotationValue value =
+        null != annotation ? AnnotationsUtil.findAnnotationValue( annotation, "value" ) : null;
 
-      final ServiceSpec[] specs = new ServiceSpec[ null == services ? 1 : services.size() ];
-      if ( null == services )
+      final String qualifier = getQualifier( method );
+      @SuppressWarnings( "unchecked" )
+      final List<TypeMirror> types =
+        null == value ?
+        Collections.singletonList( method.getReturnType() ) :
+        ( (List<AnnotationValue>) value.getValue() )
+          .stream()
+          .map( v -> (TypeMirror) v.getValue() )
+          .collect( Collectors.toList() );
+
+      final ServiceSpec[] specs = new ServiceSpec[ types.size() ];
+      for ( int i = 0; i < specs.length; i++ )
       {
-        specs[ 0 ] = new ServiceSpec( new Coordinate( "", method.getReturnType() ), nullablePresent );
-      }
-      else
-      {
-        for ( int i = 0; i < specs.length; i++ )
+        final TypeMirror type = types.get( i );
+        if ( !processingEnv.getTypeUtils().isAssignable( method.getReturnType(), type ) )
         {
-          final AnnotationMirror serviceAnnotation = services.get( i );
-          final String qualifier = AnnotationsUtil.getAnnotationValueValue( serviceAnnotation, "qualifier" );
-
-          final TypeMirror declaredType = AnnotationsUtil.getAnnotationValueValue( serviceAnnotation, "type" );
-          final TypeMirror type;
-          if ( TypeKind.VOID == declaredType.getKind() )
-          {
-            type = method.getReturnType();
-          }
-          else
-          {
-            if ( !processingEnv.getTypeUtils().isAssignable( method.getReturnType(), declaredType ) )
-            {
-              throw new ProcessorException( MemberChecks.toSimpleName( Constants.PROVIDES_CLASSNAME ) +
-                                            " target has declared a service with a 'type' parameter that is not assignable to the return type of the method",
-                                            element,
-                                            serviceAnnotation );
-            }
-            else if ( TypeKind.DECLARED == declaredType.getKind() && isParameterized( (DeclaredType) declaredType ) )
-            {
-              throw new ProcessorException( MemberChecks.mustNot( Constants.PROVIDES_CLASSNAME,
-                                                                  "declared a service with a 'type' parameter that is a a parameterized type" ),
-                                            element,
-                                            serviceAnnotation );
-            }
-            type = declaredType;
-          }
-          specs[ i ] = new ServiceSpec( new Coordinate( qualifier, type ), nullablePresent );
+          throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                        " specified a type that is not assignable to the return type of the method",
+                                        element,
+                                        annotation,
+                                        value );
         }
+        else if ( TypeKind.DECLARED == type.getKind() && isParameterized( (DeclaredType) type ) )
+        {
+          throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                        " specified a type that is a a parameterized type",
+                                        element,
+                                        annotation,
+                                        value );
+        }
+        specs[ i ] = new ServiceSpec( new Coordinate( qualifier, type ), nullablePresent );
       }
 
       if ( 0 == specs.length && !eager )
       {
-        throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME,
-                                                         "have one or more services specified or must specify eager = true otherwise the binding will never be used by the injector" ),
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
+                                      " target must not contain methods that specify zero types with the " +
+                                      MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                      " annotation and are not annotated with the " +
+                                      MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) +
+                                      " annotation otherwise the component can not be created by the injector",
                                       element );
       }
       final Binding binding =
@@ -1206,54 +1247,52 @@ public final class StingProcessor
       index++;
     }
 
-    final AnnotationMirror annotation = AnnotationsUtil.getAnnotationByType( element, Constants.INJECTABLE_CLASSNAME );
-    final List<AnnotationMirror> services = AnnotationsUtil.getAnnotationValueValue( annotation, "services" );
+    final AnnotationMirror annotation =
+      AnnotationsUtil.findAnnotationByType( element, Constants.TYPED_CLASSNAME );
+    final AnnotationValue value =
+      null != annotation ? AnnotationsUtil.findAnnotationValue( annotation, "value" ) : null;
 
-    final ServiceSpec[] specs = new ServiceSpec[ services.size() ];
+    final String qualifier = getQualifier( element );
+    @SuppressWarnings( "unchecked" )
+    final List<TypeMirror> types =
+      null == value ?
+      Collections.singletonList( element.asType() ) :
+      ( (List<AnnotationValue>) value.getValue() )
+        .stream()
+        .map( v -> (TypeMirror) v.getValue() )
+        .collect( Collectors.toList() );
+
+    final ServiceSpec[] specs = new ServiceSpec[ types.size() ];
     for ( int i = 0; i < specs.length; i++ )
     {
-      final AnnotationMirror serviceAnnotation = services.get( i );
-      final String qualifier = AnnotationsUtil.getAnnotationValueValue( serviceAnnotation, "qualifier" );
-      final TypeMirror declaredType = AnnotationsUtil.getAnnotationValueValue( serviceAnnotation, "type" );
-      final TypeMirror type;
-      if ( TypeKind.VOID == declaredType.getKind() )
+      final TypeMirror type = types.get( i );
+      if ( !processingEnv.getTypeUtils().isAssignable( element.asType(), type ) )
       {
-        type = element.asType();
-      }
-      else
-      {
-        if ( !processingEnv.getTypeUtils().isAssignable( element.asType(), declaredType ) )
-        {
-          throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                        " target has declared a service with a 'type' parameter that is not assignable to the declaring type",
-                                        element,
-                                        annotation );
-        }
-        else if ( TypeKind.DECLARED == declaredType.getKind() && isParameterized( (DeclaredType) declaredType ) )
-        {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                              "declare a 'type' parameter that is a a parameterized type" ),
-                                        element,
-                                        annotation );
-        }
-        type = declaredType;
-      }
-      final VariableElement necessity = AnnotationsUtil.getAnnotationValueValue( serviceAnnotation, "necessity" );
-      if ( "OPTIONAL".equals( necessity.toString() ) )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                      " target has declared a service with a necessity element set to OPTIONAL",
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                      " specified a type that is not assignable to the declaring type",
                                       element,
-                                      annotation );
-
+                                      annotation,
+                                      value );
+      }
+      else if ( TypeKind.DECLARED == type.getKind() && isParameterized( (DeclaredType) type ) )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                      " specified a type that is a a parameterized type",
+                                      element,
+                                      annotation,
+                                      value );
       }
       specs[ i ] = new ServiceSpec( new Coordinate( qualifier, type ), false );
     }
 
     if ( 0 == specs.length && !eager )
     {
-      throw new ProcessorException( MemberChecks.must( Constants.INJECTABLE_CLASSNAME,
-                                                       "have one or more services specified or must specify eager = true otherwise the binding will never be used by the injector" ),
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                          "specify zero types with the " +
+                                                          MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                                          " annotation or must be annotated with the " +
+                                                          MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) +
+                                                          " annotation otherwise the component can not be created by the injector" ),
                                     element );
     }
 

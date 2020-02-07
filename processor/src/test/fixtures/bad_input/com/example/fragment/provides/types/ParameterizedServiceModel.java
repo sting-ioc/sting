@@ -3,8 +3,7 @@ package com.example.fragment.provides.types;
 import java.util.ArrayList;
 import java.util.Collection;
 import sting.Fragment;
-import sting.Provides;
-import sting.Service;
+import sting.Typed;
 
 @Fragment
 public interface ParameterizedServiceModel
@@ -14,7 +13,7 @@ public interface ParameterizedServiceModel
   {
   }
 
-  @Provides( services = @Service( type = Collection.class ) )
+  @Typed( Collection.class )
   default Foo provideX()
   {
     return null;

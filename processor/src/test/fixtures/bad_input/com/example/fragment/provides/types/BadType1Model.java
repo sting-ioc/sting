@@ -1,8 +1,7 @@
 package com.example.fragment.provides.types;
 
 import sting.Fragment;
-import sting.Provides;
-import sting.Service;
+import sting.Typed;
 
 @Fragment
 public interface BadType1Model
@@ -11,7 +10,7 @@ public interface BadType1Model
   {
   }
 
-  @Provides( services = @Service( type = Runnable.class ) )
+  @Typed( Runnable.class )
   default Foo provideX()
   {
     return null;

@@ -3,8 +3,7 @@ package com.example.fragment.types;
 import java.util.EventListener;
 import java.util.Properties;
 import sting.Fragment;
-import sting.Provides;
-import sting.Service;
+import sting.Typed;
 
 @Fragment
 public interface BasicTypesModel
@@ -27,10 +26,7 @@ public interface BasicTypesModel
   }
 
   // Does not expose BasicTypesModel or AutoCloseable nor Hashtable and related
-  @Provides( services = { @Service( type = Runnable.class ),
-                          @Service( type = EventListener.class ),
-                          @Service( type = Object.class ),
-                          @Service( type = Properties.class ) } )
+  @Typed( { Runnable.class, EventListener.class, Object.class, Properties.class } )
   default MyModel provideMyModel()
   {
     return null;

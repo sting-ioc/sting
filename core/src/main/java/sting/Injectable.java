@@ -29,11 +29,4 @@ public @interface Injectable
    */
   @Nonnull
   String id() default "";
-
-  /**
-   * The services published by the component.
-   *
-   * @return the services published by the component.
-   */
-  Service[] services() default { @Service };
 }

@@ -1,13 +1,12 @@
 package com.example.fragment.qualifier;
 
 import sting.Fragment;
-import sting.Provides;
-import sting.Service;
+import sting.Named;
 
 @Fragment
 public interface BasicQualifierModel
 {
-  @Provides( services = @Service( qualifier = "com.bix/SomeQualifier" ) )
+  @Named( "com.bix/SomeQualifier" )
   default Runnable provideRunnable()
   {
     return null;

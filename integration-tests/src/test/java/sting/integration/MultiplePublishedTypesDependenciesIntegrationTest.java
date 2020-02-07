@@ -8,8 +8,7 @@ import sting.Eager;
 import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
-import sting.Provides;
-import sting.Service;
+import sting.Typed;
 import static org.testng.Assert.*;
 
 public final class MultiplePublishedTypesDependenciesIntegrationTest
@@ -32,16 +31,16 @@ public final class MultiplePublishedTypesDependenciesIntegrationTest
   }
 
   @Eager
-  @Injectable( services = { @Service( type = MyService1.class ), @Service( type = MyService2.class ) } )
+  @Injectable
+  @Typed( { MyService1.class, MyService2.class } )
   public static class Model1
     extends BaseModel
     implements MyService1, MyService2
   {
   }
 
-  @Injectable( services = { @Service( type = MyService3.class ),
-                            @Service( type = Model2.class ),
-                            @Service( type = Object.class ) } )
+  @Injectable
+  @Typed( { MyService3.class, Model2.class, Object.class } )
   public static class Model2
     extends BaseModel
     implements MyService3
@@ -62,7 +61,8 @@ public final class MultiplePublishedTypesDependenciesIntegrationTest
   }
 
   @Eager
-  @Injectable( services = {} )
+  @Injectable
+  @Typed( {} )
   public static class Model4
     extends BaseModel
   {
@@ -71,7 +71,7 @@ public final class MultiplePublishedTypesDependenciesIntegrationTest
   @Fragment
   public interface MyFragment
   {
-    @Provides( services = { @Service( type = Model3.class ), @Service( type = Object.class ) } )
+    @Typed( { Model3.class, Object.class } )
     default Model3 provideModel3( @Nonnull final MyService2 model1, @Nonnull final MyService3 model2 )
     {
       return new Model3( model1, model2 );

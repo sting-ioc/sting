@@ -1,8 +1,10 @@
 package com.example.injectable.types;
 
 import sting.Injectable;
+import sting.Typed;
 
-@Injectable( services = {} )
+@Injectable
+@Typed( {} )
 public class NoTypesAndLazyModel
 {
 }

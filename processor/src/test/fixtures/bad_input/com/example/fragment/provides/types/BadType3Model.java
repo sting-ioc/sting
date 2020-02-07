@@ -1,8 +1,7 @@
 package com.example.fragment.provides.types;
 
 import sting.Fragment;
-import sting.Provides;
-import sting.Service;
+import sting.Typed;
 
 @Fragment
 public interface BadType3Model
@@ -17,7 +16,7 @@ public interface BadType3Model
   }
 
   // Does not implement MyOuterInterface!
-  @Provides( services = { @Service( type = MyBaseInterface.class ), @Service( type = MyOuterInterface.class ) } )
+  @Typed( { MyBaseInterface.class, MyOuterInterface.class } )
   default MyBaseInterface provideX()
   {
     return null;

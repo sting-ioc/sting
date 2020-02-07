@@ -1,9 +1,10 @@
 package com.example.injectable.qualifier;
 
 import sting.Injectable;
-import sting.Service;
+import sting.Named;
 
-@Injectable( services = @Service( qualifier = "com.biz/SomeQualifier" ) )
+@Injectable
+@Named( "com.biz/SomeQualifier" )
 public class BasicQualifierModel
 {
 }

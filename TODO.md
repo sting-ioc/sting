@@ -19,9 +19,6 @@ complete as there is too much un-said.
 
 * Add support for `Supplier<Optional<T>>` and `Collection<Supplier<Optional<T>>>` for optional inputs
 
-* Add code to verify `@Typed` never appears in a context where it does not make sense. (i.e. `@Injectable` type,
-  `@Provides` method `@Injector`).
-
 * Ditch `@Provides` annotation.
 
 * Remove id parameter from `@Provides` and `@Injectable`

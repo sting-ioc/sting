@@ -1,13 +1,12 @@
 package com.example.injector.includes.recursive;
 
 import sting.Fragment;
-import sting.Provides;
-import sting.Service;
+import sting.Named;
 
 @Fragment
 interface MyFragment3
 {
-  @Provides( services = @Service( qualifier = "Fragment3" ) )
+  @Named( "Fragment3" )
   default Runnable provideRunnable()
   {
     return null;

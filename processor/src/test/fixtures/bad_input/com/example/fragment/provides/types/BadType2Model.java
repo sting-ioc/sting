@@ -2,8 +2,7 @@ package com.example.fragment.provides.types;
 
 import java.util.concurrent.Callable;
 import sting.Fragment;
-import sting.Provides;
-import sting.Service;
+import sting.Typed;
 
 @Fragment
 public interface BadType2Model
@@ -17,9 +16,7 @@ public interface BadType2Model
     }
   }
 
-  @Provides( services = { @Service( type = Foo.class ),
-                          @Service( type = Runnable.class ),
-                          @Service( type = Callable.class ) } )
+  @Typed( { Foo.class, Runnable.class, Callable.class } )
   default Foo provideX()
   {
     return null;

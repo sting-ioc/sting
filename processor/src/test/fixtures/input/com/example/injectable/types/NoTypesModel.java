@@ -2,9 +2,11 @@ package com.example.injectable.types;
 
 import sting.Eager;
 import sting.Injectable;
+import sting.Typed;
 
 @Eager
-@Injectable( services = {} )
+@Injectable
+@Typed( {} )
 public class NoTypesModel
 {
 }

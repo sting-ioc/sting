@@ -3,13 +3,11 @@ package com.example.injectable.types;
 import java.util.EventListener;
 import java.util.Properties;
 import sting.Injectable;
-import sting.Service;
+import sting.Typed;
 
 // Does not expose BasicTypesModel or AutoCloseable nor Hashtable and related
-@Injectable( services = { @Service( type = Runnable.class ),
-                          @Service( type = EventListener.class ),
-                          @Service( type = Object.class ),
-                          @Service( type = Properties.class ) } )
+@Injectable
+@Typed( { Runnable.class, EventListener.class, Object.class, Properties.class } )
 public class BasicTypesModel
   extends Properties
   implements Runnable, EventListener, AutoCloseable
