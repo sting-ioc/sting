@@ -7,12 +7,8 @@ import java.lang.annotation.Target;
 import javax.annotation.Nonnull;
 
 /**
- * A service specification.
- * The annotation can be used to declare a service that is supplied to an injector during construction.
- *
- * <p>The annotation can be used to declare a service that is required by an injector and is
- * expected to be made available to other components to consume within the injectors component graph.
- * In this scenario, the service is added to the {@link Injector#inputs()} element.</p>
+ * A specification of a service that is supplied to an injector during construction.
+ * The service is added to the the component graph and is made available for other components to consume
  */
 @Retention( RetentionPolicy.RUNTIME )
 @Documented
@@ -31,10 +27,6 @@ public @interface Service
 
   /**
    * The java type of the service.
-   *
-   * <p>The default value for this element is derived according to the heuristics documented
-   * at the class level. If the user specifies a type for this element then instances of the
-   * type MUST be assignable to the type that would be derived using the above mentioned heuristics.</p>
    *
    * <p>Sting does not support classes defined with type parameters.</p>
    *
