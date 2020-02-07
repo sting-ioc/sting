@@ -14,6 +14,8 @@ complete as there is too much un-said.
 
 * Add support for `Supplier<Optional<T>>` and `Collection<Supplier<Optional<T>>>` for optional inputs
 
+* Add tests to ensure injector methods have no parameters and can not throw an exception.
+
 * Add verification to `@Fragment` and `@Injectable` to verify that we never used the `javax.inject.Named` or
   `javax.enterprise.inject.Typed` annotations on these classes.
 
