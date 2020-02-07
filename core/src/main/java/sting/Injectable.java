@@ -10,8 +10,8 @@ import java.lang.annotation.Target;
  * Identify a component type that Sting can create by invoking the constructor.
  * The type must be concrete and should have a single package-access constructor.
  * The constructor can accept zero or more services as arguments. The constructor parameters
- * can be explicitly annotated with a {@link Service} annotation otherwise the compiler will
- * treat the parameter as if it was annotated with a {@link Service} annotation with default
+ * can be explicitly annotated with a {@link Injector.Service} annotation otherwise the compiler will
+ * treat the parameter as if it was annotated with a {@link Injector.Service} annotation with default
  * values for all the elements.
  */
 @Target( ElementType.TYPE )

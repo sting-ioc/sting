@@ -3,10 +3,9 @@ package com.example.injector.inputs;
 import sting.Injectable;
 import sting.Injector;
 import sting.Named;
-import sting.Service;
 
-@Injector( inputs = { @Service( type = Runnable.class ),
-                      @Service( qualifier = "hostname", type = String.class ) } )
+@Injector( inputs = { @Injector.Service( type = Runnable.class ),
+                      @Injector.Service( qualifier = "hostname", type = String.class ) } )
 interface MultipleInputInjectorModel
 {
   MyModel getMyModel();
