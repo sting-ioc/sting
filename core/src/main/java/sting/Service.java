@@ -11,8 +11,7 @@ import javax.annotation.Nonnull;
  *
  * <p>The annotation can be used to declare a service that is required by an injector and is
  * expected to be made available to other components to consume within the injectors component graph.
- * In this scenario, the service is added to the {@link Injector#inputs()} element. There is no default
- * value for the {@link #type()} element and the compiler will generate an error if it is not supplied.</p>
+ * In this scenario, the service is added to the {@link Injector#inputs()} element.</p>
  */
 @Retention( RetentionPolicy.RUNTIME )
 @Documented
@@ -39,5 +38,5 @@ public @interface Service
    *
    * @return the java type of the service.
    */
-  Class<?> type() default void.class;
+  Class<?> type();
 }
