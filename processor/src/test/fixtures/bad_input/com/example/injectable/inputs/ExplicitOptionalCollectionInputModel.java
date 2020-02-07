@@ -1,9 +1,9 @@
 package com.example.injectable.inputs;
 
 import java.util.Collection;
-import sting.Service;
 import sting.Injectable;
 import sting.NecessityType;
+import sting.Service;
 
 @Injectable
 public class ExplicitOptionalCollectionInputModel

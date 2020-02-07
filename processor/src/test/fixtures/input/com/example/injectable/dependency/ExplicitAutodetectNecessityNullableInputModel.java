@@ -1,9 +1,9 @@
 package com.example.injectable.dependency;
 
 import javax.annotation.Nullable;
-import sting.Service;
 import sting.Injectable;
 import sting.NecessityType;
+import sting.Service;
 
 @Injectable
 public class ExplicitAutodetectNecessityNullableInputModel

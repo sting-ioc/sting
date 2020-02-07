@@ -2,7 +2,6 @@ package com.example.fragment.types;
 
 import sting.Eager;
 import sting.Fragment;
-import sting.Provides;
 import sting.Typed;
 
 @Fragment

@@ -1,8 +1,7 @@
 package com.example.injectable.dependency;
 
-import sting.Named;
-import sting.Service;
 import sting.Injectable;
+import sting.Named;
 
 @Injectable
 public class QualifiedDependencyModel

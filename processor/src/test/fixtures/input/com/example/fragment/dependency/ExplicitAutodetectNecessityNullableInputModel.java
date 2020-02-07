@@ -1,9 +1,9 @@
 package com.example.fragment.dependency;
 
 import javax.annotation.Nullable;
-import sting.Service;
 import sting.Fragment;
 import sting.NecessityType;
+import sting.Service;
 
 @Fragment
 public interface ExplicitAutodetectNecessityNullableInputModel

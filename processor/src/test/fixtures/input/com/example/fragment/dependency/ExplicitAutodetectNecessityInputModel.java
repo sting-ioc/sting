@@ -1,8 +1,8 @@
 package com.example.fragment.dependency;
 
-import sting.Service;
 import sting.Fragment;
 import sting.NecessityType;
+import sting.Service;
 
 @Fragment
 public interface ExplicitAutodetectNecessityInputModel

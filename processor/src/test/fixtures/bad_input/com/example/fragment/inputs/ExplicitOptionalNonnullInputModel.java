@@ -1,9 +1,9 @@
 package com.example.fragment.inputs;
 
 import javax.annotation.Nonnull;
-import sting.Service;
 import sting.Fragment;
 import sting.NecessityType;
+import sting.Service;
 
 @Fragment
 public interface ExplicitOptionalNonnullInputModel

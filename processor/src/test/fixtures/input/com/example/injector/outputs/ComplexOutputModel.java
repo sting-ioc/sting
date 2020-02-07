@@ -5,7 +5,6 @@ import javax.annotation.Nullable;
 import sting.Injectable;
 import sting.Injector;
 import sting.Named;
-import sting.Service;
 
 @Injector
 interface ComplexOutputModel

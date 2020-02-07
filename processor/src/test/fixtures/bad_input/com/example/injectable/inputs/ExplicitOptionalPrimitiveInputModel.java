@@ -1,8 +1,8 @@
 package com.example.injectable.inputs;
 
-import sting.Service;
 import sting.Injectable;
 import sting.NecessityType;
+import sting.Service;
 
 @Injectable
 public class ExplicitOptionalPrimitiveInputModel
