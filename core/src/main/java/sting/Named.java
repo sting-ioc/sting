@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import javax.annotation.Nonnull;
 
 /**
- * Qualify a service.
+ * Qualify a service with a name.
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
@@ -20,7 +20,7 @@ public @interface Named
    * The string is user-supplied and used to distinguish two different services with the same type
    * but different semantics.
    *
-   * @return an opaque qualifier string.
+   * @return an opaque qualifier string or name.
    */
   @Nonnull
   String value();
