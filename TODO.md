@@ -27,8 +27,6 @@ complete as there is too much un-said.
 * Add verification to `@Fragment` and `@Injectable` to verify that we never used the `javax.inject.Named` or
   `javax.enterprise.inject.Typed` annotations on these classes.
 
-* Remove default value for `@Named.value`
-
 * Add support for optional input contributing to a collection - they are just not added to the collection.
 
 * Add the mechanisms for overriding bindings already added to object graph. Perhaps by adding an

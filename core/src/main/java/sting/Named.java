@@ -23,5 +23,5 @@ public @interface Named
    * @return an opaque qualifier string.
    */
   @Nonnull
-  String value() default "";
+  String value();
 }
