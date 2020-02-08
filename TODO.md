@@ -7,8 +7,8 @@ complete as there is too much un-said.
 * Consider generating warnings if `@Fragment` types will not resolve unless the user supplies an explicit
   `incomplete` parameter. By resolve it means that every component should have all of it's dependencies
   present.
-* Add a `@Injector.dependencies` parameter that can be used to specify additional dependencies passed into injector.
-  These must have `@Dependency.type` specified but other than that they can specify any type
+
+* Generate code for `@Injector.inputs`
 
 * Add support for `Supplier<Optional<T>>` and `Collection<Supplier<Optional<T>>>` for optional inputs
 
