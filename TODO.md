@@ -54,6 +54,13 @@ complete as there is too much un-said.
   provides the type. The annotation flag may also indicate whether the peer SHOULD be present (i.e. generates a
   warning if not) or whether a missing peer is just a no-op. It should also have mechanisms to work with names
   of classes for nested types. We should also scan nested types of injectors and add them as appropriate.
+  The framework should validate that the other type has at MOST one binding (i.e. if it is a `Fragment`) that
+  produces the appropriate type. (i.e. can have an `@Injectable` on derived class that has `@Typed()` to match
+  base or one binding in `@Fragment` with appropriate type.) Some how the autodiscovery process should also detect
+  this scenario.
+
+* We may need to add a separate phase at the end of compilation that detects when singular injection requests
+  result in multiple candidate bindings. Note that some of these bindings can be added during resolution process.
 
 * Figure out terminology. Currently it is a mixed bag derived from various injector frameworks that it has
   been inspired from. Terms that are misused and should be cleaned up. This would involved cleaning up lots
