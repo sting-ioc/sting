@@ -5,10 +5,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Locale;
 import javax.annotation.Nonnull;
-import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
@@ -272,19 +269,6 @@ public final class StingProcessorBadDescriptorTest
                              "Failed to read the Sting descriptor for type com.example.bad_descriptors.scenario3.Model1. Error: java.io.EOFException" );
     assertDiagnosticPresent( stage2,
                              "StingProcessor failed to process 1 types. See earlier warnings for further details." );
-  }
-
-  private void assertDiagnosticPresent( @Nonnull final Compilation compilation, @Nonnull final String message )
-  {
-    for ( final Diagnostic<? extends JavaFileObject> diagnostic : compilation.diagnostics() )
-    {
-      if ( diagnostic.getMessage( Locale.getDefault() ).contains( message ) )
-      {
-        return;
-      }
-    }
-    fail( "Failed but missing expected message:\n" + message +
-          "\nActual diagnostics:\n" + describeFailureDiagnostics( compilation ) );
   }
 
   private void truncateDescriptor( @Nonnull final Path descriptor )

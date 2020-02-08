@@ -1,10 +1,13 @@
 package sting.processor;
 
 import com.google.common.collect.ImmutableList;
+import com.google.testing.compile.Compilation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.Processor;
+import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import org.realityforge.proton.qa.AbstractProcessorTest;
 import static org.testng.Assert.*;
@@ -52,6 +55,20 @@ public abstract class AbstractStingProcessorTest
   final String jsonOutput( @Nonnull final String classname )
   {
     return toFilename( "expected", classname, "", StingProcessor.JSON_SUFFIX );
+  }
+
+  //TODO: Move to proton
+  final void assertDiagnosticPresent( @Nonnull final Compilation compilation, @Nonnull final String message )
+  {
+    for ( final Diagnostic<? extends JavaFileObject> diagnostic : compilation.diagnostics() )
+    {
+      if ( diagnostic.getMessage( Locale.getDefault() ).contains( message ) )
+      {
+        return;
+      }
+    }
+    fail( "Failed but missing expected message:\n" + message +
+          "\nActual diagnostics:\n" + describeFailureDiagnostics( compilation ) );
   }
 
   final void assertDescriptorCount( @Nonnull final ImmutableList<JavaFileObject> output, final long count )

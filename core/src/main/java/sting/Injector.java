@@ -50,11 +50,10 @@ import javax.annotation.Nonnull;
  * is not optional then the compiler generates an error as it is not able to determine statically that the
  * service will be available.</p>
  *
- * <p>If no matching binding is found and the service is not annotated with a {@link Named} or sets the
- * name qualifier to the empty string then the compiler will attempt to look for a class annotated with
- * {@link Injectable} that has the same name as the type of the service. If found then this class will be
- * added to the set of components created. If not found and the service is not optional then the compiler
- * will generate an error.</p>
+ * <p>If no matching binding is found then the compiler will attempt to look for a class annotated with
+ * {@link Injectable} that has the same name as the type of the service. If found and the type matches the service
+ * then the class will be added to the set of components created. If not found and the service is not optional then
+ * the compiler will generate an error.</p>
  *
  * <h2>Generated Classname</h2>
  *

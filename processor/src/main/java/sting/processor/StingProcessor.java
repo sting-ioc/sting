@@ -375,8 +375,14 @@ public final class StingProcessor
               if ( descriptor instanceof InjectableDescriptor )
               {
                 final InjectableDescriptor injectableDescriptor = (InjectableDescriptor) descriptor;
-                _registry.registerInjectable( injectableDescriptor );
-                bindings.add( injectableDescriptor.getBinding() );
+                if ( injectableDescriptor.getBinding()
+                  .getPublishedServices()
+                  .stream()
+                  .anyMatch( s -> coordinate.equals( s.getCoordinate() ) ) )
+                {
+                  _registry.registerInjectable( injectableDescriptor );
+                  bindings.add( injectableDescriptor.getBinding() );
+                }
               }
             }
             catch ( final IOException e )

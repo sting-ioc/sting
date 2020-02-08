@@ -2,6 +2,7 @@ package sting.processor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.testing.compile.Compilation;
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
@@ -543,7 +544,9 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.FinalModel" },
         new Object[]{ "com.example.injectable.PackageAccessModel" },
         new Object[]{ "com.example.injectable.SuppressedProtectedConstructorModel" },
-        new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" }
+        new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" },
+
+        new Object[]{ "com.example.injector.AutodetectInjectableNonDefaultQualifierModel" }
       };
   }
 
@@ -551,6 +554,33 @@ public final class StingProcessorTest
   public void processCompileWithoutWarnings( @Nonnull final String classname )
   {
     assertCompilesWithoutWarnings( classname );
+  }
+
+  @Test
+  public void autodetectInjectableHasNonMatchingQualifier()
+    throws IOException
+  {
+    final Compilation stage1 =
+      compiler()
+        .compile( Collections.singletonList( input( "bad_input", "com.example.injector.autodetect.MyModel1" ) ) );
+
+    final Path targetDir = Files.createTempDirectory( "sting" );
+    outputFiles( stage1.generatedFiles(), targetDir );
+
+    final ImmutableList<File> classPath = buildClasspath( targetDir.toFile() );
+    final Compilation stage2 =
+      compiler()
+        .withClasspath( classPath )
+        .compile( Collections.singletonList( input( "bad_input", "com.example.injector.autodetect.MyInjector" ) ) );
+
+    assertEquals( stage2.status(), Compilation.Status.FAILURE );
+
+    assertDiagnosticPresent( stage2,
+                             "@Injector target must not contain a non-optional dependency [com.example.injector.autodetect.MyModel1;qualifier='BadQualifier'] that can not be satisfied.\n" +
+                             "  Dependency Path:\n" +
+                             "    [Injector]       com.example.injector.autodetect.MyInjector" );
+    assertDiagnosticPresent( stage2,
+                             "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
 
   @Test
