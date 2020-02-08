@@ -187,5 +187,12 @@ public @interface Injector
      * @return the java type of the service.
      */
     Class<?> type();
+
+    /**
+     * A flag indicating whether the input is optional and may be null or required.
+     *
+     * @return a flag indicating whether the input is optional and may be null or required.
+     */
+    boolean optional() default false;
   }
 }

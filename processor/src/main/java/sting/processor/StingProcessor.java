@@ -996,7 +996,7 @@ public final class StingProcessor
                                       typeAnnotationValue );
       }
       final Coordinate coordinate = new Coordinate( qualifier, type );
-      final boolean optional = false;
+      final boolean optional = AnnotationsUtil.getAnnotationValueValue( input, "optional" );
       results.add( new ServiceDescriptor( ServiceDescriptor.Kind.INSTANCE, coordinate, optional, element, i ) );
     }
     return results;
