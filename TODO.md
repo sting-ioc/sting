@@ -62,6 +62,9 @@ complete as there is too much un-said.
 * We may need to add a separate phase at the end of compilation that detects when singular injection requests
   result in multiple candidate bindings. Note that some of these bindings can be added during resolution process.
 
+* Add test to verify that the auto-discovery of the `@Injectable` will reject a type if it does not match the
+  qualifier. Or maybe autodetect should only work with empty qualifiers? Actually the later - lets make it so!
+
 * Figure out terminology. Currently it is a mixed bag derived from various injector frameworks that it has
   been inspired from. Terms that are misused and should be cleaned up. This would involved cleaning up lots
   of code, tests and javadocs so should be done sooner rather than later.
