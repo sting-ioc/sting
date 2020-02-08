@@ -9,50 +9,105 @@ import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 
 /**
- * Annotates an interface or abstract class for which a fully-formed, dependency-injected
- * implementation is to be generated from the {@link #includes() included} object graph fragments. The generated class will
- * have the name of the type annotated with {@code @Injector} prepended with {@code Sting_}. For
- * example, {@code @Injector interface MyInjector {...}} will produce an implementation named
- * {@code Sting_MyInjector}.
+ * Annotates an interface for which a dependency-injected implementation is to be generated.
+ * The implementation builds a component graph from the {@link #includes() included} types and
+ * exposes the services declared on the injector interface.
  *
- * <a name="component-methods"></a>
- * <h2>Component methods</h2>
+ * <h2>Component Graph</h2>
  *
- * <p>Every type annotated with {@code @Injector} must contain at least one abstract component
- * method. Every abstract method must return a type provided by the object graph and must not
- * have any parameters. The dependency should be provisioned by a {@link Injectable @Injectable}
- * annotated type or a factory method in a {@link Fragment @Fragment} annotated type.
+ * <p>The component graph is created in multiple phases.</p>
  *
- * <a name="instantiation"></a>
+ * <p>The first phase involves collecting all the types that are declared via the {@link #includes()}
+ * property and adding a binding (a.k.a. a potential component) for every {@link Injectable} annotated
+ * type and a binding for every method in {@link Fragment} annotated types. </p>
+ *
+ * <p>The second phase involves building a set of actual components created by the injector. Any potential
+ * binding that is annotated with the {@link Eager} annotation is added to the set of components. The
+ * {@link #inputs() inputs} are also modelled as eager components. The compiler then examines the services
+ * declared by the <a href="#service-methods">service methods</a> and attempts to resolve the services into
+ * components. When a component is added to the list of component, the service dependencies are added to the
+ * sert of services to resolve. When there is no services left to resolve, the injector is considered
+ * complete and the compiler terminates this phase.</p>
+ *
+ * <p>The next phase will identify the binding for each component will mark the component as eager and if the
+ * binding is annotated with the {@link Eager} annotation. All dependencies  of the component that are not
+ * {@link Supplier} dependencies are marked as eager. This process is recursively applied to dependencies of
+ * dependencies. At the end of this phase the components are all categorized into those that are eager and
+ * created when the injector is instantiated and components that are lazy and are created on demand.</p>
+ *
+ * <p>The final phase performs validation and correctness checking. It is during this phase that circular
+ * dependencies are detected and rejected and that injection requests for injection of singular values with
+ * multiple bindings that satisfy are detected.</p>
+ *
+ * <h2>Resolving Services</h2>
+ *
+ * <p>A service is resolved into a component by looking at the set of bindings present in the injector.
+ * If a binding exists that publishes the same type with the same qualifier then the binding is considered
+ * a match.</p>
+ *
+ * <p>If the binding is marked as optional (i.e. the component is created by a method annotated with
+ * {@link javax.annotation.Nullable} in a type annotated with the {@link Fragment} annotation) and the service
+ * is not optional then the compiler generates an error as it is not able to determine statically that the
+ * service will be available.</p>
+ *
+ * <p>If no matching binding is found and the service is not annotated with a {@link Named} or sets the
+ * name qualifier to the empty string then the compiler will attempt to look for a class annotated with
+ * {@link Injectable} that has the same name as the type of the service. If found then this class will be
+ * added to the set of components created. If not found and the service is not optional then the compiler
+ * will generate an error.</p>
+ *
+ * <h2>Generated Classname</h2>
+ *
+ * <p>The generated class will have the name of the type annotated with the {@code @Injector} annotation
+ * prepended with {@code Sting_}. For example, the class {@code mybiz.MyInjector} will produce
+ * an implementation named {@code mybiz.Sting_MyInjector}. Nested classes are also supported but their names
+ * have the {@code $} sign replaced with a {@code _}. i.e. The nested class named {@code mybiz.MyOuterClass.MyInjector}
+ * will generate an implementation named {@code mybiz.MyOuterClass_Sting_MyInjector}</p>
+ *
+ * <a name="service-methods">Service methods</a>
+ * <h2>Service methods</h2>
+ *
+ * <p>Instance methods defined on the injector allow access to services contained within the injector and
+ * also define the root services that are used to build the component graph. The instance methods must be
+ * abstract, have zero parameters, throw no exceptions and return services. The methods can be annotated with
+ * {@link Named} to qualify the service and {@link javax.annotation.Nullable} to mark the service as optional.</p>
+ *
  * <h2>Instantiation</h2>
  *
- * <p>If a nested interface named Factory exists in the component, an implementation of the Factory interface
- * will be generated and an instance will be returned via a static method named {@code factory()}.</p>
+ * <p>A injector is created by invoking the constructor of the generated class. The generated class is package
+ * access so unless you are only using the injector from within the package it was created, you need to expose
+ * a method to create the injector. The usual pattern is to define a static method named {@code create} on the
+ * injector interface that creates an instance of the injector.</p>
  *
- * <p>Example of using a factory:</p>
+ * <p>Example:</p>
  *
  * <pre><code>
  * {@literal @}Injector(includes = {BackendFragment.class, FrontendFragment.class})
- * interface MyInjector {
- *   MyWidget myWidget();
+ * public interface MyInjector {
  *
- *   interface Factory {
- *     MyInjector create(MyService myService);
+ *   public static MyInjector create() {
+ *     return new Sting_MyInjector();
  *   }
+ *
+ *   MyWidget myWidget();
  * }
  *
  * public class Main {
  *   public static void main(String[] args) {
- *     MyService myService = ...;
- *     MyInjector injector = Sting_MyInjector.factory().create(myService);
+ *     MyInjector injector = MyInjector.create();
+ *     ... injector.myWidget() ...
  *   }
  * }</code></pre>
  *
  *
- * <p>If a nested interface named Factory does not exist then it is assumed that the component
- * is self-contained and the generated component will have a factory method {@code create()}.</p>
+ * <p>The {@link Injector} annotation use the {@link #inputs()} parameter that declares services that are
+ * passed into the injector. These services are made available to components within the component graph and
+ * maybe be qualified and/or marked as optional. Each input service is supplied to the injector as a constructor
+ * parameter in the generated class.</p>
  *
- * <p>Example of using create:</p>
+ * <p>Example of using input services:</p>
+ *
+ * <B>TODO: This example is not complete</B>
  *
  * <pre><code>
  * {@literal @}Injector(includes = {BackendFragment.class, FrontendFragment.class})
@@ -62,16 +117,17 @@ import javax.annotation.Nonnull;
  *
  * public class Main {
  *   public static void main(String[] args) {
- *     MyInjector injector = StingMyInjector.create();
+ *     MyService service = ...;
+ *     MyInjector injector = new Sting_MyInjector(service);
  *   }
  * }</code></pre>
  *
  * <h3>Circular Dependencies</h3>
  *
- * <p>Circular dependencies are disallowed by the injector and are rejected during the compilation phase.
- * The developer can break the circular dependency by injecting {@link Supplier Supplier&lt;OtherType>}
- * instead of {@code OtherType} and then calling {@link Supplier#get() get()} on the supplier when access
- * to the dependency is needed.</p>
+ * <p>Circular dependencies within the injector are detected and rejected during the compilation phase.
+ * Circular dependencies can be broken by passing a {@link Supplier} dependency. i.e The developer injects
+ * the type {@link Supplier Supplier&lt;OtherType>} instead of {@code OtherType} and then calls {@link Supplier#get()}
+ * on the supplier when access to the service is needed.</p>
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
