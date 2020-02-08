@@ -967,8 +967,7 @@ public final class StingProcessor
     {
       final AnnotationMirror input = inputs.get( i );
       final String qualifier = AnnotationsUtil.getAnnotationValueValue( input, "qualifier" );
-      final AnnotationValue typeAnnotationValue = AnnotationsUtil.findAnnotationValue( input, "type" );
-      assert null != typeAnnotationValue;
+      final AnnotationValue typeAnnotationValue = AnnotationsUtil._getAnnotationValue( input, "type" );
       final TypeMirror type = (TypeMirror) typeAnnotationValue.getValue();
       if ( TypeKind.ARRAY == type.getKind() )
       {
