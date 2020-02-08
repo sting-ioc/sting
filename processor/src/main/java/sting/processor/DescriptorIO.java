@@ -218,8 +218,8 @@ final class DescriptorIO
     writeCoordinate( dos, service.getCoordinate() );
     dos.writeBoolean( service.isOptional() );
     assert ElementKind.PARAMETER == service.getElement().getKind();
-    // parameter of @Provides method on @Fragment type or parameter of constructor on @Injectable type
-    // we are not expected to emit binary descriptors for @Injector annotated typed and thus do need
+    // parameter of method in @Fragment type or parameter of constructor in @Injectable type
+    // we are not expected to emit binary descriptors for @Injector annotated types and thus do need
     // to handle when "ElementKind.METHOD == service.getElement().getKind()"
     dos.writeShort( service.getParameterIndex() );
   }

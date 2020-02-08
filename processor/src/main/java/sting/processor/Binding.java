@@ -193,9 +193,9 @@ final class Binding
   {
     /// Instances are created by invoking the constructor
     INJECTABLE,
-    /// Instances are bound by invoking @Provides annotated method
+    /// Instances are created by invoking method in @Fragment annotated type
     PROVIDES,
-    /// Instances are bound by invoking @Provides annotated method that is also annotated by @Nullable
+    /// Instances are created by invoking method in @Fragment annotated type and the method is annotated by @Nullable
     NULLABLE_PROVIDES
   }
 }
