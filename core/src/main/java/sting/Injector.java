@@ -106,10 +106,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Example of using input services:</p>
  *
- * <B>TODO: This example is not complete</B>
- *
  * <pre><code>
- * {@literal @}Injector(includes = {BackendFragment.class, FrontendFragment.class})
+ * {@literal @}Injector( includes = {BackendFragment.class, FrontendFragment.class},
+ *            inputs = { {@literal @}Injector.Input( type = MyService.class ),
+ *                       {@literal @}Injector.Input( qualifier = "hostname", type = String.class ) } )
  * interface MyInjector {
  *   MyWidget myWidget();
  * }
@@ -117,7 +117,7 @@ import javax.annotation.Nonnull;
  * public class Main {
  *   public static void main(String[] args) {
  *     MyService service = ...;
- *     MyInjector injector = new Sting_MyInjector(service);
+ *     MyInjector injector = new Sting_MyInjector(service, "mybiz.com");
  *   }
  * }</code></pre>
  *
@@ -158,7 +158,7 @@ public @interface Injector
    *
    * @return a list of services that must be passed into the injector.
    */
-  Service[] inputs() default {};
+  Input[] inputs() default {};
 
   /**
    * A specification of a service that is supplied to an injector during construction.
@@ -167,7 +167,7 @@ public @interface Injector
   @Retention( RetentionPolicy.RUNTIME )
   @Documented
   @Target( {} )
-  @interface Service
+  @interface Input
   {
     /**
      * An opaque string that qualifies the service.

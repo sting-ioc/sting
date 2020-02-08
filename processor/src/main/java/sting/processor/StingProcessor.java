@@ -62,7 +62,7 @@ import org.realityforge.proton.ProcessorException;
                              Constants.EAGER_CLASSNAME,
                              Constants.TYPED_CLASSNAME,
                              Constants.NAMED_CLASSNAME,
-                             Constants.SERVICE_CLASSNAME } )
+                             Constants.INPUT_CLASSNAME } )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
 @SupportedOptions( { "sting.defer.unresolved",
                      "sting.defer.errors",
@@ -639,9 +639,31 @@ public final class StingProcessor
                                             @Nonnull final ExecutableElement method )
   {
     assert method.getModifiers().contains( Modifier.ABSTRACT );
-    MemberChecks.mustReturnAValue( Constants.SERVICE_CLASSNAME, method );
-    MemberChecks.mustNotHaveAnyParameters( Constants.SERVICE_CLASSNAME, method );
-    MemberChecks.mustNotHaveAnyTypeParameters( Constants.SERVICE_CLASSNAME, method );
+    if ( TypeKind.VOID == method.getReturnType().getKind() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                                          "contain a method that has a void return value" ),
+                                    method );
+    }
+    else if ( !method.getParameters().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                                          "contain a method that has parameters" ),
+                                    method );
+    }
+    else if ( !method.getTypeParameters().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                                          "contain a method that has any type parameters" ),
+                                    method );
+    }
+    else if ( !method.getThrownTypes().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                                          "contain a method that throws any exceptions" ),
+                                    method );
+    }
+    MemberChecks.mustNotHaveAnyTypeParameters( Constants.INPUT_CLASSNAME, method );
     outputs.add( processOutputMethod( method ) );
   }
 
@@ -688,90 +710,21 @@ public final class StingProcessor
       }
       else
       {
-        final boolean optional = deriveOptional( method, type, kind );
+        final boolean optional =
+          AnnotationsUtil.hasAnnotationOfType( method, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
+        if ( optional && ServiceDescriptor.Kind.INSTANCE != kind )
+        {
+          throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                                              "contain a method annotated with " +
+                                                              MemberChecks.toSimpleName( GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) +
+                                                              " that is not an instance dependency kind" ),
+                                        method );
+        }
         final String qualifier = getQualifier( method );
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
         return new ServiceDescriptor( kind, coordinate, optional, method, -1 );
       }
     }
-  }
-
-  private boolean deriveOptional( @Nonnull final Element element,
-                                  @Nonnull final TypeMirror type,
-                                  @Nonnull final ServiceDescriptor.Kind kind )
-  {
-    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( element, Constants.SERVICE_CLASSNAME );
-    final AnnotationValue optionalAnnotationValue =
-      null != annotation ?
-      AnnotationsUtil.findAnnotationValue( annotation, "necessity" ) :
-      null;
-
-    final String optionalValue =
-      null != optionalAnnotationValue ?
-      ( (VariableElement) optionalAnnotationValue.getValue() ).getSimpleName().toString() :
-      "AUTODETECT";
-
-    boolean optional = false;
-    if ( "AUTODETECT".equals( optionalValue ) )
-    {
-      final boolean nullableAnnotation =
-        AnnotationsUtil.hasAnnotationOfType( element, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
-      if ( nullableAnnotation && !type.getKind().isPrimitive() && !kind.isCollection() && !kind.isSupplier() )
-      {
-        optional = true;
-      }
-    }
-
-    if ( optional || "OPTIONAL".equals( optionalValue ) )
-    {
-      if ( kind.isCollection() )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                            "be optional and be a collection type" ),
-                                      element,
-                                      annotation,
-                                      optionalAnnotationValue );
-      }
-      else if ( kind.isSupplier() )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                            "be optional and be a supplier type" ),
-                                      element,
-                                      annotation,
-                                      optionalAnnotationValue );
-      }
-      else if ( type.getKind().isPrimitive() )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                            "be optional and be a primitive type" ),
-                                      element,
-                                      annotation,
-                                      optionalAnnotationValue );
-      }
-      else if ( AnnotationsUtil.hasAnnotationOfType( element, GeneratorUtil.NONNULL_ANNOTATION_CLASSNAME ) )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                            "be optional and be annotated by " +
-                                                            MemberChecks.toSimpleName( GeneratorUtil.NONNULL_ANNOTATION_CLASSNAME ) ),
-                                      element,
-                                      annotation,
-                                      optionalAnnotationValue );
-      }
-      optional = true;
-    }
-    else
-    {
-      if ( AnnotationsUtil.hasAnnotationOfType( element, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.SERVICE_CLASSNAME,
-                                                            "be required and be annotated by " +
-                                                            MemberChecks.toSimpleName( GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) ),
-                                      element,
-                                      annotation,
-                                      optionalAnnotationValue );
-      }
-    }
-    return optional;
   }
 
   private void verifyNamedElements( @Nonnull final RoundEnvironment env,
@@ -971,7 +924,7 @@ public final class StingProcessor
       final TypeMirror type = (TypeMirror) typeAnnotationValue.getValue();
       if ( TypeKind.ARRAY == type.getKind() )
       {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.SERVICE_CLASSNAME ) +
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INPUT_CLASSNAME ) +
                                       " must not specify an array type for the type parameter",
                                       element,
                                       input,
@@ -979,7 +932,7 @@ public final class StingProcessor
       }
       else if ( TypeKind.VOID == type.getKind() )
       {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.SERVICE_CLASSNAME ) +
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INPUT_CLASSNAME ) +
                                       " must specify a non-void type for the type parameter",
                                       element,
                                       input,
@@ -988,7 +941,7 @@ public final class StingProcessor
       else if ( TypeKind.DECLARED == type.getKind() &&
                 !( (TypeElement) ( (DeclaredType) type ).asElement() ).getTypeParameters().isEmpty() )
       {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.SERVICE_CLASSNAME ) +
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INPUT_CLASSNAME ) +
                                       " must not specify a parameterized type for the type parameter",
                                       element,
                                       input,
@@ -1178,7 +1131,16 @@ public final class StingProcessor
       }
       else
       {
-        final boolean optional = deriveOptional( parameter, type, kind );
+        final boolean optional =
+          AnnotationsUtil.hasAnnotationOfType( parameter, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
+        if ( optional && ServiceDescriptor.Kind.INSTANCE != kind )
+        {
+          throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                              "contain a method with a parameter annotated with " +
+                                                              MemberChecks.toSimpleName( GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) +
+                                                              " that is not an instance dependency kind" ),
+                                        parameter );
+        }
         final String qualifier = getQualifier( parameter );
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
         return new ServiceDescriptor( kind, coordinate, optional, parameter, parameterIndex );
@@ -1413,7 +1375,16 @@ public final class StingProcessor
       }
       else
       {
-        final boolean optional = deriveOptional( parameter, type, kind );
+        final boolean optional =
+          AnnotationsUtil.hasAnnotationOfType( parameter, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
+        if ( optional && ServiceDescriptor.Kind.INSTANCE != kind )
+        {
+          throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                              "contain a constructor with a parameter annotated with " +
+                                                              MemberChecks.toSimpleName( GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) +
+                                                              " that is not an instance dependency kind" ),
+                                        parameter );
+        }
         final String qualifier = getQualifier( parameter );
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
         return new ServiceDescriptor( kind, coordinate, optional, parameter, parameterIndex );

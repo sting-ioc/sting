@@ -10,8 +10,6 @@ complete as there is too much un-said.
 * Add a `@Injector.dependencies` parameter that can be used to specify additional dependencies passed into injector.
   These must have `@Dependency.type` specified but other than that they can specify any type
 
-* Refactor `@Service` to be specific for consuming by the injector.
-
 * Add support for `Supplier<Optional<T>>` and `Collection<Supplier<Optional<T>>>` for optional inputs
 
 * Add tests to ensure injector methods have no parameters and can not throw an exception.

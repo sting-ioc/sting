@@ -4,8 +4,8 @@ import sting.Injectable;
 import sting.Injector;
 import sting.Named;
 
-@Injector( inputs = { @Injector.Service( type = Runnable.class ),
-                      @Injector.Service( qualifier = "hostname", type = String.class ) } )
+@Injector( inputs = { @Injector.Input( type = Runnable.class ),
+                      @Injector.Input( qualifier = "hostname", type = String.class ) } )
 interface MultipleInputInjectorModel
 {
   MyModel getMyModel();
