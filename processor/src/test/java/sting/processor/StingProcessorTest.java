@@ -376,7 +376,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.NoDirectDependenciesAndNoEagerInIncludesModel",
                       "@Injector target produced an empty object graph. This means that there are no eager nodes in the includes and there are no dependencies or only unsatisfied optional dependencies defined by the injector" },
         new Object[]{ "com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel",
-                      "@Injector target must not contain a nullable @Provides method and a non-optional dependency [com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyModel3] with the same coordinate.\n" +
+                      "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyModel3]\n" +
                       "  Dependency Path:\n" +
                       "    [Injector]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel\n" +
                       "    [Injectable]     com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyModel1\n" +
@@ -386,7 +386,7 @@ public final class StingProcessorTest
                       "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment2.provideMyModel3\n" +
                       "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment4.provideMyModel3" },
         new Object[]{ "com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel",
-                      "@Injector target must not contain a nullable @Provides method and a non-optional dependency [com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyModel3] with the same coordinate.\n" +
+                      "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyModel3]\n" +
                       "  Dependency Path:\n" +
                       "    [Injector]       com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel\n" +
                       "    [Injectable]     com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyModel1\n" +

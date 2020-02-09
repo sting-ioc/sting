@@ -418,10 +418,8 @@ public final class StingProcessor
       {
         final String message =
           MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                "contain a nullable " +
-                                MemberChecks.toSimpleName( Constants.PROVIDES_CLASSNAME ) +
-                                " method and a non-optional dependency " + coordinate +
-                                " with the same coordinate.\n" +
+                                "contain an optional provider method or optional injector input and " +
+                                 "a non-optional service request for the coordinate " + coordinate + "\n" +
                                 "Dependency Path:\n" + workEntry.describePathFromRoot() + "\n" +
                                 "Binding" + ( nullableProviders.size() > 1 ? "s" : "" ) + ":\n" +
                                 bindingsToString( nullableProviders ) );
