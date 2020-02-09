@@ -22,7 +22,7 @@ final class Node
    * The object graph that created this node.
    */
   @Nonnull
-  private final ObjectGraph _objectGraph;
+  private final ComponentGraph _componentGraph;
   /**
    * The binding for the node.
    * May be null if it represents an Injector.
@@ -73,13 +73,13 @@ final class Node
   /**
    * Constructor used to construct a Node for the Injector.
    *
-   * @param objectGraph the object graph
+   * @param componentGraph the object graph
    */
-  Node( @Nonnull final ObjectGraph objectGraph )
+  Node( @Nonnull final ComponentGraph componentGraph )
   {
-    this( objectGraph,
+    this( componentGraph,
           null,
-          objectGraph.getInjector().getOutputs().toArray( new ServiceDescriptor[ 0 ] ) );
+          componentGraph.getInjector().getOutputs().toArray( new ServiceDescriptor[ 0 ] ) );
   }
 
   /**
@@ -87,16 +87,16 @@ final class Node
    *
    * @param binding the binding.
    */
-  Node( final ObjectGraph objectGraph, @Nonnull final Binding binding )
+  Node( final ComponentGraph componentGraph, @Nonnull final Binding binding )
   {
-    this( objectGraph, binding, binding.getDependencies() );
+    this( componentGraph, binding, binding.getDependencies() );
   }
 
-  private Node( @Nonnull final ObjectGraph objectGraph,
+  private Node( @Nonnull final ComponentGraph componentGraph,
                 @Nullable final Binding binding,
                 @Nonnull final ServiceDescriptor[] dependencies )
   {
-    _objectGraph = Objects.requireNonNull( objectGraph );
+    _componentGraph = Objects.requireNonNull( componentGraph );
     _binding = binding;
     for ( final ServiceDescriptor dependency : dependencies )
     {
@@ -254,7 +254,7 @@ final class Node
   String describeBinding()
   {
     return null == _binding ?
-           _objectGraph.getInjector().getElement().getQualifiedName().toString() :
+           _componentGraph.getInjector().getElement().getQualifiedName().toString() :
            _binding.describe();
   }
 

@@ -13,7 +13,7 @@ final class CircularDependencyChecker
   {
   }
 
-  static void verifyNoCircularDependencyLoops( @Nonnull final ObjectGraph graph )
+  static void verifyNoCircularDependencyLoops( @Nonnull final ComponentGraph graph )
   {
     final Set<Node> completed = new HashSet<>();
 
@@ -28,7 +28,7 @@ final class CircularDependencyChecker
     }
   }
 
-  private static void verifyNoCircularDependenciesForRootNode( @Nonnull final ObjectGraph graph,
+  private static void verifyNoCircularDependenciesForRootNode( @Nonnull final ComponentGraph graph,
                                                                @Nonnull final Node node,
                                                                @Nonnull final Set<Node> completed )
   {
@@ -38,7 +38,7 @@ final class CircularDependencyChecker
     assert stack.isEmpty();
   }
 
-  private static void verifyNoCircularDependenciesForNode( @Nonnull final ObjectGraph graph,
+  private static void verifyNoCircularDependenciesForNode( @Nonnull final ComponentGraph graph,
                                                            @Nonnull final PathEntry entry,
                                                            @Nonnull final Stack<PathEntry> stack,
                                                            @Nonnull final Set<Node> completed )

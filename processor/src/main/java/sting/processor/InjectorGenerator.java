@@ -30,7 +30,7 @@ final class InjectorGenerator
   }
 
   @Nonnull
-  static TypeSpec buildType( @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final ObjectGraph graph )
+  static TypeSpec buildType( @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final ComponentGraph graph )
   {
     final InjectorDescriptor injector = graph.getInjector();
     final TypeElement element = injector.getElement();
@@ -54,7 +54,7 @@ final class InjectorGenerator
   }
 
   private static void emitOutputMethods( @Nonnull final ProcessingEnvironment processingEnv,
-                                         @Nonnull final ObjectGraph graph,
+                                         @Nonnull final ComponentGraph graph,
                                          @Nonnull final TypeSpec.Builder builder )
   {
     for ( final Edge edge : graph.getRootNode().getDependsOn() )
@@ -79,7 +79,7 @@ final class InjectorGenerator
     }
   }
 
-  private static void emitConstructor( @Nonnull final ObjectGraph graph, @Nonnull final TypeSpec.Builder builder )
+  private static void emitConstructor( @Nonnull final ComponentGraph graph, @Nonnull final TypeSpec.Builder builder )
   {
     final MethodSpec.Builder ctor = MethodSpec.constructorBuilder();
 
@@ -98,7 +98,7 @@ final class InjectorGenerator
   }
 
   private static void emitNodeFields( @Nonnull final ProcessingEnvironment processingEnv,
-                                      @Nonnull final ObjectGraph graph,
+                                      @Nonnull final ComponentGraph graph,
                                       @Nonnull final TypeSpec.Builder builder )
   {
     for ( final Node node : graph.getNodes() )
@@ -137,7 +137,7 @@ final class InjectorGenerator
   }
 
   private static void emitNodeAccessorMethod( @Nonnull final ProcessingEnvironment processingEnv,
-                                              @Nonnull final ObjectGraph graph,
+                                              @Nonnull final ComponentGraph graph,
                                               @Nonnull final TypeSpec.Builder builder )
   {
     for ( final Node node : graph.getNodes() )
@@ -326,7 +326,7 @@ final class InjectorGenerator
 
   private static void emitFragmentFields( @Nonnull final ProcessingEnvironment processingEnv,
                                           @Nonnull final TypeSpec.Builder builder,
-                                          @Nonnull final ObjectGraph graph )
+                                          @Nonnull final ComponentGraph graph )
   {
     for ( final FragmentNode node : graph.getFragments() )
     {

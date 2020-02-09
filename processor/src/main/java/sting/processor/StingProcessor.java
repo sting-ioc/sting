@@ -276,7 +276,7 @@ public final class StingProcessor
   private void buildAndEmitObjectGraph( @Nonnull final InjectorDescriptor injector )
     throws Exception
   {
-    final ObjectGraph graph = new ObjectGraph( injector );
+    final ComponentGraph graph = new ComponentGraph( injector );
     registerIncludesComponents( graph );
 
     buildObjectGraphNodes( graph );
@@ -300,7 +300,7 @@ public final class StingProcessor
     emitTypeSpec( packageName, InjectorGenerator.buildType( processingEnv, graph ) );
   }
 
-  private void propagateEagerFlagUpstream( @Nonnull final ObjectGraph graph )
+  private void propagateEagerFlagUpstream( @Nonnull final ComponentGraph graph )
   {
     // Propagate Eager flag to all dependencies of eager nodes breaking the propagation at Supplier nodes
     // They may not be configured as eager but they are effectively eager given that they will be created
@@ -308,12 +308,12 @@ public final class StingProcessor
     graph.getNodes().stream().filter( n -> n.getBinding().isEager() ).forEach( Node::markNodeAndUpstreamAsEager );
   }
 
-  private void registerIncludesComponents( @Nonnull final ObjectGraph graph )
+  private void registerIncludesComponents( @Nonnull final ComponentGraph graph )
   {
     registerIncludes( graph, graph.getInjector().getIncludes() );
   }
 
-  private void registerIncludes( @Nonnull final ObjectGraph graph,
+  private void registerIncludes( @Nonnull final ComponentGraph graph,
                                  @Nonnull final Collection<DeclaredType> includes )
   {
     for ( final DeclaredType include : includes )
@@ -335,7 +335,7 @@ public final class StingProcessor
     }
   }
 
-  private void buildObjectGraphNodes( @Nonnull final ObjectGraph graph )
+  private void buildObjectGraphNodes( @Nonnull final ComponentGraph graph )
   {
     final InjectorDescriptor injector = graph.getInjector();
     final Node rootNode = graph.getRootNode();
@@ -504,7 +504,7 @@ public final class StingProcessor
     }
   }
 
-  private void emitObjectGraphJsonDescriptor( @Nonnull final ObjectGraph graph )
+  private void emitObjectGraphJsonDescriptor( @Nonnull final ComponentGraph graph )
     throws IOException
   {
     if ( _emitJsonDescriptors )

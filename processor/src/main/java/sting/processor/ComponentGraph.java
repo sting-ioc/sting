@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
 
-final class ObjectGraph
+final class ComponentGraph
 {
   /**
    * The injector that defines the graph.
@@ -65,7 +65,7 @@ final class ObjectGraph
   @Nullable
   private List<FragmentNode> _fragmentNodes;
 
-  ObjectGraph( @Nonnull final InjectorDescriptor injector )
+  ComponentGraph( @Nonnull final InjectorDescriptor injector )
   {
     _injector = Objects.requireNonNull( injector );
     _rootNode = new Node( this );
