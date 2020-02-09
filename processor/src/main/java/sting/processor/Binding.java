@@ -155,15 +155,16 @@ final class Binding
   @Nonnull
   String describe()
   {
-    final String className = ( (TypeElement) _element.getEnclosingElement() ).getQualifiedName().toString();
     if ( Kind.INJECTABLE == _kind )
     {
-      return className;
+      return ( (TypeElement) _element.getEnclosingElement() ).getQualifiedName().toString();
     }
     else
     {
       assert Kind.PROVIDES == _kind || Kind.NULLABLE_PROVIDES == _kind;
-      return className + "." + _element.getSimpleName();
+      return ( (TypeElement) _element.getEnclosingElement() ).getQualifiedName().toString() +
+             "." +
+             _element.getSimpleName();
     }
   }
 
