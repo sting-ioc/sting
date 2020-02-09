@@ -18,7 +18,7 @@ complete as there is too much un-said.
   - `Optional<T>`
   - `Supplier<Optional<T>`
   - `Collection<Supplier<Optional<T>`
-  
+
   and we should also support nullability in `Collection<T>` by just not adding service to collection.
 
 * Add the mechanisms for overriding bindings already added to object graph. Perhaps by adding an
