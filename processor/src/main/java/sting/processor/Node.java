@@ -275,7 +275,7 @@ final class Node
       for ( final Edge edge : _dependsOn.values() )
       {
         g.writeStartObject();
-        edge.getService().getCoordinate().write( g );
+        edge.getService().getService().getCoordinate().write( g );
         g.writeStartArray( "supportedBy" );
         for ( final Node node : edge.getSatisfiedBy() )
         {

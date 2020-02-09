@@ -37,7 +37,7 @@ final class StingGeneratorUtil
   static TypeName getServiceType( @Nonnull final ServiceDescriptor service )
   {
     final ServiceDescriptor.Kind kind = service.getKind();
-    final TypeName baseType = TypeName.get( service.getCoordinate().getType() );
+    final TypeName baseType = TypeName.get( service.getService().getCoordinate().getType() );
     if ( ServiceDescriptor.Kind.INSTANCE == kind )
     {
       return baseType;
@@ -84,8 +84,8 @@ final class StingGeneratorUtil
       final VariableElement parameter = (VariableElement) service.getElement();
       final String paramName = parameter.getSimpleName().toString();
 
-      typesProcessed.add( service.getCoordinate().getType() );
-      final boolean isPublic = service.isPublic();
+      typesProcessed.add( service.getService().getCoordinate().getType() );
+      final boolean isPublic = service.getService().isPublic();
       allPublic &= isPublic;
 
       final TypeName actualTypeName = getServiceType( service );
@@ -124,7 +124,7 @@ final class StingGeneratorUtil
         code.append( ", " );
       }
       firstParam = false;
-      final boolean requireNonNull = !service.isOptional() && !typeProduced.getKind().isPrimitive();
+      final boolean requireNonNull = !service.getService().isOptional() && !typeProduced.getKind().isPrimitive();
       if ( requireNonNull )
       {
         code.append( "$T.requireNonNull( " );

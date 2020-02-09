@@ -217,8 +217,8 @@ final class DescriptorIO
     throws IOException
   {
     dos.writeByte( service.getKind().ordinal() );
-    writeCoordinate( dos, service.getCoordinate() );
-    dos.writeBoolean( service.isOptional() );
+    writeCoordinate( dos, service.getService().getCoordinate() );
+    dos.writeBoolean( service.getService().isOptional() );
     assert ElementKind.PARAMETER == service.getElement().getKind();
     // parameter of method in @Fragment type or parameter of constructor in @Injectable type
     // we are not expected to emit binary descriptors for @Injector annotated types and thus do need
@@ -238,7 +238,7 @@ final class DescriptorIO
     final Element element = ( (ExecutableElement) enclosingElement ).getParameters().get( parameterIndex );
     assert null != element;
 
-    return new ServiceDescriptor( type, coordinate, optional, element, parameterIndex );
+    return new ServiceDescriptor( type, new ServiceSpec( coordinate, optional ), element, parameterIndex );
   }
 
   private void writeCoordinate( @Nonnull final DataOutputStream dos, @Nonnull final Coordinate coordinate )

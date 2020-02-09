@@ -348,7 +348,7 @@ public final class StingProcessor
       final Edge edge = workEntry.getEntry().getEdge();
       assert null != edge;
       final ServiceDescriptor service = edge.getService();
-      final Coordinate coordinate = service.getCoordinate();
+      final Coordinate coordinate = service.getService().getCoordinate();
       final List<Binding> bindings = new ArrayList<>( graph.findAllBindingsByCoordinate( coordinate ) );
 
       if ( bindings.isEmpty() )
@@ -404,7 +404,7 @@ public final class StingProcessor
       final List<Binding> nullableProviders = bindings.stream()
         .filter( b -> Binding.Kind.NULLABLE_PROVIDES == b.getKind() )
         .collect( Collectors.toList() );
-      if ( !service.isOptional() && !nullableProviders.isEmpty() )
+      if ( !service.getService().isOptional() && !nullableProviders.isEmpty() )
       {
         final String message =
           MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
@@ -419,7 +419,7 @@ public final class StingProcessor
       }
       if ( bindings.isEmpty() )
       {
-        if ( service.isOptional() || service.getKind().isCollection() )
+        if ( service.getService().isOptional() || service.getKind().isCollection() )
         {
           edge.setSatisfiedBy( Collections.emptyList() );
         }
@@ -722,7 +722,8 @@ public final class StingProcessor
         }
         final String qualifier = getQualifier( method );
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
-        return new ServiceDescriptor( kind, coordinate, optional, method, -1 );
+        final ServiceSpec service = new ServiceSpec( coordinate, optional );
+        return new ServiceDescriptor( kind, service, method, -1 );
       }
     }
   }
@@ -1143,7 +1144,8 @@ public final class StingProcessor
         }
         final String qualifier = getQualifier( parameter );
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
-        return new ServiceDescriptor( kind, coordinate, optional, parameter, parameterIndex );
+        final ServiceSpec service = new ServiceSpec( coordinate, optional );
+        return new ServiceDescriptor( kind, service, parameter, parameterIndex );
       }
     }
   }
@@ -1387,7 +1389,8 @@ public final class StingProcessor
         }
         final String qualifier = getQualifier( parameter );
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
-        return new ServiceDescriptor( kind, coordinate, optional, parameter, parameterIndex );
+        final ServiceSpec service = new ServiceSpec( coordinate, optional );
+        return new ServiceDescriptor( kind, service, parameter, parameterIndex );
       }
     }
   }

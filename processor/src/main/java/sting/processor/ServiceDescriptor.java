@@ -12,7 +12,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import org.realityforge.proton.ElementsUtil;
 
 final class ServiceDescriptor
 {
@@ -22,14 +21,10 @@ final class ServiceDescriptor
   @Nonnull
   private final Kind _kind;
   /**
-   * The coordinate of the service to match.
+   * The service to match.
    */
   @Nonnull
-  private final Coordinate _coordinate;
-  /**
-   * Is the service optional.
-   */
-  private final boolean _optional;
+  private final ServiceSpec _service;
   /**
    * The element that declares the service.
    * The element will either be:
@@ -48,14 +43,12 @@ final class ServiceDescriptor
   private final int _parameterIndex;
 
   ServiceDescriptor( @Nonnull final Kind kind,
-                     @Nonnull final Coordinate coordinate,
-                     final boolean optional,
+                     @Nonnull final ServiceSpec service,
                      @Nonnull final Element element,
                      final int parameterIndex )
   {
     _kind = Objects.requireNonNull( kind );
-    _coordinate = Objects.requireNonNull( coordinate );
-    _optional = optional;
+    _service = Objects.requireNonNull( service );
     _element = Objects.requireNonNull( element );
     _parameterIndex = parameterIndex;
   }
@@ -67,22 +60,9 @@ final class ServiceDescriptor
   }
 
   @Nonnull
-  Coordinate getCoordinate()
+  ServiceSpec getService()
   {
-    return _coordinate;
-  }
-
-  boolean isOptional()
-  {
-    return _optional;
-  }
-
-  boolean isPublic()
-  {
-    final TypeMirror type = _coordinate.getType();
-    return
-      TypeKind.DECLARED != type.getKind() ||
-      ElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) type ).asElement() );
+    return _service;
   }
 
   @Nonnull
@@ -103,12 +83,7 @@ final class ServiceDescriptor
     {
       g.write( "type", _kind.name() );
     }
-
-    _coordinate.write( g );
-    if ( _optional )
-    {
-      g.write( "optional", true );
-    }
+    _service.write( g );
     g.writeEnd();
   }
 

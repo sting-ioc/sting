@@ -315,10 +315,10 @@ final class InjectorGenerator
     {
       code.append( "() -> " );
     }
-    if ( emitCasts && !service.isPublic() )
+    if ( emitCasts && !service.getService().isPublic() )
     {
       code.append( "($T) " );
-      args.add( service.getCoordinate().getType() );
+      args.add( service.getService().getCoordinate().getType() );
     }
     code.append( node.isEager() ? "$N" : "$N()" );
     args.add( node.getName() );
