@@ -3,7 +3,7 @@
   "nodes": [
     {
       "id": "com.example.injector.outputs.OptionalProvidesOutputModel.MyFragment#provideValue",
-      "kind": "NULLABLE_PROVIDES"
+      "kind": "PROVIDES"
     }
   ]
 }
