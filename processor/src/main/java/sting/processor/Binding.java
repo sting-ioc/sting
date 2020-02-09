@@ -112,10 +112,6 @@ final class Binding
   void write( @Nonnull final JsonGenerator g )
   {
     g.write( "id", _id );
-    if ( Kind.NULLABLE_PROVIDES == _kind )
-    {
-      g.write( "nullable", true );
-    }
     if ( !_publishedServices.isEmpty() )
     {
       g.writeStartArray( "publishedServices" );

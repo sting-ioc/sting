@@ -3,7 +3,6 @@
   "bindings": [
     {
       "id": "com.example.fragment.NullableProvidesModel#provideRunnable",
-      "nullable": true,
       "publishedServices": [
         {
           "type": "java.lang.Runnable",
