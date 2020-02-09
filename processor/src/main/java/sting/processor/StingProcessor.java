@@ -402,7 +402,7 @@ public final class StingProcessor
       }
 
       final List<Binding> nullableProviders = bindings.stream()
-        .filter( b -> Binding.Kind.NULLABLE_PROVIDES == b.getKind() )
+        .filter( b -> b.getPublishedServices().stream().anyMatch( ServiceSpec::isOptional ) )
         .collect( Collectors.toList() );
       if ( !service.getService().isOptional() && !nullableProviders.isEmpty() )
       {
