@@ -10,4 +10,3 @@ interface MyInjector
   @Named( "BadQualifier" )
   MyModel1 getMyModel1();
 }
-
