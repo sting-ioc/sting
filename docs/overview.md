@@ -13,5 +13,5 @@ compiler analyzes the graph to ensure that is well formed and contains no cycles
 successful then Sting will generate java source code to implement the injector.
 
 Sting can create components directly if they are annotated with the {@api_url: Injectable} annotation
-or it can call out to user code to construct the component (i.e. {@api_url: Provides} annotated methods
-in {@api_url: Fragment} annotated types.)
+or it can call out to user code to provide the component (i.e. methods in {@api_url: Fragment} annotated
+types.)
