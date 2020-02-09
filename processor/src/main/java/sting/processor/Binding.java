@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.json.stream.JsonGenerator;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
 final class Binding
@@ -31,12 +31,13 @@ final class Binding
    * The element that created this binding.
    * This will be one of;
    * <ul>
+   *   <lI>A {@link javax.lang.model.element.TypeElement} of the injector for {@link Kind#INPUT} binding</lI>
    *   <lI>A {@link javax.lang.model.element.ExecutableElement} of a constructor for {@link Kind#INJECTABLE} binding</lI>
    *   <lI>A {@link javax.lang.model.element.ExecutableElement} of a method for {@link Kind#PROVIDES} binding</lI>
    * </ul>
    */
   @Nonnull
-  private final ExecutableElement _element;
+  private final Element _element;
   /**
    * The dependencies that need to be supplied when creating a binding instance.
    */
@@ -60,11 +61,11 @@ final class Binding
            @Nonnull final String id,
            @Nonnull final List<ServiceSpec> publishedServices,
            final boolean eager,
-           @Nonnull final ExecutableElement element,
+           @Nonnull final Element element,
            @Nonnull final ServiceDescriptor[] dependencies )
   {
-    assert ( Kind.INJECTABLE == kind && ElementKind.CONSTRUCTOR == element.getKind() ) ||
-           ( Kind.INJECTABLE != kind && ElementKind.METHOD == element.getKind() );
+    assert ( Kind.INPUT == kind && ElementKind.INTERFACE == element.getKind() ) ||
+           ( Kind.INJECTABLE == kind && ElementKind.CONSTRUCTOR == element.getKind() ) ||
            ( Kind.PROVIDES == kind && ElementKind.METHOD == element.getKind() );
     _kind = Objects.requireNonNull( kind );
     _id = Objects.requireNonNull( id );
@@ -121,7 +122,7 @@ final class Binding
   }
 
   @Nonnull
-  ExecutableElement getElement()
+  Element getElement()
   {
     return _element;
   }
@@ -164,7 +165,8 @@ final class Binding
   void setOwner( @Nonnull final Object owner )
   {
     assert null == _owner;
-    assert ( owner instanceof InjectableDescriptor && Kind.INJECTABLE == _kind ) ||
+    assert ( owner instanceof InputDescriptor && Kind.INPUT == _kind ) ||
+           ( owner instanceof InjectableDescriptor && Kind.INJECTABLE == _kind ) ||
            ( owner instanceof FragmentDescriptor && Kind.PROVIDES == _kind );
     _owner = owner;
   }
@@ -172,7 +174,13 @@ final class Binding
   @Nonnull
   String describe()
   {
-    if ( Kind.INJECTABLE == _kind )
+    if ( Kind.INPUT == _kind )
+    {
+      final InputDescriptor input = (InputDescriptor) _owner;
+      return ( (TypeElement) _element ).getQualifiedName().toString() +
+             "." + input.getName() + "/" + input.getService();
+    }
+    else if ( Kind.INJECTABLE == _kind )
     {
       return ( (TypeElement) _element.getEnclosingElement() ).getQualifiedName().toString();
     }
@@ -188,7 +196,11 @@ final class Binding
   @Nonnull
   String getTypeLabel()
   {
-    if ( Kind.INJECTABLE == _kind )
+    if ( Kind.INPUT == _kind )
+    {
+      return "[Input]      ";
+    }
+    else if ( Kind.INJECTABLE == _kind )
     {
       return "[Injectable] ";
     }
@@ -201,6 +213,8 @@ final class Binding
 
   enum Kind
   {
+    /// Instances are passed into injector when it is created
+    INPUT,
     /// Instances are created by invoking the constructor
     INJECTABLE,
     /// Instances are created by invoking method in @Fragment annotated type

@@ -56,7 +56,7 @@ final class FragmentGenerator
   private static MethodSpec buildProvidesStub( @Nonnull final ProcessingEnvironment processingEnv,
                                                @Nonnull final Binding binding )
   {
-    final ExecutableElement element = binding.getElement();
+    final ExecutableElement element = (ExecutableElement) binding.getElement();
     final TypeMirror returnType = element.getReturnType();
     final boolean isPublic =
       TypeKind.DECLARED != returnType.getKind() ||

@@ -170,6 +170,18 @@ final class ComponentGraph
   }
 
   /**
+   * Include the input in the component graph.
+   *
+   * @param input the input.
+   */
+  void registerInput( @Nonnull final InputDescriptor input )
+  {
+    final Binding binding = input.getBinding();
+    registerBinding( binding );
+    findOrCreateNode( binding );
+  }
+
+  /**
    * Include the injectable in the component graph.
    *
    * @param injectable the injectable.

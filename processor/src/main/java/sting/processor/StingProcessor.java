@@ -279,6 +279,8 @@ public final class StingProcessor
     final ComponentGraph graph = new ComponentGraph( injector );
     registerIncludesComponents( graph );
 
+    registerInputs( graph );
+
     buildObjectGraphNodes( graph );
 
     if ( graph.getNodes().isEmpty() && graph.getRootNode().getDependsOn().isEmpty() )
@@ -298,6 +300,14 @@ public final class StingProcessor
 
     final String packageName = GeneratorUtil.getQualifiedPackageName( graph.getInjector().getElement() );
     emitTypeSpec( packageName, InjectorGenerator.buildType( processingEnv, graph ) );
+  }
+
+  private void registerInputs( @Nonnull final ComponentGraph graph )
+  {
+    for ( final InputDescriptor input : graph.getInjector().getInputs() )
+    {
+      graph.registerInput( input );
+    }
   }
 
   private void propagateEagerFlagUpstream( @Nonnull final ComponentGraph graph )
@@ -586,7 +596,7 @@ public final class StingProcessor
     }
 
     final List<DeclaredType> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
-    final List<ServiceDescriptor> inputs = extractInputs( element );
+    final List<InputDescriptor> inputs = extractInputs( element );
 
     final List<ServiceDescriptor> outputs = new ArrayList<>();
     final List<ExecutableElement> methods =
@@ -908,9 +918,9 @@ public final class StingProcessor
 
   @SuppressWarnings( "unchecked" )
   @Nonnull
-  private List<ServiceDescriptor> extractInputs( @Nonnull final TypeElement element )
+  private List<InputDescriptor> extractInputs( @Nonnull final TypeElement element )
   {
-    final List<ServiceDescriptor> results = new ArrayList<>();
+    final List<InputDescriptor> results = new ArrayList<>();
     final AnnotationMirror annotation = AnnotationsUtil.getAnnotationByType( element, Constants.INJECTOR_CLASSNAME );
     final AnnotationValue inputsAnnotationValue = AnnotationsUtil.findAnnotationValue( annotation, "inputs" );
     assert null != inputsAnnotationValue;
@@ -950,7 +960,15 @@ public final class StingProcessor
       }
       final Coordinate coordinate = new Coordinate( qualifier, type );
       final boolean optional = AnnotationsUtil.getAnnotationValueValue( input, "optional" );
-      results.add( new ServiceDescriptor( ServiceDescriptor.Kind.INSTANCE, coordinate, optional, element, i ) );
+      final ServiceSpec service = new ServiceSpec( coordinate, optional );
+      final Binding binding =
+        new Binding( Binding.Kind.INPUT,
+                     element.getQualifiedName() + "#" + i,
+                     Collections.singletonList( service ),
+                     true,
+                     element,
+                     new ServiceDescriptor[ 0 ] );
+      results.add( new InputDescriptor( service, binding, "input" + ( i + 1 ) ) );
     }
     return results;
   }
