@@ -31,12 +31,12 @@ final class ComponentGraph
   @Nonnull
   private final Set<String> _includedTypes = new HashSet<>();
   /**
-   * The types that are published in the object graph.
+   * The types that are published in the component graph.
    */
   @Nonnull
   private final Map<Coordinate, List<Binding>> _publishedTypes = new LinkedHashMap<>();
   /**
-   * The nodes contained in the object graph.
+   * The nodes contained in the component graph.
    */
   @Nonnull
   private final Map<Binding, Node> _nodes = new HashMap<>();
@@ -151,7 +151,7 @@ final class ComponentGraph
   }
 
   /**
-   * Register the binding in the object graph.
+   * Register the binding in the component graph.
    *
    * @param binding the binding.
    */
@@ -170,7 +170,7 @@ final class ComponentGraph
   }
 
   /**
-   * Include the injectable in the object graph.
+   * Include the injectable in the component graph.
    *
    * @param injectable the injectable.
    */
@@ -189,7 +189,7 @@ final class ComponentGraph
   }
 
   /**
-   * Include the fragment in the object graph.
+   * Include the fragment in the component graph.
    * It is assumed that the types included by the fragment have already been included in the ObjectGraph.
    *
    * @param fragment the fragment.
