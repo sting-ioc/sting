@@ -59,4 +59,10 @@ final class ServiceSpec
       g.write( "optional", true );
     }
   }
+
+  @Override
+  public String toString()
+  {
+    return _coordinate.toString() + ( _optional ? "?" : "" );
+  }
 }
