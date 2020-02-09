@@ -29,9 +29,11 @@ final class Binding
   private final boolean _eager;
   /**
    * The element that created this binding.
-   * The field will be a constructor for an {@link Kind#INJECTABLE} binding
-   * otherwise it will be a method for a {@link Kind#PROVIDES} binding
-   * or a {@link Kind#NULLABLE_PROVIDES} binding.
+   * This will be one of;
+   * <ul>
+   *   <lI>A {@link javax.lang.model.element.ExecutableElement} of a constructor for {@link Kind#INJECTABLE} binding</lI>
+   *   <lI>A {@link javax.lang.model.element.ExecutableElement} of a method for {@link Kind#PROVIDES} binding</lI>
+   * </ul>
    */
   @Nonnull
   private final ExecutableElement _element;
@@ -63,6 +65,7 @@ final class Binding
   {
     assert ( Kind.INJECTABLE == kind && ElementKind.CONSTRUCTOR == element.getKind() ) ||
            ( Kind.INJECTABLE != kind && ElementKind.METHOD == element.getKind() );
+           ( Kind.PROVIDES == kind && ElementKind.METHOD == element.getKind() );
     _kind = Objects.requireNonNull( kind );
     _id = Objects.requireNonNull( id );
     _publishedServices = Objects.requireNonNull( publishedServices );
@@ -162,8 +165,7 @@ final class Binding
   {
     assert null == _owner;
     assert ( owner instanceof InjectableDescriptor && Kind.INJECTABLE == _kind ) ||
-           ( owner instanceof FragmentDescriptor && Kind.PROVIDES == _kind ) ||
-           ( owner instanceof FragmentDescriptor && Kind.NULLABLE_PROVIDES == _kind );
+           ( owner instanceof FragmentDescriptor && Kind.PROVIDES == _kind );
     _owner = owner;
   }
 
@@ -176,7 +178,7 @@ final class Binding
     }
     else
     {
-      assert Kind.PROVIDES == _kind || Kind.NULLABLE_PROVIDES == _kind;
+      assert Kind.PROVIDES == _kind;
       return ( (TypeElement) _element.getEnclosingElement() ).getQualifiedName().toString() +
              "." +
              _element.getSimpleName();
@@ -192,7 +194,7 @@ final class Binding
     }
     else
     {
-      assert Kind.PROVIDES == _kind || Kind.NULLABLE_PROVIDES == _kind;
+      assert Kind.PROVIDES == _kind;
       return "[Provides]   ";
     }
   }
@@ -202,8 +204,6 @@ final class Binding
     /// Instances are created by invoking the constructor
     INJECTABLE,
     /// Instances are created by invoking method in @Fragment annotated type
-    PROVIDES,
-    /// Instances are created by invoking method in @Fragment annotated type and the method is annotated by @Nullable
-    NULLABLE_PROVIDES
+    PROVIDES
   }
 }

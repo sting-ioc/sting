@@ -118,15 +118,7 @@ final class Node
 
   boolean isFromProvides()
   {
-    if ( null == _binding )
-    {
-      return false;
-    }
-    else
-    {
-      final Binding.Kind kind = _binding.getKind();
-      return Binding.Kind.PROVIDES == kind || Binding.Kind.NULLABLE_PROVIDES == kind;
-    }
+    return null != _binding && Binding.Kind.PROVIDES == _binding.getKind();
   }
 
   @Nonnull

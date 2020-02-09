@@ -1078,7 +1078,7 @@ public final class StingProcessor
                                       element );
       }
       final Binding binding =
-        new Binding( nullablePresent ? Binding.Kind.NULLABLE_PROVIDES : Binding.Kind.PROVIDES,
+        new Binding( Binding.Kind.PROVIDES,
                      element.getQualifiedName() + "#" + method.getSimpleName(),
                      Arrays.asList( specs ),
                      eager,

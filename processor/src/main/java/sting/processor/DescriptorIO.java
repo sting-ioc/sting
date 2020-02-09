@@ -155,9 +155,7 @@ final class DescriptorIO
       dos.writeBoolean( service.isOptional() );
     }
     dos.writeBoolean( binding.isEager() );
-    dos.writeUTF( Binding.Kind.PROVIDES == kind || Binding.Kind.NULLABLE_PROVIDES == kind ?
-                  binding.getElement().getSimpleName().toString() :
-                  "" );
+    dos.writeUTF( Binding.Kind.PROVIDES == kind ? binding.getElement().getSimpleName().toString() : "" );
     final ServiceDescriptor[] dependencies = binding.getDependencies();
     dos.writeShort( dependencies.length );
     for ( final ServiceDescriptor dependency : dependencies )
