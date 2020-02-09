@@ -2,7 +2,6 @@ package com.example.injector.outputs;
 
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 @Generated("sting.processor.StingProcessor")
 final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
@@ -30,42 +29,34 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   @Nonnull
   private final PrimitiveOutputModel_Sting_MyFragment fragment8 = new PrimitiveOutputModel_Sting_MyFragment();
 
-  @Nullable
   private double node1;
 
   private boolean node1_allocated;
 
-  @Nullable
   private float node2;
 
   private boolean node2_allocated;
 
-  @Nullable
   private long node3;
 
   private boolean node3_allocated;
 
-  @Nullable
   private int node4;
 
   private boolean node4_allocated;
 
-  @Nullable
   private short node5;
 
   private boolean node5_allocated;
 
-  @Nullable
   private byte node6;
 
   private boolean node6_allocated;
 
-  @Nullable
   private char node7;
 
   private boolean node7_allocated;
 
-  @Nullable
   private boolean node8;
 
   private boolean node8_allocated;

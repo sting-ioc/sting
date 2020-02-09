@@ -103,11 +103,15 @@ final class InjectorGenerator
   {
     for ( final Node node : graph.getNodes() )
     {
-      final boolean isNonnull = node.isEager() && Binding.Kind.NULLABLE_PROVIDES != node.getBinding().getKind();
       final FieldSpec.Builder field =
         FieldSpec
-          .builder( getPublicTypeName( node ), node.getName(), Modifier.PRIVATE )
-          .addAnnotation( isNonnull ? GeneratorUtil.NONNULL_CLASSNAME : GeneratorUtil.NULLABLE_CLASSNAME );
+          .builder( getPublicTypeName( node ), node.getName(), Modifier.PRIVATE );
+      if ( !node.getType().getKind().isPrimitive() )
+      {
+        field.addAnnotation( node.isEager() && node.getBinding().isRequired() ?
+                             GeneratorUtil.NONNULL_CLASSNAME :
+                             GeneratorUtil.NULLABLE_CLASSNAME );
+      }
       if ( node.isPublic() )
       {
         SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv,
