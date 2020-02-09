@@ -46,6 +46,10 @@ final class Binding
   @Nonnull
   private final List<ServiceSpec> _publishedServices;
   /**
+   * Flag indicating whether this binding will always create a component or may produce a null value.
+   */
+  private final boolean _optional;
+  /**
    * The descriptor that created the binding.
    */
   private Object _owner;
@@ -65,6 +69,12 @@ final class Binding
     _eager = eager;
     _element = Objects.requireNonNull( element );
     _dependencies = Objects.requireNonNull( dependencies );
+    _optional = _publishedServices.stream().anyMatch( ServiceSpec::isOptional );
+    // The optionality must match across all published services
+    assert ( _optional && _publishedServices.stream().allMatch( ServiceSpec::isOptional ) ) ||
+           ( !_optional && _publishedServices.stream().allMatch( ServiceSpec::isRequired ) );
+    // Injectables ALWAYS create non-optional bindings
+    assert Kind.INJECTABLE != kind || _publishedServices.stream().allMatch( ServiceSpec::isRequired );
   }
 
   @Nonnull
@@ -95,6 +105,16 @@ final class Binding
   boolean isEager()
   {
     return _eager;
+  }
+
+  boolean isOptional()
+  {
+    return _optional;
+  }
+
+  boolean isRequired()
+  {
+    return !isOptional();
   }
 
   @Nonnull

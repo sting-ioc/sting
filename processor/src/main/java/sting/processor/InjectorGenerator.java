@@ -122,9 +122,7 @@ final class InjectorGenerator
 
       builder.addField( field.build() );
 
-      if ( !node.isEager() &&
-           ( Binding.Kind.NULLABLE_PROVIDES == node.getBinding().getKind() ||
-             node.getType().getKind().isPrimitive() ) )
+      if ( !node.isEager() && ( node.getBinding().isOptional() || node.getType().getKind().isPrimitive() ) )
       {
         builder.addField( FieldSpec.builder( TypeName.BOOLEAN, getFlagFieldName( node ), Modifier.PRIVATE ).build() );
       }
@@ -149,16 +147,17 @@ final class InjectorGenerator
             .methodBuilder( node.getName() )
             .addModifiers( Modifier.PRIVATE )
             .returns( getPublicTypeName( node ) );
-        final List<TypeMirror> types =
-          Collections.singletonList( node.getBinding().getElement().getEnclosingElement().asType() );
+        final Binding binding = node.getBinding();
+        final Element element = binding.getElement();
+        final List<TypeMirror> types = Collections.singletonList( element.getEnclosingElement().asType() );
         final List<String> additionalSuppressions = new ArrayList<>();
-        if ( ElementsUtil.isElementDeprecated( node.getBinding().getElement() ) )
+        if ( ElementsUtil.isElementDeprecated( element ) )
         {
           additionalSuppressions.add( "deprecation" );
         }
         SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv, method, additionalSuppressions, types );
 
-        final boolean isNonnull = Binding.Kind.NULLABLE_PROVIDES != node.getBinding().getKind();
+        final boolean isNonnull = binding.isRequired();
         final boolean isNonPrimitive = !node.getType().getKind().isPrimitive();
         if ( isNonPrimitive )
         {
@@ -205,7 +204,7 @@ final class InjectorGenerator
   {
     code.append( "$N = " );
     args.add( node.getName() );
-    final boolean isNonnull = Binding.Kind.NULLABLE_PROVIDES != node.getBinding().getKind();
+    final boolean isNonnull = node.getBinding().isRequired();
     final boolean requireNonNull = isNonnull && !node.getType().getKind().isPrimitive();
     if ( requireNonNull )
     {
