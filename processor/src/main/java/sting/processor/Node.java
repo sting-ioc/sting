@@ -9,6 +9,7 @@ import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -104,8 +105,12 @@ final class Node
     }
     if ( null != _binding )
     {
-      final ExecutableElement element = binding.getElement();
-      _type = isFromProvides() ? element.getReturnType() : element.getEnclosingElement().asType();
+      final Element element = binding.getElement();
+      final Binding.Kind kind = binding.getKind();
+      _type =
+        Binding.Kind.INPUT == kind ? binding.getPublishedServices().get( 0 ).getCoordinate().getType() :
+        Binding.Kind.INJECTABLE == kind ? element.getEnclosingElement().asType() :
+        ( (ExecutableElement) element ).getReturnType();
       _public = TypeKind.DECLARED != _type.getKind() ||
                 ElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) _type ).asElement() );
     }
