@@ -38,6 +38,11 @@ final class ServiceSpec
     return _optional;
   }
 
+  boolean isRequired()
+  {
+    return !isOptional();
+  }
+
   boolean isPublic()
   {
     final TypeMirror type = _coordinate.getType();
