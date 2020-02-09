@@ -1,0 +1,10 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.inputs.SingleInputInjectorModel#0",
+      "kind": "INPUT",
+      "eager": true
+    }
+  ]
+}

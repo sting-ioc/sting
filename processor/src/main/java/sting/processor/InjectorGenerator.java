@@ -3,6 +3,7 @@ package sting.processor;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -83,14 +85,43 @@ final class InjectorGenerator
   {
     final MethodSpec.Builder ctor = MethodSpec.constructorBuilder();
 
+    for ( final InputDescriptor input : graph.getInjector().getInputs() )
+    {
+      final ParameterSpec.Builder parameter =
+        ParameterSpec
+          .builder( TypeName.get( input.getService().getCoordinate().getType() ),
+                    input.getName(),
+                    Modifier.FINAL )
+          .addAnnotation( input.getService().isOptional() ?
+                          GeneratorUtil.NULLABLE_CLASSNAME :
+                          GeneratorUtil.NONNULL_CLASSNAME );
+      ctor.addParameter( parameter.build() );
+    }
+
     for ( final Node node : graph.getNodes() )
     {
       if ( node.isEager() )
       {
-        final StringBuilder code = new StringBuilder();
-        final List<Object> args = new ArrayList<>();
-        provideAndAssign( node, code, args );
-        ctor.addStatement( code.toString(), args.toArray() );
+        final Binding binding = node.getBinding();
+        if ( Binding.Kind.INPUT == binding.getKind() )
+        {
+          final InputDescriptor input = (InputDescriptor) binding.getOwner();
+          if ( binding.getPublishedServices().get( 0 ).isOptional() )
+          {
+            ctor.addStatement( "this.$N = $N", node.getName(), input.getName() );
+          }
+          else
+          {
+            ctor.addStatement( "this.$N = $T.requireNonNull( $N )", node.getName(), Objects.class, input.getName() );
+          }
+        }
+        else
+        {
+          final StringBuilder code = new StringBuilder();
+          final List<Object> args = new ArrayList<>();
+          provideAndAssign( node, code, args );
+          ctor.addStatement( code.toString(), args.toArray() );
+        }
       }
     }
 

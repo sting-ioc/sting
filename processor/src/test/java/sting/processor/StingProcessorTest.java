@@ -114,11 +114,11 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.outputs.PrimitiveOutputModel" },
         new Object[]{ "com.example.injector.outputs.QualifiedOutputModel" },
         new Object[]{ "com.example.injector.outputs.SupplierCollectionOutputModel" },
-        new Object[]{ "com.example.injector.outputs.SupplierOutputModel" }
+        new Object[]{ "com.example.injector.outputs.SupplierOutputModel" },
 
-        //TODO: new Object[]{ "com.example.injector.inputs.MultipleInputInjectorModel" },
-        //TODO: new Object[]{ "com.example.injector.inputs.OptionalInputInjectorModel" },
-        //TODO: new Object[]{ "com.example.injector.inputs.SingleInputInjectorModel" }
+        new Object[]{ "com.example.injector.inputs.MultipleInputInjectorModel" },
+        new Object[]{ "com.example.injector.inputs.OptionalInputInjectorModel" },
+        new Object[]{ "com.example.injector.inputs.SingleInputInjectorModel" }
       };
   }
 
@@ -419,6 +419,14 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injector.inputs.ArrayTypeInputModel",
                       "@Input must not specify an array type for the type parameter" },
+        new Object[]{ "com.example.injector.inputs.MismatchOptionalityInputInjectorModel",
+                      "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [java.lang.Runnable]\n" +
+                      "  Dependency Path:\n" +
+                      "    [Injector]       com.example.injector.inputs.MismatchOptionalityInputInjectorModel\n" +
+                      "    [Injectable]  *  com.example.injector.inputs.MismatchOptionalityInputInjectorModel.MyModel\n" +
+                      "  \n" +
+                      "  Binding:\n" +
+                      "    [Input]          com.example.injector.inputs.MismatchOptionalityInputInjectorModel.input1/[java.lang.Runnable]?" },
         new Object[]{ "com.example.injector.inputs.RawParameterizedTypeInputModel",
                       "@Input must not specify a parameterized type for the type parameter" },
         new Object[]{ "com.example.injector.inputs.VoidTypeInputModel",

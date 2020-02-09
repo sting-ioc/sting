@@ -1,0 +1,15 @@
+{
+  "schema": "injector/1",
+  "inputs": [
+    {
+      "type": "java.lang.Runnable",
+      "optional": true
+    }
+  ],
+  "outputs": [
+    {
+      "type": "java.lang.Runnable",
+      "optional": true
+    }
+  ]
+}

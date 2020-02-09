@@ -8,8 +8,6 @@ complete as there is too much un-said.
   `incomplete` parameter. By resolve it means that every component should have all of it's dependencies
   present.
 
-* Generate code for `@Injector.inputs`
-
 * Remove `@Provides` from error messages
 
 * Add verification to `@Fragment` and `@Injectable` to verify that we never used the `javax.inject.Named` or

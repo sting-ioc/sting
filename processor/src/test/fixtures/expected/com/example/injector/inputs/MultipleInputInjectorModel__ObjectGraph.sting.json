@@ -1,0 +1,27 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.inputs.MultipleInputInjectorModel#0",
+      "kind": "INPUT",
+      "eager": true
+    },
+    {
+      "id": "com.example.injector.inputs.MultipleInputInjectorModel.MyModel",
+      "kind": "INJECTABLE",
+      "dependencies": [
+        {
+          "type": "java.lang.Runnable",
+          "supportedBy": [
+            "com.example.injector.inputs.MultipleInputInjectorModel#0"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "com.example.injector.inputs.MultipleInputInjectorModel#1",
+      "kind": "INPUT",
+      "eager": true
+    }
+  ]
+}
