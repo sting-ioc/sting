@@ -13,11 +13,6 @@ complete as there is too much un-said.
 * Add verification to `@Fragment` and `@Injectable` to verify that we never used the `javax.inject.Named` or
   `javax.enterprise.inject.Typed` annotations on these classes.
 
-* Fix nullability across app. We represent it in the following locations - 2 for publishing.
-  - We have `Binding.Kind.NULLABLE_PROVIDES`
-  - We have `Binding.getPublishedServices().isOptional()` (i.e. `ServiceSpec._optional`)
-  - We have `ServiceDescriptor._optional`
-
 * Add support for different optional services in code generator. We should support the following patterns:
   - `@Nullable T`
   - `Optional<T>`
