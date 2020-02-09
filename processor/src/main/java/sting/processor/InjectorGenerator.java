@@ -219,7 +219,7 @@ final class InjectorGenerator
     {
       code.append( "$N.$N" );
       args.add( node.getFragment().getName() );
-      args.add( StingGeneratorUtil.getFragmentProvidesStubName( node.getBinding().getElement() ) );
+      args.add( StingGeneratorUtil.getFragmentProvidesStubName( (ExecutableElement) node.getBinding().getElement() ) );
     }
     else
     {
