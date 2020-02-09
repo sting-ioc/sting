@@ -3,7 +3,6 @@
   "bindings": [
     {
       "id": "com.example.fragment.qualifier.NonStandardQualifierModel#provideRunnable",
-      "providesMethod": "provideRunnable",
       "publishedServices": [
         {
           "qualifier": "‎🎉 Tada!",

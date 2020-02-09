@@ -3,7 +3,6 @@
   "bindings": [
     {
       "id": "com.example.fragment.qualifier.BasicQualifierModel#provideRunnable",
-      "providesMethod": "provideRunnable",
       "publishedServices": [
         {
           "qualifier": "com.bix/SomeQualifier",

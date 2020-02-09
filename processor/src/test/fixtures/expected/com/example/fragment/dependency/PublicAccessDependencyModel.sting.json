@@ -3,7 +3,6 @@
   "bindings": [
     {
       "id": "com.example.fragment.dependency.PublicAccessDependencyModel#provideMyType1",
-      "providesMethod": "provideMyType1",
       "publishedServices": [
         {
           "type": "com.example.fragment.dependency.PublicAccessDependencyModel.MyType1"
@@ -17,7 +16,6 @@
     },
     {
       "id": "com.example.fragment.dependency.PublicAccessDependencyModel#provideMyType2",
-      "providesMethod": "provideMyType2",
       "publishedServices": [
         {
           "type": "com.example.fragment.dependency.PublicAccessDependencyModel.MyType2"
@@ -32,7 +30,6 @@
     },
     {
       "id": "com.example.fragment.dependency.PublicAccessDependencyModel#provideMyType3",
-      "providesMethod": "provideMyType3",
       "publishedServices": [
         {
           "type": "com.example.fragment.dependency.PublicAccessDependencyModel.MyType3"
@@ -47,7 +44,6 @@
     },
     {
       "id": "com.example.fragment.dependency.PublicAccessDependencyModel#provideMyType4",
-      "providesMethod": "provideMyType4",
       "publishedServices": [
         {
           "type": "com.example.fragment.dependency.PublicAccessDependencyModel.MyType4"

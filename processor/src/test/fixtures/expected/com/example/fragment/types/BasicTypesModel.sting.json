@@ -3,7 +3,6 @@
   "bindings": [
     {
       "id": "com.example.fragment.types.BasicTypesModel#provideMyModel",
-      "providesMethod": "provideMyModel",
       "publishedServices": [
         {
           "type": "java.lang.Runnable"

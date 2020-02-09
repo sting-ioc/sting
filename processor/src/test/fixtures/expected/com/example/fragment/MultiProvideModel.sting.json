@@ -3,7 +3,6 @@
   "bindings": [
     {
       "id": "com.example.fragment.MultiProvideModel#provideRunnable",
-      "providesMethod": "provideRunnable",
       "publishedServices": [
         {
           "type": "java.lang.Runnable"
@@ -12,7 +11,6 @@
     },
     {
       "id": "com.example.fragment.MultiProvideModel#provideEventListener",
-      "providesMethod": "provideEventListener",
       "publishedServices": [
         {
           "type": "java.util.EventListener"
@@ -21,7 +19,6 @@
     },
     {
       "id": "com.example.fragment.MultiProvideModel#provideSerializable",
-      "providesMethod": "provideSerializable",
       "publishedServices": [
         {
           "type": "java.io.Serializable"

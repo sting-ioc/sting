@@ -3,7 +3,6 @@
   "bindings": [
     {
       "id": "com.example.fragment.dependency.BasicDependencyModel#provideRunnable",
-      "providesMethod": "provideRunnable",
       "publishedServices": [
         {
           "type": "java.lang.Runnable"

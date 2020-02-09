@@ -3,7 +3,6 @@
   "bindings": [
     {
       "id": "com.example.injector.includes.single.MyFragment#provideRunnable",
-      "providesMethod": "provideRunnable",
       "publishedServices": [
         {
           "type": "java.lang.Runnable"

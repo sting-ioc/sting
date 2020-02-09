@@ -3,7 +3,6 @@
   "bindings": [
     {
       "id": "com.example.fragment.eager.EagerModel#provideRunnable",
-      "providesMethod": "provideRunnable",
       "publishedServices": [
         {
           "type": "java.lang.Runnable"
