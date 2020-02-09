@@ -135,15 +135,10 @@ final class Binding
     if ( !_publishedServices.isEmpty() )
     {
       g.writeStartArray( "publishedServices" );
-      for ( final ServiceSpec spec : _publishedServices )
+      for ( final ServiceSpec service : _publishedServices )
       {
         g.writeStartObject();
-        spec.getCoordinate().write( g );
-        final boolean optional = spec.isOptional();
-        if ( optional )
-        {
-          g.write( "optional", optional );
-        }
+        service.write( g );
         g.writeEnd();
       }
       g.writeEnd();
