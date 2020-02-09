@@ -10,22 +10,29 @@ complete as there is too much un-said.
 
 * Generate code for `@Injector.inputs`
 
-* Add support for `Supplier<Optional<T>>` and `Collection<Supplier<Optional<T>>>` for optional inputs
-
 * Remove `@Provides` from error messages
 
 * Add verification to `@Fragment` and `@Injectable` to verify that we never used the `javax.inject.Named` or
   `javax.enterprise.inject.Typed` annotations on these classes.
 
-* Add support for optional input contributing to a collection - they are just not added to the collection.
+* Fix nullability across app. We represent it in the following locations - 2 for publishing.
+  - We have `Binding.Kind.NULLABLE_PROVIDES`
+  - We have `Binding.getPublishedServices().isOptional()` (i.e. `ServiceSpec._optional`)
+  - We have `ServiceDescriptor._optional`
+
+* Add support for different optional services in code generator. We should support the following patterns:
+  - `@Nullable T`
+  - `Optional<T>`
+  - `Supplier<Optional<T>`
+  - `Collection<Supplier<Optional<T>`
+  
+  and we should also support nullability in `Collection<T>` by just not adding service to collection.
 
 * Add the mechanisms for overriding bindings already added to object graph. Perhaps by adding an
   `override=ENABLE|DISABLE|AUTODETECT` parameter which indicates whether the binding can override
   existing bindings. Order in `includes` matters in this scenario. This will default to `AUTODETECT`
   which will evaluate to `DISABLE` all scenarios except when the binding is from a descriptor declared
   as nested class of the injector. Overrides can either be by id or published types.
-
-* A null produced by an optional binding should not be added to a collection? Then how do we deal with optional `Supplier` inputs?
 
 * Write integration tests that compare with dagger the following performance characteristics.
   * time to compile the injector
