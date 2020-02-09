@@ -23,6 +23,8 @@ define 'sting' do
 
     test.options[:java_args] = ['-ea']
 
+    gwt_enhance(project)
+
     package(:jar)
     package(:sources)
     package(:javadoc)

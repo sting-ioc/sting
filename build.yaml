@@ -30,3 +30,7 @@ artifacts:
   gir: org.realityforge.gir:gir-core:jar:0.11
 
   revapi_diff: org.realityforge.revapi.diff:revapi-diff:jar:all:0.08
+
+  # GWT deps
+  gwt_user: org.realityforge.com.google.gwt:gwt-user:jar:2.8.2-v20191108
+  gwt_dev: org.realityforge.com.google.gwt:gwt-dev:jar:2.8.2-v20191108
