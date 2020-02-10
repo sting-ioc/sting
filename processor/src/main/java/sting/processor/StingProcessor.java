@@ -922,8 +922,7 @@ public final class StingProcessor
                                                        "contain one or more methods or one or more includes" ),
                                     element );
     }
-    final FragmentDescriptor fragment = new FragmentDescriptor( element, includes, bindings.values() );
-    _registry.registerFragment( fragment );
+    _registry.registerFragment( new FragmentDescriptor( element, includes, bindings.values() ) );
   }
 
   @SuppressWarnings( "unchecked" )
