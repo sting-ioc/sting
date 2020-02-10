@@ -6,8 +6,6 @@ complete as there is too much un-said.
 
 ## Alpha Release TODO Items
 
-* Remove `@Provides` from error messages
-
 * Generate a suppressable warning if `@Inject` is present on constructor of `@Injectable`.
 
 * Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`

@@ -1024,111 +1024,119 @@ public final class StingProcessor
                                       @Nonnull final Map<ExecutableElement, Binding> bindings,
                                       @Nonnull final ExecutableElement method )
   {
-    MemberChecks.mustReturnAValue( Constants.PROVIDES_CLASSNAME, method );
-    MemberChecks.mustNotHaveAnyTypeParameters( Constants.PROVIDES_CLASSNAME, method );
-    if ( !method.getModifiers().contains( Modifier.DEFAULT ) )
+    if ( TypeKind.VOID == method.getReturnType().getKind() )
     {
-      throw new ProcessorException( MemberChecks.must( Constants.PROVIDES_CLASSNAME, "have a default modifier" ),
+      throw new ProcessorException( MemberChecks.must( Constants.FRAGMENT_CLASSNAME,
+                                                       "only contain methods that return a value" ),
                                     method );
     }
-    else
+    if ( !method.getTypeParameters().isEmpty() )
     {
-      final boolean nullablePresent =
-        AnnotationsUtil.hasAnnotationOfType( method, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
-
-      if ( nullablePresent && method.getReturnType().getKind().isPrimitive() )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.PROVIDES_CLASSNAME ) +
-                                      " target is incorrectly annotated with " +
-                                      MemberChecks.toSimpleName( GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) +
-                                      " as the return type is a primitive",
-                                      method );
-      }
-
-      final boolean eager = AnnotationsUtil.hasAnnotationOfType( method, Constants.EAGER_CLASSNAME );
-
-      final List<ServiceDescriptor> dependencies = new ArrayList<>();
-      int index = 0;
-      final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) method.asType() ).getParameterTypes();
-      for ( final VariableElement parameter : method.getParameters() )
-      {
-        dependencies.add( processFragmentServiceParameter( parameter, parameterTypes.get( index ), index ) );
-        index++;
-      }
-
-      final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( method, Constants.TYPED_CLASSNAME );
-      final AnnotationValue value =
-        null != annotation ? AnnotationsUtil.findAnnotationValue( annotation, "value" ) : null;
-
-      final String qualifier = getQualifier( method );
-      if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.JSR_330_NAMED_CLASSNAME ) )
-      {
-        final String message =
-          MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                "contain a method annotated with the " + Constants.JSR_330_NAMED_CLASSNAME +
-                                " annotation. Use the " + Constants.NAMED_CLASSNAME + " annotation instead" );
-        throw new ProcessorException( message, method );
-      }
-      if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.CDI_TYPED_CLASSNAME ) )
-      {
-        final String message =
-          MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                "contain a method annotated with the " + Constants.CDI_TYPED_CLASSNAME +
-                                " annotation. Use the " + Constants.TYPED_CLASSNAME + " annotation instead" );
-        throw new ProcessorException( message, method );
-      }
-
-      @SuppressWarnings( "unchecked" )
-      final List<TypeMirror> types =
-        null == value ?
-        Collections.singletonList( method.getReturnType() ) :
-        ( (List<AnnotationValue>) value.getValue() )
-          .stream()
-          .map( v -> (TypeMirror) v.getValue() )
-          .collect( Collectors.toList() );
-
-      final ServiceSpec[] specs = new ServiceSpec[ types.size() ];
-      for ( int i = 0; i < specs.length; i++ )
-      {
-        final TypeMirror type = types.get( i );
-        if ( !processingEnv.getTypeUtils().isAssignable( method.getReturnType(), type ) )
-        {
-          throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                        " specified a type that is not assignable to the return type of the method",
-                                        element,
-                                        annotation,
-                                        value );
-        }
-        else if ( TypeKind.DECLARED == type.getKind() && isParameterized( (DeclaredType) type ) )
-        {
-          throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                        " specified a type that is a a parameterized type",
-                                        element,
-                                        annotation,
-                                        value );
-        }
-        specs[ i ] = new ServiceSpec( new Coordinate( qualifier, type ), nullablePresent );
-      }
-
-      if ( 0 == specs.length && !eager )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
-                                      " target must not contain methods that specify zero types with the " +
-                                      MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                      " annotation and are not annotated with the " +
-                                      MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) +
-                                      " annotation otherwise the component can not be created by the injector",
-                                      element );
-      }
-      final Binding binding =
-        new Binding( Binding.Kind.PROVIDES,
-                     element.getQualifiedName() + "#" + method.getSimpleName(),
-                     Arrays.asList( specs ),
-                     eager,
-                     method,
-                     dependencies.toArray( new ServiceDescriptor[ 0 ] ) );
-      bindings.put( method, binding );
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                          "contain methods with a type parameter" ),
+                                    method );
     }
+    if ( !method.getModifiers().contains( Modifier.DEFAULT ) )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.FRAGMENT_CLASSNAME,
+                                                       "only contain methods with a default modifier" ),
+                                    method );
+    }
+    final boolean nullablePresent =
+      AnnotationsUtil.hasAnnotationOfType( method, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
+
+    if ( nullablePresent && method.getReturnType().getKind().isPrimitive() )
+    {
+      throw new ProcessorException( MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
+                                    " contains a method that is incorrectly annotated with " +
+                                    MemberChecks.toSimpleName( GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) +
+                                    " as the return type is a primitive value",
+                                    method );
+    }
+
+    final boolean eager = AnnotationsUtil.hasAnnotationOfType( method, Constants.EAGER_CLASSNAME );
+
+    final List<ServiceDescriptor> dependencies = new ArrayList<>();
+    int index = 0;
+    final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) method.asType() ).getParameterTypes();
+    for ( final VariableElement parameter : method.getParameters() )
+    {
+      dependencies.add( processFragmentServiceParameter( parameter, parameterTypes.get( index ), index ) );
+      index++;
+    }
+
+    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( method, Constants.TYPED_CLASSNAME );
+    final AnnotationValue value =
+      null != annotation ? AnnotationsUtil.findAnnotationValue( annotation, "value" ) : null;
+
+    final String qualifier = getQualifier( method );
+    if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.JSR_330_NAMED_CLASSNAME ) )
+    {
+      final String message =
+        MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                              "contain a method annotated with the " + Constants.JSR_330_NAMED_CLASSNAME +
+                              " annotation. Use the " + Constants.NAMED_CLASSNAME + " annotation instead" );
+      throw new ProcessorException( message, method );
+    }
+    if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.CDI_TYPED_CLASSNAME ) )
+    {
+      final String message =
+        MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                              "contain a method annotated with the " + Constants.CDI_TYPED_CLASSNAME +
+                              " annotation. Use the " + Constants.TYPED_CLASSNAME + " annotation instead" );
+      throw new ProcessorException( message, method );
+    }
+
+    @SuppressWarnings( "unchecked" )
+    final List<TypeMirror> types =
+      null == value ?
+      Collections.singletonList( method.getReturnType() ) :
+      ( (List<AnnotationValue>) value.getValue() )
+        .stream()
+        .map( v -> (TypeMirror) v.getValue() )
+        .collect( Collectors.toList() );
+
+    final ServiceSpec[] specs = new ServiceSpec[ types.size() ];
+    for ( int i = 0; i < specs.length; i++ )
+    {
+      final TypeMirror type = types.get( i );
+      if ( !processingEnv.getTypeUtils().isAssignable( method.getReturnType(), type ) )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                      " specified a type that is not assignable to the return type of the method",
+                                      element,
+                                      annotation,
+                                      value );
+      }
+      else if ( TypeKind.DECLARED == type.getKind() && isParameterized( (DeclaredType) type ) )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                      " specified a type that is a a parameterized type",
+                                      element,
+                                      annotation,
+                                      value );
+      }
+      specs[ i ] = new ServiceSpec( new Coordinate( qualifier, type ), nullablePresent );
+    }
+
+    if ( 0 == specs.length && !eager )
+    {
+      throw new ProcessorException( MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
+                                    " target must not contain methods that specify zero types with the " +
+                                    MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                    " annotation and are not annotated with the " +
+                                    MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) +
+                                    " annotation otherwise the component can not be created by the injector",
+                                    element );
+    }
+    final Binding binding =
+      new Binding( Binding.Kind.PROVIDES,
+                   element.getQualifiedName() + "#" + method.getSimpleName(),
+                   Arrays.asList( specs ),
+                   eager,
+                   method,
+                   dependencies.toArray( new ServiceDescriptor[ 0 ] ) );
+    bindings.put( method, binding );
   }
 
   @Nonnull
