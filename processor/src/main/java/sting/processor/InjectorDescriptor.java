@@ -20,7 +20,7 @@ final class InjectorDescriptor
    * The list of types included by Injector.
    */
   @Nonnull
-  private final Collection<DeclaredType> _includes;
+  private final Collection<IncludeDescriptor> _includes;
   /**
    * The collection of services that must be supplied to the injector during creation.
    */
@@ -33,7 +33,7 @@ final class InjectorDescriptor
   private final List<ServiceDescriptor> _outputs;
 
   InjectorDescriptor( @Nonnull final TypeElement element,
-                      @Nonnull final Collection<DeclaredType> includes,
+                      @Nonnull final Collection<IncludeDescriptor> includes,
                       @Nonnull final List<InputDescriptor> inputs,
                       @Nonnull final List<ServiceDescriptor> outputs )
   {
@@ -50,7 +50,7 @@ final class InjectorDescriptor
   }
 
   @Nonnull
-  Collection<DeclaredType> getIncludes()
+  Collection<IncludeDescriptor> getIncludes()
   {
     return _includes;
   }
@@ -74,9 +74,9 @@ final class InjectorDescriptor
     if ( !_includes.isEmpty() )
     {
       g.writeStartArray( "includes" );
-      for ( final DeclaredType include : _includes )
+      for ( final IncludeDescriptor include : _includes )
       {
-        g.write( include.toString() );
+        g.write( include.getIncludedType().toString() );
       }
       g.writeEnd();
     }

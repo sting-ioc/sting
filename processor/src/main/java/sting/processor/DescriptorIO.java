@@ -86,11 +86,12 @@ final class DescriptorIO
   private void writeFragment( @Nonnull final DataOutputStream dos, @Nonnull final FragmentDescriptor fragment )
     throws IOException
   {
-    final Collection<DeclaredType> includes = fragment.getIncludes();
+    final Collection<IncludeDescriptor> includes = fragment.getIncludes();
     dos.writeShort( includes.size() );
-    for ( final DeclaredType include : includes )
+    for ( final IncludeDescriptor include : includes )
     {
-      dos.writeUTF( toFieldDescriptor( include ) );
+      dos.writeUTF( toFieldDescriptor( include.getIncludedType() ) );
+      dos.writeUTF( toFieldDescriptor( include.getActualType() ) );
     }
     final Collection<Binding> bindings = fragment.getBindings();
     dos.writeShort( bindings.size() );
@@ -106,10 +107,12 @@ final class DescriptorIO
     throws IOException
   {
     final short includeCount = dis.readShort();
-    final DeclaredType[] types = new DeclaredType[ includeCount ];
+    final IncludeDescriptor[] types = new IncludeDescriptor[ includeCount ];
     for ( int i = 0; i < types.length; i++ )
     {
-      types[ i ] = readDeclaredType( dis.readUTF() );
+      final DeclaredType includedType = readDeclaredType( dis.readUTF() );
+      final DeclaredType actualType = readDeclaredType( dis.readUTF() );
+      types[ i ] = new IncludeDescriptor( includedType, actualType );
     }
     final short bindingCount = dis.readShort();
     final Binding[] bindings = new Binding[ bindingCount ];

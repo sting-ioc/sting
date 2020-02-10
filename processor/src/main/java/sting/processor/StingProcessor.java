@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 import java.util.stream.Collectors;
@@ -325,11 +326,11 @@ public final class StingProcessor
   }
 
   private void registerIncludes( @Nonnull final ComponentGraph graph,
-                                 @Nonnull final Collection<DeclaredType> includes )
+                                 @Nonnull final Collection<IncludeDescriptor> includes )
   {
-    for ( final DeclaredType include : includes )
+    for ( final IncludeDescriptor include : includes )
     {
-      final TypeElement element = (TypeElement) include.asElement();
+      final TypeElement element = (TypeElement) include.getActualType().asElement();
       if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
       {
         final FragmentDescriptor fragment = _registry.getFragmentByClassName( element.getQualifiedName().toString() );
@@ -539,13 +540,13 @@ public final class StingProcessor
     return isResolved( injector.getElement(), injector.getIncludes() );
   }
 
-  private boolean isResolved( @Nonnull final TypeElement originator, @Nonnull final Collection<DeclaredType> includes )
+  private boolean isResolved( @Nonnull final TypeElement originator, @Nonnull final Collection<IncludeDescriptor> includes )
   {
     // By the time we get here we can guarantee that the java types are correctly resolved
     // so we only have to check that the descriptors are present and valid in this method
-    for ( final DeclaredType include : includes )
+    for ( final IncludeDescriptor include : includes )
     {
-      final TypeElement element = (TypeElement) include.asElement();
+      final TypeElement element = (TypeElement) include.getActualType().asElement();
       final String classname = element.getQualifiedName().toString();
       if ( null == _registry.findFragmentByClassName( classname ) &&
            null == _registry.findInjectableByClassName( classname ) )
@@ -594,7 +595,7 @@ public final class StingProcessor
                                     element );
     }
 
-    final List<DeclaredType> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
+    final List<IncludeDescriptor> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
     final List<InputDescriptor> inputs = extractInputs( element );
 
     final List<ServiceDescriptor> outputs = new ArrayList<>();
@@ -609,22 +610,22 @@ public final class StingProcessor
     }
     for ( final Element enclosedElement : element.getEnclosedElements() )
     {
-      if ( enclosedElement.getKind() == ElementKind.INTERFACE &&
+      if ( ElementKind.INTERFACE == enclosedElement.getKind() &&
            AnnotationsUtil.hasAnnotationOfType( enclosedElement, Constants.FRAGMENT_CLASSNAME ) )
       {
         final DeclaredType type = (DeclaredType) enclosedElement.asType();
-        if ( !includes.contains( type ) )
+        if ( includes.stream().noneMatch( d -> Objects.equals( d.getIncludedType(), type ) ) )
         {
-          includes.add( type );
+          includes.add( new IncludeDescriptor( type, type ) );
         }
       }
-      else if ( enclosedElement.getKind() == ElementKind.CLASS &&
+      else if ( ElementKind.CLASS == enclosedElement.getKind() &&
                 AnnotationsUtil.hasAnnotationOfType( enclosedElement, Constants.INJECTABLE_CLASSNAME ) )
       {
         final DeclaredType type = (DeclaredType) enclosedElement.asType();
-        if ( !includes.contains( type ) )
+        if ( includes.stream().noneMatch( d -> Objects.equals( d.getIncludedType(), type ) ) )
         {
-          includes.add( type );
+          includes.add( new IncludeDescriptor( type, type ) );
         }
       }
     }
@@ -907,7 +908,7 @@ public final class StingProcessor
       throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME, "extend any interfaces" ),
                                     element );
     }
-    final List<DeclaredType> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME );
+    final List<IncludeDescriptor> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME );
     final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
     final List<ExecutableElement> methods =
       ElementsUtil.getMethods( element, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
@@ -983,19 +984,22 @@ public final class StingProcessor
   }
 
   @Nonnull
-  private List<DeclaredType> extractIncludes( @Nonnull final TypeElement element,
-                                              @Nonnull final String annotationClassname )
+  private List<IncludeDescriptor> extractIncludes( @Nonnull final TypeElement element,
+                                                   @Nonnull final String annotationClassname )
   {
-    final List<DeclaredType> results = new ArrayList<>();
+    final List<IncludeDescriptor> results = new ArrayList<>();
     final List<TypeMirror> includes =
       AnnotationsUtil.getTypeMirrorsAnnotationParameter( element, annotationClassname, "includes" );
     for ( final TypeMirror include : includes )
     {
       final Element includeElement = processingEnv.getTypeUtils().asElement( include );
-      if ( AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FRAGMENT_CLASSNAME ) ||
-           AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) )
+      if ( AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FRAGMENT_CLASSNAME ) )
       {
-        results.add( (DeclaredType) include );
+        results.add( new IncludeDescriptor( (DeclaredType) include, (DeclaredType) include ) );
+      }
+      else if ( AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) )
+      {
+        results.add( new IncludeDescriptor( (DeclaredType) include, (DeclaredType) include ) );
       }
       else
       {

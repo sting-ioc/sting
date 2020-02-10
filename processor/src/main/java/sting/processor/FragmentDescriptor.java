@@ -20,7 +20,7 @@ final class FragmentDescriptor
    * The list of types included by fragment.
    */
   @Nonnull
-  private final Collection<DeclaredType> _includes;
+  private final Collection<IncludeDescriptor> _includes;
   /**
    * The bindings that the fragment explicitly declares.
    */
@@ -32,7 +32,7 @@ final class FragmentDescriptor
   private boolean _javaStubGenerated;
 
   FragmentDescriptor( @Nonnull final TypeElement element,
-                      @Nonnull final Collection<DeclaredType> includes,
+                      @Nonnull final Collection<IncludeDescriptor> includes,
                       @Nonnull final Collection<Binding> bindings )
   {
     assert ElementKind.INTERFACE == element.getKind();
@@ -55,7 +55,7 @@ final class FragmentDescriptor
   }
 
   @Nonnull
-  Collection<DeclaredType> getIncludes()
+  Collection<IncludeDescriptor> getIncludes()
   {
     return _includes;
   }
@@ -83,9 +83,9 @@ final class FragmentDescriptor
     if ( !_includes.isEmpty() )
     {
       g.writeStartArray( "includes" );
-      for ( final DeclaredType include : _includes )
+      for ( final IncludeDescriptor include : _includes )
       {
-        g.write( include.toString() );
+        g.write( include.getIncludedType().toString() );
       }
       g.writeEnd();
     }
