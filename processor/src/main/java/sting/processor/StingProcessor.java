@@ -1281,7 +1281,15 @@ public final class StingProcessor
                               MemberChecks.suppressedBy( Constants.WARNING_CDI_TYPED ) );
       processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, element );
     }
-
+    if ( AnnotationsUtil.hasAnnotationOfType( constructor, Constants.JSR_330_INJECT_CLASSNAME ) &&
+         ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_JSR_330_INJECT ) )
+    {
+      final String message =
+        MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                              "be annotated with the " + Constants.JSR_330_INJECT_CLASSNAME + " annotation. " +
+                              MemberChecks.suppressedBy( Constants.WARNING_JSR_330_INJECT ) );
+      processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, constructor );
+    }
     @SuppressWarnings( "unchecked" )
     final List<TypeMirror> types =
       null == value ?

@@ -523,6 +523,7 @@ public final class StingProcessorTest
       {
         new Object[]{ "com.example.injectable.CdiTypedModel",
                       "@Injectable target must not be annotated with the javax.enterprise.inject.Typed annotation. Use the sting.Typed annotation instead. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:CdiTypedPresent\" )" },
+        new Object[]{ "com.example.injectable.Jsr330InjectModel", "@Injectable target must not be annotated with the javax.inject.Inject annotation. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:Jsr330InjectPresent\" )" },
 
         new Object[]{ "com.example.injectable.ProtectedConstructorModel",
                       "@Injectable target should not have a protected constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:ProtectedConstructor\" )" },
@@ -570,6 +571,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.SuppressedProtectedConstructorModel" },
         new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" },
         new Object[]{ "com.example.injectable.SuppressedCdiTypedModel" },
+        new Object[]{ "com.example.injectable.SuppressedJsr330InjectModel" },
 
         new Object[]{ "com.example.injectable.named.SuppressedJsr330NamedInputModel" },
         new Object[]{ "com.example.injectable.named.SuppressedJsr330NamedInjectableModel" },

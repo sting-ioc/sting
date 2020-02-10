@@ -6,8 +6,6 @@ complete as there is too much un-said.
 
 ## Alpha Release TODO Items
 
-* Generate a suppressable warning if `@Inject` is present on constructor of `@Injectable`.
-
 * Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
   or `Injector` will have their type annotations scanned for matching annotations of which there must be at most
   1. This annotation gives the name pattern for the expected `@Injectable` or `@Fragment` annotated class that
