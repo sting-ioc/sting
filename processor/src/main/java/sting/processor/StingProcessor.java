@@ -1172,9 +1172,9 @@ public final class StingProcessor
         if ( optional && ServiceDescriptor.Kind.INSTANCE != kind )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                              "contain a method with a parameter annotated with " +
+                                                              "contain a method with a parameter annotated with the " +
                                                               MemberChecks.toSimpleName( GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) +
-                                                              " that is not an instance dependency kind" ),
+                                                              " annotation that is not an instance dependency kind" ),
                                         parameter );
         }
         final String qualifier = getQualifier( parameter );
