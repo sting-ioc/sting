@@ -131,6 +131,7 @@ import javax.annotation.Nonnull;
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
 @Target( ElementType.TYPE )
+@StingProvider( "[FlatEnclosingName]Sting_[SimpleName]_Provider" )
 public @interface Injector
 {
   /**

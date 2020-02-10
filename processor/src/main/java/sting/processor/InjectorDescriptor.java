@@ -6,7 +6,6 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
 
 final class InjectorDescriptor
 {
@@ -31,6 +30,10 @@ final class InjectorDescriptor
    */
   @Nonnull
   private final List<ServiceDescriptor> _outputs;
+  /**
+   * True if the injector has a fatal error and should not be reprocessed.
+   */
+  private boolean _containsError;
 
   InjectorDescriptor( @Nonnull final TypeElement element,
                       @Nonnull final Collection<IncludeDescriptor> includes,
@@ -65,6 +68,16 @@ final class InjectorDescriptor
   List<ServiceDescriptor> getOutputs()
   {
     return _outputs;
+  }
+
+  boolean containsError()
+  {
+    return _containsError;
+  }
+
+  void markAsContainsError()
+  {
+    _containsError = true;
   }
 
   void write( final JsonGenerator g )

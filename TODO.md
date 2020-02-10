@@ -6,17 +6,6 @@ complete as there is too much un-said.
 
 ## Alpha Release TODO Items
 
-* Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
-  or `Injector` will have their type annotations scanned for matching annotations of which there must be at most
-  1. This annotation gives the name pattern for the expected `@Injectable` or `@Fragment` annotated class that
-  provides the type. The annotation flag may also indicate whether the peer SHOULD be present (i.e. generates a
-  warning if not) or whether a missing peer is just a no-op. It should also have mechanisms to work with names
-  of classes for nested types. We should also scan nested types of injectors and add them as appropriate.
-  The framework should validate that the other type has at MOST one binding (i.e. if it is a `Fragment`) that
-  produces the appropriate type. (i.e. can have an `@Injectable` on derived class that has `@Typed()` to match
-  base or one binding in `@Fragment` with appropriate type.) Some how the autodiscovery process should also detect
-  this scenario.
-
 * We may need to add a separate phase at the end of compilation that detects when singular injection requests
   result in multiple candidate bindings. Note that some of these bindings can be added during resolution process.
 
@@ -25,6 +14,12 @@ complete as there is too much un-said.
 * Update React4j to support sting injection
 
 ## Beta Release TODO Items
+
+* Add code to verify that the provider class `@StingProvider` identifies should produce a binding that exposes
+  the originating type as published service.
+
+* Integrate `@StingProvider` into auto-discovery process. We may need to add a flag to `@StingProvider` that
+  controls whether that provider is subject to auto-discovery ... if there is a valid use case.
 
 * Write integration tests that compare with dagger the following performance characteristics.
   * time to compile the injector

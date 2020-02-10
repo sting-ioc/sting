@@ -6,7 +6,6 @@ import javax.annotation.Nonnull;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
 
 final class FragmentDescriptor
 {
@@ -30,6 +29,10 @@ final class FragmentDescriptor
    * True if the java stub has been generated.
    */
   private boolean _javaStubGenerated;
+  /**
+   * True if the fragment has a fatal error and should not be reprocessed.
+   */
+  private boolean _containsError;
 
   FragmentDescriptor( @Nonnull final TypeElement element,
                       @Nonnull final Collection<IncludeDescriptor> includes,
@@ -74,6 +77,16 @@ final class FragmentDescriptor
   void markJavaStubAsGenerated()
   {
     _javaStubGenerated = true;
+  }
+
+  boolean containsError()
+  {
+    return _containsError;
+  }
+
+  void markAsContainsError()
+  {
+    _containsError = true;
   }
 
   void write( @Nonnull final JsonGenerator g )

@@ -111,6 +111,64 @@ public final class StingProcessorInjectorGraphTest
     assertNodeWithIdPresent( nodes, pkg + ".MyModel3" );
   }
 
+  @Test
+  public void compoundNamesInIncludedProviders()
+    throws Exception
+  {
+    final String pkg = "com.example.injector.includes.provider.naming.compound";
+    final String classname = pkg + ".MyInjector";
+    final String objectGraphFilename = jsonGraphOutput( classname );
+    assertSuccessfulCompile( inputs( classname,
+                                     pkg + ".MyFrameworkComponent",
+                                     pkg + ".MyModel1",
+                                     pkg + ".MyModel1Impl",
+                                     pkg + ".Outer" ),
+                             Collections.singletonList( objectGraphFilename ),
+                             t -> emitInjectorGeneratedFile( classname, t ) );
+    final JsonArray nodes = readInjectorGraph( objectGraphFilename );
+    assertNodeWithIdPresent( nodes, pkg + ".MyModel1Impl" );
+    assertNodeWithIdPresent( nodes, pkg + ".Outer.Middle.Leaf.MyModel2Impl" );
+  }
+
+  @Test
+  public void enclosingNamesInIncludedProviders()
+    throws Exception
+  {
+    final String pkg = "com.example.injector.includes.provider.naming.enclosing";
+    final String classname = pkg + ".MyInjector";
+    final String objectGraphFilename = jsonGraphOutput( classname );
+    assertSuccessfulCompile( inputs( classname,
+                                     pkg + ".MyFrameworkComponent",
+                                     pkg + ".MyFramework_MyModel",
+                                     pkg + ".MyModel",
+                                     pkg + ".Outer" ),
+                             Collections.singletonList( objectGraphFilename ),
+                             t -> emitInjectorGeneratedFile( classname, t ) );
+    final JsonArray nodes = readInjectorGraph( objectGraphFilename );
+    assertNodeWithIdPresent( nodes, pkg + ".MyFramework_MyModel" );
+    assertNodeWithIdPresent( nodes, pkg + ".Outer.Middle.Leaf.MyFramework_MyModel2" );
+  }
+
+  @Test
+  public void flatEnclosingNamesInIncludedProviders()
+    throws Exception
+  {
+    final String pkg = "com.example.injector.includes.provider.naming.flat_enclosing";
+    final String classname = pkg + ".MyInjector";
+    final String objectGraphFilename = jsonGraphOutput( classname );
+    assertSuccessfulCompile( inputs( classname,
+                                     pkg + ".MyFrameworkComponent",
+                                     pkg + ".MyFramework_MyModel",
+                                     pkg + ".MyModel",
+                                     pkg + ".Outer",
+                                     pkg + ".Outer_Middle_Leaf_MyFramework_MyModel2" ),
+                             Collections.singletonList( objectGraphFilename ),
+                             t -> emitInjectorGeneratedFile( classname, t ) );
+    final JsonArray nodes = readInjectorGraph( objectGraphFilename );
+    assertNodeWithIdPresent( nodes, pkg + ".MyFramework_MyModel" );
+    assertNodeWithIdPresent( nodes, pkg + ".Outer_Middle_Leaf_MyFramework_MyModel2" );
+  }
+
   private void assertNodeWithIdPresent( @Nonnull final JsonArray nodes,
                                         @Nonnull final String id )
   {

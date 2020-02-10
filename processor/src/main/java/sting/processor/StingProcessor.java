@@ -219,7 +219,7 @@ public final class StingProcessor
     for ( final InjectableDescriptor injectable : new ArrayList<>( _registry.getInjectables() ) )
     {
       performAction( env, e -> {
-        if ( isInjectableResolved( injectable ) && !injectable.isJavaStubGenerated() )
+        if ( !injectable.isJavaStubGenerated() )
         {
           injectable.markJavaStubAsGenerated();
           writeBinaryDescriptor( injectable.getElement(), injectable );
@@ -242,7 +242,7 @@ public final class StingProcessor
     for ( final FragmentDescriptor fragment : new ArrayList<>( _registry.getFragments() ) )
     {
       performAction( env, e -> {
-        if ( isFragmentResolved( fragment ) && !fragment.isJavaStubGenerated() )
+        if ( !fragment.isJavaStubGenerated() && !fragment.containsError() && isFragmentResolved( env, fragment ) )
         {
           fragment.markJavaStubAsGenerated();
           writeBinaryDescriptor( fragment.getElement(), fragment );
@@ -265,7 +265,7 @@ public final class StingProcessor
     for ( final InjectorDescriptor injector : new ArrayList<>( _registry.getInjectors() ) )
     {
       performAction( env, e -> {
-        if ( isInjectorResolved( injector ) )
+        if ( !injector.containsError() && isInjectorResolved( env, injector ) )
         {
           _registry.deregisterInjector( injector );
           buildAndEmitObjectGraph( injector );
@@ -330,7 +330,9 @@ public final class StingProcessor
   {
     for ( final IncludeDescriptor include : includes )
     {
-      final TypeElement element = (TypeElement) include.getActualType().asElement();
+      final String classname = include.getActualTypeName();
+      final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
+      assert null != element;
       if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
       {
         final FragmentDescriptor fragment = _registry.getFragmentByClassName( element.getQualifiedName().toString() );
@@ -340,9 +342,7 @@ public final class StingProcessor
       else
       {
         assert AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME );
-        final InjectableDescriptor injectable =
-          _registry.getInjectableByClassName( element.getQualifiedName().toString() );
-        graph.registerInjectable( injectable );
+        graph.registerInjectable( _registry.getInjectableByClassName( element.getQualifiedName().toString() ) );
       }
     }
   }
@@ -525,29 +525,93 @@ public final class StingProcessor
     }
   }
 
-  private boolean isInjectableResolved( @Nonnull final InjectableDescriptor injectable )
+  private boolean isFragmentResolved( @Nonnull final RoundEnvironment env, @Nonnull final FragmentDescriptor fragment )
   {
-    return isResolved( injectable.getElement(), Collections.emptyList() );
+    return isResolved( env, fragment, fragment.getElement(), fragment.getIncludes() );
   }
 
-  private boolean isFragmentResolved( @Nonnull final FragmentDescriptor fragment )
+  private boolean isInjectorResolved( @Nonnull final RoundEnvironment env, @Nonnull final InjectorDescriptor injector )
   {
-    return isResolved( fragment.getElement(), fragment.getIncludes() );
+    return isResolved( env, injector, injector.getElement(), injector.getIncludes() );
   }
 
-  private boolean isInjectorResolved( @Nonnull final InjectorDescriptor injector )
-  {
-    return isResolved( injector.getElement(), injector.getIncludes() );
-  }
-
-  private boolean isResolved( @Nonnull final TypeElement originator, @Nonnull final Collection<IncludeDescriptor> includes )
+  private boolean isResolved( @Nonnull final RoundEnvironment env,
+                              @Nonnull final Object descriptor,
+                              @Nonnull final TypeElement originator,
+                              @Nonnull final Collection<IncludeDescriptor> includes )
   {
     // By the time we get here we can guarantee that the java types are correctly resolved
     // so we only have to check that the descriptors are present and valid in this method
+    // Except for providers. Providers may be loaded a lot later
     for ( final IncludeDescriptor include : includes )
     {
-      final TypeElement element = (TypeElement) include.getActualType().asElement();
-      final String classname = element.getQualifiedName().toString();
+      final String classname = include.getActualTypeName();
+      final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
+      if ( null == element )
+      {
+        assert include.isProvider();
+        if ( env.processingOver() )
+        {
+          AnnotationMirror annotation =
+            AnnotationsUtil.findAnnotationByType( originator, Constants.INJECTOR_CLASSNAME );
+
+          final String annotationClassname =
+            null != annotation ? Constants.INJECTOR_CLASSNAME : Constants.FRAGMENT_CLASSNAME;
+          if ( null == annotation )
+          {
+            annotation = AnnotationsUtil.getAnnotationByType( originator, Constants.FRAGMENT_CLASSNAME );
+          }
+
+          if ( descriptor instanceof FragmentDescriptor )
+          {
+            ( (FragmentDescriptor) descriptor ).markAsContainsError();
+          }
+          else
+          {
+            ( (InjectorDescriptor) descriptor ).markAsContainsError();
+          }
+
+          final String message =
+            MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
+            "parameter named 'includes' containing the value " + include.getIncludedType() +
+            " and that type is annotated by the @StingProvider annotation. The provider annotation expects a " +
+            "provider class named " + include.getActualTypeName() + " but no such class exists. The " +
+            "type need to be removed from the includes or the provider class needs to be present.";
+          reportError( env, message, originator, annotation, null );
+        }
+        return false;
+      }
+      if ( include.isProvider() &&
+           !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) &&
+           !AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
+      {
+        AnnotationMirror annotation =
+          AnnotationsUtil.findAnnotationByType( originator, Constants.INJECTOR_CLASSNAME );
+
+        final String annotationClassname =
+          null != annotation ? Constants.INJECTOR_CLASSNAME : Constants.FRAGMENT_CLASSNAME;
+        if ( null == annotation )
+        {
+          annotation = AnnotationsUtil.getAnnotationByType( originator, Constants.FRAGMENT_CLASSNAME );
+        }
+        if ( descriptor instanceof FragmentDescriptor )
+        {
+          ( (FragmentDescriptor) descriptor ).markAsContainsError();
+        }
+        else
+        {
+          ( (InjectorDescriptor) descriptor ).markAsContainsError();
+        }
+
+        final String message =
+          MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
+          "parameter named 'includes' containing the value " + include.getIncludedType() +
+          " and that type is annotated by the @StingProvider annotation. The provider annotation expects a " +
+          "provider class named " + include.getActualTypeName() + " but that class is not annotated with either " +
+          MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " or " +
+          MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME );
+        throw new ProcessorException( message, originator, annotation );
+      }
       if ( null == _registry.findFragmentByClassName( classname ) &&
            null == _registry.findInjectableByClassName( classname ) )
       {
@@ -558,14 +622,14 @@ public final class StingProcessor
         }
         try
         {
-          final Object descriptor = loadDescriptor( classname, data );
-          if ( descriptor instanceof FragmentDescriptor )
+          final Object loadedDescriptor = loadDescriptor( classname, data );
+          if ( loadedDescriptor instanceof FragmentDescriptor )
           {
-            _registry.registerFragment( (FragmentDescriptor) descriptor );
+            _registry.registerFragment( (FragmentDescriptor) loadedDescriptor );
           }
           else
           {
-            _registry.registerInjectable( (InjectableDescriptor) descriptor );
+            _registry.registerInjectable( (InjectableDescriptor) loadedDescriptor );
           }
         }
         catch ( final IOException e )
@@ -616,7 +680,7 @@ public final class StingProcessor
         final DeclaredType type = (DeclaredType) enclosedElement.asType();
         if ( includes.stream().noneMatch( d -> Objects.equals( d.getIncludedType(), type ) ) )
         {
-          includes.add( new IncludeDescriptor( type, type ) );
+          includes.add( new IncludeDescriptor( type, type.toString() ) );
         }
       }
       else if ( ElementKind.CLASS == enclosedElement.getKind() &&
@@ -625,7 +689,7 @@ public final class StingProcessor
         final DeclaredType type = (DeclaredType) enclosedElement.asType();
         if ( includes.stream().noneMatch( d -> Objects.equals( d.getIncludedType(), type ) ) )
         {
-          includes.add( new IncludeDescriptor( type, type ) );
+          includes.add( new IncludeDescriptor( type, type.toString() ) );
         }
       }
     }
@@ -992,25 +1056,146 @@ public final class StingProcessor
     for ( final TypeMirror include : includes )
     {
       final Element includeElement = processingEnv.getTypeUtils().asElement( include );
-      if ( AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FRAGMENT_CLASSNAME ) )
+      if ( AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FRAGMENT_CLASSNAME ) ||
+           AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) )
       {
-        results.add( new IncludeDescriptor( (DeclaredType) include, (DeclaredType) include ) );
-      }
-      else if ( AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) )
-      {
-        results.add( new IncludeDescriptor( (DeclaredType) include, (DeclaredType) include ) );
+        results.add( new IncludeDescriptor( (DeclaredType) include, include.toString() ) );
       }
       else
       {
-        throw new ProcessorException( MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
-                                      "includes parameter containing the value " + include + " that is not a type " +
-                                      "annotated by either " +
-                                      MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " or " +
-                                      MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ),
-                                      element );
+        final ElementKind kind = includeElement.getKind();
+        if ( ElementKind.CLASS == kind || ElementKind.INTERFACE == kind )
+        {
+          final List<ProviderEntry> providers =
+            includeElement.getAnnotationMirrors()
+              .stream()
+              .map( a -> {
+                final AnnotationMirror provider =
+                  getStingProvider( element, annotationClassname, (TypeElement) includeElement, a );
+                return null != provider ? new ProviderEntry( a, provider ) : null;
+              } )
+              .filter( Objects::nonNull )
+              .collect( Collectors.toList() );
+          if ( providers.size() > 1 )
+          {
+            final String message =
+              MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
+              "'includes' parameter containing the value " + includeElement.asType() +
+              " that is annotated by multiple @StingProvider annotations. Matching annotations:\n" +
+              providers
+                .stream()
+                .map( a -> ( (TypeElement) a.getAnnotation().getAnnotationType().asElement() ).getQualifiedName() )
+                .map( a -> "  " + a )
+                .collect( Collectors.joining( "\n" ) );
+            throw new ProcessorException( message, element );
+          }
+          else if ( !providers.isEmpty() )
+          {
+            final ProviderEntry entry = providers.get( 0 );
+            final AnnotationMirror providerAnnotation = entry.getProvider();
+            final String namePattern = AnnotationsUtil.getAnnotationValueValue( providerAnnotation, "value" );
+
+            final String targetCompoundType =
+              namePattern
+                .replace( "[SimpleName]", includeElement.getSimpleName().toString() )
+                .replace( "[CompoundName]", getComponentName( (TypeElement) includeElement ) )
+                .replace( "[EnclosingName]", getEnclosingName( (TypeElement) includeElement ) )
+                .replace( "[FlatEnclosingName]", getEnclosingName( (TypeElement) includeElement ).replace( '.', '_' ) );
+
+            final String targetQualifiedName =
+              GeneratorUtil.getPackageElement( element ).getQualifiedName().toString() + "." + targetCompoundType;
+
+            results.add( new IncludeDescriptor( (DeclaredType) include, targetQualifiedName ) );
+          }
+          else
+          {
+            throw new ProcessorException( MemberChecks.toSimpleName( annotationClassname ) +
+                                          " target has an includes parameter containing the value " + include +
+                                          " that is not a type annotated by either " +
+                                          MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
+                                          " or " +
+                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                          " and the type does not declare a provider",
+                                          element );
+          }
+        }
       }
     }
     return results;
+  }
+
+  @Nullable
+  private AnnotationMirror getStingProvider( @Nonnull final TypeElement element,
+                                             @Nonnull final String annotationClassname,
+                                             @Nonnull final TypeElement includeElement,
+                                             @Nonnull final AnnotationMirror annotation )
+  {
+    return annotation.getAnnotationType()
+      .asElement()
+      .getAnnotationMirrors()
+      .stream()
+      .filter( ca -> isStingProvider( element, annotationClassname, includeElement, ca ) )
+      .findAny()
+      .orElse( null );
+  }
+
+  @Nonnull
+  private String getComponentName( @Nonnull final TypeElement element )
+  {
+    return getEnclosingName( element ) + element.getSimpleName();
+  }
+
+  @Nonnull
+  private String getEnclosingName( @Nonnull final TypeElement element )
+  {
+    Element enclosingElement = element.getEnclosingElement();
+    final List<String> nameParts = new ArrayList<>();
+    while ( ElementKind.PACKAGE != enclosingElement.getKind() )
+    {
+      nameParts.add( enclosingElement.getSimpleName().toString() );
+      enclosingElement = enclosingElement.getEnclosingElement();
+    }
+    if ( nameParts.isEmpty() )
+    {
+      return "";
+    }
+    else
+    {
+      Collections.reverse( nameParts );
+      return String.join( ".", nameParts ) + ".";
+    }
+  }
+
+  private boolean isStingProvider( @Nonnull final TypeElement element,
+                                   @Nonnull final String annotationClassname,
+                                   @Nonnull final Element includeElement,
+                                   @Nonnull final AnnotationMirror annotation )
+  {
+    if ( !annotation.getAnnotationType().asElement().getSimpleName().contentEquals( "StingProvider" ) )
+    {
+      return false;
+    }
+    else
+    {
+      final boolean nameMatched = annotation.getElementValues()
+        .entrySet()
+        .stream()
+        .anyMatch( e -> e.getKey().getSimpleName().contentEquals( "value" ) &&
+                        e.getValue().getValue() instanceof String );
+      if ( nameMatched )
+      {
+        return true;
+      }
+      else
+      {
+        final String message =
+          MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
+          "'includes' parameter containing the value " + includeElement.asType() +
+          " that is annotated by " + annotation + " that is annotated by an invalid @StingProvider " +
+          "annotation missing a 'value' parameter of type string.";
+        throw new ProcessorException( message, element );
+      }
+    }
   }
 
   private void emitFragmentJsonDescriptor( @Nonnull final FragmentDescriptor fragment )

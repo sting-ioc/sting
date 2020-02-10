@@ -95,6 +95,7 @@ public final class StingProcessorTest
     return new Object[][]
       {
         new Object[]{ "com.example.injector.BasicInjectorModel" },
+        new Object[]{ "com.example.injector.IncludeInjectorModel" },
 
         new Object[]{ "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel" },
         new Object[]{ "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel" },
@@ -260,6 +261,18 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.fragment.includes.BadTypesInIncludesModel",
                       "@Fragment target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment or @Injectable" },
+        new Object[]{ "com.example.fragment.includes.InvalidProvider1IncludesModel",
+                      "@Fragment target has an 'includes' parameter containing the value com.example.fragment.includes.InvalidProvider1IncludesModel.MyComponent that is annotated by @com.example.fragment.includes.InvalidProvider1IncludesModel.StingProvider(name=\"[FlatEnclosingName]MF1_[SimpleName]_Provider\") that is annotated by an invalid @StingProvider annotation missing a 'value' parameter of type string." },
+        new Object[]{ "com.example.fragment.includes.InvalidProvider2IncludesModel",
+                      "@Fragment target has an 'includes' parameter containing the value com.example.fragment.includes.InvalidProvider2IncludesModel.MyComponent that is annotated by @com.example.fragment.includes.InvalidProvider2IncludesModel.StingProvider(23) that is annotated by an invalid @StingProvider annotation missing a 'value' parameter of type string." },
+        new Object[]{ "com.example.fragment.includes.MissingProviderIncludesModel",
+                      "@Fragment target has an parameter named 'includes' containing the value com.example.fragment.includes.MissingProviderIncludesModel.MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.fragment.includes.MissingProviderIncludesModel_MF1_MyComponent_Provider but no such class exists. The type need to be removed from the includes or the provider class needs to be present." },
+        new Object[]{ "com.example.fragment.includes.MultipleProvidersIncludesModel",
+                      "@Fragment target has an 'includes' parameter containing the value com.example.fragment.includes.MultipleProvidersIncludesModel.MyComponent that is annotated by multiple @StingProvider annotations. Matching annotations:\n" +
+                      "    com.example.fragment.includes.MultipleProvidersIncludesModel.MyFrameworkComponent1\n" +
+                      "    com.example.fragment.includes.MultipleProvidersIncludesModel.MyFrameworkComponent2" },
+        new Object[]{ "com.example.fragment.includes.UnannotatedProviderIncludesModel",
+                      "@Fragment target has an parameter named 'includes' containing the value com.example.fragment.includes.UnannotatedProviderIncludesModel.MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.fragment.includes.UnannotatedProviderIncludesModel.MyComponent_Provider but that class is not annotated with either @Injector or @Fragment" },
 
         new Object[]{ "com.example.fragment.inputs.ArrayTypeInputModel",
                       "@Fragment target must not contain a method with a parameter that contains an array type" },
@@ -419,6 +432,18 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injector.includes.BadTypesInIncludesModel",
                       "@Injector target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment or @Injectable" },
+        new Object[]{ "com.example.injector.includes.InvalidProvider1IncludesModel",
+                      "@Injector target has an 'includes' parameter containing the value com.example.injector.includes.InvalidProvider1IncludesModel.MyComponent that is annotated by @com.example.injector.includes.InvalidProvider1IncludesModel.StingProvider(name=\"[FlatEnclosingName]MF1_[SimpleName]_Provider\") that is annotated by an invalid @StingProvider annotation missing a 'value' parameter of type string." },
+        new Object[]{ "com.example.injector.includes.InvalidProvider2IncludesModel",
+                      "@Injector target has an 'includes' parameter containing the value com.example.injector.includes.InvalidProvider2IncludesModel.MyComponent that is annotated by @com.example.injector.includes.InvalidProvider2IncludesModel.StingProvider(42) that is annotated by an invalid @StingProvider annotation missing a 'value' parameter of type string." },
+        new Object[]{ "com.example.injector.includes.MissingProviderIncludesModel",
+                      "@Injector target has an parameter named 'includes' containing the value com.example.injector.includes.MissingProviderIncludesModel.MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.injector.includes.MissingProviderIncludesModel_MF1_MyComponent_Provider but no such class exists. The type need to be removed from the includes or the provider class needs to be present." },
+        new Object[]{ "com.example.injector.includes.MultipleProvidersIncludesModel",
+                      "@Injector target has an 'includes' parameter containing the value com.example.injector.includes.MultipleProvidersIncludesModel.MyComponent that is annotated by multiple @StingProvider annotations. Matching annotations:\n" +
+                      "    com.example.injector.includes.MultipleProvidersIncludesModel.MyFrameworkComponent1\n" +
+                      "    com.example.injector.includes.MultipleProvidersIncludesModel.MyFrameworkComponent2" },
+        new Object[]{ "com.example.injector.includes.UnannotatedProviderIncludesModel",
+                      "@Injector target has an parameter named 'includes' containing the value com.example.injector.includes.UnannotatedProviderIncludesModel.MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.injector.includes.UnannotatedProviderIncludesModel.MyComponent_Provider but that class is not annotated with either @Injector or @Fragment" },
 
         new Object[]{ "com.example.injector.inputs.ArrayTypeInputModel",
                       "@Input must not specify an array type for the type parameter" },
@@ -524,7 +549,8 @@ public final class StingProcessorTest
       {
         new Object[]{ "com.example.injectable.CdiTypedModel",
                       "@Injectable target must not be annotated with the javax.enterprise.inject.Typed annotation. Use the sting.Typed annotation instead. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:CdiTypedPresent\" )" },
-        new Object[]{ "com.example.injectable.Jsr330InjectModel", "@Injectable target must not be annotated with the javax.inject.Inject annotation. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:Jsr330InjectPresent\" )" },
+        new Object[]{ "com.example.injectable.Jsr330InjectModel",
+                      "@Injectable target must not be annotated with the javax.inject.Inject annotation. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:Jsr330InjectPresent\" )" },
 
         new Object[]{ "com.example.injectable.ProtectedConstructorModel",
                       "@Injectable target should not have a protected constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:ProtectedConstructor\" )" },

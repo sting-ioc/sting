@@ -91,7 +91,7 @@ final class DescriptorIO
     for ( final IncludeDescriptor include : includes )
     {
       dos.writeUTF( toFieldDescriptor( include.getIncludedType() ) );
-      dos.writeUTF( toFieldDescriptor( include.getActualType() ) );
+      dos.writeUTF( include.getActualTypeName()  );
     }
     final Collection<Binding> bindings = fragment.getBindings();
     dos.writeShort( bindings.size() );
@@ -111,8 +111,8 @@ final class DescriptorIO
     for ( int i = 0; i < types.length; i++ )
     {
       final DeclaredType includedType = readDeclaredType( dis.readUTF() );
-      final DeclaredType actualType = readDeclaredType( dis.readUTF() );
-      types[ i ] = new IncludeDescriptor( includedType, actualType );
+      final String actualTypeName = dis.readUTF();
+      types[ i ] = new IncludeDescriptor( includedType, actualTypeName );
     }
     final short bindingCount = dis.readShort();
     final Binding[] bindings = new Binding[ bindingCount ];
