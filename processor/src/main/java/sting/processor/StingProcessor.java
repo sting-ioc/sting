@@ -300,6 +300,7 @@ public final class StingProcessor
 
     final String packageName = GeneratorUtil.getQualifiedPackageName( graph.getInjector().getElement() );
     emitTypeSpec( packageName, InjectorGenerator.buildType( processingEnv, graph ) );
+    emitTypeSpec( packageName, InjectorProviderGenerator.buildType( processingEnv, graph ) );
   }
 
   private void registerInputs( @Nonnull final ComponentGraph graph )

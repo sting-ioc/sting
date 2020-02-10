@@ -1,0 +1,13 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.injector.includes.diamond.Sting_DiamondDependencyIncludesModel_Provider#provide",
+      "publishedServices": [
+        {
+          "type": "com.example.injector.includes.diamond.DiamondDependencyIncludesModel"
+        }
+      ]
+    }
+  ]
+}

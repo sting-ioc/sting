@@ -55,8 +55,9 @@ public final class StingProcessorMultiStageCompilesTest
 
     final ImmutableList<JavaFileObject> stage3Output = stage3.generatedFiles();
 
-    assertEquals( stage3Output.size(), 3 );
-    assertClassFileCount( stage3Output, 2L );
-    assertSourceFileCount( stage3Output, 1L );
+    assertEquals( stage3Output.size(), 8 );
+    assertClassFileCount( stage3Output, 4L );
+    assertDescriptorCount( stage2Output, 1L );
+    assertSourceFileCount( stage3Output, 3L );
   }
 }

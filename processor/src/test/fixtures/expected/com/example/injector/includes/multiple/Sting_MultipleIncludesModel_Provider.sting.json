@@ -1,0 +1,13 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.injector.includes.multiple.Sting_MultipleIncludesModel_Provider#provide",
+      "publishedServices": [
+        {
+          "type": "com.example.injector.includes.multiple.MultipleIncludesModel"
+        }
+      ]
+    }
+  ]
+}
