@@ -13,6 +13,8 @@ complete as there is too much un-said.
 * Add verification to `@Fragment` and `@Injectable` to verify that we never used the `javax.enterprise.inject.Typed`
   annotation on these classes.
 
+* Generate a suppressable warning if `@Inject` is present on constructor of `@Injectable`.
+
 * Add support for different optional services in code generator. We should support the following patterns:
   - `@Nullable T`
   - `Optional<T>`
