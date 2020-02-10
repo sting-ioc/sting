@@ -992,8 +992,12 @@ public final class StingProcessor
     for ( final TypeMirror include : includes )
     {
       final Element includeElement = processingEnv.getTypeUtils().asElement( include );
-      if ( !AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FRAGMENT_CLASSNAME ) &&
-           !AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) )
+      if ( AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FRAGMENT_CLASSNAME ) ||
+           AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) )
+      {
+        results.add( (DeclaredType) include );
+      }
+      else
       {
         throw new ProcessorException( MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
                                       "includes parameter containing the value " + include + " that is not a type " +
@@ -1001,10 +1005,6 @@ public final class StingProcessor
                                       MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " or " +
                                       MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ),
                                       element );
-      }
-      else
-      {
-        results.add( (DeclaredType) include );
       }
     }
     return results;
