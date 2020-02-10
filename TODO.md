@@ -10,8 +10,8 @@ complete as there is too much un-said.
 
 * Remove `@Provides` from error messages
 
-* Add verification to `@Fragment` and `@Injectable` to verify that we never used the `javax.inject.Named` or
-  `javax.enterprise.inject.Typed` annotations on these classes.
+* Add verification to `@Fragment` and `@Injectable` to verify that we never used the `javax.enterprise.inject.Typed`
+  annotation on these classes.
 
 * Add support for different optional services in code generator. We should support the following patterns:
   - `@Nullable T`

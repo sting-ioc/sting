@@ -432,6 +432,9 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.inputs.VoidTypeInputModel",
                       "@Input must specify a non-void type for the type parameter" },
 
+        new Object[]{ "com.example.injector.named.Jsr330NamedOutputModel",
+                      "@Injector target must not contain a method annotated with the javax.inject.Named annotation. Use the sting.Named annotation instead" },
+
         new Object[]{ "com.example.injector.outputs.ArrayTypeOutputModel",
                       "@Injector target must not contain a method with a return type that contains an array type" },
         new Object[]{ "com.example.injector.outputs.NullableCollectionOutputModel",
@@ -519,7 +522,12 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.ProtectedConstructorModel",
                       "@Injectable target should not have a protected constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:ProtectedConstructor\" )" },
         new Object[]{ "com.example.injectable.PublicConstructorModel",
-                      "@Injectable target should not have a public constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:PublicConstructor\" )" }
+                      "@Injectable target should not have a public constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:PublicConstructor\" )" },
+
+        new Object[]{ "com.example.injectable.named.Jsr330NamedInputModel",
+                      "@Injectable target must not contain a constructor with a parameter annotated with the javax.inject.Named annotation. Use the sting.Named annotation instead. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:Jsr330NamedPresent\" )" },
+        new Object[]{ "com.example.injectable.named.Jsr330NamedInjectableModel",
+                      "@Injectable target must not be annotated with the javax.inject.Named annotation. Use the sting.Named annotation instead. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:Jsr330NamedPresent\" )" }
       };
   }
 
@@ -556,6 +564,9 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.PackageAccessModel" },
         new Object[]{ "com.example.injectable.SuppressedProtectedConstructorModel" },
         new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" },
+
+        new Object[]{ "com.example.injectable.named.SuppressedJsr330NamedInputModel" },
+        new Object[]{ "com.example.injectable.named.SuppressedJsr330NamedInjectableModel" },
 
         new Object[]{ "com.example.injector.AutodetectInjectableNonDefaultQualifierModel" }
       };

@@ -729,6 +729,16 @@ public final class StingProcessor
                                         method );
         }
         final String qualifier = getQualifier( method );
+        if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.JSR_330_NAMED_CLASSNAME ) )
+        {
+          throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                                              "contain a method annotated with the " +
+                                                              Constants.JSR_330_NAMED_CLASSNAME +
+                                                              " annotation. Use the " + Constants.NAMED_CLASSNAME +
+                                                              " annotation instead" ),
+                                        method );
+        }
+
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
         final ServiceSpec service = new ServiceSpec( coordinate, optional );
         return new ServiceDescriptor( kind, service, method, -1 );
@@ -1051,6 +1061,15 @@ public final class StingProcessor
         null != annotation ? AnnotationsUtil.findAnnotationValue( annotation, "value" ) : null;
 
       final String qualifier = getQualifier( method );
+      if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.JSR_330_NAMED_CLASSNAME ) )
+      {
+        final String message =
+          MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                "contain a method annotated with the " + Constants.JSR_330_NAMED_CLASSNAME +
+                                " annotation. Use the " + Constants.NAMED_CLASSNAME + " annotation instead" );
+        throw new ProcessorException( message, method );
+      }
+
       @SuppressWarnings( "unchecked" )
       final List<TypeMirror> types =
         null == value ?
@@ -1159,6 +1178,15 @@ public final class StingProcessor
                                         parameter );
         }
         final String qualifier = getQualifier( parameter );
+        if ( AnnotationsUtil.hasAnnotationOfType( parameter, Constants.JSR_330_NAMED_CLASSNAME ) )
+        {
+          final String message =
+            MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                  "contain a method with a parameter annotated with the " +
+                                  Constants.JSR_330_NAMED_CLASSNAME + " annotation. Use the " +
+                                  Constants.NAMED_CLASSNAME + " annotation instead" );
+          throw new ProcessorException( message, parameter );
+        }
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
         final ServiceSpec service = new ServiceSpec( coordinate, optional );
         return new ServiceDescriptor( kind, service, parameter, parameterIndex );
@@ -1217,6 +1245,17 @@ public final class StingProcessor
       null != annotation ? AnnotationsUtil.findAnnotationValue( annotation, "value" ) : null;
 
     final String qualifier = getQualifier( element );
+    if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.JSR_330_NAMED_CLASSNAME ) &&
+         ElementsUtil.isWarningNotSuppressed( element, Constants.WARNING_JSR_330_NAMED ) )
+    {
+      final String message =
+        MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                              "be annotated with the " + Constants.JSR_330_NAMED_CLASSNAME + " annotation. " +
+                              "Use the " + Constants.NAMED_CLASSNAME + " annotation instead. " +
+                              MemberChecks.suppressedBy( Constants.WARNING_JSR_330_NAMED ) );
+      processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, element );
+    }
+
     @SuppressWarnings( "unchecked" )
     final List<TypeMirror> types =
       null == value ?
@@ -1404,6 +1443,17 @@ public final class StingProcessor
                                         parameter );
         }
         final String qualifier = getQualifier( parameter );
+        if ( AnnotationsUtil.hasAnnotationOfType( parameter, Constants.JSR_330_NAMED_CLASSNAME ) &&
+             ElementsUtil.isWarningNotSuppressed( parameter, Constants.WARNING_JSR_330_NAMED ) )
+        {
+          final String message =
+            MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                  "contain a constructor with a parameter annotated with the " +
+                                  Constants.JSR_330_NAMED_CLASSNAME + " annotation. Use the " +
+                                  Constants.NAMED_CLASSNAME + " annotation instead. " +
+                                  MemberChecks.suppressedBy( Constants.WARNING_JSR_330_NAMED ) );
+          processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, parameter );
+        }
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
         final ServiceSpec service = new ServiceSpec( coordinate, optional );
         return new ServiceDescriptor( kind, service, parameter, parameterIndex );

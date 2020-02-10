@@ -15,6 +15,8 @@ final class Constants
   @Nonnull
   static final String NAMED_CLASSNAME = "sting.Named";
   @Nonnull
+  static final String JSR_330_NAMED_CLASSNAME = "javax.inject.Named";
+  @Nonnull
   static final String PROVIDES_CLASSNAME = "sting.Provides";
   @Nonnull
   static final String EAGER_CLASSNAME = "sting.Eager";
@@ -24,6 +26,8 @@ final class Constants
   static final String WARNING_PROTECTED_CONSTRUCTOR = "Sting:ProtectedConstructor";
   @Nonnull
   static final String WARNING_PUBLIC_CONSTRUCTOR = "Sting:PublicConstructor";
+  @Nonnull
+  static final String WARNING_JSR_330_NAMED = "Sting:Jsr330NamedPresent";
 
   private Constants()
   {

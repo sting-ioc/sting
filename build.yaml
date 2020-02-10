@@ -34,3 +34,5 @@ artifacts:
   # GWT deps
   gwt_user: org.realityforge.com.google.gwt:gwt-user:jar:2.8.2-v20191108
   gwt_dev: org.realityforge.com.google.gwt:gwt-dev:jar:2.8.2-v20191108
+
+  javaee_api: javax:javaee-api:jar:8.0.1
