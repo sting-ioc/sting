@@ -17,10 +17,8 @@ complete as there is too much un-said.
   base or one binding in `@Fragment` with appropriate type.) Some how the autodiscovery process should also detect
   this scenario.
 
-* Add additional generator for injectors that creates a `@Fragment` that has inputs as dependencies and outputs
-  the Injector as candidate service. We would also have provider methods that expose all the service methods on
-  injector. This would be linked up with the `X` annotation on `@Injector` as described above so you could both
-  auto-discover injectors as well as add them to an includes list.
+* Enhance generator for Injector fragment so that any singular outputs are output as either provider methods.
+  Should support optional and required dependencies.
 
 * We may need to add a separate phase at the end of compilation that detects when singular injection requests
   result in multiple candidate bindings. Note that some of these bindings can be added during resolution process.
