@@ -4,9 +4,7 @@ This document is essentially a list of shorthand notes describing work yet to be
 Unfortunately it is not complete enough for other people to pick work off the list and
 complete as there is too much un-said.
 
-* Consider generating warnings if `@Fragment` types will not resolve unless the user supplies an explicit
-  `incomplete` parameter. By resolve it means that every component should have all of it's dependencies
-  present.
+## Alpha Release TODO Items
 
 * Remove `@Provides` from error messages
 
@@ -14,39 +12,6 @@ complete as there is too much un-said.
   annotation on these classes.
 
 * Generate a suppressable warning if `@Inject` is present on constructor of `@Injectable`.
-
-* Add support for different optional services in code generator. We should support the following patterns:
-  - `@Nullable T`
-  - `Optional<T>`
-  - `Supplier<Optional<T>`
-  - `Collection<Supplier<Optional<T>`
-
-  and we should also support nullability in `Collection<T>` by just not adding service to collection.
-
-* Add the mechanisms for overriding bindings already added to object graph. Perhaps by adding an
-  `override=ENABLE|DISABLE|AUTODETECT` parameter which indicates whether the binding can override
-  existing bindings. Order in `includes` matters in this scenario. This will default to `AUTODETECT`
-  which will evaluate to `DISABLE` all scenarios except when the binding is from a descriptor declared
-  as nested class of the injector. Overrides can either be by id or published types.
-
-* Write integration tests that compare with dagger the following performance characteristics.
-  * time to compile the injector
-  * time to initialize and access the injector at runtime
-  * Code size of the the injector when compiled to GWT
-
-  The integration tests will generate an injector with various numbers of fragments, injectables with
-  a dependency tree that has various shapes (i.e. width and depth of tree varied). The integration tests
-  will be in a separate module and will use javapoet to generate the code, existing test infrastructure
-  to compile the code repeatedly until we get stable builds.
-
-* Add support to dependencyType so that the boxed types and primitives interoperate. ie. Can have a collection of `Integer` that derived from `int` values.
-
-* Add some basic documentation
-  * Usage documentation.
-  * Recipe style examples for how to solve specific problems.
-  * Comparison to other technologies (i.e. Dagger/IOC) in terms of functionality and performance.
-  * Development process FAQ - just like in Arez but reflective of Stings approach.
-  * Maybe terminology should be (more) inspired by OSGI service ala https://www.osgi.org/developer/architecture/
 
 * Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`
   or `Injector` will have their type annotations scanned for matching annotations of which there must be at most
@@ -66,6 +31,53 @@ complete as there is too much un-said.
 
 * We may need to add a separate phase at the end of compilation that detects when singular injection requests
   result in multiple candidate bindings. Note that some of these bindings can be added during resolution process.
+
+* Update Arez to support sting injection
+
+* Update React4j to support sting injection
+
+## Beta Release TODO Items
+
+* Write integration tests that compare with dagger the following performance characteristics.
+  * time to compile the injector
+  * time to initialize and access the injector at runtime
+  * Code size of the the injector when compiled to GWT
+
+  The integration tests will generate an injector with various numbers of fragments, injectables with
+  a dependency tree that has various shapes (i.e. width and depth of tree varied). The integration tests
+  will be in a separate module and will use javapoet to generate the code, existing test infrastructure
+  to compile the code repeatedly until we get stable builds.
+
+* Write integration tests that compile a branch of `react4j-todomvc` using sting versus Dagger versus Arez.
+
+* Add some basic documentation
+  * Usage documentation.
+  * Recipe style examples for how to solve specific problems.
+  * Comparison to other technologies (i.e. Dagger/IOC) in terms of functionality and performance.
+  * Development process FAQ - just like in Arez but reflective of Stings approach.
+  * Maybe terminology should be (more) inspired by OSGI service ala https://www.osgi.org/developer/architecture/
+
+## Other TODO
+
+* Consider generating warnings if `@Fragment` types will not resolve unless the user supplies an explicit
+  `incomplete` parameter. By resolve it means that every component should have all of it's dependencies
+  present.
+
+* Add support for different optional services in code generator. We should support the following patterns:
+  - `@Nullable T`
+  - `Optional<T>`
+  - `Supplier<Optional<T>`
+  - `Collection<Supplier<Optional<T>`
+
+  and we should also support nullability in `Collection<T>` by just not adding service to collection.
+
+* Add the mechanisms for overriding bindings already added to object graph. Perhaps by adding an
+  `override=ENABLE|DISABLE|AUTODETECT` parameter which indicates whether the binding can override
+  existing bindings. Order in `includes` matters in this scenario. This will default to `AUTODETECT`
+  which will evaluate to `DISABLE` all scenarios except when the binding is from a descriptor declared
+  as nested class of the injector. Overrides can either be by id or published types.
+
+* Add support to dependencyType so that the boxed types and primitives interoperate. ie. Can have a collection of `Integer` that derived from `int` values.
 
 * Figure out terminology. Currently it is a mixed bag derived from various injector frameworks that it has
   been inspired from. Terms that are misused and should be cleaned up. This would involved cleaning up lots
