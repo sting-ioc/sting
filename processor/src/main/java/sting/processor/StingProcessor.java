@@ -1069,6 +1069,14 @@ public final class StingProcessor
                                 " annotation. Use the " + Constants.NAMED_CLASSNAME + " annotation instead" );
         throw new ProcessorException( message, method );
       }
+      if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.CDI_TYPED_CLASSNAME ) )
+      {
+        final String message =
+          MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                "contain a method annotated with the " + Constants.CDI_TYPED_CLASSNAME +
+                                " annotation. Use the " + Constants.TYPED_CLASSNAME + " annotation instead" );
+        throw new ProcessorException( message, method );
+      }
 
       @SuppressWarnings( "unchecked" )
       final List<TypeMirror> types =
@@ -1253,6 +1261,16 @@ public final class StingProcessor
                               "be annotated with the " + Constants.JSR_330_NAMED_CLASSNAME + " annotation. " +
                               "Use the " + Constants.NAMED_CLASSNAME + " annotation instead. " +
                               MemberChecks.suppressedBy( Constants.WARNING_JSR_330_NAMED ) );
+      processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, element );
+    }
+    if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.CDI_TYPED_CLASSNAME ) &&
+         ElementsUtil.isWarningNotSuppressed( element, Constants.WARNING_CDI_TYPED ) )
+    {
+      final String message =
+        MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                              "be annotated with the " + Constants.CDI_TYPED_CLASSNAME + " annotation. " +
+                              "Use the " + Constants.TYPED_CLASSNAME + " annotation instead. " +
+                              MemberChecks.suppressedBy( Constants.WARNING_CDI_TYPED ) );
       processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, element );
     }
 

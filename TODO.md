@@ -8,9 +8,6 @@ complete as there is too much un-said.
 
 * Remove `@Provides` from error messages
 
-* Add verification to `@Fragment` and `@Injectable` to verify that we never used the `javax.enterprise.inject.Typed`
-  annotation on these classes.
-
 * Generate a suppressable warning if `@Inject` is present on constructor of `@Injectable`.
 
 * Add an annotation `X` that can be applied to annotations. Any types that are `include`-ed into a `Fragment`

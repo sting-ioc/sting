@@ -23,11 +23,15 @@ final class Constants
   @Nonnull
   static final String TYPED_CLASSNAME = "sting.Typed";
   @Nonnull
+  static final String CDI_TYPED_CLASSNAME = "javax.enterprise.inject.Typed";
+  @Nonnull
   static final String WARNING_PROTECTED_CONSTRUCTOR = "Sting:ProtectedConstructor";
   @Nonnull
   static final String WARNING_PUBLIC_CONSTRUCTOR = "Sting:PublicConstructor";
   @Nonnull
   static final String WARNING_JSR_330_NAMED = "Sting:Jsr330NamedPresent";
+  @Nonnull
+  static final String WARNING_CDI_TYPED = "Sting:CdiTypedPresent";
 
   private Constants()
   {
