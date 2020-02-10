@@ -118,6 +118,7 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injector.inputs.MultipleInputInjectorModel" },
         new Object[]{ "com.example.injector.inputs.OptionalInputInjectorModel" },
+        new Object[]{ "com.example.injector.inputs.PrimitiveInputInjectorModel" },
         new Object[]{ "com.example.injector.inputs.SingleInputInjectorModel" }
       };
   }

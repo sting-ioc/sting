@@ -91,10 +91,14 @@ final class InjectorGenerator
         ParameterSpec
           .builder( TypeName.get( input.getService().getCoordinate().getType() ),
                     input.getName(),
-                    Modifier.FINAL )
-          .addAnnotation( input.getService().isOptional() ?
-                          GeneratorUtil.NULLABLE_CLASSNAME :
-                          GeneratorUtil.NONNULL_CLASSNAME );
+                    Modifier.FINAL );
+
+      if ( !input.getService().getCoordinate().getType().getKind().isPrimitive() )
+      {
+        parameter.addAnnotation( input.getService().isOptional() ?
+                                 GeneratorUtil.NULLABLE_CLASSNAME :
+                                 GeneratorUtil.NONNULL_CLASSNAME );
+      }
       ctor.addParameter( parameter.build() );
     }
 
@@ -106,7 +110,8 @@ final class InjectorGenerator
         if ( Binding.Kind.INPUT == binding.getKind() )
         {
           final InputDescriptor input = (InputDescriptor) binding.getOwner();
-          if ( binding.getPublishedServices().get( 0 ).isOptional() )
+          final ServiceSpec serviceSpec = binding.getPublishedServices().get( 0 );
+          if ( serviceSpec.isOptional() || serviceSpec.getCoordinate().getType().getKind().isPrimitive() )
           {
             ctor.addStatement( "this.$N = $N", node.getName(), input.getName() );
           }
