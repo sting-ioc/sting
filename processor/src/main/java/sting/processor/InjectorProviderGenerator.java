@@ -53,7 +53,6 @@ final class InjectorProviderGenerator
 
     builder.addAnnotation( ClassName.get( "sting", "Fragment" ) );
 
-
     emitProvide( graph, builder );
 
     return builder.build();
