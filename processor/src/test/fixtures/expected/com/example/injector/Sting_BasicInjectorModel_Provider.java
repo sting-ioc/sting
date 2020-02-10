@@ -11,4 +11,8 @@ public interface Sting_BasicInjectorModel_Provider {
   default BasicInjectorModel provide() {
     return new Sting_BasicInjectorModel();
   }
+
+  default BasicInjectorModel.MyModel getMyModel(final BasicInjectorModel injector) {
+    return injector.getMyModel();
+  }
 }

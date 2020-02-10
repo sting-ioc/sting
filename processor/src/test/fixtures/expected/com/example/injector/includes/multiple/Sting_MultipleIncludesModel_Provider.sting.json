@@ -8,6 +8,19 @@
           "type": "com.example.injector.includes.multiple.MultipleIncludesModel"
         }
       ]
+    },
+    {
+      "id": "com.example.injector.includes.multiple.Sting_MultipleIncludesModel_Provider#getRunnable",
+      "publishedServices": [
+        {
+          "type": "java.lang.Runnable"
+        }
+      ],
+      "dependencies": [
+        {
+          "type": "com.example.injector.includes.multiple.MultipleIncludesModel"
+        }
+      ]
     }
   ]
 }

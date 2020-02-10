@@ -11,4 +11,8 @@ public interface Sting_BasicOutputModel_Provider {
   default BasicOutputModel provide() {
     return new Sting_BasicOutputModel();
   }
+
+  default BasicOutputModel.MyModel getMyModel(final BasicOutputModel injector) {
+    return injector.getMyModel();
+  }
 }

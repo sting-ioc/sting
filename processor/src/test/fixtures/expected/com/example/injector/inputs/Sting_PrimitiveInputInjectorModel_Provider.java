@@ -13,4 +13,8 @@ public interface Sting_PrimitiveInputInjectorModel_Provider {
       final float input7, final double input8) {
     return new Sting_PrimitiveInputInjectorModel(input1, input2, input3, input4, input5, input6, input7, input8);
   }
+
+  default boolean value1(final PrimitiveInputInjectorModel injector) {
+    return injector.value1();
+  }
 }

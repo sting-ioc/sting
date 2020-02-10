@@ -1,5 +1,6 @@
 package com.example.injector.includes.multiple;
 
+import java.util.Objects;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 
@@ -8,5 +9,10 @@ public final class Sting_Sting_MultipleIncludesModel_Provider implements Sting_M
   @Nonnull
   public Object $sting$_provide() {
     return provide();
+  }
+
+  @SuppressWarnings("unchecked")
+  public Runnable $sting$_getRunnable(final Object injector) {
+    return getRunnable( Objects.requireNonNull( (MultipleIncludesModel) injector ) );
   }
 }

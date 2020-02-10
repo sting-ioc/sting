@@ -11,4 +11,8 @@ public interface Sting_BasicEagerDependencyModel_Provider {
   default BasicEagerDependencyModel provide() {
     return new Sting_BasicEagerDependencyModel();
   }
+
+  default BasicEagerDependencyModel.MyModel6 getMyModel(final BasicEagerDependencyModel injector) {
+    return injector.getMyModel();
+  }
 }

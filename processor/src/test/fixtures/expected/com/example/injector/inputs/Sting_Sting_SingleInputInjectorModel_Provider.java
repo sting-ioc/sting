@@ -10,4 +10,9 @@ public final class Sting_Sting_SingleInputInjectorModel_Provider implements Stin
   public Object $sting$_provide(@Nonnull final Runnable input1) {
     return provide( Objects.requireNonNull( input1 ) );
   }
+
+  @SuppressWarnings("unchecked")
+  public Runnable $sting$_getRunnable(final Object injector) {
+    return getRunnable( Objects.requireNonNull( (SingleInputInjectorModel) injector ) );
+  }
 }

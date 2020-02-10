@@ -11,4 +11,8 @@ public interface Sting_DiamondDependencyIncludesModel_Provider {
   default DiamondDependencyIncludesModel provide() {
     return new Sting_DiamondDependencyIncludesModel();
   }
+
+  default MyModel getRunnable(final DiamondDependencyIncludesModel injector) {
+    return injector.getRunnable();
+  }
 }

@@ -11,4 +11,8 @@ public interface Sting_SingleIncludesModel_Provider {
   default SingleIncludesModel provide() {
     return new Sting_SingleIncludesModel();
   }
+
+  default Runnable getRunnable(final SingleIncludesModel injector) {
+    return injector.getRunnable();
+  }
 }

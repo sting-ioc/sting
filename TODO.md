@@ -17,9 +17,6 @@ complete as there is too much un-said.
   base or one binding in `@Fragment` with appropriate type.) Some how the autodiscovery process should also detect
   this scenario.
 
-* Enhance generator for Injector fragment so that any singular outputs are output as either provider methods.
-  Should support optional and required dependencies.
-
 * We may need to add a separate phase at the end of compilation that detects when singular injection requests
   result in multiple candidate bindings. Note that some of these bindings can be added during resolution process.
 

@@ -12,4 +12,9 @@ public interface Sting_OptionalInputInjectorModel_Provider {
   default OptionalInputInjectorModel provide(@Nullable final Runnable input1) {
     return new Sting_OptionalInputInjectorModel(input1);
   }
+
+  @Nullable
+  default Runnable getRunnable(final OptionalInputInjectorModel injector) {
+    return injector.getRunnable();
+  }
 }

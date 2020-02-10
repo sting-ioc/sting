@@ -8,6 +8,19 @@
           "type": "com.example.injector.includes.diamond.DiamondDependencyIncludesModel"
         }
       ]
+    },
+    {
+      "id": "com.example.injector.includes.diamond.Sting_DiamondDependencyIncludesModel_Provider#getRunnable",
+      "publishedServices": [
+        {
+          "type": "com.example.injector.includes.diamond.MyModel"
+        }
+      ],
+      "dependencies": [
+        {
+          "type": "com.example.injector.includes.diamond.DiamondDependencyIncludesModel"
+        }
+      ]
     }
   ]
 }

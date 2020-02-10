@@ -11,4 +11,8 @@ public interface Sting_MultipleIncludesModel_Provider {
   default MultipleIncludesModel provide() {
     return new Sting_MultipleIncludesModel();
   }
+
+  default Runnable getRunnable(final MultipleIncludesModel injector) {
+    return injector.getRunnable();
+  }
 }

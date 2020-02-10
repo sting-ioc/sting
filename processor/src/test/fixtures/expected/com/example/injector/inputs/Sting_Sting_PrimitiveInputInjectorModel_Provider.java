@@ -12,4 +12,9 @@ public final class Sting_Sting_PrimitiveInputInjectorModel_Provider implements S
       final double input8) {
     return provide( Objects.requireNonNull( input1 ), Objects.requireNonNull( input2 ), Objects.requireNonNull( input3 ), Objects.requireNonNull( input4 ), Objects.requireNonNull( input5 ), Objects.requireNonNull( input6 ), Objects.requireNonNull( input7 ), Objects.requireNonNull( input8 ) );
   }
+
+  @SuppressWarnings("unchecked")
+  public boolean $sting$_value1(final Object injector) {
+    return value1( (PrimitiveInputInjectorModel) injector );
+  }
 }

@@ -10,4 +10,14 @@ public final class Sting_Sting_MultipleInputInjectorModel_Provider implements St
   public Object $sting$_provide(@Nonnull final Runnable input1, @Nonnull final String input2) {
     return provide( Objects.requireNonNull( input1 ), Objects.requireNonNull( input2 ) );
   }
+
+  @SuppressWarnings("unchecked")
+  public Object $sting$_getMyModel(final Object injector) {
+    return getMyModel( Objects.requireNonNull( (MultipleInputInjectorModel) injector ) );
+  }
+
+  @SuppressWarnings("unchecked")
+  public String $sting$_getHostname(final Object injector) {
+    return getHostname( Objects.requireNonNull( (MultipleInputInjectorModel) injector ) );
+  }
 }

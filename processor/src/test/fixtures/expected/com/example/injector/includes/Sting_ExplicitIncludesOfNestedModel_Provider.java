@@ -11,4 +11,13 @@ public interface Sting_ExplicitIncludesOfNestedModel_Provider {
   default ExplicitIncludesOfNestedModel provide() {
     return new Sting_ExplicitIncludesOfNestedModel();
   }
+
+  default Runnable getRunnable(final ExplicitIncludesOfNestedModel injector) {
+    return injector.getRunnable();
+  }
+
+  default ExplicitIncludesOfNestedModel.MyModel getMyModel(
+      final ExplicitIncludesOfNestedModel injector) {
+    return injector.getMyModel();
+  }
 }

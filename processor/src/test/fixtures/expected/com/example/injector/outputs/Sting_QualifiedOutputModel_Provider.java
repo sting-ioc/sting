@@ -11,4 +11,8 @@ public interface Sting_QualifiedOutputModel_Provider {
   default QualifiedOutputModel provide() {
     return new Sting_QualifiedOutputModel();
   }
+
+  default QualifiedOutputModel.MyModel getMyModel(final QualifiedOutputModel injector) {
+    return injector.getMyModel();
+  }
 }
