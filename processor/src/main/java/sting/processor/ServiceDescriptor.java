@@ -141,22 +141,16 @@ final class ServiceDescriptor
           else
           {
             final TypeMirror typeL2 = typeArgumentsL1.get( 0 );
-            if ( TypeKind.DECLARED != typeL2.getKind() )
+            assert TypeKind.DECLARED == typeL2.getKind();
+            final DeclaredType declaredTypeL2 = (DeclaredType) typeL2;
+            final String classnameL2 = getClassname( declaredTypeL2 );
+            if ( Supplier.class.getName().equals( classnameL2 ) )
             {
-              return !_supplier ? extractDependencyType( typeL2 ) : null;
+              return _supplier ? extractDependencyType( declaredTypeL2.getTypeArguments().get( 0 ) ) : null;
             }
             else
             {
-              final DeclaredType declaredTypeL2 = (DeclaredType) typeL2;
-              final String classnameL2 = getClassname( declaredTypeL2 );
-              if ( Supplier.class.getName().equals( classnameL2 ) )
-              {
-                return _supplier ? extractDependencyType( declaredTypeL2.getTypeArguments().get( 0 ) ) : null;
-              }
-              else
-              {
-                return extractDependencyType( typeL2 );
-              }
+              return extractDependencyType( typeL2 );
             }
           }
         }
