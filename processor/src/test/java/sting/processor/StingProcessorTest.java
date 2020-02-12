@@ -318,6 +318,11 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.provides.VoidReturnTypeProvidesModel",
                       "@Fragment target must only contain methods that return a value" },
 
+        new Object[]{ "com.example.fragment.named.Jsr330NamedInputModel",
+                      "@Fragment target must not contain a method with a parameter annotated with the javax.inject.Named annotation. Use the sting.Named annotation instead" },
+        new Object[]{ "com.example.fragment.named.Jsr330NamedProvidesModel",
+                      "@Fragment target must not contain a method annotated with the javax.inject.Named annotation. Use the sting.Named annotation instead" },
+
         new Object[]{ "com.example.fragment.provides.types.BadType1Model",
                       "@Typed specified a type that is not assignable to the return type of the method" },
         new Object[]{ "com.example.fragment.provides.types.BadType2Model",
