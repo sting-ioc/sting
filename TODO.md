@@ -6,14 +6,14 @@ complete as there is too much un-said.
 
 ## Alpha Release TODO Items
 
-* We may need to add a separate phase at the end of compilation that detects when singular injection requests
-  result in multiple candidate bindings. Note that some of these bindings can be added during resolution process.
-
 * Update Arez to support sting injection
 
 * Update React4j to support sting injection
 
 ## Beta Release TODO Items
+
+* We may need to add a separate phase at the end of compilation that detects when singular injection requests
+  result in multiple candidate bindings. Note that some of these bindings can be added during resolution process.
 
 * Add code to verify that the provider class `@StingProvider` identifies should produce a binding that exposes
   the originating type as published service.
