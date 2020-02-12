@@ -1,7 +1,5 @@
 package sting.processor;
 
-import com.sun.tools.javac.code.Flags;
-import com.sun.tools.javac.code.Symbol;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -1683,7 +1681,7 @@ public final class StingProcessor
 
   private void injectableConstructorMustNotBePublic( @Nonnull final ExecutableElement constructor )
   {
-    if ( isNotSynthetic( constructor ) &&
+    if ( ElementsUtil.isNotSynthetic( constructor ) &&
          constructor.getModifiers().contains( Modifier.PUBLIC ) &&
          ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_PUBLIC_CONSTRUCTOR ) )
     {
@@ -1706,18 +1704,6 @@ public final class StingProcessor
         MemberChecks.suppressedBy( Constants.WARNING_PROTECTED_CONSTRUCTOR );
       processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, constructor );
     }
-  }
-
-  /**
-   * Returns true if the given element is synthetic.
-   *
-   * @param element to check
-   * @return true if and only if the given element is synthetic, false otherwise
-   */
-  private boolean isNotSynthetic( @Nonnull final Element element )
-  {
-    final long flags = ( (Symbol) element ).flags();
-    return 0 == ( flags & Flags.SYNTHETIC ) && 0 == ( flags & Flags.GENERATEDCONSTR );
   }
 
   @Nonnull
