@@ -815,12 +815,16 @@ public final class StingProcessor
           !injectableType &&
           AnnotationsUtil.hasAnnotationOfType( executableElement.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME );
         final ElementKind executableKind = executableElement.getKind();
-        if ( !injectableType && ElementKind.CONSTRUCTOR == executableKind )
+        final boolean isProvider =
+          !injectableType && !isFragmentType && hasStingProvider( executableElement.getEnclosingElement() );
+        if ( !injectableType && ElementKind.CONSTRUCTOR == executableKind && !isProvider )
         {
           reportError( env,
                        MemberChecks.must( Constants.NAMED_CLASSNAME,
-                                          "only be present on a constructor parameter if the constructor is enclosed in a type annotated with " +
-                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) ),
+                                          "only be present on a constructor parameter if the constructor " +
+                                          "is enclosed in a type annotated with " +
+                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                          " or the type is has an associated provider" ),
                        element );
         }
         else if ( !isFragmentType && ElementKind.METHOD == executableKind )
@@ -834,6 +838,7 @@ public final class StingProcessor
         else
         {
           assert ( injectableType && ElementKind.CONSTRUCTOR == executableKind ) ||
+                 ( isProvider && ElementKind.CONSTRUCTOR == executableKind ) ||
                  ( isFragmentType && ElementKind.METHOD == executableKind );
         }
       }
@@ -868,6 +873,18 @@ public final class StingProcessor
                      element );
       }
     }
+  }
+
+  private boolean hasStingProvider( @Nonnull final Element element )
+  {
+    return element
+      .getAnnotationMirrors()
+      .stream()
+      .anyMatch( a -> a.getAnnotationType()
+        .asElement()
+        .getAnnotationMirrors()
+        .stream()
+        .anyMatch( ca -> ca.getAnnotationType().asElement().getSimpleName().contentEquals( "StingProvider" ) ) );
   }
 
   private void verifyTypedElements( @Nonnull final RoundEnvironment env,

@@ -605,6 +605,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.SuppressedCdiTypedModel" },
         new Object[]{ "com.example.injectable.SuppressedJsr330InjectModel" },
 
+        new Object[]{ "com.example.injectable.named.NamedProviderModel" },
         new Object[]{ "com.example.injectable.named.SuppressedJsr330NamedInputModel" },
         new Object[]{ "com.example.injectable.named.SuppressedJsr330NamedInjectableModel" },
 
