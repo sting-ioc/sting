@@ -1,4 +1,4 @@
-<p align="center"><img src="/assets/icons/logo.png" alt="Arez" width="120"></p>
+<p align="center"><img src="/assets/icons/logo.png" alt="Sting" width="120"></p>
 
 # Sting
 
