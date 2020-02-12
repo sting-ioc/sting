@@ -44,6 +44,7 @@ import javax.tools.JavaFileManager;
 import javax.tools.StandardLocation;
 import org.realityforge.proton.AbstractStandardProcessor;
 import org.realityforge.proton.AnnotationsUtil;
+import org.realityforge.proton.DeferredElementSet;
 import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.IOUtil;
@@ -90,6 +91,12 @@ public final class StingProcessor
    */
   @Nonnull
   private final Registry _registry = new Registry();
+  @Nonnull
+  private final DeferredElementSet _deferredInjectableTypes = new DeferredElementSet();
+  @Nonnull
+  private final DeferredElementSet _deferredFragmentTypes = new DeferredElementSet();
+  @Nonnull
+  private final DeferredElementSet _deferredInjectorTypes = new DeferredElementSet();
   /**
    * Flag controlling whether json descriptors are emitted.
    * Json descriptors are primarily used during debugging and probably should not be enabled in production code.
@@ -140,6 +147,7 @@ public final class StingProcessor
       .filter( a -> a.getQualifiedName().toString().equals( Constants.INJECTABLE_CLASSNAME ) )
       .findAny()
       .ifPresent( a -> processTypeElements( env,
+                                            _deferredInjectableTypes,
                                             (Collection<TypeElement>) env.getElementsAnnotatedWith( a ),
                                             this::processInjectable ) );
 
@@ -147,6 +155,7 @@ public final class StingProcessor
       .filter( a -> a.getQualifiedName().toString().equals( Constants.FRAGMENT_CLASSNAME ) )
       .findAny()
       .ifPresent( a -> processTypeElements( env,
+                                            _deferredFragmentTypes,
                                             (Collection<TypeElement>) env.getElementsAnnotatedWith( a ),
                                             this::processFragment ) );
 
@@ -169,6 +178,7 @@ public final class StingProcessor
       .filter( a -> a.getQualifiedName().toString().equals( Constants.INJECTOR_CLASSNAME ) )
       .findAny()
       .ifPresent( a -> processTypeElements( env,
+                                            _deferredInjectorTypes,
                                             (Collection<TypeElement>) env.getElementsAnnotatedWith( a ),
                                             this::processInjector ) );
 
@@ -177,7 +187,9 @@ public final class StingProcessor
     processResolvedInjectors( env );
 
     errorIfProcessingOverAndInvalidTypesDetected( env );
-    errorIfProcessingOverAndDeferredTypesUnprocessed( env );
+    errorIfProcessingOverAndDeferredTypesUnprocessed( env, _deferredInjectableTypes );
+    errorIfProcessingOverAndDeferredTypesUnprocessed( env, _deferredFragmentTypes );
+    errorIfProcessingOverAndDeferredTypesUnprocessed( env, _deferredInjectorTypes );
     errorIfProcessingOverAndUnprocessedInjectorDetected( env );
     if ( env.processingOver() || env.errorRaised() )
     {
@@ -772,13 +784,12 @@ public final class StingProcessor
       }
       else
       {
-        final boolean optional =
-          AnnotationsUtil.hasAnnotationOfType( method, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
+        final boolean optional = AnnotationsUtil.hasNullableAnnotation( method );
         if ( optional && ServiceDescriptor.Kind.INSTANCE != kind )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
                                                               "contain a method annotated with " +
-                                                              MemberChecks.toSimpleName( GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) +
+                                                              MemberChecks.toSimpleName( AnnotationsUtil.NULLABLE_CLASSNAME ) +
                                                               " that is not an instance dependency kind" ),
                                         method );
         }
@@ -1010,7 +1021,7 @@ public final class StingProcessor
     {
       final AnnotationMirror input = inputs.get( i );
       final String qualifier = AnnotationsUtil.getAnnotationValueValue( input, "qualifier" );
-      final AnnotationValue typeAnnotationValue = AnnotationsUtil._getAnnotationValue( input, "type" );
+      final AnnotationValue typeAnnotationValue = AnnotationsUtil.getAnnotationValue( input, "type" );
       final TypeMirror type = (TypeMirror) typeAnnotationValue.getValue();
       if ( TypeKind.ARRAY == type.getKind() )
       {
@@ -1109,7 +1120,7 @@ public final class StingProcessor
                 .replace( "[FlatEnclosingName]", getEnclosingName( (TypeElement) includeElement ).replace( '.', '_' ) );
 
             final String targetQualifiedName =
-              GeneratorUtil.getPackageElement( element ).getQualifiedName().toString() + "." + targetCompoundType;
+              ElementsUtil.getPackageElement( element ).getQualifiedName().toString() + "." + targetCompoundType;
 
             results.add( new IncludeDescriptor( (DeclaredType) include, targetQualifiedName ) );
           }
@@ -1237,14 +1248,12 @@ public final class StingProcessor
                                                        "only contain methods with a default modifier" ),
                                     method );
     }
-    final boolean nullablePresent =
-      AnnotationsUtil.hasAnnotationOfType( method, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
-
+    final boolean nullablePresent = AnnotationsUtil.hasNullableAnnotation( method );
     if ( nullablePresent && method.getReturnType().getKind().isPrimitive() )
     {
       throw new ProcessorException( MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
                                     " contains a method that is incorrectly annotated with " +
-                                    MemberChecks.toSimpleName( GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) +
+                                    MemberChecks.toSimpleName( AnnotationsUtil.NULLABLE_CLASSNAME ) +
                                     " as the return type is a primitive value",
                                     method );
     }
@@ -1378,13 +1387,12 @@ public final class StingProcessor
       }
       else
       {
-        final boolean optional =
-          AnnotationsUtil.hasAnnotationOfType( parameter, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
+        final boolean optional = AnnotationsUtil.hasNullableAnnotation( parameter );
         if ( optional && ServiceDescriptor.Kind.INSTANCE != kind )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                               "contain a method with a parameter annotated with the " +
-                                                              MemberChecks.toSimpleName( GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) +
+                                                              MemberChecks.toSimpleName( AnnotationsUtil.NULLABLE_CLASSNAME ) +
                                                               " annotation that is not an instance dependency kind" ),
                                         parameter );
         }
@@ -1661,13 +1669,12 @@ public final class StingProcessor
       }
       else
       {
-        final boolean optional =
-          AnnotationsUtil.hasAnnotationOfType( parameter, GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME );
+        final boolean optional = AnnotationsUtil.hasNullableAnnotation( parameter );
         if ( optional && ServiceDescriptor.Kind.INSTANCE != kind )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
                                                               "contain a constructor with a parameter annotated with " +
-                                                              MemberChecks.toSimpleName( GeneratorUtil.NULLABLE_ANNOTATION_CLASSNAME ) +
+                                                              MemberChecks.toSimpleName( AnnotationsUtil.NULLABLE_CLASSNAME ) +
                                                               " that is not an instance dependency kind" ),
                                         parameter );
         }
