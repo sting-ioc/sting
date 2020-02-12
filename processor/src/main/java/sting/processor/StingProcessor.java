@@ -812,6 +812,7 @@ public final class StingProcessor
           AnnotationsUtil.hasAnnotationOfType( executableElement.getEnclosingElement(),
                                                Constants.INJECTABLE_CLASSNAME );
         final boolean isFragmentType =
+          !injectableType &&
           AnnotationsUtil.hasAnnotationOfType( executableElement.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME );
         final ElementKind executableKind = executableElement.getKind();
         if ( !injectableType && ElementKind.CONSTRUCTOR == executableKind )
