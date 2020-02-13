@@ -2,6 +2,11 @@
   "schema": "graph/1",
   "nodes": [
     {
+      "id": "com.example.injector.eager.BasicEagerDependencyModel.MyModel2",
+      "kind": "INJECTABLE",
+      "eager": true
+    },
+    {
       "id": "com.example.injector.eager.BasicEagerDependencyModel.MyModel0",
       "kind": "INJECTABLE"
     },
@@ -22,11 +27,6 @@
           ]
         }
       ]
-    },
-    {
-      "id": "com.example.injector.eager.BasicEagerDependencyModel.MyModel2",
-      "kind": "INJECTABLE",
-      "eager": true
     },
     {
       "id": "com.example.injector.eager.BasicEagerDependencyModel.MyModel1",
