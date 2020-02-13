@@ -638,6 +638,7 @@ public final class StingProcessor
   private void processInjector( @Nonnull final TypeElement element )
     throws Exception
   {
+    debug( () -> "Processing Injector: " + element );
     final ElementKind kind = element.getKind();
     if ( ElementKind.INTERFACE != kind )
     {
@@ -965,6 +966,7 @@ public final class StingProcessor
 
   private void processFragment( @Nonnull final TypeElement element )
   {
+    debug( () -> "Processing Fragment: " + element );
     if ( ElementKind.INTERFACE != element.getKind() )
     {
       throw new ProcessorException( MemberChecks.must( Constants.FRAGMENT_CLASSNAME, "be an interface" ),
@@ -1406,6 +1408,7 @@ public final class StingProcessor
 
   private void processInjectable( @Nonnull final TypeElement element )
   {
+    debug( () -> "Processing Injectable: " + element );
     if ( ElementKind.CLASS != element.getKind() )
     {
       throw new ProcessorException( MemberChecks.must( Constants.INJECTABLE_CLASSNAME, "be a class" ),
