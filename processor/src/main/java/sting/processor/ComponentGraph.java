@@ -1,6 +1,7 @@
 package sting.processor;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -35,11 +36,6 @@ final class ComponentGraph
    */
   @Nonnull
   private final Map<Coordinate, List<Binding>> _publishedTypes = new LinkedHashMap<>();
-  /**
-   * The nodes contained in the component graph.
-   */
-  @Nonnull
-  private final Map<Binding, Node> _nodes = new HashMap<>();
   /**
    * The index of ids to Node.
    */
@@ -83,17 +79,22 @@ final class ComponentGraph
     return _rootNode;
   }
 
-  @Nullable
-  Node findNodeById( @Nonnull final String id )
-  {
-    return _nodesById.get( id );
-  }
-
   @Nonnull
   Node findOrCreateNode( @Nonnull final Binding binding )
   {
     assert !_complete;
-    return _nodes.computeIfAbsent( binding, this::createNode );
+    final String id = binding.getId();
+    final Node node = _nodesById.get( id );
+    if ( null == node )
+    {
+      final Node newNode = createNode( binding );
+      _nodesById.put( id, newNode );
+      return newNode;
+    }
+    else
+    {
+      return node;
+    }
   }
 
   @Nonnull
@@ -126,7 +127,7 @@ final class ComponentGraph
     _complete = true;
     final AtomicInteger index = new AtomicInteger();
     final Map<FragmentDescriptor, FragmentNode> fragmentMap = new HashMap<>();
-    _fragmentNodes = _nodes
+    _fragmentNodes = _nodesById
       .values()
       .stream()
       .filter( Node::isFromProvides )
@@ -136,7 +137,7 @@ final class ComponentGraph
       .peek( f -> fragmentMap.put( f.getFragment(), f ) )
       .collect( Collectors.toList() );
     index.set( 0 );
-    _orderedNodes = _nodes.values()
+    _orderedNodes = _nodesById.values()
       .stream()
       .sorted( Comparator.comparing( Node::getDepth ).thenComparing( n -> n.getBinding().getId() ).reversed() )
       .peek( n -> n.setName( "node" + index.incrementAndGet() ) )
