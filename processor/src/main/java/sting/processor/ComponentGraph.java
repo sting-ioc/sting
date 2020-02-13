@@ -80,6 +80,12 @@ final class ComponentGraph
   }
 
   @Nonnull
+  Collection<Node> getRawNodeCollection()
+  {
+    return _nodesById.values();
+  }
+
+  @Nonnull
   Node findOrCreateNode( @Nonnull final Binding binding )
   {
     assert !_complete;

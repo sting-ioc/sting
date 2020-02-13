@@ -352,6 +352,10 @@ public final class StingProcessor
     final Set<Node> completed = new HashSet<>();
     final Stack<WorkEntry> workList = new Stack<>();
     addDependsOnToWorkList( workList, rootNode, null );
+    for ( final Node node : graph.getRawNodeCollection() )
+    {
+      addDependsOnToWorkList( workList, node, null );
+    }
     while ( !workList.isEmpty() )
     {
       final WorkEntry workEntry = workList.pop();
