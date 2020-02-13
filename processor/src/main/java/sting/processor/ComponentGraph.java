@@ -143,7 +143,8 @@ final class ComponentGraph
       .peek( f -> fragmentMap.put( f.getFragment(), f ) )
       .collect( Collectors.toList() );
     index.set( 0 );
-    _orderedNodes = _nodesById.values()
+    _orderedNodes = _nodesById
+      .values()
       .stream()
       .sorted( Comparator.comparing( Node::getDepth ).thenComparing( n -> n.getBinding().getId() ).reversed() )
       .peek( n -> n.setName( "node" + index.incrementAndGet() ) )
