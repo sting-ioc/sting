@@ -144,21 +144,17 @@ public final class StingProcessor
     _verifyDescriptors =
       "true".equals( processingEnv.getOptions().getOrDefault( "sting.verify_descriptors", "false" ) );
 
-    annotations.stream()
-      .filter( a -> a.getQualifiedName().toString().equals( Constants.INJECTABLE_CLASSNAME ) )
-      .findAny()
-      .ifPresent( a -> processTypeElements( env,
-                                            _deferredInjectableTypes,
-                                            (Collection<TypeElement>) env.getElementsAnnotatedWith( a ),
-                                            this::processInjectable ) );
+    processTypeElements( annotations,
+                         env,
+                         Constants.INJECTABLE_CLASSNAME,
+                         _deferredInjectableTypes,
+                         this::processInjectable );
 
-    annotations.stream()
-      .filter( a -> a.getQualifiedName().toString().equals( Constants.FRAGMENT_CLASSNAME ) )
-      .findAny()
-      .ifPresent( a -> processTypeElements( env,
-                                            _deferredFragmentTypes,
-                                            (Collection<TypeElement>) env.getElementsAnnotatedWith( a ),
-                                            this::processFragment ) );
+    processTypeElements( annotations,
+                         env,
+                         Constants.FRAGMENT_CLASSNAME,
+                         _deferredFragmentTypes,
+                         this::processFragment );
 
     annotations.stream()
       .filter( a -> a.getQualifiedName().toString().equals( Constants.NAMED_CLASSNAME ) )
@@ -175,13 +171,11 @@ public final class StingProcessor
       .findAny()
       .ifPresent( a -> verifyEagerElements( env, env.getElementsAnnotatedWith( a ) ) );
 
-    annotations.stream()
-      .filter( a -> a.getQualifiedName().toString().equals( Constants.INJECTOR_CLASSNAME ) )
-      .findAny()
-      .ifPresent( a -> processTypeElements( env,
-                                            _deferredInjectorTypes,
-                                            (Collection<TypeElement>) env.getElementsAnnotatedWith( a ),
-                                            this::processInjector ) );
+    processTypeElements( annotations,
+                         env,
+                         Constants.INJECTOR_CLASSNAME,
+                         _deferredInjectorTypes,
+                         this::processInjector );
 
     processResolvedInjectables( env );
     processResolvedFragments( env );
