@@ -1,0 +1,11 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.includes.injector.MyFragment"
+  ],
+  "outputs": [
+    {
+      "type": "com.example.injector.includes.injector.MyModel"
+    }
+  ]
+}

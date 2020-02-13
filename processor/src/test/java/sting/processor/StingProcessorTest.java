@@ -95,7 +95,6 @@ public final class StingProcessorTest
     return new Object[][]
       {
         new Object[]{ "com.example.injector.BasicInjectorModel" },
-        new Object[]{ "com.example.injector.IncludeInjectorModel" },
 
         new Object[]{ "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel" },
         new Object[]{ "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel" },
@@ -245,6 +244,23 @@ public final class StingProcessorTest
                                             javaOutput( pkg + ".MyFragment3" ),
                                             jsonOutput( pkg + ".MyModel" ),
                                             javaOutput( pkg + ".MyModel" ) ) );
+  }
+
+  @Test
+  public void InjectorIncludesInjector()
+    throws Exception
+  {
+    final String pkg = "com.example.injector.includes.injector";
+    assertSuccessfulCompile( inputs( pkg + ".MyInjector",
+                                     pkg + ".MyOtherInjectorModel",
+                                     pkg + ".MyFragment",
+                                     pkg + ".MyModel" ),
+                             Arrays.asList( jsonOutput( pkg + ".MyInjector" ),
+                                            javaOutput( pkg + ".MyInjector" ),
+                                            jsonOutput( pkg + ".MyOtherInjectorModel" ),
+                                            javaOutput( pkg + ".MyOtherInjectorModel" ),
+                                            jsonOutput( pkg + ".MyFragment" ),
+                                            javaOutput( pkg + ".MyFragment" ) ) );
   }
 
   @DataProvider( name = "failedCompiles" )

@@ -1,0 +1,13 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.injector.includes.injector.MyFragment#provideRunnable",
+      "publishedServices": [
+        {
+          "type": "com.example.injector.includes.injector.MyModel"
+        }
+      ]
+    }
+  ]
+}
