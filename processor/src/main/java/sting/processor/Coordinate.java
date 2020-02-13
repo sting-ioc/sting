@@ -59,7 +59,7 @@ final class Coordinate
   {
     assert o instanceof Coordinate;
     final Coordinate coordinate = (Coordinate) o;
-    return _qualifier.equals( coordinate._qualifier ) && _type.equals( coordinate._type );
+    return _qualifier.equals( coordinate._qualifier ) && _type.toString().equals( coordinate._type.toString() );
   }
 
   @Override
