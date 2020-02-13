@@ -8,8 +8,6 @@ complete as there is too much un-said.
 
 * Update Arez to support sting injection
 
-* Update React4j to support sting injection
-
 ## Beta Release TODO Items
 
 * We may need to add a separate phase at the end of compilation that detects when singular injection requests
