@@ -66,6 +66,7 @@ import org.realityforge.proton.ProcessorException;
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
 @SupportedOptions( { "sting.defer.unresolved",
                      "sting.defer.errors",
+                     "sting.debug",
                      "sting.emit_json_descriptors",
                      "sting.verbose_out_of_round.errors",
                      "sting.verify_descriptors" } )
