@@ -351,6 +351,9 @@ public final class StingProcessor
     final Node rootNode = graph.getRootNode();
     final Set<Node> completed = new HashSet<>();
     final Stack<WorkEntry> workList = new Stack<>();
+    // At this stage the "rootNode" contains dependencies for all the service methods declared on the injector
+    // and all the eager services declared in includes have already been added to the nodes list. So we get
+    // these nodes and add all their dependencies to the work list so we can walk the dependency tree
     addDependsOnToWorkList( workList, rootNode, null );
     for ( final Node node : graph.getRawNodeCollection() )
     {
