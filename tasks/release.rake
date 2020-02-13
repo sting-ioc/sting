@@ -109,7 +109,7 @@ CONTENT
       # Find the double new line after the product version banner
       start_index = changelog.index("\n\n", changelog.index("## [v#{ENV['PRODUCT_VERSION']}]")) + 2
 
-      end_index = changelog.index("### [v#{ENV['PREVIOUS_PRODUCT_VERSION']}]", start_index)
+      end_index = changelog.index("### [v#{ENV['PREVIOUS_PRODUCT_VERSION']}]", start_index) || changelog.length
 
       filename = "website/blog/#{ENV['RELEASE_DATE']}-version-#{ENV['PRODUCT_VERSION']}-release.md"
       content = <<CONTENT
@@ -191,7 +191,7 @@ HEADER
       start = changelog.index("\n", start)
       start = changelog.index("\n", start + 1)
 
-      end_index = changelog.index('### [v', start)
+      end_index = changelog.index('### [v', start) || changelog.length
 
       changes = changelog[start, end_index - start]
 
