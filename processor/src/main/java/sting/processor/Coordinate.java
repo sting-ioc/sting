@@ -65,6 +65,6 @@ final class Coordinate
   @Override
   public int hashCode()
   {
-    return Objects.hash( _qualifier, _type );
+    return Objects.hash( _qualifier, _type.toString() );
   }
 }
