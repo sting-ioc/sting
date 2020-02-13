@@ -135,7 +135,6 @@ public final class StingProcessor
     _descriptorIO = new DescriptorIO( processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
   }
 
-  @SuppressWarnings( "unchecked" )
   @Override
   public boolean process( @Nonnull final Set<? extends TypeElement> annotations, @Nonnull final RoundEnvironment env )
   {
