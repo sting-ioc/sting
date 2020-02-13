@@ -41,9 +41,9 @@ public final class StingProcessorInjectorGraphTest
     assertIndex( nodes, classname, "MyModel4", 5 );
     assertIndex( nodes, classname, "MyModel5", 4 );
     assertIndex( nodes, classname, "MyModel1", 3 );
-    assertIndex( nodes, classname, "MyModel2", 2 );
-    assertIndex( nodes, classname, "MyModel3", 1 );
-    assertIndex( nodes, classname, "MyModel0", 0 );
+    assertIndex( nodes, classname, "MyModel3", 2 );
+    assertIndex( nodes, classname, "MyModel0", 1 );
+    assertIndex( nodes, classname, "MyModel2", 0 );
   }
 
   @Test
