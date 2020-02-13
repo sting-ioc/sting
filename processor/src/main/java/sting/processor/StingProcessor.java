@@ -133,16 +133,13 @@ public final class StingProcessor
   {
     super.init( processingEnv );
     _descriptorIO = new DescriptorIO( processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
+    _emitJsonDescriptors = readBooleanOption( "emit_json_descriptors", false );
+    _verifyDescriptors = readBooleanOption( "verify_descriptors", false );
   }
 
   @Override
   public boolean process( @Nonnull final Set<? extends TypeElement> annotations, @Nonnull final RoundEnvironment env )
   {
-    _emitJsonDescriptors =
-      "true".equals( processingEnv.getOptions().getOrDefault( "sting.emit_json_descriptors", "false" ) );
-    _verifyDescriptors =
-      "true".equals( processingEnv.getOptions().getOrDefault( "sting.verify_descriptors", "false" ) );
-
     processTypeElements( annotations,
                          env,
                          Constants.INJECTABLE_CLASSNAME,
