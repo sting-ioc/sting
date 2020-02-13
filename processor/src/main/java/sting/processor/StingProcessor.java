@@ -347,18 +347,36 @@ public final class StingProcessor
 
   private void buildObjectGraphNodes( @Nonnull final ComponentGraph graph )
   {
-    final InjectorDescriptor injector = graph.getInjector();
-    final Node rootNode = graph.getRootNode();
     final Set<Node> completed = new HashSet<>();
     final Stack<WorkEntry> workList = new Stack<>();
     // At this stage the "rootNode" contains dependencies for all the service methods declared on the injector
-    // and all the eager services declared in includes have already been added to the nodes list. So we get
-    // these nodes and add all their dependencies to the work list so we can walk the dependency tree
+    // and all the eager services declared in includes have already been added to the nodes list.
+    //
+    // We start at the rootNode and expand all of the dependencies. And then we take any of the eager dependencies
+    // that have yet to be added to be processed and add them to to worklist and expand all dependencies until there
+    // are no eager nodes left to process
+    final List<Node> eagerNodes = new ArrayList<>( graph.getRawNodeCollection() );
+    final Node rootNode = graph.getRootNode();
+    rootNode.setDepth( 0 );
     addDependsOnToWorkList( workList, rootNode, null );
-    for ( final Node node : graph.getRawNodeCollection() )
+    processWorkList( graph, completed, workList );
+    for ( final Node node : eagerNodes )
     {
-      addDependsOnToWorkList( workList, node, null );
+      if( node.isDepthNotSet() )
+      {
+        node.setDepth( 0 );
+        addDependsOnToWorkList( workList, node, null );
+        processWorkList( graph, completed, workList );
+      }
     }
+    graph.complete();
+  }
+
+  private void processWorkList( @Nonnull final ComponentGraph graph,
+                                @Nonnull final Set<Node> completed,
+                                @Nonnull final Stack<WorkEntry> workList )
+  {
+    final InjectorDescriptor injector = graph.getInjector();
     while ( !workList.isEmpty() )
     {
       final WorkEntry workEntry = workList.pop();
@@ -480,7 +498,6 @@ public final class StingProcessor
         }
       }
     }
-    graph.complete();
   }
 
   @Nonnull

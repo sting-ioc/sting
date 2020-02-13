@@ -37,7 +37,7 @@ final class Edge
     for ( final Node node : satisfiedBy )
     {
       node.usedBy( this );
-      node.setDepth( _node.getDepth() + 1 );
+      node.setDepth( Math.max( _node.getDepth() + 1, node.getDepth() ) );
     }
   }
 
