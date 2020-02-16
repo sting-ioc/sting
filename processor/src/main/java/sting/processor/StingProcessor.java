@@ -363,7 +363,7 @@ public final class StingProcessor
     processWorkList( graph, completed, workList );
     for ( final Node node : eagerNodes )
     {
-      if( node.isDepthNotSet() )
+      if ( node.isDepthNotSet() )
       {
         node.setDepth( 0 );
         addDependsOnToWorkList( workList, node, null );
