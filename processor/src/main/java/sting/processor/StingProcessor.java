@@ -51,6 +51,7 @@ import org.realityforge.proton.IOUtil;
 import org.realityforge.proton.JsonUtil;
 import org.realityforge.proton.MemberChecks;
 import org.realityforge.proton.ProcessorException;
+import org.realityforge.proton.TypesUtil;
 
 /**
  * Annotation processor that analyzes Sting annotated source code and generates source to support the Sting elements.
@@ -758,19 +759,19 @@ public final class StingProcessor
   private ServiceDescriptor processOutputMethod( @Nonnull final ExecutableElement method )
   {
     final TypeMirror type = method.getReturnType();
-    if ( StingTypesUtil.containsArrayType( type ) )
+    if ( TypesUtil.containsArrayType( type ) )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
                                                           "contain a method with a return type that contains an array type" ),
                                     method );
     }
-    else if ( StingTypesUtil.containsWildcard( type ) )
+    else if ( TypesUtil.containsWildcard( type ) )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
                                                           "contain a method with a return type that contains a wildcard type parameter" ),
                                     method );
     }
-    else if ( StingTypesUtil.containsRawType( type ) )
+    else if ( TypesUtil.containsRawType( type ) )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
                                                           "contain a method with a return type that contains a raw type" ),
@@ -1362,19 +1363,19 @@ public final class StingProcessor
                                                              @Nonnull final TypeMirror type,
                                                              final int parameterIndex )
   {
-    if ( StingTypesUtil.containsArrayType( type ) )
+    if ( TypesUtil.containsArrayType( type ) )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                           "contain a method with a parameter that contains an array type" ),
                                     parameter );
     }
-    else if ( StingTypesUtil.containsWildcard( type ) )
+    else if ( TypesUtil.containsWildcard( type ) )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                           "contain a method with a parameter that contains a wildcard type parameter" ),
                                     parameter );
     }
-    else if ( StingTypesUtil.containsRawType( type ) )
+    else if ( TypesUtil.containsRawType( type ) )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                           "contain a method with a parameter that contains a raw type" ),
@@ -1645,19 +1646,19 @@ public final class StingProcessor
                                                         @Nonnull final TypeMirror type,
                                                         final int parameterIndex )
   {
-    if ( StingTypesUtil.containsArrayType( type ) )
+    if ( TypesUtil.containsArrayType( type ) )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
                                                           "contain a constructor with a parameter that contains an array type" ),
                                     parameter );
     }
-    else if ( StingTypesUtil.containsWildcard( type ) )
+    else if ( TypesUtil.containsWildcard( type ) )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
                                                           "contain a constructor with a parameter that contains a wildcard type parameter" ),
                                     parameter );
     }
-    else if ( StingTypesUtil.containsRawType( type ) )
+    else if ( TypesUtil.containsRawType( type ) )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
                                                           "contain a constructor with a parameter that contains a raw type" ),
