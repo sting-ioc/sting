@@ -6,8 +6,6 @@ complete as there is too much un-said.
 
 ## Alpha Release TODO Items
 
-* Update Arez to support sting injection
-
 * Ensure Maven POM is correct. Verify this by converting `dagger_maven` branch in `react4j-todomvc`
 
 * Convert `react4j-flux-challenge` and `react4j-drumloop` to use `sting`
