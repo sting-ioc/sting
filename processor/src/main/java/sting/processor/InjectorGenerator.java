@@ -285,7 +285,7 @@ final class InjectorGenerator
   }
 
   private static void emitServiceValue( @Nonnull final Edge edge,
-                                        final boolean emitCasts,
+                                        final boolean isOutput,
                                         @Nonnull final StringBuilder code,
                                         @Nonnull final List<Object> args )
   {
@@ -300,7 +300,7 @@ final class InjectorGenerator
       }
       else
       {
-        emitNodeAccessor( service, satisfiedBy.iterator().next(), emitCasts, code, args );
+        emitNodeAccessor( service, satisfiedBy.iterator().next(), isOutput, code, args );
       }
     }
     else
@@ -315,7 +315,7 @@ final class InjectorGenerator
       {
         code.append( "$T.singletonList( " );
         args.add( Collections.class );
-        emitNodeAccessor( service, satisfiedBy.iterator().next(), emitCasts, code, args );
+        emitNodeAccessor( service, satisfiedBy.iterator().next(), isOutput, code, args );
         code.append( " )" );
       }
       else
@@ -329,7 +329,7 @@ final class InjectorGenerator
           {
             code.append( ", " );
           }
-          emitNodeAccessor( service, iterator.next(), emitCasts, code, args );
+          emitNodeAccessor( service, iterator.next(), isOutput, code, args );
         }
         code.append( " )" );
       }
@@ -345,7 +345,7 @@ final class InjectorGenerator
    */
   private static void emitNodeAccessor( @Nonnull final ServiceDescriptor service,
                                         @Nonnull final Node node,
-                                        final boolean emitCasts,
+                                        final boolean isOutput,
                                         @Nonnull final StringBuilder code,
                                         @Nonnull final List<Object> args )
   {
@@ -354,7 +354,8 @@ final class InjectorGenerator
     {
       code.append( "() -> " );
     }
-    if ( emitCasts && !service.getService().isPublic() )
+    if ( ( isOutput && !service.getService().isPublic() ) ||
+         ( !node.isPublic() && service.getService().isPublic() ) )
     {
       code.append( "($T) " );
       args.add( service.getService().getCoordinate().getType() );
