@@ -1141,7 +1141,7 @@ public final class StingProcessor
                 .replace( "[FlatEnclosingName]", getEnclosingName( (TypeElement) includeElement ).replace( '.', '_' ) );
 
             final String targetQualifiedName =
-              ElementsUtil.getPackageElement( element ).getQualifiedName().toString() + "." + targetCompoundType;
+              ElementsUtil.getPackageElement( includeElement ).getQualifiedName().toString() + "." + targetCompoundType;
 
             results.add( new IncludeDescriptor( (DeclaredType) include, targetQualifiedName ) );
           }
