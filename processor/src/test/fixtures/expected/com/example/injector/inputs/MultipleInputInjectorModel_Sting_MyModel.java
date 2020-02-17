@@ -10,7 +10,7 @@ public final class MultipleInputInjectorModel_Sting_MyModel {
   }
 
   @Nonnull
-  public static MultipleInputInjectorModel.MyModel create(final Runnable runnable) {
+  public static Object create(final Runnable runnable) {
     return new MultipleInputInjectorModel.MyModel( Objects.requireNonNull( runnable ) );
   }
 }

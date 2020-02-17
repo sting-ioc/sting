@@ -9,7 +9,7 @@ public final class QualifiedOutputModel_Sting_MyModel {
   }
 
   @Nonnull
-  public static QualifiedOutputModel.MyModel create() {
+  public static Object create() {
     return new QualifiedOutputModel.MyModel();
   }
 }

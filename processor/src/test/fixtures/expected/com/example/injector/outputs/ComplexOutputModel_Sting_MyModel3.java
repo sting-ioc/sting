@@ -9,7 +9,7 @@ public final class ComplexOutputModel_Sting_MyModel3 {
   }
 
   @Nonnull
-  public static ComplexOutputModel.MyModel3 create() {
+  public static Object create() {
     return new ComplexOutputModel.MyModel3();
   }
 }

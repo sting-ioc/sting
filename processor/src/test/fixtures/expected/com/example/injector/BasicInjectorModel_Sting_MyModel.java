@@ -9,7 +9,7 @@ public final class BasicInjectorModel_Sting_MyModel {
   }
 
   @Nonnull
-  public static BasicInjectorModel.MyModel create() {
+  public static Object create() {
     return new BasicInjectorModel.MyModel();
   }
 }

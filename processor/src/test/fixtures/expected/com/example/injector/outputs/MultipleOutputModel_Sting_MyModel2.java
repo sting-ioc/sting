@@ -9,7 +9,7 @@ public final class MultipleOutputModel_Sting_MyModel2 {
   }
 
   @Nonnull
-  public static MultipleOutputModel.MyModel2 create() {
+  public static Object create() {
     return new MultipleOutputModel.MyModel2();
   }
 }

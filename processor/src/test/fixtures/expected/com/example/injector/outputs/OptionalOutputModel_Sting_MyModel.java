@@ -9,7 +9,7 @@ public final class OptionalOutputModel_Sting_MyModel {
   }
 
   @Nonnull
-  public static OptionalOutputModel.MyModel create() {
+  public static Object create() {
     return new OptionalOutputModel.MyModel();
   }
 }

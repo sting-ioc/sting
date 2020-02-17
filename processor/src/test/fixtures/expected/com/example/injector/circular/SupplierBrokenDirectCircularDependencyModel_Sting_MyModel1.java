@@ -11,7 +11,7 @@ public final class SupplierBrokenDirectCircularDependencyModel_Sting_MyModel1 {
 
   @Nonnull
   @SuppressWarnings("unchecked")
-  public static SupplierBrokenDirectCircularDependencyModel.MyModel1 create(final Object model) {
+  public static Object create(final Object model) {
     return new SupplierBrokenDirectCircularDependencyModel.MyModel1( Objects.requireNonNull( (SupplierBrokenDirectCircularDependencyModel.MyModel2) model ) );
   }
 }

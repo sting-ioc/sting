@@ -9,7 +9,7 @@ public final class CollectionOutputModel_Sting_MyModel {
   }
 
   @Nonnull
-  public static CollectionOutputModel.MyModel create() {
+  public static Object create() {
     return new CollectionOutputModel.MyModel();
   }
 }

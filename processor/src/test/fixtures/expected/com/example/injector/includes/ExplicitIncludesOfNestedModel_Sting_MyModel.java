@@ -9,7 +9,7 @@ public final class ExplicitIncludesOfNestedModel_Sting_MyModel {
   }
 
   @Nonnull
-  public static ExplicitIncludesOfNestedModel.MyModel create() {
+  public static Object create() {
     return new ExplicitIncludesOfNestedModel.MyModel();
   }
 }

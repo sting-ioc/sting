@@ -11,8 +11,7 @@ public final class BasicEagerDependencyModel_Sting_MyModel6 {
 
   @Nonnull
   @SuppressWarnings("unchecked")
-  public static BasicEagerDependencyModel.MyModel6 create(final Object modelA,
-      final Object modelB) {
+  public static Object create(final Object modelA, final Object modelB) {
     return new BasicEagerDependencyModel.MyModel6( Objects.requireNonNull( (BasicEagerDependencyModel.MyModel4) modelA ), Objects.requireNonNull( (BasicEagerDependencyModel.MyModel5) modelB ) );
   }
 }

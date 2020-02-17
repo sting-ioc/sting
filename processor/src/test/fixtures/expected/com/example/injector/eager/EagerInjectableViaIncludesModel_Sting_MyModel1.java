@@ -9,7 +9,7 @@ public final class EagerInjectableViaIncludesModel_Sting_MyModel1 {
   }
 
   @Nonnull
-  public static EagerInjectableViaIncludesModel.MyModel1 create() {
+  public static Object create() {
     return new EagerInjectableViaIncludesModel.MyModel1();
   }
 }

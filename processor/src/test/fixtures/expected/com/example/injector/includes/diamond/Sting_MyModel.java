@@ -9,7 +9,7 @@ public final class Sting_MyModel {
   }
 
   @Nonnull
-  public static MyModel create() {
+  public static Object create() {
     return new MyModel();
   }
 }

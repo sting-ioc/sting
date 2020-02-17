@@ -9,7 +9,7 @@ public final class BasicEagerDependencyModel_Sting_MyModel2 {
   }
 
   @Nonnull
-  public static BasicEagerDependencyModel.MyModel2 create() {
+  public static Object create() {
     return new BasicEagerDependencyModel.MyModel2();
   }
 }

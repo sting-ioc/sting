@@ -9,7 +9,7 @@ public final class SupplierCollectionOutputModel_Sting_MyModel {
   }
 
   @Nonnull
-  public static SupplierCollectionOutputModel.MyModel create() {
+  public static Object create() {
     return new SupplierCollectionOutputModel.MyModel();
   }
 }
