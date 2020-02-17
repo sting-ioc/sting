@@ -24,7 +24,7 @@ your Maven project, simply add the following to your `pom.xml`:
     <dependency>
       <groupId>org.realityforge.sting</groupId>
       <artifactId>sting-core</artifactId>
-      <version>0.01</version>
+      <version>0.02</version>
     </dependency>
     ...
   </dependencies>
@@ -51,7 +51,7 @@ snippet to configure the maven compiler plugin from within the `pom.xml`:
             <path>
               <groupId>org.realityforge.sting</groupId>
               <artifactId>sting-processor</artifactId>
-              <version>0.01</version>
+              <version>0.02</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
