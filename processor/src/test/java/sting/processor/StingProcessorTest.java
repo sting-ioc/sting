@@ -532,7 +532,7 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedAnnotationModel", "@Named target is not valid" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedConstructorParameterModel",
-                      "@Named target must only be present on a constructor parameter if the constructor is enclosed in a type annotated with @Injectable" },
+                      "@Named target must only be present on a constructor parameter if the constructor is enclosed in a type annotated with @Injectable or the type has an associated provider" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedEnumModel", "@Named target is not valid" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedMethodModel",
                       "@Named target must not be a method unless the method is enclosed in a type annotated with @Fragment or @Injector" },

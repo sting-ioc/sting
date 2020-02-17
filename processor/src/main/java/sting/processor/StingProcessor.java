@@ -849,7 +849,7 @@ public final class StingProcessor
                                           "only be present on a constructor parameter if the constructor " +
                                           "is enclosed in a type annotated with " +
                                           MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                          " or the type is has an associated provider" ),
+                                          " or the type has an associated provider" ),
                        element );
         }
         else if ( !isFragmentType && ElementKind.METHOD == executableKind )
