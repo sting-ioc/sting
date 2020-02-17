@@ -1,6 +1,8 @@
 # Change Log
 
-### Unreleased
+### [v0.02](https://github.com/sting-ioc/sting/tree/v0.02) (2020-02-17) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.01...v0.02)
+
+Changes in this release:
 
 * Upgrade the `org.realityforge.proton` artifacts to version `0.40`.
 * Stop generating errors if types are annotated with `@Named`, `@Typed` or `@Eager` and they have a provider annotation.
