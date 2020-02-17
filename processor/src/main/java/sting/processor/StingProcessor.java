@@ -62,8 +62,7 @@ import org.realityforge.proton.TypesUtil;
                              Constants.FRAGMENT_CLASSNAME,
                              Constants.EAGER_CLASSNAME,
                              Constants.TYPED_CLASSNAME,
-                             Constants.NAMED_CLASSNAME,
-                             Constants.INPUT_CLASSNAME } )
+                             Constants.NAMED_CLASSNAME } )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
 @SupportedOptions( { "sting.defer.unresolved",
                      "sting.defer.errors",
