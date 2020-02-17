@@ -10,6 +10,8 @@ complete as there is too much un-said.
 
 * Convert `react4j-flux-challenge` and `react4j-drumloop` to use `sting`
 
+* Convert the `dagger_maven` and `dagger_maven_j2cl` branches in `react4j-todomvc` to use sting. Update the react4j and arez projects.
+
 ## Beta Release TODO Items
 
 * We may need to add a separate phase at the end of compilation that detects when singular injection requests
