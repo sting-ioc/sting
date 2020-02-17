@@ -1,0 +1,17 @@
+{
+  "schema": "injectable/1",
+  "id": "com.example.integration.todomvc.model.Arez_ViewService",
+  "publishedServices": [
+    {
+      "type": "com.example.integration.todomvc.model.ViewService"
+    }
+  ],
+  "dependencies": [
+    {
+      "type": "com.example.integration.todomvc.model.TodoRepository"
+    },
+    {
+      "type": "com.example.integration.todomvc.model.BrowserLocation"
+    }
+  ]
+}

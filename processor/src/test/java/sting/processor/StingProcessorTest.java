@@ -263,6 +263,34 @@ public final class StingProcessorTest
                                             javaOutput( pkg + ".MyFragment" ) ) );
   }
 
+  @Test
+  public void todomvcIntegrationTest()
+    throws Exception
+  {
+    final String pkg = "com.example.integration.todomvc";
+    assertSuccessfulCompile( inputs( pkg + ".ArezComponent",
+                                     pkg + ".ioc.TodoInjector",
+                                     pkg + ".model.Arez_BrowserLocation",
+                                     pkg + ".model.Arez_TodoRepository",
+                                     pkg + ".model.Arez_TodoService",
+                                     pkg + ".model.Arez_ViewService",
+                                     pkg + ".model.BrowserLocation",
+                                     pkg + ".model.BrowserLocationFragment",
+                                     pkg + ".model.TodoRepository",
+                                     pkg + ".model.TodoService",
+                                     pkg + ".model.ViewService" ),
+                             Arrays.asList( jsonOutput( pkg + ".ioc.TodoInjector" ),
+                                            javaOutput( pkg + ".ioc.TodoInjector" ),
+                                            javaOutput( pkg + ".model.Arez_TodoRepository" ),
+                                            jsonOutput( pkg + ".model.Arez_TodoRepository" ),
+                                            javaOutput( pkg + ".model.Arez_TodoService" ),
+                                            jsonOutput( pkg + ".model.Arez_TodoService" ),
+                                            javaOutput( pkg + ".model.Arez_ViewService" ),
+                                            jsonOutput( pkg + ".model.Arez_ViewService" ),
+                                            javaOutput( pkg + ".model.BrowserLocationFragment" ),
+                                            jsonOutput( pkg + ".model.BrowserLocationFragment" ) ) );
+  }
+
   @DataProvider( name = "failedCompiles" )
   public Object[][] failedCompiles()
   {

@@ -1,0 +1,14 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.integration.todomvc.model.BrowserLocationFragment#createBrowserLocation",
+      "publishedServices": [
+        {
+          "type": "com.example.integration.todomvc.model.BrowserLocation"
+        }
+      ],
+      "eager": true
+    }
+  ]
+}

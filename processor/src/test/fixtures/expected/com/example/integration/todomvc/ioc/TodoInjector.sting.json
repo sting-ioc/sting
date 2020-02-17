@@ -1,0 +1,17 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.integration.todomvc.model.TodoRepository",
+    "com.example.integration.todomvc.model.BrowserLocationFragment",
+    "com.example.integration.todomvc.model.TodoService",
+    "com.example.integration.todomvc.model.ViewService"
+  ],
+  "outputs": [
+    {
+      "type": "com.example.integration.todomvc.model.TodoService"
+    },
+    {
+      "type": "com.example.integration.todomvc.model.ViewService"
+    }
+  ]
+}
