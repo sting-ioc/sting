@@ -15,11 +15,10 @@ complete as there is too much un-said.
 * We may need to add a separate phase at the end of compilation that detects when singular injection requests
   result in multiple candidate bindings. Note that some of these bindings can be added during resolution process.
 
-* Add code to verify that the provider class `@StingProvider` identifies should produce a binding that exposes
-  the originating type as published service.
-
 * Integrate `@StingProvider` into auto-discovery process. We may need to add a flag to `@StingProvider` that
-  controls whether that provider is subject to auto-discovery ... if there is a valid use case.
+  controls whether that provider is subject to auto-discovery ... if there is a valid use case. In this scenario
+  we will need to verify that the provider publishes a binding that exposes the originating type as a published
+  service.
 
 * Write integration tests that compare with dagger the following performance characteristics.
   * time to compile the injector
