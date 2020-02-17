@@ -869,12 +869,14 @@ public final class StingProcessor
       }
       else if ( ElementKind.CLASS == element.getKind() )
       {
-        if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+        if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) &&
+             !hasStingProvider( element ) )
         {
           reportError( env,
                        MemberChecks.must( Constants.NAMED_CLASSNAME,
                                           "only be present on a type if the type is annotated with " +
-                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) ),
+                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                          " or the type has an associated provider" ),
                        element );
         }
       }
@@ -919,12 +921,14 @@ public final class StingProcessor
     {
       if ( ElementKind.CLASS == element.getKind() )
       {
-        if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+        if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) &&
+             !hasStingProvider( element ) )
         {
           reportError( env,
                        MemberChecks.must( Constants.TYPED_CLASSNAME,
                                           "only be present on a type if the type is annotated with " +
-                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) ),
+                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                          " or the type has an associated provider" ),
                        element );
         }
       }
@@ -957,12 +961,14 @@ public final class StingProcessor
     {
       if ( ElementKind.CLASS == element.getKind() )
       {
-        if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+        if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) &&
+             !hasStingProvider( element ) )
         {
           reportError( env,
                        MemberChecks.must( Constants.EAGER_CLASSNAME,
                                           "only be present on a type if the type is annotated with " +
-                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) ),
+                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                          " or the type has an associated provider" ),
                        element );
         }
       }

@@ -539,21 +539,21 @@ public final class StingProcessorTest
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedMethodParameterModel",
                       "@Named target must only be present on a method parameter if the method is enclosed in a type annotated with @Fragment" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedTypeModel",
-                      "@Named target must only be present on a type if the type is annotated with @Injectable" },
+                      "@Named target must only be present on a type if the type is annotated with @Injectable or the type has an associated provider" },
 
         new Object[]{ "com.example.unclaimed.typed.UnclaimedTypedAnnotationModel", "@Typed target is not valid" },
         new Object[]{ "com.example.unclaimed.typed.UnclaimedTypedEnumModel", "@Typed target is not valid" },
         new Object[]{ "com.example.unclaimed.typed.UnclaimedTypedMethodModel",
                       "@Typed target must not be a method unless the method is enclosed in a type annotated with @Fragment or @Injector" },
         new Object[]{ "com.example.unclaimed.typed.UnclaimedTypedTypeModel",
-                      "@Typed target must only be present on a type if the type is annotated with @Injectable" },
+                      "@Typed target must only be present on a type if the type is annotated with @Injectable or the type has an associated provider" },
 
         new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerAnnotationModel", "@Eager target is not valid" },
         new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerEnumModel", "@Eager target is not valid" },
         new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerMethodModel",
                       "@Eager target must only be present on a method if the method is enclosed in a type annotated with @Fragment" },
         new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerTypeModel",
-                      "@Eager target must only be present on a type if the type is annotated with @Injectable" }
+                      "@Eager target must only be present on a type if the type is annotated with @Injectable or the type has an associated provider" }
       };
   }
 
