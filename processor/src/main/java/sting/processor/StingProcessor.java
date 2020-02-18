@@ -769,7 +769,6 @@ public final class StingProcessor
                                                           " annotation such as " + scopedAnnotations ),
                                     method );
     }
-    MemberChecks.mustNotHaveAnyTypeParameters( Constants.INPUT_CLASSNAME, method );
     outputs.add( processOutputMethod( method ) );
   }
 
