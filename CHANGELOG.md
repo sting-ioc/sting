@@ -7,6 +7,7 @@
 Changes in this release:
 
 * Improve the POM generated for both the `sting-core` and `sting-processor` modules.
+* Improve the javadocs organization.
 
 ### [v0.02](https://github.com/sting-ioc/sting/tree/v0.02) (2020-02-17) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.01...v0.02)
 
