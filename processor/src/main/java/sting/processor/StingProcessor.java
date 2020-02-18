@@ -1747,7 +1747,7 @@ public final class StingProcessor
     {
       final String message =
         MemberChecks.shouldNot( Constants.INJECTABLE_CLASSNAME,
-                                "have a protected constructor. The type is instantiated by the" +
+                                "have a protected constructor. The type is instantiated by the " +
                                 "injector and should have a package-access constructor. " +
                                 MemberChecks.suppressedBy( Constants.WARNING_PROTECTED_CONSTRUCTOR ) );
       processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, constructor );
