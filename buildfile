@@ -215,7 +215,7 @@ define 'sting' do
     using(:javadoc,
           :windowtitle => 'Sting API Documentation',
           :linksource => true,
-          :link => %w(https://sting.github.io/api https://docs.oracle.com/javase/8/docs/api),
+          :link => %w(https://sting-ioc.github.io/api https://docs.oracle.com/javase/8/docs/api),
           :group => {
             'Core Packages' => 'sting.*',
             'Annotation Packages' => 'sting.annotations*:sting.processor*'
