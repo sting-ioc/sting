@@ -217,8 +217,8 @@ define 'sting' do
           :linksource => true,
           :link => %w(https://sting-ioc.github.io/api https://docs.oracle.com/javase/8/docs/api),
           :group => {
-            'Core Packages' => 'sting.*',
-            'Annotation Packages' => 'sting.annotations*:sting.processor*'
+            'Core' => 'sting.*',
+            'Compiler' => 'sting.processor*'
           }
     )
   cleanup_javadocs(project, 'sting')
