@@ -1465,8 +1465,8 @@ public final class StingProcessor
                                                           "have multiple constructors" ),
                                     element );
     }
-    injectableConstructorMustNotBeProtected( constructor );
-    injectableConstructorMustNotBePublic( constructor );
+    injectableConstructorShouldNotBeProtected( constructor );
+    injectableConstructorShouldNotBePublic( constructor );
 
     final boolean eager = AnnotationsUtil.hasAnnotationOfType( element, Constants.EAGER_CLASSNAME );
 
@@ -1725,29 +1725,31 @@ public final class StingProcessor
     return null == annotation ? "" : AnnotationsUtil.getAnnotationValueValue( annotation, "value" );
   }
 
-  private void injectableConstructorMustNotBePublic( @Nonnull final ExecutableElement constructor )
+  private void injectableConstructorShouldNotBePublic( @Nonnull final ExecutableElement constructor )
   {
     if ( ElementsUtil.isNotSynthetic( constructor ) &&
          constructor.getModifiers().contains( Modifier.PUBLIC ) &&
          ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_PUBLIC_CONSTRUCTOR ) )
     {
       final String message =
-        MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) + " target should not have a public " +
-        "constructor. The type is instantiated by the injector and should have a package-access constructor. " +
-        MemberChecks.suppressedBy( Constants.WARNING_PUBLIC_CONSTRUCTOR );
+        MemberChecks.shouldNot( Constants.INJECTABLE_CLASSNAME,
+                                "have a public constructor. The type is instantiated by the injector " +
+                                "and should have a package-access constructor. " +
+                                MemberChecks.suppressedBy( Constants.WARNING_PUBLIC_CONSTRUCTOR ) );
       processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, constructor );
     }
   }
 
-  private void injectableConstructorMustNotBeProtected( @Nonnull final ExecutableElement constructor )
+  private void injectableConstructorShouldNotBeProtected( @Nonnull final ExecutableElement constructor )
   {
     if ( constructor.getModifiers().contains( Modifier.PROTECTED ) &&
          ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_PROTECTED_CONSTRUCTOR ) )
     {
       final String message =
-        MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) + " target should not have a protected " +
-        "constructor. The type is instantiated by the injector and should have a package-access constructor. " +
-        MemberChecks.suppressedBy( Constants.WARNING_PROTECTED_CONSTRUCTOR );
+        MemberChecks.shouldNot( Constants.INJECTABLE_CLASSNAME,
+                                "have a protected constructor. The type is instantiated by the" +
+                                "injector and should have a package-access constructor. " +
+                                MemberChecks.suppressedBy( Constants.WARNING_PROTECTED_CONSTRUCTOR ) );
       processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, constructor );
     }
   }
