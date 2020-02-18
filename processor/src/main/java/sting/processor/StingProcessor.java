@@ -54,7 +54,7 @@ import org.realityforge.proton.ProcessorException;
 import org.realityforge.proton.TypesUtil;
 
 /**
- * Annotation processor that analyzes Sting annotated source code and generates source to support the Sting elements.
+ * The annotation processor that analyzes Sting annotated source code and generates an injector and supporting artifacts.
  */
 @SuppressWarnings( "DuplicatedCode" )
 @SupportedAnnotationTypes( { Constants.INJECTOR_CLASSNAME,

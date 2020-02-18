@@ -1,4 +1,4 @@
 /**
- * This package contains the annotation processor.
+ * The package containing the annotation processor.
  */
 package sting.processor;
