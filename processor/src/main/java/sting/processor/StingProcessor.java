@@ -1023,6 +1023,15 @@ public final class StingProcessor
                                                        "contain one or more methods or one or more includes" ),
                                     element );
     }
+    final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations( element );
+    if ( !scopedAnnotations.isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                          "be annotated with an annotation that is " +
+                                                          "annotated with the " + Constants.JSR_330_SCOPE_CLASSNAME +
+                                                          " annotation such as " + scopedAnnotations ),
+                                    element );
+    }
     _registry.registerFragment( new FragmentDescriptor( element, includes, bindings.values() ) );
   }
 
@@ -1275,6 +1284,16 @@ public final class StingProcessor
                                     " contains a method that is incorrectly annotated with " +
                                     MemberChecks.toSimpleName( AnnotationsUtil.NULLABLE_CLASSNAME ) +
                                     " as the return type is a primitive value",
+                                    method );
+    }
+    final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations( method );
+    if ( !scopedAnnotations.isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                          "contain a method that is annotated with an " +
+                                                          "annotation that is annotated with the " +
+                                                          Constants.JSR_330_SCOPE_CLASSNAME +
+                                                          " annotation such as " + scopedAnnotations ),
                                     method );
     }
 
