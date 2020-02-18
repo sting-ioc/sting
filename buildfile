@@ -19,6 +19,9 @@ define 'sting' do
 
   desc 'The core module'
   define 'core' do
+    pom.include_transitive_dependencies << artifact(:javax_annotation)
+    pom.dependency_filter = Proc.new { |dep| dep[:scope].to_s != 'test' }
+
     compile.with :javax_annotation
 
     test.options[:java_args] = ['-ea']
@@ -34,6 +37,8 @@ define 'sting' do
 
   desc 'The Annotation processor'
   define 'processor' do
+    pom.dependency_filter = Proc.new { |_| false }
+
     compile.with :proton_core,
                  :javax_json,
                  :javapoet,
