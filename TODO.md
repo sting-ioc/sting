@@ -4,10 +4,6 @@ This document is essentially a list of shorthand notes describing work yet to be
 Unfortunately it is not complete enough for other people to pick work off the list and
 complete as there is too much un-said.
 
-## Alpha Release TODO Items
-
-* Convert `react4j-flux-challenge` to use `sting`
-
 ## Beta Release TODO Items
 
 * We may need to add a separate phase at the end of compilation that detects when singular injection requests
