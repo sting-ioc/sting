@@ -35,7 +35,7 @@ final class WorkspaceTestUtil
   private static Path getFixtureDir()
   {
     return Paths
-      .get( SystemProperty.get( "arez.deploy_test.fixture_dir" ) )
+      .get( SystemProperty.get( "sting.deploy_test.fixture_dir" ) )
       .toAbsolutePath()
       .normalize();
   }
@@ -50,7 +50,7 @@ final class WorkspaceTestUtil
   private static Path getWorkDir()
   {
     return Paths
-      .get( SystemProperty.get( "arez.deploy_test.work_dir" ) )
+      .get( SystemProperty.get( "sting.deploy_test.work_dir" ) )
       .toAbsolutePath()
       .normalize();
   }
