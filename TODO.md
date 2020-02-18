@@ -6,7 +6,7 @@ complete as there is too much un-said.
 
 ## Alpha Release TODO Items
 
-* Convert `react4j-flux-challenge` and `react4j-drumloop` to use `sting`
+* Convert `react4j-flux-challenge` to use `sting`
 
 ## Beta Release TODO Items
 
