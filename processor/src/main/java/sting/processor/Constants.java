@@ -19,6 +19,8 @@ final class Constants
   @Nonnull
   static final String JSR_330_INJECT_CLASSNAME = "javax.inject.Inject";
   @Nonnull
+  static final String JSR_330_SCOPE_CLASSNAME = "javax.inject.Scope";
+  @Nonnull
   static final String EAGER_CLASSNAME = "sting.Eager";
   @Nonnull
   static final String TYPED_CLASSNAME = "sting.Typed";
@@ -32,6 +34,8 @@ final class Constants
   static final String WARNING_JSR_330_NAMED = "Sting:Jsr330NamedPresent";
   @Nonnull
   static final String WARNING_JSR_330_INJECT = "Sting:Jsr330InjectPresent";
+  @Nonnull
+  static final String WARNING_JSR_330_SCOPED = "Sting:Jsr330ScopedPresent";
   @Nonnull
   static final String WARNING_CDI_TYPED = "Sting:CdiTypedPresent";
 

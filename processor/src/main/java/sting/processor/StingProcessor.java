@@ -1467,6 +1467,7 @@ public final class StingProcessor
     }
     injectableConstructorShouldNotBeProtected( constructor );
     injectableConstructorShouldNotBePublic( constructor );
+    injectableShouldNotHaveScopedAnnotation( element );
 
     final boolean eager = AnnotationsUtil.hasAnnotationOfType( element, Constants.EAGER_CLASSNAME );
 
@@ -1725,6 +1726,21 @@ public final class StingProcessor
     return null == annotation ? "" : AnnotationsUtil.getAnnotationValueValue( annotation, "value" );
   }
 
+  private void injectableShouldNotHaveScopedAnnotation( @Nonnull final TypeElement element )
+  {
+    final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations( element );
+    if ( !scopedAnnotations.isEmpty() &&
+         ElementsUtil.isWarningNotSuppressed( element, Constants.WARNING_JSR_330_SCOPED ) )
+    {
+      final String message =
+        MemberChecks.shouldNot( Constants.INJECTABLE_CLASSNAME,
+                                "be annotated with an annotation that is annotated with the " +
+                                Constants.JSR_330_SCOPE_CLASSNAME + " annotation such as " + scopedAnnotations + ". " +
+                                MemberChecks.suppressedBy( Constants.WARNING_JSR_330_SCOPED ) );
+      processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, element );
+    }
+  }
+
   private void injectableConstructorShouldNotBePublic( @Nonnull final ExecutableElement constructor )
   {
     if ( ElementsUtil.isNotSynthetic( constructor ) &&
@@ -1801,5 +1817,16 @@ public final class StingProcessor
   private boolean isParameterized( @Nonnull final DeclaredType nestedParameterType )
   {
     return !( (TypeElement) nestedParameterType.asElement() ).getTypeParameters().isEmpty();
+  }
+
+  @Nonnull
+  private List<? extends AnnotationMirror> getScopedAnnotations( @Nonnull final Element element )
+  {
+    return element
+      .getAnnotationMirrors()
+      .stream()
+      .filter( a -> AnnotationsUtil.hasAnnotationOfType( a.getAnnotationType().asElement(),
+                                                         Constants.JSR_330_SCOPE_CLASSNAME ) )
+      .collect( Collectors.toList() );
   }
 }

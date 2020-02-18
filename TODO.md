@@ -31,8 +31,7 @@ complete as there is too much un-said.
   * Development process FAQ - just like in Arez but reflective of Stings approach.
   * Maybe terminology should be (more) inspired by OSGI service ala https://www.osgi.org/developer/architecture/
 
-* Generate a suppressable warning if `@Injectable` is annotated with a `@javax.inject.Scope` annotation and a hard
-  error if a provider method or fragment is annotated.
+* Generate an error if a provider method or fragment is annotated with a `@javax.inject.Scope` annotation.
 
 ## Other TODO
 
