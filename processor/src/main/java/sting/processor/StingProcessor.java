@@ -671,6 +671,15 @@ public final class StingProcessor
       throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME, "have type parameters" ),
                                     element );
     }
+    final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations( element );
+    if ( !scopedAnnotations.isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                                          "be annotated with an annotation that is " +
+                                                          "annotated with the " + Constants.JSR_330_SCOPE_CLASSNAME +
+                                                          " annotation such as " + scopedAnnotations ),
+                                    element );
+    }
 
     final List<IncludeDescriptor> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
     final List<InputDescriptor> inputs = extractInputs( element );
@@ -748,6 +757,16 @@ public final class StingProcessor
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
                                                           "contain a method that throws any exceptions" ),
+                                    method );
+    }
+    final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations( method );
+    if ( !scopedAnnotations.isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                                          "contain a method that is annotated with an " +
+                                                          "annotation that is annotated with the " +
+                                                          Constants.JSR_330_SCOPE_CLASSNAME +
+                                                          " annotation such as " + scopedAnnotations ),
                                     method );
     }
     MemberChecks.mustNotHaveAnyTypeParameters( Constants.INPUT_CLASSNAME, method );

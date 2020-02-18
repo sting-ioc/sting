@@ -6,6 +6,7 @@
 * Build and measure code size of downstream sample projects to help identify track code size changes as the library evolves.
 * Generate a suppressable warning when an `@Injectable` annotated type is also annotated with an annotation that is annotated by `@javax.inject.Scope` that is used in other injection frameworks like CDI, Dagger, Guice, GIN etc. This generates a warning as it is unusual that an application uses multiple injection frameworks and the presence of a scoped annotation is more likely the result of a misunderstanding or incomplete conversion from a prior injection framework.
 * Generate an error if a `@Fragment` annotated type or a provider method enclosed by the fragment has a jsr330 `@javax.inject.Scope` annotated annotation present.
+* Generate an error if an `@Injector` annotated type or an output method enclosed by the injector has a jsr330 `@javax.inject.Scope` annotated annotation present.
 
 ### [v0.03](https://github.com/sting-ioc/sting/tree/v0.03) (2020-02-18) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.02...v0.03)
 
