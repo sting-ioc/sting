@@ -24,8 +24,6 @@ complete as there is too much un-said.
   will be in a separate module and will use javapoet to generate the code, existing test infrastructure
   to compile the code repeatedly until we get stable builds.
 
-* Write integration tests that compile a branch of `react4j-todomvc` using sting versus Dagger versus Arez.
-
 * Add some basic documentation
   * Usage documentation.
   * Recipe style examples for how to solve specific problems.

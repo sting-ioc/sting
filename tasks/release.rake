@@ -58,6 +58,12 @@ task 'perform_release' do
       task('package').invoke
     end
 
+    stage('ArchiveDownstream', 'Archive downstream projects that may need changes pushed') do
+      FileUtils.rm_rf 'archive'
+      FileUtils.mkdir_p 'archive'
+      mv 'target/sting_downstream-test/deploy_test/workdir', 'archive/downstream'
+    end
+
     stage('PatchChangelog', 'Patch the changelog to update from previous release') do
       changelog = IO.read('CHANGELOG.md')
       from = '0.00' == ENV['PREVIOUS_PRODUCT_VERSION'] ? `git rev-list --max-parents=0 HEAD`.strip : "v#{ENV['PREVIOUS_PRODUCT_VERSION']}"
@@ -213,6 +219,22 @@ HEADER
         end
       end
     end
+  end
+
+  stage('PushDownstreamChanges', 'Push downstream changes') do
+    # Push the changes that have been made locally in downstream projects.
+    # Artifacts have been pushed to staging repository by this time so they should build
+    # even if it has not made it through the Maven release process
+    DOWNSTREAM_EXAMPLES.each_pair do |downstream_example, branches|
+      sh "cd archive/downstream/#{downstream_example} && git push --all"
+      branches.each do |branch|
+        full_branch = "#{branch}-StingUpgrade-#{ENV['PRODUCT_VERSION']}"
+        `cd archive/downstream/#{downstream_example} && git push origin :#{full_branch} 2>&1`
+        puts "Completed remote branch #{downstream_example}/#{full_branch}. Removed." if 0 == $?.exitstatus
+      end
+    end
+
+    FileUtils.rm_rf 'archive'
   end
 
   if ENV['STAGE']

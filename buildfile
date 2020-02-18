@@ -134,6 +134,83 @@ define 'sting' do
     iml.test_source_directories << _('generated/processors/test/java')
   end
 
+  desc 'Test Arez in downstream projects'
+  define 'downstream-test' do
+    compile.with :gir,
+                 :javax_annotation
+
+    test.options[:properties] =
+      {
+        'sting.prev.version' => ENV['PREVIOUS_PRODUCT_VERSION'] || project.version,
+        'sting.next.version' => ENV['PRODUCT_VERSION'] || project.version,
+        'sting.next.jar' => project('core').package(:jar).to_s,
+        'sting.build_j2cl_variants' => (ENV['J2CL'] != 'no'),
+        'sting.deploy_test.fixture_dir' => _('src/test/resources/fixtures').to_s,
+        'sting.deploy_test.work_dir' => _(:target, 'deploy_test/workdir').to_s
+      }
+    test.options[:java_args] = ['-ea']
+
+    local_test_repository_url = URI.join('file:///', project._(:target, :local_test_repository)).to_s
+    compile.enhance do
+      projects_to_upload = projects(%w(core processor))
+      old_release_to = repositories.release_to
+      begin
+        # First we install them in a local repository so we don't have to access the network during local builds
+        repositories.release_to = local_test_repository_url
+        projects_to_upload.each do |prj|
+          prj.packages.each do |pkg|
+            # Uninstall version already present in local maven cache
+            pkg.uninstall
+            # Install version into local repository
+            pkg.upload
+          end
+        end
+        if ENV['STAGE_RELEASE'] == 'true'
+          # Then we install it to a remote repository so that TravisCI can access the builds when it attempts
+          # to perform a release
+          repositories.release_to =
+            { :url => 'https://stocksoftware.jfrog.io/stocksoftware/staging', :username => ENV['STAGING_USERNAME'], :password => ENV['STAGING_PASSWORD'] }
+          projects_to_upload.each do |prj|
+            prj.packages.each(&:upload)
+          end
+        end
+      ensure
+        repositories.release_to = old_release_to
+      end
+    end unless ENV['TEST'] == 'no' # These artifacts only required when running tests.
+
+    test.compile.enhance do
+      cp = project.compile.dependencies.map(&:to_s) + [project.compile.target.to_s]
+
+      properties = {}
+      # Take the version that we are releasing else fallback to project version
+      properties['sting.prev.version'] = ENV['PREVIOUS_PRODUCT_VERSION'] || project.version
+      properties['sting.next.version'] = ENV['PRODUCT_VERSION'] || project.version
+      properties['sting.build_j2cl_variants'] = ENV['J2CL'] != 'no'
+      properties['sting.deploy_test.work_dir'] = _(:target, 'deploy_test/workdir').to_s
+      properties['sting.deploy_test.fixture_dir'] = _('src/test/resources/fixtures').to_s
+      properties['sting.deploy_test.local_repository_url'] = local_test_repository_url
+      properties['sting.deploy_test.store_statistics'] = ENV['STORE_BUILD_STATISTICS'] == 'true'
+      properties['sting.deploy_test.build_before'] = (ENV['STORE_BUILD_STATISTICS'] != 'true' && ENV['BUILD_BEFORE'] != 'no')
+
+      Java::Commands.java 'sting.downstream.CollectDrumLoopBuildStats', { :classpath => cp, :properties => properties } unless ENV['BUILD_STATS'] == 'no'
+      Java::Commands.java 'sting.downstream.CollectFluxChallengeBuildStats', { :classpath => cp, :properties => properties } unless ENV['BUILD_STATS'] == 'no'
+      Java::Commands.java 'sting.downstream.CollectBuildStats', { :classpath => cp, :properties => properties } unless ENV['BUILD_STATS'] == 'no'
+    end
+
+    # Only run this test when preparing for release, never on TravisCI (as produces different byte sizes)
+    test.exclude '*BuildStatsTest' if ENV['PRODUCT_VERSION'].nil? || ENV['BUILD_STATS'] == 'no' || !ENV['TRAVIS_BUILD_NUMBER'].nil?
+
+    test.using :testng
+    test.compile.with :javax_annotation,
+                      :javacsv,
+                      :gwt_symbolmap,
+                      :javax_json,
+                      :testng
+
+    project.jacoco.enabled = false
+  end
+
   doc.from(projects(%w(core))).
     using(:javadoc,
           :windowtitle => 'Sting API Documentation',
