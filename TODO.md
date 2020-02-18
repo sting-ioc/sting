@@ -31,7 +31,7 @@ complete as there is too much un-said.
   * Development process FAQ - just like in Arez but reflective of Stings approach.
   * Maybe terminology should be (more) inspired by OSGI service ala https://www.osgi.org/developer/architecture/
 
-* Generate an error if a provider method or fragment is annotated with a `@javax.inject.Scope` annotation.
+* Generate an error if a provider method, a fragment type, an injector type or an injector output method is annotated with a `@javax.inject.Scope` annotation.
 
 ## Other TODO
 
