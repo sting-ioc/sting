@@ -211,7 +211,7 @@ define 'sting' do
     project.jacoco.enabled = false
   end
 
-  doc.from(projects(%w(core))).
+  doc.from(projects(%w(core processor))).
     using(:javadoc,
           :windowtitle => 'Sting API Documentation',
           :linksource => true,
