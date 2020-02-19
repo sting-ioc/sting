@@ -34,10 +34,6 @@ complete as there is too much un-said.
 
 ## Other TODO
 
-* Consider generating warnings if `@Fragment` types will not resolve unless the user supplies an explicit
-  `incomplete` parameter. By resolve it means that every component should have all of it's dependencies
-  present.
-
 * Add support for different optional services in code generator. We should support the following patterns:
   - `@Nullable T`
   - `Optional<T>`
