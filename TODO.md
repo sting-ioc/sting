@@ -16,6 +16,7 @@ complete as there is too much un-said.
 
 * Write integration tests that compare with dagger the following performance characteristics.
   * time to compile the injector
+  * time to incrementally compile the injector and no contributors
   * time to initialize and access the injector at runtime
   * Code size of the the injector when compiled to GWT
 
