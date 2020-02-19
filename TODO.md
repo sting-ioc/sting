@@ -86,7 +86,6 @@ The significant differences from Dagger:
 * No Array types can be part of the object graph.
 * Injectors may specify dependencies that accepts values from outside the injector but are added to the ObjectGraph
 * Can very easily extend an existing component and replace some beans in object with those used in testing.
-* Also supports runtime graph construction in jre to speed up tests and potentially development.
 * Package access components are supported by generating factory glue in the package (the equivalent of `@Provide`
   annotated class in the same package) and it is assumed any consumers are also in the same package.
 
