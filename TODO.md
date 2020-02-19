@@ -76,7 +76,6 @@ complete as there is too much un-said.
   Alternatively we could invoke methods on a `@Fragment` type to dispose an instance. The injector would only generate
   the dispose operation if explicitly requested.
 
-## Old Notes
 
 ## Differences from Dagger
 
