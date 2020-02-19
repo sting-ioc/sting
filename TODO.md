@@ -76,6 +76,11 @@ complete as there is too much un-said.
   Alternatively we could invoke methods on a `@Fragment` type to dispose an instance. The injector would only generate
   the dispose operation if explicitly requested.
 
+* We could add a "gathering" annotation processor that collected all the bindings into an injector. Each `@Injectable`
+  and `@Fragment` etc could have an annotation like `@ContributeTo('SomeKey')` and we would have a type annotated with
+  `@CollectContributors('SomeKey')` that is converted into a `@Fragment` type that could be included. Emitting the
+  generated `@Fragment` type before processing completes may be difficult in normal adhoc builds but in more controlled
+  build environments (i.e. Bazel), this would work well.
 
 ## Differences from Dagger
 
