@@ -64,9 +64,10 @@ complete as there is too much un-said.
   * `Edge` = a list of nodes that provide a service to a `Node` to satisfy a `Dependency`
 
 * Generate a [.dot](https://en.wikipedia.org/wiki/DOT_(graph_description_language) formatted version of
-  object graph so that it can be fed into graphviz
+  object graph so that it can be fed into graphviz. This could be generated at build time or potentially
+  at runtime via spy infrastructure.
 
-* Generate a website where you can view the graph similar to [dagger-browser](https://github.com/Snapchat/dagger-browser)
+* Generate a website where you can view the graph similar to [dagger-browser](https://github.com/Snapchat/dagger-browser). This could be built at build time or potentially at runtime via spy infrastructure.
 
 ## Old Notes
 
