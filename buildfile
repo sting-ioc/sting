@@ -140,13 +140,17 @@ define 'sting' do
     test.options[:properties] = { 'sting.perf.working_directory' => _('generated/perf/test/java').to_s }
     test.options[:java_args] = %w(-ea)
     test.compile.with :gir,
+                      :compile_testing,
+
+                      # Code for the Application to compile against
                       :gwt_user,
                       :jsinterop_annotations,
                       :jsinterop_base,
                       :elemental2_core,
                       :elemental2_dom,
                       :elemental2_promise,
-                      :compile_testing,
+
+                      # Sting deps follow
                       project('core').package(:jar),
                       project('core').compile.dependencies,
                       project('processor').package(:jar),
