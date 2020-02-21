@@ -134,6 +134,25 @@ define 'sting' do
     iml.test_source_directories << _('generated/processors/test/java')
   end
 
+  desc 'Performance Tests'
+  define 'performance-tests' do
+    test.using :testng
+    test.options[:properties] = { 'sting.perf.working_directory' => _('generated/perf/test/java').to_s }
+    test.options[:java_args] = %w(-ea)
+    test.compile.with :gir,
+                      :gwt_user,
+                      :jsinterop_annotations,
+                      :jsinterop_base,
+                      :elemental2_core,
+                      :elemental2_dom,
+                      :elemental2_promise,
+                      :compile_testing,
+                      project('core').package(:jar),
+                      project('core').compile.dependencies,
+                      project('processor').package(:jar),
+                      project('processor').compile.dependencies
+  end
+
   desc 'Test Arez in downstream projects'
   define 'downstream-test' do
     compile.with :gir,
