@@ -154,7 +154,22 @@ define 'sting' do
                       project('core').package(:jar),
                       project('core').compile.dependencies,
                       project('processor').package(:jar),
-                      project('processor').compile.dependencies
+                      project('processor').compile.dependencies,
+
+                      # Dagger deps follow
+                      :javax_inject,
+                      :dagger_core,
+                      :dagger_producers,
+                      :dagger_spi,
+                      :dagger_compiler,
+                      :autocommon,
+                      :guava,
+                      :guava_failureaccess,
+                      :kotlinx_metadata_jvm,
+                      :kotlin_stdlib,
+                      :kotlin_stdlib_common,
+                      :googlejavaformat,
+                      :errorprone
   end
 
   desc 'Test Arez in downstream projects'

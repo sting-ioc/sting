@@ -7,6 +7,7 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
+import dagger.Component;
 import elemental2.dom.DomGlobal;
 import gir.io.FileUtil;
 import java.io.IOException;
@@ -14,20 +15,18 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.Nonnull;
+import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
-import sting.Eager;
-import sting.Injectable;
-import sting.Injector;
 
-final class StingSourceGenerator
+final class DaggerSourceGenerator
 {
-  private static final String PKG = "com.example.perf.sting";
+  private static final String PKG = "com.example.perf.dagger";
 
-  private StingSourceGenerator()
+  private DaggerSourceGenerator()
   {
   }
 
-  static void createStingInjectableScenarioSource( @Nonnull final Scenario scenario )
+  static void createDaggerInjectScenarioSource( @Nonnull final Scenario scenario )
     throws IOException
   {
     final Path outputDirectory = scenario.getOutputDirectory();
@@ -43,27 +42,22 @@ final class StingSourceGenerator
     {
       for ( int node = 0; node < nodesPerLayer; node++ )
       {
-        final ClassName className = toInjectableClassName( nodesPerLayer, layer, node );
+        final ClassName className = toNodeClassName( nodesPerLayer, layer, node );
         final TypeSpec.Builder type =
           TypeSpec
             .classBuilder( className )
-            .addModifiers( Modifier.PUBLIC, Modifier.FINAL )
-            .addAnnotation( Injectable.class );
-        if ( remainingEager > 0 )
-        {
-          type.addAnnotation( Eager.class );
-          remainingEager--;
-        }
+            .addModifiers( Modifier.PUBLIC, Modifier.FINAL );
+        final MethodSpec.Builder constructor = MethodSpec.constructorBuilder();
+        constructor.addAnnotation( Inject.class );
         final MethodSpec.Builder compute =
           MethodSpec.methodBuilder( "compute" ).addModifiers( Modifier.PUBLIC ).addAnnotation( DoNotInline.class );
         if ( 0 != layer )
         {
-          final MethodSpec.Builder constructor = MethodSpec.constructorBuilder();
 
           for ( int input = 0; input < inputsPerNode; input++ )
           {
             final ClassName inputType =
-              toInjectableClassName( nodesPerLayer, layer - 1, ( currentInputNode + input ) % nodesPerLayer );
+              toNodeClassName( nodesPerLayer, layer - 1, ( currentInputNode + input ) % nodesPerLayer );
             final String name = "input" + input;
             type.addField( FieldSpec.builder( inputType, name, Modifier.PRIVATE, Modifier.FINAL ).build() );
             constructor.addParameter( ParameterSpec.builder( inputType, name, Modifier.FINAL ).build() );
@@ -71,9 +65,9 @@ final class StingSourceGenerator
             compute.addStatement( "$N.compute()", name );
             compute.addStatement( "$T.console.log( $N )", DomGlobal.class, name );
           }
-          type.addMethod( constructor.build() );
           currentInputNode = ( currentInputNode + inputsPerNode ) % nodesPerLayer;
         }
+        type.addMethod( constructor.build() );
         type.addMethod( compute.build() );
 
         JavaFile.builder( className.packageName(), type.build() ).
@@ -91,16 +85,42 @@ final class StingSourceGenerator
         TypeSpec
           .interfaceBuilder( className )
           .addModifiers( Modifier.PUBLIC )
-          .addAnnotation( Injector.class );
+          .addAnnotation( Component.class );
 
       for ( int node = 0; node < nodesPerLayer; node++ )
       {
-        final ClassName inputType = toInjectableClassName( nodesPerLayer, 0, node );
+        if ( remainingEager > 0 )
+        {
+          remainingEager--;
+        }
+        final ClassName inputType = toNodeClassName( nodesPerLayer, 0, node );
         type.addMethod( MethodSpec.methodBuilder( inputType.simpleName() )
                           .returns( inputType )
                           .addModifiers( Modifier.PUBLIC, Modifier.ABSTRACT )
                           .build() );
       }
+
+      outer:
+      for ( int layer = 1; layer < layerCount; layer++ )
+      {
+        for ( int node = 0; node < nodesPerLayer; node++ )
+        {
+          if ( remainingEager > 0 )
+          {
+            remainingEager--;
+            final ClassName inputType = toNodeClassName( nodesPerLayer, layer, node );
+            type.addMethod( MethodSpec.methodBuilder( inputType.simpleName() )
+                              .returns( inputType )
+                              .addModifiers( Modifier.PUBLIC, Modifier.ABSTRACT )
+                              .build() );
+          }
+          else
+          {
+            break outer;
+          }
+        }
+      }
+
       JavaFile.builder( className.packageName(), type.build() ).
         skipJavaLangImports( true ).
         build().
@@ -122,10 +142,31 @@ final class StingSourceGenerator
           .methodBuilder( "onModuleLoad" )
           .addModifiers( Modifier.PUBLIC )
           .addAnnotation( Override.class );
-      method.addStatement( "final Application application = new Sting_Application()" );
+      method.addStatement( "final Application application = DaggerApplication.create()" );
+
+      // This is to make sure the eager ... are eager
+      remainingEager = scenario.getEagerCount();
+      outer:
+      for ( int layer = 0; layer < layerCount; layer++ )
+      {
+        for ( int node = 0; node < nodesPerLayer; node++ )
+        {
+          if ( remainingEager > 0 )
+          {
+            remainingEager--;
+            final ClassName inputType = toNodeClassName( nodesPerLayer, layer, node );
+            method.addStatement( "application.$N()", inputType.simpleName());
+          }
+          else
+          {
+            break outer;
+          }
+        }
+      }
+
       for ( int node = 0; node < nodesPerLayer; node++ )
       {
-        final ClassName inputType = toInjectableClassName( nodesPerLayer, 0, node );
+        final ClassName inputType = toNodeClassName( nodesPerLayer, 0, node );
         method.addStatement( "application.$N().compute()", inputType.simpleName() );
       }
 
@@ -140,7 +181,7 @@ final class StingSourceGenerator
   }
 
   @Nonnull
-  private static ClassName toInjectableClassName( final int nodesPerLayer, final int layer, final int node )
+  private static ClassName toNodeClassName( final int nodesPerLayer, final int layer, final int node )
   {
     final int nodeIndex = ( layer * nodesPerLayer ) + node + 1;
     return ClassName.get( PKG + ".layer" + ( layer + 1 ), "Node" + nodeIndex );

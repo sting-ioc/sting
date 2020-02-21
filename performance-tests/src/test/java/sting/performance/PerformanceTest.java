@@ -1,6 +1,8 @@
 package sting.performance;
 
+import dagger.internal.codegen.ComponentProcessor;
 import gir.io.FileUtil;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,32 +40,77 @@ public class PerformanceTest
     final Path workingDirectory = getWorkingDirectory();
     Files.createDirectories( workingDirectory );
     FileUtil.inDirectory( workingDirectory, () -> {
-
-      final Path srcDirectory = FileUtil.getCurrentDirectory().resolve( "sting/src" );
-      final Scenario scenario =
-        new Scenario( srcDirectory, warmupTrials, measureTrials, layerCount, nodesPerLayer, inputsPerNode, eagerCount );
-
-      StingSourceGenerator.createStingInjectableScenarioSource( scenario );
-
-      // AllInOne compiles
-      {
-        final List<String> classnames = new ArrayList<>( scenario.getNodeClassNames() );
-        classnames.addAll( scenario.getInjectorClassNames() );
-        classnames.addAll( scenario.getEntryClassNames() );
-        scenario.setAllInOneDurations( TestEngine.compileTrials( "All-in-one", scenario, classnames ) );
-      }
-
-      // Incremental compiles
-      {
-        TestEngine.compile( StingProcessor::new,
-                            scenario.getNodeClassNames(),
-                            scenario.getOutputDirectory(),
-                            scenario.getOutputDirectory() );
-        scenario.setIncrementalDurations( TestEngine.compileTrials( "Incremental",
-                                                                    scenario,
-                                                                    scenario.getInjectorClassNames() ) );
-      }
+      final Scenario daggerScenario =
+        new Scenario( FileUtil.getCurrentDirectory().resolve( "src" ),
+                      warmupTrials,
+                      measureTrials,
+                      layerCount,
+                      nodesPerLayer,
+                      inputsPerNode,
+                      eagerCount );
+      performDaggerTests( daggerScenario );
+      final Scenario stingScenario =
+        new Scenario( FileUtil.getCurrentDirectory().resolve( "src" ),
+                      warmupTrials,
+                      measureTrials,
+                      layerCount,
+                      nodesPerLayer,
+                      inputsPerNode,
+                      eagerCount );
+      performStingTests( stingScenario );
     } );
+  }
+
+  private static void performStingTests( @Nonnull final Scenario scenario )
+    throws IOException
+  {
+    StingSourceGenerator.createStingInjectableScenarioSource( scenario );
+
+    // AllInOne compiles
+    {
+      final List<String> classnames = new ArrayList<>( scenario.getNodeClassNames() );
+      classnames.addAll( scenario.getInjectorClassNames() );
+      classnames.addAll( scenario.getEntryClassNames() );
+      final long[] results = TestEngine.compileTrials( "All-in-one", scenario, StingProcessor::new, classnames );
+      scenario.setAllInOneDurations( results );
+    }
+
+    // Incremental compiles
+    {
+      TestEngine.compile( StingProcessor::new,
+                          scenario.getNodeClassNames(),
+                          scenario.getOutputDirectory(),
+                          scenario.getOutputDirectory() );
+      final long[] results =
+        TestEngine.compileTrials( "Incremental", scenario, StingProcessor::new, scenario.getInjectorClassNames() );
+      scenario.setIncrementalDurations( results );
+    }
+  }
+
+  private static void performDaggerTests( @Nonnull final Scenario scenario )
+    throws IOException
+  {
+    DaggerSourceGenerator.createDaggerInjectScenarioSource( scenario );
+
+    // AllInOne compiles
+    {
+      final List<String> classnames = new ArrayList<>( scenario.getNodeClassNames() );
+      classnames.addAll( scenario.getInjectorClassNames() );
+      classnames.addAll( scenario.getEntryClassNames() );
+      final long[] results = TestEngine.compileTrials( "All-in-one", scenario, ComponentProcessor::new, classnames );
+      scenario.setAllInOneDurations( results );
+    }
+
+    // Incremental compiles
+    {
+      TestEngine.compile( StingProcessor::new,
+                          scenario.getNodeClassNames(),
+                          scenario.getOutputDirectory(),
+                          scenario.getOutputDirectory() );
+      final long[] results =
+        TestEngine.compileTrials( "Incremental", scenario, ComponentProcessor::new, scenario.getInjectorClassNames() );
+      scenario.setIncrementalDurations( results );
+    }
   }
 
   @Nonnull

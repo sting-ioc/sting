@@ -33,19 +33,20 @@ final class TestEngine
 
   static long[] compileTrials( @Nonnull final String label,
                                @Nonnull final Scenario scenario,
+                               @Nonnull final Supplier<Processor> processorSupplier,
                                @Nonnull final List<String> classnames )
     throws IOException
   {
     final int warmups = scenario.getWarmupTrials();
     for ( int i = 0; i < warmups; i++ )
     {
-      final long duration = compileTrial( scenario, StingProcessor::new, classnames );
+      final long duration = compileTrial( scenario, processorSupplier, classnames );
       System.out.println( label + " Warmup Trial duration: " + duration );
     }
     final long[] durations = new long[ scenario.getMeasureTrials() ];
     for ( int i = 0; i < durations.length; i++ )
     {
-      final long duration = compileTrial( scenario, StingProcessor::new, classnames );
+      final long duration = compileTrial( scenario, processorSupplier, classnames );
       durations[ i ] = duration;
       System.out.println( label + " Trial duration: " + duration );
     }
