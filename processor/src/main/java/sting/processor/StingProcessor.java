@@ -1617,9 +1617,9 @@ public final class StingProcessor
       processingEnv.getFiler().createResource( StandardLocation.CLASS_OUTPUT, nameParts[ 0 ], nameParts[ 1 ], element );
     try ( final OutputStream out = resource.openOutputStream() )
     {
-      try ( final DataOutputStream dos1 = new DataOutputStream( out ) )
+      try ( final DataOutputStream dos = new DataOutputStream( out ) )
       {
-        _descriptorIO.write( dos1, descriptor );
+        _descriptorIO.write( dos, descriptor );
       }
     }
 
