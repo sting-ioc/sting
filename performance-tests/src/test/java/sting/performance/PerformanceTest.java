@@ -1,13 +1,19 @@
 package sting.performance;
 
 import dagger.internal.codegen.ComponentProcessor;
+import gir.GirException;
+import gir.delta.Patch;
 import gir.io.FileUtil;
+import gir.sys.SystemProperty;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import javax.annotation.Nonnull;
 import sting.processor.StingProcessor;
 import static org.testng.Assert.*;
@@ -17,7 +23,88 @@ public class PerformanceTest
   public static void main( String[] args )
     throws Exception
   {
-    runTestScenario( 15, 10, 10, 10, 5, ( 10 * 10 ) / 2 );
+    final OrderedProperties fixtureStatistics = OrderedProperties.load( getFixtureStatisticsPath() );
+    final String variant = SystemProperty.get( "sting.perf.variant" );
+    switch ( variant )
+    {
+      case "small":
+        collectStatistics( "small", fixtureStatistics, 2, 5, 0.5 );
+        break;
+      case "medium":
+        collectStatistics( "medium", fixtureStatistics, 5, 10, 0.5 );
+        break;
+      case "large":
+        collectStatistics( "large", fixtureStatistics, 5, 100, 0.5 );
+        break;
+      case "huge":
+        collectStatistics( "huge", fixtureStatistics, 10, 100, 0.5 );
+        break;
+      default:
+        System.out.println( "Unknown variant: " + variant );
+        break;
+    }
+  }
+
+  private static void updateFixtureStatistics( @Nonnull final OrderedProperties fixtureStatistics )
+  {
+    final Path path = getFixtureStatisticsPath();
+    System.out.println( "Updating fixture statistics at " + path + "." );
+    writeProperties( path, fixtureStatistics );
+  }
+
+  static void writeProperties( @Nonnull final Path outputFile, @Nonnull final OrderedProperties properties )
+  {
+    try
+    {
+      properties.store( new FileWriter( outputFile.toFile() ), "" );
+      Patch.file( outputFile, c -> c.replaceAll( "#.*\n", "" ) );
+    }
+    catch ( final IOException ioe )
+    {
+      final String message = "Failed to write properties file: " + outputFile;
+      System.out.println( message );
+      throw new GirException( message, ioe );
+    }
+  }
+
+  @SuppressWarnings( "SameParameterValue" )
+  private static void collectStatistics( @Nonnull final String variant,
+                                         @Nonnull final OrderedProperties fixtureStatistics,
+                                         final int layerCount,
+                                         final int nodesPerLayer,
+                                         final double eagerCountRatio )
+    throws Exception
+  {
+    final int eagerCount = (int) ( ( layerCount * nodesPerLayer ) * eagerCountRatio );
+    final OrderedProperties scenarioStatistics =
+      runTestScenario( variant, 5, 10, layerCount, nodesPerLayer, 5, eagerCount );
+
+    System.out.println();
+    System.out.println();
+    System.out.println( variant + " Scenario Statistics" );
+    scenarioStatistics.keySet().forEach( k -> System.out.println( k + ": " + scenarioStatistics.get( k ) ) );
+    System.out.println();
+    System.out.println();
+    fixtureStatistics.mergeWithPrefix( scenarioStatistics, getVersion() + "." + variant );
+    updateFixtureStatistics( fixtureStatistics );
+  }
+
+  @Nonnull
+  private static Path getFixtureStatisticsPath()
+  {
+    return getFixtureDirectory().resolve( "statistics.properties" );
+  }
+
+  @Nonnull
+  private static String getVersion()
+  {
+    return SystemProperty.get( "sting.next.version" );
+  }
+
+  @Nonnull
+  private static Path getFixtureDirectory()
+  {
+    return Paths.get( SystemProperty.get( "sting.perf.fixture_dir" ) ).toAbsolutePath().normalize();
   }
 
   /**
@@ -29,14 +116,23 @@ public class PerformanceTest
    * @param eagerCount    the number of nodes that are considered eager and must be created at startup.
    * @throws Exception if error occurs running scenario
    */
-  public static void runTestScenario( final int warmupTrials,
-                                      final int measureTrials,
-                                      final int layerCount,
-                                      final int nodesPerLayer,
-                                      final int inputsPerNode,
-                                      final int eagerCount )
+  @Nonnull
+  public static OrderedProperties runTestScenario( @Nonnull final String label,
+                                                   final int warmupTrials,
+                                                   final int measureTrials,
+                                                   final int layerCount,
+                                                   final int nodesPerLayer,
+                                                   final int inputsPerNode,
+                                                   final int eagerCount )
     throws Exception
   {
+    final OrderedProperties statistics = new OrderedProperties();
+    statistics.setProperty( "input.warmupTrials", String.valueOf( warmupTrials ) );
+    statistics.setProperty( "input.measureTrials", String.valueOf( measureTrials ) );
+    statistics.setProperty( "input.layerCount", String.valueOf( layerCount ) );
+    statistics.setProperty( "input.nodesPerLayer", String.valueOf( nodesPerLayer ) );
+    statistics.setProperty( "input.inputsPerNode", String.valueOf( inputsPerNode ) );
+    statistics.setProperty( "input.eagerCount", String.valueOf( eagerCount ) );
     final Path workingDirectory = getWorkingDirectory();
     Files.createDirectories( workingDirectory );
     FileUtil.inDirectory( workingDirectory, () -> {
@@ -48,7 +144,7 @@ public class PerformanceTest
                       nodesPerLayer,
                       inputsPerNode,
                       eagerCount );
-      performDaggerTests( daggerScenario );
+      performDaggerTests( label, daggerScenario, statistics );
       final Scenario stingScenario =
         new Scenario( FileUtil.getCurrentDirectory().resolve( "src" ),
                       warmupTrials,
@@ -57,11 +153,22 @@ public class PerformanceTest
                       nodesPerLayer,
                       inputsPerNode,
                       eagerCount );
-      performStingTests( stingScenario );
+      performStingTests( label, stingScenario, statistics );
     } );
+    final double minAllRatio =
+      ( Long.parseLong( statistics.getProperty( "output.dagger.all.min" ) ) * 1.0 ) /
+      Long.parseLong( statistics.getProperty( "output.sting.all.min" ) );
+    final double minIncrementalRatio =
+      ( Long.parseLong( statistics.getProperty( "output.dagger.incremental.min" ) ) * 1.0 ) /
+      Long.parseLong( statistics.getProperty( "output.sting.incremental.min" ) );
+    statistics.setProperty( "output.sting2dagger.all.min", String.format( "%.3f", minAllRatio ) );
+    statistics.setProperty( "output.sting2dagger.incremental.min", String.format( "%.3f", minIncrementalRatio ) );
+    return statistics;
   }
 
-  private static void performStingTests( @Nonnull final Scenario scenario )
+  private static void performStingTests( @Nonnull final String label,
+                                         @Nonnull final Scenario scenario,
+                                         @Nonnull final Properties results )
     throws IOException
   {
     StingSourceGenerator.createStingInjectableScenarioSource( scenario );
@@ -71,8 +178,9 @@ public class PerformanceTest
       final List<String> classnames = new ArrayList<>( scenario.getNodeClassNames() );
       classnames.addAll( scenario.getInjectorClassNames() );
       classnames.addAll( scenario.getEntryClassNames() );
-      final long[] results = TestEngine.compileTrials( "All-in-one", scenario, StingProcessor::new, classnames );
-      scenario.setAllInOneDurations( results );
+      final long[] durations =
+        TestEngine.compileTrials( label + " Sting All", scenario, StingProcessor::new, classnames );
+      scenario.setAllInOneDurations( durations );
     }
 
     // Incremental compiles
@@ -81,13 +189,30 @@ public class PerformanceTest
                           scenario.getNodeClassNames(),
                           scenario.getOutputDirectory(),
                           scenario.getOutputDirectory() );
-      final long[] results =
-        TestEngine.compileTrials( "Incremental", scenario, StingProcessor::new, scenario.getInjectorClassNames() );
-      scenario.setIncrementalDurations( results );
+      final long[] durations =
+        TestEngine.compileTrials( label + " Sting Incremental",
+                                  scenario,
+                                  StingProcessor::new,
+                                  scenario.getInjectorClassNames() );
+      scenario.setIncrementalDurations( durations );
     }
+    Arrays.stream( scenario.getAllInOneDurations() )
+      .min()
+      .ifPresent( v -> results.setProperty( "output.sting.all.min", String.valueOf( v ) ) );
+    Arrays.stream( scenario.getAllInOneDurations() )
+      .average()
+      .ifPresent( v -> results.setProperty( "output.sting.all.average", String.valueOf( (long) v ) ) );
+    Arrays.stream( scenario.getIncrementalDurations() )
+      .min()
+      .ifPresent( v -> results.setProperty( "output.sting.incremental.min", String.valueOf( v ) ) );
+    Arrays.stream( scenario.getIncrementalDurations() )
+      .average()
+      .ifPresent( v -> results.setProperty( "output.sting.incremental.average", String.valueOf( (long) v ) ) );
   }
 
-  private static void performDaggerTests( @Nonnull final Scenario scenario )
+  private static void performDaggerTests( @Nonnull final String label,
+                                          @Nonnull final Scenario scenario,
+                                          @Nonnull final Properties results )
     throws IOException
   {
     DaggerSourceGenerator.createDaggerInjectScenarioSource( scenario );
@@ -97,8 +222,9 @@ public class PerformanceTest
       final List<String> classnames = new ArrayList<>( scenario.getNodeClassNames() );
       classnames.addAll( scenario.getInjectorClassNames() );
       classnames.addAll( scenario.getEntryClassNames() );
-      final long[] results = TestEngine.compileTrials( "All-in-one", scenario, ComponentProcessor::new, classnames );
-      scenario.setAllInOneDurations( results );
+      final long[] durations =
+        TestEngine.compileTrials( label + " Dagger All", scenario, ComponentProcessor::new, classnames );
+      scenario.setAllInOneDurations( durations );
     }
 
     // Incremental compiles
@@ -107,10 +233,25 @@ public class PerformanceTest
                           scenario.getNodeClassNames(),
                           scenario.getOutputDirectory(),
                           scenario.getOutputDirectory() );
-      final long[] results =
-        TestEngine.compileTrials( "Incremental", scenario, ComponentProcessor::new, scenario.getInjectorClassNames() );
-      scenario.setIncrementalDurations( results );
+      final long[] durations =
+        TestEngine.compileTrials( label + " Dagger Incremental",
+                                  scenario,
+                                  ComponentProcessor::new,
+                                  scenario.getInjectorClassNames() );
+      scenario.setIncrementalDurations( durations );
     }
+    Arrays.stream( scenario.getAllInOneDurations() )
+      .min()
+      .ifPresent( v -> results.setProperty( "output.dagger.all.min", String.valueOf( v ) ) );
+    Arrays.stream( scenario.getAllInOneDurations() )
+      .average()
+      .ifPresent( v -> results.setProperty( "output.dagger.all.average", String.valueOf( (long) v ) ) );
+    Arrays.stream( scenario.getIncrementalDurations() )
+      .min()
+      .ifPresent( v -> results.setProperty( "output.dagger.incremental.min", String.valueOf( v ) ) );
+    Arrays.stream( scenario.getIncrementalDurations() )
+      .average()
+      .ifPresent( v -> results.setProperty( "output.dagger.incremental.average", String.valueOf( (long) v ) ) );
   }
 
   @Nonnull

@@ -87,6 +87,7 @@ final class TestEngine
     task.setProcessors( Collections.singletonList( processorSupplier.get() ) );
 
     System.gc();
+    System.out.println( "Pre-compile free memory: " + Runtime.getRuntime().freeMemory() );
     final long start = System.nanoTime();
     boolean succeeded = task.call();
     final long duration = System.nanoTime() - start;
