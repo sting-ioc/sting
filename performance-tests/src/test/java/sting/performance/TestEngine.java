@@ -73,7 +73,8 @@ final class TestEngine
     final DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
     final JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
     final String classpath =
-      buildClasspath( inputDir.toFile() ).stream()
+      buildClasspath( inputDir.toFile() )
+        .stream()
         .map( File::toString )
         .collect( Collectors.joining( File.pathSeparator ) );
     final JavaCompiler.CompilationTask task =
