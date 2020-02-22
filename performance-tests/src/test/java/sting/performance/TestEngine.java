@@ -22,7 +22,6 @@ import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
-import sting.processor.StingProcessor;
 import static org.testng.Assert.*;
 
 final class TestEngine
