@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
@@ -169,6 +170,6 @@ final class TestEngine
       classloader = classloader.getParent();
     }
 
-    return elements.stream().collect( Collectors.toList() );
+    return new ArrayList<>( elements );
   }
 }
