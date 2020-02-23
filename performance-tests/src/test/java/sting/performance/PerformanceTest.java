@@ -28,11 +28,14 @@ public class PerformanceTest
     final String variant = SystemProperty.get( "sting.perf.variant" );
     switch ( variant )
     {
+      case "tiny":
+        collectStatistics( "tiny", fixtureStatistics, 2, 5, 0.5 );
+        break;
       case "small":
-        collectStatistics( "small", fixtureStatistics, 2, 5, 0.5 );
+        collectStatistics( "small", fixtureStatistics, 5, 10, 0.5 );
         break;
       case "medium":
-        collectStatistics( "medium", fixtureStatistics, 5, 10, 0.5 );
+        collectStatistics( "medium", fixtureStatistics, 5, 50, 0.5 );
         break;
       case "large":
         collectStatistics( "large", fixtureStatistics, 5, 100, 0.5 );
