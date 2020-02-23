@@ -4,6 +4,9 @@
       "overview",
       "project_setup",
       "getting_started"
+    ],
+    "Technical": [
+      "performance"
     ]
   }
 }
