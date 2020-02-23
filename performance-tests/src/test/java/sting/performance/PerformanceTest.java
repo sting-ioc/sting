@@ -82,7 +82,7 @@ public class PerformanceTest
     final String prefix = getVersion() + "." + variant;
     System.out.println();
     System.out.println();
-    System.out.println( variant + " Scenario Statistics" );
+    System.out.println( prefix + " Scenario Statistics" );
     scenarioStatistics.keySet().forEach( k -> System.out.println( k + ": " + scenarioStatistics.get( k ) ) );
     System.out.println();
     System.out.println();
