@@ -79,13 +79,14 @@ public class PerformanceTest
     final OrderedProperties scenarioStatistics =
       runTestScenario( variant, 5, 10, layerCount, nodesPerLayer, 5, eagerCount );
 
+    final String prefix = getVersion() + "." + variant;
     System.out.println();
     System.out.println();
     System.out.println( variant + " Scenario Statistics" );
     scenarioStatistics.keySet().forEach( k -> System.out.println( k + ": " + scenarioStatistics.get( k ) ) );
     System.out.println();
     System.out.println();
-    fixtureStatistics.mergeWithPrefix( scenarioStatistics, getVersion() + "." + variant );
+    fixtureStatistics.mergeWithPrefix( scenarioStatistics, prefix + "." );
     updateFixtureStatistics( fixtureStatistics );
   }
 
