@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sting.processor.StingProcessor;
 import static org.testng.Assert.*;
@@ -86,6 +87,11 @@ public class PerformanceTest
     scenarioStatistics.keySet().forEach( k -> System.out.println( k + ": " + scenarioStatistics.get( k ) ) );
     System.out.println();
     System.out.println();
+    final List<Object> keysToRemove = fixtureStatistics.keySet()
+      .stream()
+      .filter( k -> ( (String) k ).startsWith( prefix ) )
+      .collect( Collectors.toList() );
+    keysToRemove.forEach( fixtureStatistics::remove );
     fixtureStatistics.mergeWithPrefix( scenarioStatistics, prefix + "." );
     updateFixtureStatistics( fixtureStatistics );
   }
