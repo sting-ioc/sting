@@ -2,7 +2,7 @@
 title: Performance
 ---
 
-## Build Times
+## Build Time
 
 Sting prioritizes decreasing build time of incremental injector rebuilds over rebuilding the entire
 application. Sting is often used in the construction of web applications. In this context the application
