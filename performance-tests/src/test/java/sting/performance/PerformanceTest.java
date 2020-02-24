@@ -146,15 +146,6 @@ public class PerformanceTest
     final Path workingDirectory = getWorkingDirectory();
     Files.createDirectories( workingDirectory );
     FileUtil.inDirectory( workingDirectory, () -> {
-      final Scenario daggerScenario =
-        new Scenario( FileUtil.getCurrentDirectory().resolve( "src" ),
-                      warmupTrials,
-                      measureTrials,
-                      layerCount,
-                      nodesPerLayer,
-                      inputsPerNode,
-                      eagerCount );
-      performDaggerTests( label, daggerScenario, statistics );
       final Scenario stingScenario =
         new Scenario( FileUtil.getCurrentDirectory().resolve( "src" ),
                       warmupTrials,
@@ -164,6 +155,15 @@ public class PerformanceTest
                       inputsPerNode,
                       eagerCount );
       performStingTests( label, stingScenario, statistics );
+      final Scenario daggerScenario =
+        new Scenario( FileUtil.getCurrentDirectory().resolve( "src" ),
+                      warmupTrials,
+                      measureTrials,
+                      layerCount,
+                      nodesPerLayer,
+                      inputsPerNode,
+                      eagerCount );
+      performDaggerTests( label, daggerScenario, statistics );
     } );
     final double minAllRatio =
       ( Long.parseLong( statistics.getProperty( "output.dagger.all.min" ) ) * 1.0 ) /
