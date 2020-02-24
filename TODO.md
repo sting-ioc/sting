@@ -18,6 +18,15 @@ complete as there is too much un-said.
   we will need to verify that the provider publishes a binding that exposes the originating type as a published
   service.
 
+* Add some basic documentation
+  * Usage documentation.
+  * Recipe style examples for how to solve specific problems.
+  * Comparison to other technologies (i.e. Dagger/IOC) in terms of functionality and performance.
+  * Development process FAQ - just like in Arez but reflective of Stings approach.
+  * Maybe terminology should be (more) inspired by OSGI service ala https://www.osgi.org/developer/architecture/
+
+### Performance Documentation and Tests
+
 * Write integration tests that compare with dagger the following performance characteristics.
   * time to compile the injector
   * time to incrementally compile the injector and no contributors
@@ -45,12 +54,6 @@ complete as there is too much un-said.
 * Fail release if there is no performance data for current version UNLESS the user specifies a environment
   variable override.
 
-* Add some basic documentation
-  * Usage documentation.
-  * Recipe style examples for how to solve specific problems.
-  * Comparison to other technologies (i.e. Dagger/IOC) in terms of functionality and performance.
-  * Development process FAQ - just like in Arez but reflective of Stings approach.
-  * Maybe terminology should be (more) inspired by OSGI service ala https://www.osgi.org/developer/architecture/
 
 ## Other TODO
 
