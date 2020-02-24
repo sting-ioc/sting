@@ -109,7 +109,7 @@ final class TestEngine
    * @return an list of directories that define the created classpath.
    */
   @Nonnull
-  private static List<File> buildClasspath( @Nonnull final File... paths )
+  static List<File> buildClasspath( @Nonnull final File... paths )
   {
     final Set<File> elements = new LinkedHashSet<>( Arrays.asList( paths ) );
     ClassLoader classloader = TestEngine.class.getClassLoader();
