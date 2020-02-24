@@ -81,7 +81,7 @@ public class PerformanceTest
   {
     final int eagerCount = (int) ( ( layerCount * nodesPerLayer ) * eagerCountRatio );
     final OrderedProperties scenarioStatistics =
-      runTestScenario( variant, 5, 10, layerCount, nodesPerLayer, 5, eagerCount );
+      runTestScenario( variant, 20, 10, layerCount, nodesPerLayer, 5, eagerCount );
 
     final String prefix = getVersion() + "." + variant;
     System.out.println();
@@ -128,7 +128,7 @@ public class PerformanceTest
    */
   @Nonnull
   public static OrderedProperties runTestScenario( @Nonnull final String label,
-                                                   final int warmupTrials,
+                                                   final int warmupTimeInSeconds,
                                                    final int measureTrials,
                                                    final int layerCount,
                                                    final int nodesPerLayer,
@@ -137,7 +137,7 @@ public class PerformanceTest
     throws Exception
   {
     final OrderedProperties statistics = new OrderedProperties();
-    statistics.setProperty( "input.warmupTrials", String.valueOf( warmupTrials ) );
+    statistics.setProperty( "input.warmupTimeInSeconds", String.valueOf( warmupTimeInSeconds ) );
     statistics.setProperty( "input.measureTrials", String.valueOf( measureTrials ) );
     statistics.setProperty( "input.layerCount", String.valueOf( layerCount ) );
     statistics.setProperty( "input.nodesPerLayer", String.valueOf( nodesPerLayer ) );
@@ -148,7 +148,7 @@ public class PerformanceTest
     FileUtil.inDirectory( workingDirectory, () -> {
       final Scenario stingScenario =
         new Scenario( FileUtil.getCurrentDirectory().resolve( "src" ),
-                      warmupTrials,
+                      warmupTimeInSeconds,
                       measureTrials,
                       layerCount,
                       nodesPerLayer,
@@ -157,7 +157,7 @@ public class PerformanceTest
       performStingTests( label, stingScenario, statistics );
       final Scenario daggerScenario =
         new Scenario( FileUtil.getCurrentDirectory().resolve( "src" ),
-                      warmupTrials,
+                      warmupTimeInSeconds,
                       measureTrials,
                       layerCount,
                       nodesPerLayer,

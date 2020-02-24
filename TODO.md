@@ -38,9 +38,6 @@ complete as there is too much un-said.
 
 * Add standard deviation to calculated values for each scenario so we can add to table something like `± 0.3`
 
-* change the way warmup is done in performance tests so that it is time based run iteration based. i.e. Warmup
-  for 40 seconds then go. The problem is that currently low run time trials are getting high variation.
-
 * Patch the tables in documentation with performance test data. Do this as part of the build. Patch version
   in documentation
 

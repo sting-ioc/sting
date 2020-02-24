@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -37,8 +38,8 @@ final class TestEngine
                                @Nonnull final List<String> classnames )
     throws IOException
   {
-    final int warmups = scenario.getWarmupTrials();
-    for ( int i = 0; i < warmups; i++ )
+    final long endWarmup = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis( scenario.getWarmupTimeInSeconds() );
+    while ( System.currentTimeMillis() < endWarmup )
     {
       final long duration = compileTrial( scenario, processorSupplier, classnames );
       System.out.println( label + " Warmup Trial duration: " + duration );

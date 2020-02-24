@@ -10,7 +10,7 @@ final class Scenario
 {
   @Nonnull
   private final Path _outputDirectory;
-  private final int _warmupTrials;
+  private final int _warmupTimeInSeconds;
   private final int _measureTrials;
   private final int _layerCount;
   private final int _nodesPerLayer;
@@ -26,7 +26,7 @@ final class Scenario
   private long[] _incrementalDurations;
 
   Scenario( @Nonnull final Path outputDirectory,
-            final int warmupTrials,
+            final int warmupTimeInSeconds,
             final int measureTrials,
             final int layerCount,
             final int nodesPerLayer,
@@ -34,7 +34,7 @@ final class Scenario
             final int eagerCount )
   {
     _outputDirectory = outputDirectory;
-    _warmupTrials = warmupTrials;
+    _warmupTimeInSeconds = warmupTimeInSeconds;
     _measureTrials = measureTrials;
     _layerCount = layerCount;
     _nodesPerLayer = nodesPerLayer;
@@ -48,9 +48,9 @@ final class Scenario
     return _outputDirectory;
   }
 
-  int getWarmupTrials()
+  int getWarmupTimeInSeconds()
   {
-    return _warmupTrials;
+    return _warmupTimeInSeconds;
   }
 
   int getMeasureTrials()
