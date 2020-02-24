@@ -17,6 +17,7 @@ import java.nio.file.Path;
 import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.lang.model.element.Modifier;
 
 final class DaggerSourceGenerator
@@ -47,6 +48,7 @@ final class DaggerSourceGenerator
         final TypeSpec.Builder type =
           TypeSpec
             .classBuilder( className )
+            .addAnnotation( Singleton.class )
             .addModifiers( Modifier.PUBLIC, Modifier.FINAL );
         final MethodSpec.Builder constructor = MethodSpec.constructorBuilder();
         constructor.addAnnotation( Inject.class );
@@ -86,6 +88,7 @@ final class DaggerSourceGenerator
         TypeSpec
           .interfaceBuilder( className )
           .addModifiers( Modifier.PUBLIC )
+          .addAnnotation( Singleton.class )
           .addAnnotation( Component.class );
 
       for ( int node = 0; node < nodesPerLayer; node++ )
