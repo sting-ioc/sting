@@ -157,7 +157,9 @@ define 'sting' do
 
                       # Dagger deps follow
                       :javax_inject,
+                      :javax_inject_sources,
                       :dagger_core,
+                      :dagger_core_sources,
                       :dagger_gwt,
                       :dagger_producers,
                       :dagger_spi,

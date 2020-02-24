@@ -52,7 +52,9 @@ artifacts:
   # Dagger deps
   autocommon: com.google.auto:auto-common:jar:0.10
   javax_inject: javax.inject:javax.inject:jar:1
+  javax_inject_sources: javax.inject:javax.inject:jar:sources:1
   dagger_core: com.google.dagger:dagger:jar:2.25.2
+  dagger_core_sources: com.google.dagger:dagger:jar:sources:2.25.2
   dagger_gwt: com.google.dagger:dagger-gwt:jar:2.25.2
   dagger_producers: com.google.dagger:dagger-producers:jar:2.25.2
   dagger_spi: com.google.dagger:dagger-spi:jar:2.25.2
