@@ -171,10 +171,23 @@ final class DaggerSourceGenerator
         }
       }
 
-      for ( int node = 0; node < nodesPerLayer; node++ )
+      remainingEager = scenario.getEagerCount();
+      outer2:
+      for ( int layer = 0; layer < layerCount; layer++ )
       {
-        final ClassName inputType = toNodeClassName( nodesPerLayer, 0, node );
-        method.addStatement( "$N.compute()", inputType.simpleName() );
+        for ( int node = 0; node < nodesPerLayer; node++ )
+        {
+          if ( remainingEager > 0 )
+          {
+            remainingEager--;
+            final ClassName inputType = toNodeClassName( nodesPerLayer, layer, node );
+            method.addStatement( "$N.compute()", inputType.simpleName() );
+          }
+          else
+          {
+            break outer2;
+          }
+        }
       }
 
       type.addMethod( method.build() );
