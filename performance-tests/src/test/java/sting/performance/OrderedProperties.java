@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -35,6 +36,15 @@ public final class OrderedProperties
   public Set<Object> keySet()
   {
     return new TreeSet<>( super.keySet() );
+  }
+
+  void removeWithPrefix( @Nonnull final String prefix )
+  {
+    keySet()
+      .stream()
+      .filter( k -> ( (String) k ).startsWith( prefix ) )
+      .collect( Collectors.toList() )
+      .forEach( this::remove );
   }
 
   void mergeWithPrefix( @Nonnull final Properties properties, @Nonnull final String prefix )
