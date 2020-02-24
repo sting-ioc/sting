@@ -12,6 +12,7 @@ import elemental2.dom.DomGlobal;
 import gir.io.FileUtil;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.Nonnull;
@@ -155,7 +156,10 @@ final class DaggerSourceGenerator
           {
             remainingEager--;
             final ClassName inputType = toNodeClassName( nodesPerLayer, layer, node );
-            method.addStatement( "application.$N()", inputType.simpleName());
+            method.addStatement( "final $T $N = application.$N()",
+                                 inputType,
+                                 inputType.simpleName(),
+                                 inputType.simpleName() );
           }
           else
           {
@@ -167,7 +171,7 @@ final class DaggerSourceGenerator
       for ( int node = 0; node < nodesPerLayer; node++ )
       {
         final ClassName inputType = toNodeClassName( nodesPerLayer, 0, node );
-        method.addStatement( "application.$N().compute()", inputType.simpleName() );
+        method.addStatement( "$N.compute()", inputType.simpleName() );
       }
 
       type.addMethod( method.build() );
