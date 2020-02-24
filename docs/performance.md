@@ -1,5 +1,5 @@
 ---
-title: Performance Comparison to Dagger
+title: Performance
 ---
 
 ## Build Times
