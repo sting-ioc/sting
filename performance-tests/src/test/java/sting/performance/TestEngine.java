@@ -4,7 +4,6 @@ import com.google.testing.compile.JavaFileObjects;
 import gir.io.FileUtil;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
