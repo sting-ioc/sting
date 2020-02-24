@@ -55,6 +55,6 @@ final class TestUtil
   {
     final String outputDirectoryName = System.getProperty( "sting.perf.working_directory" );
     assertNotNull( outputDirectoryName );
-    return Paths.get( outputDirectoryName );
+    return Paths.get( outputDirectoryName ).toAbsolutePath();
   }
 }
