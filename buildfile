@@ -143,8 +143,7 @@ define 'sting' do
                       :compile_testing,
 
                       # Code for the Application to compile against
-                      :gwt_user,
-                      :jsinterop_annotations,
+                      Buildr::GWT.dependencies,
                       :jsinterop_base,
                       :elemental2_core,
                       :elemental2_dom,
@@ -159,6 +158,7 @@ define 'sting' do
                       # Dagger deps follow
                       :javax_inject,
                       :dagger_core,
+                      :dagger_gwt,
                       :dagger_producers,
                       :dagger_spi,
                       :dagger_compiler,
