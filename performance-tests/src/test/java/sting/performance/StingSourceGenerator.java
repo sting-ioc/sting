@@ -11,6 +11,7 @@ import elemental2.dom.DomGlobal;
 import gir.io.FileUtil;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.Nonnull;
@@ -137,6 +138,22 @@ final class StingSourceGenerator
         writeTo( outputDirectory, StandardCharsets.UTF_8 );
       scenario.addEntryClassName( className.canonicalName() );
     }
+    final String moduleXml =
+      "<module>\n" +
+      "  <inherits name='com.google.gwt.core.Core'/>\n" +
+      "  <inherits name='sting.Sting'/>\n" +
+      "\n" +
+      "  <set-property name='jre.checks.checkLevel' value='MINIMAL'/>\n" +
+      "  <set-property name='compiler.stackMode' value='strip'/>\n" +
+      "\n" +
+      "  <entry-point class='com.example.perf.sting.ApplicationEntrypoint'/>\n" +
+      "\n" +
+      "  <source path=''/>\n" +
+      "\n" +
+      "  <add-linker name='sso'/>\n" +
+      "</module>\n";
+    Files.write( outputDirectory.resolve( PKG.replace( '.', '/' ) ).resolve( "Application.gwt.xml" ),
+                 moduleXml.getBytes( StandardCharsets.UTF_8 ) );
   }
 
   @Nonnull

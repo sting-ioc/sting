@@ -182,6 +182,22 @@ final class DaggerSourceGenerator
         writeTo( outputDirectory, StandardCharsets.UTF_8 );
       scenario.addEntryClassName( className.canonicalName() );
     }
+    final String moduleXml =
+      "<module>\n" +
+      "  <inherits name='com.google.gwt.core.Core'/>\n" +
+      "  <inherits name='dagger.Dagger'/>\n" +
+      "\n" +
+      "  <set-property name='jre.checks.checkLevel' value='MINIMAL'/>\n" +
+      "  <set-property name='compiler.stackMode' value='strip'/>\n" +
+      "\n" +
+      "  <entry-point class='com.example.perf.dagger.ApplicationEntrypoint'/>\n" +
+      "\n" +
+      "  <source path=''/>\n" +
+      "\n" +
+      "  <add-linker name='sso'/>\n" +
+      "</module>\n";
+    Files.write( outputDirectory.resolve( PKG.replace( '.', '/' ) ).resolve( "Application.gwt.xml" ),
+                 moduleXml.getBytes( StandardCharsets.UTF_8 ) );
   }
 
   @Nonnull
