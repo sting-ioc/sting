@@ -16,9 +16,8 @@ final class TestUtil
   {
   }
 
-  static void updateFixtureStatistics( @Nonnull final OrderedProperties fixtureStatistics )
+  static void updateFixtureStatistics( @Nonnull final Path path, @Nonnull final OrderedProperties fixtureStatistics )
   {
-    final Path path = BuildTimePerformanceTest.getFixtureStatisticsPath();
     System.out.println( "Updating fixture statistics at " + path + "." );
     writeProperties( path, fixtureStatistics );
   }

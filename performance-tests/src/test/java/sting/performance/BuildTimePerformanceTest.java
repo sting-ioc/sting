@@ -67,7 +67,7 @@ public class BuildTimePerformanceTest
     System.out.println();
     fixtureStatistics.removeWithPrefix( prefix );
     fixtureStatistics.mergeWithPrefix( scenarioStatistics, prefix + "." );
-    TestUtil.updateFixtureStatistics( fixtureStatistics );
+    TestUtil.updateFixtureStatistics( getFixtureStatisticsPath(), fixtureStatistics );
   }
 
   /**
