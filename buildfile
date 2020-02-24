@@ -143,7 +143,7 @@ define 'sting' do
                       :compile_testing,
 
                       # Code for the Application to compile against
-                      Buildr::GWT.dependencies,
+                      Buildr::GWT.dependencies('2.8.2-v20191108'),
                       :jsinterop_base,
                       :elemental2_core,
                       :elemental2_dom,
