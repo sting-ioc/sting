@@ -77,3 +77,8 @@ The object graph in the sample application is intended to be reasonably represen
 graphs that appear in real-life applications without being unduly biased towards Sting or Dagger. However, the
 tests do focus on incremental build time and code-size which are Sting strengths. This is primarily because this
 is what Sting is focused upon and intends to improve upon in the future.
+
+It should be noted that the example application only includes `@javax.inject.Inject` annotated types for Dagger
+and {@api_url: @Injectable::Injectable} annotated types for Sting and not components provided by `@dagger.Module`
+annotated types for Dagger or {@api_url: @Fragment::Fragment} annotated types for Sting. This is primarily because
+it was too easy to introduce bias against Dagger in this scenario.
