@@ -188,6 +188,7 @@ final class DaggerSourceGenerator
     final String moduleXml =
       "<module>\n" +
       "  <inherits name='com.google.gwt.core.Core'/>\n" +
+      "  <inherits name='elemental2.dom.Dom'/>\n" +
       "  <inherits name='dagger.Dagger'/>\n" +
       "\n" +
       "  <set-property name='jre.checks.checkLevel' value='MINIMAL'/>\n" +

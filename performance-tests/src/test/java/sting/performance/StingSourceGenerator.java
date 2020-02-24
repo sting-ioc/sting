@@ -141,6 +141,7 @@ final class StingSourceGenerator
     final String moduleXml =
       "<module>\n" +
       "  <inherits name='com.google.gwt.core.Core'/>\n" +
+      "  <inherits name='elemental2.dom.Dom'/>\n" +
       "  <inherits name='sting.Sting'/>\n" +
       "\n" +
       "  <set-property name='jre.checks.checkLevel' value='MINIMAL'/>\n" +
