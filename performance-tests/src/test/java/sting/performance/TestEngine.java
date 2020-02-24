@@ -4,6 +4,7 @@ import com.google.testing.compile.JavaFileObjects;
 import gir.io.FileUtil;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -34,17 +35,19 @@ final class TestEngine
 
   static long[] compileTrials( @Nonnull final String label,
                                @Nonnull final Scenario scenario,
+                               final int warmupTimeInSeconds,
+                               final int trialCount,
                                @Nonnull final Supplier<Processor> processorSupplier,
                                @Nonnull final List<String> classnames )
     throws IOException
   {
-    final long endWarmup = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis( scenario.getWarmupTimeInSeconds() );
+    final long endWarmup = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis( warmupTimeInSeconds );
     while ( System.currentTimeMillis() < endWarmup )
     {
       final long duration = compileTrial( scenario, processorSupplier, classnames );
       System.out.println( label + " Warmup Trial duration: " + duration );
     }
-    final long[] durations = new long[ scenario.getMeasureTrials() ];
+    final long[] durations = new long[ trialCount ];
     for ( int i = 0; i < durations.length; i++ )
     {
       final long duration = compileTrial( scenario, processorSupplier, classnames );

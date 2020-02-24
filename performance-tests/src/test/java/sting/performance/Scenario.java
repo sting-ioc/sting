@@ -10,8 +10,6 @@ final class Scenario
 {
   @Nonnull
   private final Path _outputDirectory;
-  private final int _warmupTimeInSeconds;
-  private final int _measureTrials;
   private final int _layerCount;
   private final int _nodesPerLayer;
   private final int _inputsPerNode;
@@ -22,20 +20,14 @@ final class Scenario
   private final List<String> _injectorClassNames = new ArrayList<>();
   @Nonnull
   private final List<String> _entryClassNames = new ArrayList<>();
-  private long[] _allInOneDurations;
-  private long[] _incrementalDurations;
 
   Scenario( @Nonnull final Path outputDirectory,
-            final int warmupTimeInSeconds,
-            final int measureTrials,
             final int layerCount,
             final int nodesPerLayer,
             final int inputsPerNode,
             final int eagerCount )
   {
     _outputDirectory = outputDirectory;
-    _warmupTimeInSeconds = warmupTimeInSeconds;
-    _measureTrials = measureTrials;
     _layerCount = layerCount;
     _nodesPerLayer = nodesPerLayer;
     _inputsPerNode = inputsPerNode;
@@ -46,16 +38,6 @@ final class Scenario
   Path getOutputDirectory()
   {
     return _outputDirectory;
-  }
-
-  int getWarmupTimeInSeconds()
-  {
-    return _warmupTimeInSeconds;
-  }
-
-  int getMeasureTrials()
-  {
-    return _measureTrials;
   }
 
   int getLayerCount()
@@ -109,25 +91,5 @@ final class Scenario
   List<String> getEntryClassNames()
   {
     return Collections.unmodifiableList( _entryClassNames );
-  }
-
-  long[] getAllInOneDurations()
-  {
-    return _allInOneDurations;
-  }
-
-  void setAllInOneDurations( final long[] allInOneDurations )
-  {
-    _allInOneDurations = allInOneDurations;
-  }
-
-  long[] getIncrementalDurations()
-  {
-    return _incrementalDurations;
-  }
-
-  void setIncrementalDurations( final long[] incrementalDurations )
-  {
-    _incrementalDurations = incrementalDurations;
   }
 }
