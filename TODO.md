@@ -25,6 +25,22 @@ complete as there is too much un-said.
   will be in a separate module and will use javapoet to generate the code, existing test infrastructure
   to compile the code repeatedly until we get stable builds.
 
+* Add trial times to the statistics in performance tests. So we add something like
+    > 0.5.medium.output.sting.all.trial.1=123
+    > 0.5.medium.output.sting.all.trial.2=222
+    > 0.5.medium.output.sting.all.trial.3=222
+
+* Add standard deviation to calculated values for each scenario so we can add to table something like `± 0.3`
+
+* change the way warmup is done in performance tests so that it is time based run iteration based. i.e. Warmup
+  for 40 seconds then go. The problem is that currently low run time trials are getting high variation.
+
+* Patch the tables in documentation with performance test data. Do this as part of the build. Patch version
+  in documentation
+
+* Fail release if there is no performance data for current version UNLESS the user specifies a environment
+  variable override.
+
 * Add some basic documentation
   * Usage documentation.
   * Recipe style examples for how to solve specific problems.
