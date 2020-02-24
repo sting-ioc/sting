@@ -21,7 +21,7 @@ import static org.testng.Assert.*;
 
 public class PerformanceTest
 {
-  public static void main( String[] args )
+  public static void main( final String[] args )
     throws Exception
   {
     final OrderedProperties fixtureStatistics = OrderedProperties.load( getFixtureStatisticsPath() );
