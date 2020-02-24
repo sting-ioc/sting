@@ -27,16 +27,9 @@ complete as there is too much un-said.
 
 ### Performance Documentation and Tests
 
-* Write integration tests that compare with dagger the following performance characteristics.
-  * time to compile the injector
-  * time to incrementally compile the injector and no contributors
-  * time to initialize and access the injector at runtime
-  * Code size of the the injector when compiled to GWT
+* Compare "time to initialize and access the injector at runtime" between dagger and sting in jre mode and/or js mode.
 
-  The integration tests will generate an injector with various numbers of fragments, injectables with
-  a dependency tree that has various shapes (i.e. width and depth of tree varied). The integration tests
-  will be in a separate module and will use javapoet to generate the code, existing test infrastructure
-  to compile the code repeatedly until we get stable builds.
+* Compare "Code size of the the injector when compiled to GWT" between dagger and sting.
 
 * Add trial times to the statistics in performance tests. So we add something like
     > 0.5.medium.output.sting.all.trial.1=123
