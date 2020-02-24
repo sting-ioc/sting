@@ -141,6 +141,7 @@ define 'sting' do
     test.options[:java_args] = %w(-ea)
     test.compile.with :gir,
                       :compile_testing,
+                      Java.tools_jar,
 
                       # Code for the Application to compile against
                       Buildr::GWT.dependencies('2.8.2-v20191108'),
@@ -172,6 +173,22 @@ define 'sting' do
                       :kotlin_stdlib_common,
                       :googlejavaformat,
                       :errorprone
+
+    task 'generate_size_statistics' do
+      project.test.compile.invoke
+      cp = project.test.compile.dependencies.map(&:to_s) + [project.test.compile.target.to_s]
+
+      %w(tiny small medium lazy_medium eager_medium large lazy_large eager_large huge).each do |variant|
+
+        properties = {
+          'sting.perf.working_directory' => project._('generated/perf'),
+          'sting.perf.fixture_dir' => project._('src/test/fixtures'),
+          'sting.perf.variant' => variant,
+          'sting.next.version' => ENV['PRODUCT_VERSION'] || p.version,
+        }
+        Java::Commands.java 'sting.performance.CodeSizePerformanceTest', { :classpath => cp, :properties => properties }
+      end
+    end
   end
 
   desc 'Test Arez in downstream projects'
