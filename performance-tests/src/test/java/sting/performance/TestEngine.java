@@ -32,41 +32,6 @@ final class TestEngine
   {
   }
 
-  static long[] compileTrials( @Nonnull final String label,
-                               @Nonnull final Scenario scenario,
-                               final int warmupTimeInSeconds,
-                               final int trialCount,
-                               @Nonnull final Supplier<Processor> processorSupplier,
-                               @Nonnull final List<String> classnames )
-    throws IOException
-  {
-    final long endWarmup = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis( warmupTimeInSeconds );
-    while ( System.currentTimeMillis() < endWarmup )
-    {
-      final long duration = compileTrial( scenario, processorSupplier, classnames );
-      System.out.println( label + " Warmup Trial duration: " + duration );
-    }
-    final long[] durations = new long[ trialCount ];
-    for ( int i = 0; i < durations.length; i++ )
-    {
-      final long duration = compileTrial( scenario, processorSupplier, classnames );
-      durations[ i ] = duration;
-      System.out.println( label + " Trial duration: " + duration );
-    }
-    return durations;
-  }
-
-  private static long compileTrial( @Nonnull final Scenario scenario,
-                                    @Nonnull final Supplier<Processor> processorSupplier,
-                                    @Nonnull final List<String> classnames )
-    throws IOException
-  {
-    final Path outputDir = FileUtil.createLocalTempDir();
-    final long duration = compile( processorSupplier, classnames, scenario.getOutputDirectory(), outputDir );
-    FileUtil.deleteDirIfExists( outputDir );
-    return duration;
-  }
-
   static long compile( @Nonnull final Supplier<Processor> processorSupplier,
                        @Nonnull final List<String> classnames,
                        @Nonnull final Path inputDir,

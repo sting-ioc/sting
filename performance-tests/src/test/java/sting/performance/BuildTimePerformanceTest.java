@@ -10,7 +10,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.Processor;
 import sting.processor.StingProcessor;
 
 public class BuildTimePerformanceTest
@@ -76,14 +79,15 @@ public class BuildTimePerformanceTest
    * @param eagerCount    the number of nodes that are considered eager and must be created at startup.
    * @throws Exception if error occurs running scenario
    */
+  @SuppressWarnings( "SameParameterValue" )
   @Nonnull
-  public static OrderedProperties runTestScenario( @Nonnull final String label,
-                                                   final int warmupTimeInSeconds,
-                                                   final int measureTrials,
-                                                   final int layerCount,
-                                                   final int nodesPerLayer,
-                                                   final int inputsPerNode,
-                                                   final int eagerCount )
+  private static OrderedProperties runTestScenario( @Nonnull final String label,
+                                                    final int warmupTimeInSeconds,
+                                                    final int measureTrials,
+                                                    final int layerCount,
+                                                    final int nodesPerLayer,
+                                                    final int inputsPerNode,
+                                                    final int eagerCount )
     throws Exception
   {
     final OrderedProperties statistics = new OrderedProperties();
@@ -145,12 +149,12 @@ public class BuildTimePerformanceTest
       classnames.addAll( scenario.getInjectorClassNames() );
       classnames.addAll( scenario.getEntryClassNames() );
       final long[] durations =
-        TestEngine.compileTrials( label + " " + variant + " All",
-                                  scenario,
-                                  warmupTimeInSeconds,
-                                  trialCount,
-                                  isDagger ? ComponentProcessor::new : StingProcessor::new,
-                                  classnames );
+        compileTrials( label + " " + variant + " All",
+                       scenario,
+                       warmupTimeInSeconds,
+                       trialCount,
+                       isDagger ? ComponentProcessor::new : StingProcessor::new,
+                       classnames );
       Arrays.stream( durations )
         .min()
         .ifPresent( v -> results.setProperty( "output." + variant + ".all.min", String.valueOf( v ) ) );
@@ -163,12 +167,12 @@ public class BuildTimePerformanceTest
                           scenario.getOutputDirectory(),
                           scenario.getOutputDirectory() );
       final long[] durations =
-        TestEngine.compileTrials( label + " " + variant + " Incremental",
-                                  scenario,
-                                  warmupTimeInSeconds,
-                                  trialCount,
-                                  isDagger ? ComponentProcessor::new : StingProcessor::new,
-                                  scenario.getInjectorClassNames() );
+        compileTrials( label + " " + variant + " Incremental",
+                       scenario,
+                       warmupTimeInSeconds,
+                       trialCount,
+                       isDagger ? ComponentProcessor::new : StingProcessor::new,
+                       scenario.getInjectorClassNames() );
       Arrays.stream( durations )
         .min()
         .ifPresent( v -> results.setProperty( "output." + variant + ".incremental.min", String.valueOf( v ) ) );
@@ -176,8 +180,43 @@ public class BuildTimePerformanceTest
   }
 
   @Nonnull
-  static Path getFixtureStatisticsPath()
+  private static Path getFixtureStatisticsPath()
   {
     return TestUtil.getFixtureDirectory().resolve( "build-times.properties" );
+  }
+
+  private static long[] compileTrials( @Nonnull final String label,
+                                       @Nonnull final Scenario scenario,
+                                       final int warmupTimeInSeconds,
+                                       final int trialCount,
+                                       @Nonnull final Supplier<Processor> processorSupplier,
+                                       @Nonnull final List<String> classnames )
+    throws IOException
+  {
+    final long endWarmup = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis( warmupTimeInSeconds );
+    while ( System.currentTimeMillis() < endWarmup )
+    {
+      final long duration = compileTrial( scenario, processorSupplier, classnames );
+      System.out.println( label + " Warmup Trial duration: " + duration );
+    }
+    final long[] durations = new long[ trialCount ];
+    for ( int i = 0; i < durations.length; i++ )
+    {
+      final long duration = compileTrial( scenario, processorSupplier, classnames );
+      durations[ i ] = duration;
+      System.out.println( label + " Trial duration: " + duration );
+    }
+    return durations;
+  }
+
+  private static long compileTrial( @Nonnull final Scenario scenario,
+                                    @Nonnull final Supplier<Processor> processorSupplier,
+                                    @Nonnull final List<String> classnames )
+    throws IOException
+  {
+    final Path outputDir = FileUtil.createLocalTempDir();
+    final long duration = TestEngine.compile( processorSupplier, classnames, scenario.getOutputDirectory(), outputDir );
+    FileUtil.deleteDirIfExists( outputDir );
+    return duration;
   }
 }
