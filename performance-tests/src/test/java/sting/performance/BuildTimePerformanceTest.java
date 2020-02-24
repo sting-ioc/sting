@@ -154,9 +154,6 @@ public class BuildTimePerformanceTest
       Arrays.stream( durations )
         .min()
         .ifPresent( v -> results.setProperty( "output." + variant + ".all.min", String.valueOf( v ) ) );
-      Arrays.stream( durations )
-        .average()
-        .ifPresent( v -> results.setProperty( "output." + variant + ".all.average", String.valueOf( (long) v ) ) );
     }
 
     // Incremental compiles
@@ -175,10 +172,6 @@ public class BuildTimePerformanceTest
       Arrays.stream( durations )
         .min()
         .ifPresent( v -> results.setProperty( "output." + variant + ".incremental.min", String.valueOf( v ) ) );
-      Arrays.stream( durations )
-        .average()
-        .ifPresent( v -> results.setProperty( "output." + variant + ".incremental.average",
-                                              String.valueOf( (long) v ) ) );
     }
   }
 
