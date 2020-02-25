@@ -171,21 +171,36 @@ public class CodeSizePerformanceTest
                  "NONE",
                  "-noincremental",
                  moduleName );
-    final Path jsFile =
-      FileUtil.getCurrentDirectory().resolve( "war" ).resolve( moduleName ).resolve( moduleName + ".nocache.js" );
+    final Path moduleOutput = FileUtil.getCurrentDirectory().resolve( "war" ).resolve( moduleName );
+    final Path jsFile = moduleOutput.resolve( moduleName + ".nocache.js" );
     if ( !Files.exists( jsFile ) )
     {
       throw new IllegalStateException( "Expected to find generated js file at " + jsFile );
     }
     final long size = Files.size( jsFile );
 
+    final OrderedProperties properties = new OrderedProperties();
     System.out.println( label + " js file size: " + size );
     results.setProperty( "output." + variant + ".size", String.valueOf( size ) );
+    properties.setProperty( "output." + variant + ".size", String.valueOf( size ) );
+    final Path archiveDir = getArchivePath().resolve( variant );
+    Files.createDirectories( archiveDir );
+    FileUtil.copyDirectory( moduleOutput, archiveDir.resolve( moduleOutput.getFileName() ) );
+    FileUtil.copyDirectory( FileUtil.getCurrentDirectory().resolve( "extras" ).resolve( moduleName ),
+                            archiveDir.resolve( "extras" ) );
+    FileUtil.copyDirectory( scenario.getOutputDirectory(), archiveDir.resolve( "src" ) );
+    TestUtil.writeProperties( archiveDir.resolve( "statistics.properties" ), properties );
   }
 
   @Nonnull
   private static Path getFixtureStatisticsPath()
   {
     return TestUtil.getFixtureDirectory().resolve( "code-size.properties" );
+  }
+
+  @Nonnull
+  private static Path getArchivePath()
+  {
+    return TestUtil.getWorkingDirectory().resolve( "archive" );
   }
 }
