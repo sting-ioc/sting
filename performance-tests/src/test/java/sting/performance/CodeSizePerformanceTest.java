@@ -170,6 +170,7 @@ public class CodeSizePerformanceTest
                  "-XmethodNameDisplayMode",
                  "NONE",
                  "-noincremental",
+                 "-compileReport",
                  moduleName );
     final Path moduleOutput = FileUtil.getCurrentDirectory().resolve( "war" ).resolve( moduleName );
     final Path jsFile = moduleOutput.resolve( moduleName + ".nocache.js" );
