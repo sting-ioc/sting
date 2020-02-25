@@ -155,6 +155,7 @@ define 'sting' do
                       project('core').compile.dependencies,
                       project('processor').package(:jar),
                       project('processor').compile.dependencies,
+                      :braincheck,
 
                       # Dagger deps follow
                       :javax_inject,

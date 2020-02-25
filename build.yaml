@@ -49,6 +49,10 @@ artifacts:
 
   testng: org.testng:testng:jar:6.11
 
+  # Sting dep. Not directly required but it introduces a super-source of j.u.Objects
+  # that strips requireNonNull in production code
+  braincheck: org.realityforge.braincheck:braincheck:jar:1.26.0
+
   # Dagger deps
   autocommon: com.google.auto:auto-common:jar:0.10
   javax_inject: javax.inject:javax.inject:jar:1

@@ -143,6 +143,7 @@ final class StingSourceGenerator
       "  <inherits name='com.google.gwt.core.Core'/>\n" +
       "  <inherits name='elemental2.dom.Dom'/>\n" +
       "  <inherits name='sting.Sting'/>\n" +
+      "  <inherits name='org.realityforge.braincheck.BrainCheck'/>\n" +
       "\n" +
       "  <set-property name='jre.checks.checkLevel' value='MINIMAL'/>\n" +
       "  <set-property name='compiler.stackMode' value='strip'/>\n" +
