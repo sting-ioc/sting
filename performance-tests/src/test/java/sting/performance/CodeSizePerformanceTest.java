@@ -156,6 +156,9 @@ public class CodeSizePerformanceTest
         .map( File::toString )
         .collect( Collectors.joining( File.pathSeparator ) );
 
+    // Remove unit cache otherwise GWT can get confused and stall in the optimizer
+    FileUtil.deleteDirIfExists( FileUtil.getCurrentDirectory().resolve( "gwt-unitCache" ) );
+
     // Now perform the GWT compile
     final String moduleName = "com.example.perf." + variant + ".Application";
     Exec.system( "java",
