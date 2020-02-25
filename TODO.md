@@ -27,6 +27,17 @@ complete as there is too much un-said.
 
 * Compare "Code size of the the injector when compiled to GWT" between dagger and sting.
 
+* Add a baseline example that just performs the behaviour of outputting console logs.
+  his should include all the `@DoNotInline` annotated static methods on entrypoint.
+  The ratios should be based on remainder after that.
+
+* The application should expose all the nodes in the leaf and call compute on them as compute on root nodes is empty
+
+* Change performance tests so that they collect performance data in archive directory for easy inspection.
+  i.e. Source source for build-time tests in separate directory plus a properties file with every trial time
+  For GWT compile, include the src, generated src, classes and GWT output (potentially also including a
+  compile report)
+
 * regenerate performance data for compile times
 
 * Patch the tables in documentation with performance test data. Do this as part of the build. Patch version
