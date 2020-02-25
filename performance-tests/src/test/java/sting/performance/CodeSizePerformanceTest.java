@@ -172,6 +172,8 @@ public class CodeSizePerformanceTest
                  "-nocheckAssertions",
                  "-XmethodNameDisplayMode",
                  "NONE",
+                 "-logLevel",
+                 "INFO",
                  "-noincremental",
                  "-compileReport",
                  moduleName );
