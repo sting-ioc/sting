@@ -35,7 +35,6 @@ complete as there is too much un-said.
 * Fail release if there is no performance data for current version UNLESS the user specifies a environment
   variable override.
 
-
 ## Other TODO
 
 * Add support for different optional services in code generator. We should support the following patterns:
