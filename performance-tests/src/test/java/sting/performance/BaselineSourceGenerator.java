@@ -57,7 +57,7 @@ final class BaselineSourceGenerator
             final String name =
               nodeMethodName( nodesPerLayer, layer - 1, ( currentInputNode + input ) % nodesPerLayer );
             compute.addStatement( "$N()", name );
-            compute.addStatement( "$T.console.log( $S )", DomGlobal.class, name );
+            compute.addStatement( "$T.console.log( new $T().hashCode() )", DomGlobal.class, Object.class );
           }
           currentInputNode = ( currentInputNode + inputsPerNode ) % nodesPerLayer;
         }

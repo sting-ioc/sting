@@ -66,7 +66,7 @@ final class DaggerSourceGenerator
             constructor.addParameter( ParameterSpec.builder( inputType, name, Modifier.FINAL ).build() );
             constructor.addStatement( "this.$N = $N", name, name );
             compute.addStatement( "$N.compute()", name );
-            compute.addStatement( "$T.console.log( $S )", DomGlobal.class, inputType.simpleName() );
+            compute.addStatement( "$T.console.log( $N.hashCode() )", DomGlobal.class, name );
           }
           currentInputNode = ( currentInputNode + inputsPerNode ) % nodesPerLayer;
         }
