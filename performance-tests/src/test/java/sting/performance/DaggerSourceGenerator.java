@@ -91,25 +91,11 @@ final class DaggerSourceGenerator
           .addAnnotation( Singleton.class )
           .addAnnotation( Component.class );
 
-      for ( int node = 0; node < nodesPerLayer; node++ )
-      {
-        if ( remainingEager > 0 )
-        {
-          remainingEager--;
-        }
-        final ClassName inputType = toNodeClassName( nodesPerLayer, 0, node );
-        type.addMethod( MethodSpec.methodBuilder( inputType.simpleName() )
-                          .returns( inputType )
-                          .addModifiers( Modifier.PUBLIC, Modifier.ABSTRACT )
-                          .build() );
-      }
-
-      outer:
-      for ( int layer = 1; layer < layerCount; layer++ )
+      for ( int layer = 0; layer < layerCount; layer++ )
       {
         for ( int node = 0; node < nodesPerLayer; node++ )
         {
-          if ( remainingEager > 0 )
+          if ( remainingEager > 0 || layer == layerCount - 1 )
           {
             remainingEager--;
             final ClassName inputType = toNodeClassName( nodesPerLayer, layer, node );
@@ -117,10 +103,6 @@ final class DaggerSourceGenerator
                               .returns( inputType )
                               .addModifiers( Modifier.PUBLIC, Modifier.ABSTRACT )
                               .build() );
-          }
-          else
-          {
-            break outer;
           }
         }
       }
@@ -159,10 +141,7 @@ final class DaggerSourceGenerator
           {
             remainingEager--;
             final ClassName inputType = toNodeClassName( nodesPerLayer, layer, node );
-            method.addStatement( "final $T $N = application.$N()",
-                                 inputType,
-                                 inputType.simpleName(),
-                                 inputType.simpleName() );
+            method.addStatement( "application.$N()", inputType.simpleName() );
           }
           else
           {
@@ -171,23 +150,11 @@ final class DaggerSourceGenerator
         }
       }
 
-      remainingEager = scenario.getEagerCount();
-      outer2:
-      for ( int layer = 0; layer < layerCount; layer++ )
+      // Invoke compute on leaf nodes
+      for ( int node = 0; node < nodesPerLayer; node++ )
       {
-        for ( int node = 0; node < nodesPerLayer; node++ )
-        {
-          if ( remainingEager > 0 )
-          {
-            remainingEager--;
-            final ClassName inputType = toNodeClassName( nodesPerLayer, layer, node );
-            method.addStatement( "$N.compute()", inputType.simpleName() );
-          }
-          else
-          {
-            break outer2;
-          }
-        }
+        final ClassName inputType = toNodeClassName( nodesPerLayer, layerCount - 1, node );
+        method.addStatement( "application.$N().compute()", inputType.simpleName() );
       }
 
       type.addMethod( method.build() );

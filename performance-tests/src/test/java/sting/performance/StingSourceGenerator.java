@@ -96,7 +96,7 @@ final class StingSourceGenerator
 
       for ( int node = 0; node < nodesPerLayer; node++ )
       {
-        final ClassName inputType = toInjectableClassName( nodesPerLayer, 0, node );
+        final ClassName inputType = toInjectableClassName( nodesPerLayer, layerCount - 1, node );
         type.addMethod( MethodSpec.methodBuilder( inputType.simpleName() )
                           .returns( inputType )
                           .addModifiers( Modifier.PUBLIC, Modifier.ABSTRACT )
@@ -126,7 +126,7 @@ final class StingSourceGenerator
       method.addStatement( "final Application application = new Sting_Application()" );
       for ( int node = 0; node < nodesPerLayer; node++ )
       {
-        final ClassName inputType = toInjectableClassName( nodesPerLayer, 0, node );
+        final ClassName inputType = toInjectableClassName( nodesPerLayer, layerCount - 1, node );
         method.addStatement( "application.$N().compute()", inputType.simpleName() );
       }
 
