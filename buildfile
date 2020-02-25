@@ -174,6 +174,22 @@ define 'sting' do
                       :googlejavaformat,
                       :errorprone
 
+    task 'generate_build_time_statistics' do
+      project.test.compile.invoke
+      cp = project.test.compile.dependencies.map(&:to_s) + [project.test.compile.target.to_s]
+
+      %w(tiny small medium large huge).each do |variant|
+
+        properties = {
+          'sting.perf.working_directory' => project._('generated/perf'),
+          'sting.perf.fixture_dir' => project._('src/test/fixtures'),
+          'sting.perf.variant' => variant,
+          'sting.next.version' => ENV['PRODUCT_VERSION'] || p.version,
+        }
+        Java::Commands.java 'sting.performance.BuildTimePerformanceTest', { :classpath => cp, :properties => properties }
+      end
+    end
+
     task 'generate_size_statistics' do
       project.test.compile.invoke
       cp = project.test.compile.dependencies.map(&:to_s) + [project.test.compile.target.to_s]
