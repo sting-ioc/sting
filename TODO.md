@@ -6,10 +6,6 @@ complete as there is too much un-said.
 
 ## Beta Release TODO Items
 
-* Add flag to `@Injector` that controls whether it can be injected or not. Change the code generator
-  so that rather than generating a `@Fragment` for the `@Injector` type, instead the implementation is
-  generated with an `@Injectable` annotation.
-
 * We may need to add a separate phase at the end of compilation that detects when singular injection requests
   result in multiple candidate bindings. Note that some of these bindings can be added during resolution process.
 

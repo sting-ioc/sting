@@ -16,6 +16,10 @@ final class InjectorDescriptor
   @Nonnull
   private final TypeElement _element;
   /**
+   * Should this injector be able to be included i other injectors.
+   */
+  private final boolean _injectable;
+  /**
    * The list of types included by Injector.
    */
   @Nonnull
@@ -36,11 +40,13 @@ final class InjectorDescriptor
   private boolean _containsError;
 
   InjectorDescriptor( @Nonnull final TypeElement element,
+                      final boolean injectable,
                       @Nonnull final Collection<IncludeDescriptor> includes,
                       @Nonnull final List<InputDescriptor> inputs,
                       @Nonnull final List<ServiceDescriptor> outputs )
   {
     _element = Objects.requireNonNull( element );
+    _injectable = injectable;
     _includes = Objects.requireNonNull( includes );
     _inputs = Objects.requireNonNull( inputs );
     _outputs = Objects.requireNonNull( outputs );
@@ -50,6 +56,11 @@ final class InjectorDescriptor
   TypeElement getElement()
   {
     return _element;
+  }
+
+  boolean isInjectable()
+  {
+    return _injectable;
   }
 
   @Nonnull
@@ -84,6 +95,10 @@ final class InjectorDescriptor
   {
     g.writeStartObject();
     g.write( "schema", "injector/1" );
+    if ( _injectable )
+    {
+      g.write( "injectable", "true" );
+    }
     if ( !_includes.isEmpty() )
     {
       g.writeStartArray( "includes" );

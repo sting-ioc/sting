@@ -162,6 +162,16 @@ public @interface Injector
   Input[] inputs() default {};
 
   /**
+   * A flag controlling whether the injector implementation can be added to other injectors.
+   * If set to true then the injector can be included in another injector. The {@link #inputs()}
+   * are services that need to be provided while the service methods will define services that this
+   * injector provides.
+   *
+   * @return true to make the injector able to be included in another injector, false otehrwise.
+   */
+  boolean injectable() default false;
+
+  /**
    * A specification of a service that is supplied to an injector during construction.
    * The service is added to the the component graph and is made available for other components to consume
    */

@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Add the `@Injector.injectable` parameter that that controls whether the annotation processor will generate a provider so that the injector can be included in other injectors.
+
 ### [v0.04](https://github.com/sting-ioc/sting/tree/v0.04) (2020-02-19) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.03...v0.04)
 
 Changes in this release:

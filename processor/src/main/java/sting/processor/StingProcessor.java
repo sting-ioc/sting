@@ -299,7 +299,10 @@ public final class StingProcessor
 
     final String packageName = GeneratorUtil.getQualifiedPackageName( graph.getInjector().getElement() );
     emitTypeSpec( packageName, InjectorGenerator.buildType( processingEnv, graph ) );
-    emitTypeSpec( packageName, InjectorProviderGenerator.buildType( processingEnv, graph ) );
+    if ( injector.isInjectable() )
+    {
+      emitTypeSpec( packageName, InjectorProviderGenerator.buildType( processingEnv, graph ) );
+    }
   }
 
   private void registerInputs( @Nonnull final ComponentGraph graph )
@@ -681,6 +684,8 @@ public final class StingProcessor
                                     element );
     }
 
+    final boolean injectable =
+      (boolean) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTOR_CLASSNAME, "injectable" ).getValue();
     final List<IncludeDescriptor> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
     final List<InputDescriptor> inputs = extractInputs( element );
 
@@ -715,7 +720,7 @@ public final class StingProcessor
         }
       }
     }
-    final InjectorDescriptor injector = new InjectorDescriptor( element, includes, inputs, outputs );
+    final InjectorDescriptor injector = new InjectorDescriptor( element, injectable, includes, inputs, outputs );
     _registry.registerInjector( injector );
     emitInjectorJsonDescriptor( injector );
   }
