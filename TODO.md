@@ -27,6 +27,8 @@ complete as there is too much un-said.
 
 * Compare "Code size of the the injector when compiled to GWT" between dagger and sting.
 
+* regenerate performance data for compile times
+
 * Add trial times to the statistics in performance tests. So we add something like
     > 0.5.medium.output.sting.all.trial.1=123
     > 0.5.medium.output.sting.all.trial.2=222
