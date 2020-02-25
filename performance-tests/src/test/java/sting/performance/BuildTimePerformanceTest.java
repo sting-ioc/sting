@@ -67,7 +67,9 @@ public class BuildTimePerformanceTest
     System.out.println();
     fixtureStatistics.removeWithPrefix( prefix );
     fixtureStatistics.mergeWithPrefix( scenarioStatistics, prefix + "." );
-    TestUtil.updateFixtureStatistics( getFixtureStatisticsPath(), fixtureStatistics );
+    final Path path = getFixtureStatisticsPath();
+    System.out.println( "Updating fixture statistics at " + path + "." );
+    TestUtil.writeProperties( path, fixtureStatistics );
   }
 
   /**

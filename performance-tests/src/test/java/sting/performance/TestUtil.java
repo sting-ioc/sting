@@ -16,12 +16,6 @@ final class TestUtil
   {
   }
 
-  static void updateFixtureStatistics( @Nonnull final Path path, @Nonnull final OrderedProperties fixtureStatistics )
-  {
-    System.out.println( "Updating fixture statistics at " + path + "." );
-    writeProperties( path, fixtureStatistics );
-  }
-
   static void writeProperties( @Nonnull final Path outputFile, @Nonnull final OrderedProperties properties )
   {
     try
