@@ -56,7 +56,6 @@ final class DaggerSourceGenerator
           MethodSpec.methodBuilder( "compute" ).addModifiers( Modifier.PUBLIC ).addAnnotation( DoNotInline.class );
         if ( 0 != layer )
         {
-
           for ( int input = 0; input < inputsPerNode; input++ )
           {
             final ClassName inputType =
