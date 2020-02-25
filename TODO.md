@@ -29,13 +29,6 @@ complete as there is too much un-said.
 
 * regenerate performance data for compile times
 
-* Add trial times to the statistics in performance tests. So we add something like
-    > 0.5.medium.output.sting.all.trial.1=123
-    > 0.5.medium.output.sting.all.trial.2=222
-    > 0.5.medium.output.sting.all.trial.3=222
-
-* Add standard deviation to calculated values for each scenario so we can add to table something like `± 0.3`
-
 * Patch the tables in documentation with performance test data. Do this as part of the build. Patch version
   in documentation
 
