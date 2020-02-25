@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import sting.processor.StingProcessor;
@@ -110,12 +109,18 @@ public class CodeSizePerformanceTest
     Files.createDirectories( workingDirectory );
     FileUtil.inDirectory( workingDirectory, () -> {
       final Path src = FileUtil.getCurrentDirectory().resolve( "src" );
+      final OrderedProperties base = new OrderedProperties();
+
       performTests( label,
-                    false,
+                    TrialType.BASE,
                     new Scenario( src, layerCount, nodesPerLayer, inputsPerNode, eagerCount ),
                     statistics );
       performTests( label,
-                    true,
+                    TrialType.DAGGER,
+                    new Scenario( src, layerCount, nodesPerLayer, inputsPerNode, eagerCount ),
+                    statistics );
+      performTests( label,
+                    TrialType.STING,
                     new Scenario( src, layerCount, nodesPerLayer, inputsPerNode, eagerCount ),
                     statistics );
     } );
@@ -127,25 +132,32 @@ public class CodeSizePerformanceTest
   }
 
   private static void performTests( @Nonnull final String label,
-                                    final boolean isDagger,
+                                    @Nonnull final TrialType type,
                                     @Nonnull final Scenario scenario,
-                                    @Nonnull final Properties results )
+                                    @Nonnull final OrderedProperties results )
     throws IOException
   {
-    final String variant = isDagger ? "dagger" : "sting";
-    if ( isDagger )
+    final String variant;
+    if ( TrialType.DAGGER == type )
     {
       DaggerSourceGenerator.createDaggerInjectScenarioSource( scenario );
+      variant = "dagger";
+    }
+    else if ( TrialType.STING == type )
+    {
+      StingSourceGenerator.createStingInjectableScenarioSource( scenario );
+      variant = "sting";
     }
     else
     {
-      StingSourceGenerator.createStingInjectableScenarioSource( scenario );
+      BaselineSourceGenerator.createBaseScenarioSource( scenario );
+      variant = "base";
     }
 
     final List<String> classnames = new ArrayList<>( scenario.getNodeClassNames() );
     classnames.addAll( scenario.getInjectorClassNames() );
     classnames.addAll( scenario.getEntryClassNames() );
-    TestEngine.compile( isDagger ? ComponentProcessor::new : StingProcessor::new,
+    TestEngine.compile( TrialType.DAGGER == type ? ComponentProcessor::new : StingProcessor::new,
                         classnames,
                         scenario.getOutputDirectory(),
                         scenario.getOutputDirectory() );
@@ -208,5 +220,12 @@ public class CodeSizePerformanceTest
   private static Path getArchivePath()
   {
     return TestUtil.getWorkingDirectory().resolve( "archive" );
+  }
+
+  private enum TrialType
+  {
+    BASE,
+    STING,
+    DAGGER
   }
 }
