@@ -109,7 +109,6 @@ public class CodeSizePerformanceTest
     Files.createDirectories( workingDirectory );
     FileUtil.inDirectory( workingDirectory, () -> {
       final Path src = FileUtil.getCurrentDirectory().resolve( "src" );
-      final OrderedProperties base = new OrderedProperties();
 
       performTests( label,
                     TrialType.BASE,
