@@ -115,11 +115,11 @@ public class BuildTimePerformanceTest
                     statistics );
     } );
     final double minAllRatio =
-      ( Long.parseLong( statistics.getProperty( "output.dagger.all.min" ) ) * 1.0 ) /
-      Long.parseLong( statistics.getProperty( "output.sting.all.min" ) );
+      ( Long.parseLong( (String) statistics.remove( "output.dagger.all.min" ) ) * 1.0 ) /
+      Long.parseLong( (String) statistics.remove( "output.sting.all.min" ) );
     final double minIncrementalRatio =
-      ( Long.parseLong( statistics.getProperty( "output.dagger.incremental.min" ) ) * 1.0 ) /
-      Long.parseLong( statistics.getProperty( "output.sting.incremental.min" ) );
+      ( Long.parseLong( (String) statistics.remove( "output.dagger.incremental.min" ) ) * 1.0 ) /
+      Long.parseLong( (String) statistics.remove( "output.sting.incremental.min" ) );
     statistics.setProperty( "output.sting2dagger.all.min", String.format( "%.3f", minAllRatio ) );
     statistics.setProperty( "output.sting2dagger.incremental.min", String.format( "%.3f", minIncrementalRatio ) );
     return statistics;
