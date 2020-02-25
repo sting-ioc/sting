@@ -27,8 +27,6 @@ complete as there is too much un-said.
 
 * Compare "Code size of the the injector when compiled to GWT" between dagger and sting.
 
-* The application should expose all the nodes in the leaf and call compute on them as compute on root nodes is empty
-
 * regenerate performance data for compile times
 
 * Patch the tables in documentation with performance test data. Do this as part of the build. Patch version
