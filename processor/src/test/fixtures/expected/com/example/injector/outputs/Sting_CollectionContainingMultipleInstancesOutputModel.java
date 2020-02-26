@@ -33,7 +33,7 @@ final class Sting_CollectionContainingMultipleInstancesOutputModel implements Co
 
   @Nonnull
   @DoNotInline
-  private Object node1() {
+  private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( fragment3.$sting$_myModel() );
     }
@@ -43,7 +43,7 @@ final class Sting_CollectionContainingMultipleInstancesOutputModel implements Co
 
   @Nonnull
   @DoNotInline
-  private Object node2() {
+  private synchronized Object node2() {
     if ( null == node2 ) {
       node2 = Objects.requireNonNull( fragment2.$sting$_myModel() );
     }
@@ -53,7 +53,7 @@ final class Sting_CollectionContainingMultipleInstancesOutputModel implements Co
 
   @Nonnull
   @DoNotInline
-  private Object node3() {
+  private synchronized Object node3() {
     if ( null == node3 ) {
       node3 = Objects.requireNonNull( fragment1.$sting$_myModel() );
     }

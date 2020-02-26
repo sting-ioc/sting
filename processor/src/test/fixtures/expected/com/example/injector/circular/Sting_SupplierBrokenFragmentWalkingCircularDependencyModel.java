@@ -25,7 +25,7 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
 
   @Nonnull
   @DoNotInline
-  private Object node1() {
+  private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( fragment1.$sting$_provideMyModel2(() -> node3()) );
     }
@@ -35,7 +35,7 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
 
   @Nonnull
   @DoNotInline
-  private Object node2() {
+  private synchronized Object node2() {
     if ( null == node2 ) {
       node2 = Objects.requireNonNull( SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel2.create(node1()) );
     }
@@ -45,7 +45,7 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
 
   @Nonnull
   @DoNotInline
-  private Object node3() {
+  private synchronized Object node3() {
     if ( null == node3 ) {
       node3 = Objects.requireNonNull( SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel1.create(node2()) );
     }

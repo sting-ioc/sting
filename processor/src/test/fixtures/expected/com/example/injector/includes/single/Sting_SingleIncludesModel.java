@@ -19,7 +19,7 @@ final class Sting_SingleIncludesModel implements SingleIncludesModel {
 
   @Nonnull
   @DoNotInline
-  private Runnable node1() {
+  private synchronized Runnable node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( fragment1.$sting$_provideRunnable() );
     }

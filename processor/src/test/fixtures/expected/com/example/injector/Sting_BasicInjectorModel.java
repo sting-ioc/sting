@@ -16,7 +16,7 @@ final class Sting_BasicInjectorModel implements BasicInjectorModel {
 
   @Nonnull
   @DoNotInline
-  private Object node1() {
+  private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( BasicInjectorModel_Sting_MyModel.create() );
     }

@@ -18,7 +18,7 @@ final class Sting_CollectionOutputModel implements CollectionOutputModel {
 
   @Nonnull
   @DoNotInline
-  private Object node1() {
+  private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( CollectionOutputModel_Sting_MyModel.create() );
     }

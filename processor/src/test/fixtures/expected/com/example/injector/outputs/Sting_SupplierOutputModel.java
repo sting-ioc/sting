@@ -17,7 +17,7 @@ final class Sting_SupplierOutputModel implements SupplierOutputModel {
 
   @Nonnull
   @DoNotInline
-  private Object node1() {
+  private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( SupplierOutputModel_Sting_MyModel.create() );
     }

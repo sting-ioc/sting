@@ -16,7 +16,7 @@ final class Sting_QualifiedOutputModel implements QualifiedOutputModel {
 
   @Nonnull
   @DoNotInline
-  private Object node1() {
+  private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( QualifiedOutputModel_Sting_MyModel.create() );
     }

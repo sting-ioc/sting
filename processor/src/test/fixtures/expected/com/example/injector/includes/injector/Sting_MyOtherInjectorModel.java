@@ -19,7 +19,7 @@ final class Sting_MyOtherInjectorModel implements MyOtherInjectorModel {
 
   @Nonnull
   @DoNotInline
-  private MyModel node1() {
+  private synchronized MyModel node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( fragment1.$sting$_provideRunnable() );
     }

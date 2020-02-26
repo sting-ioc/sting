@@ -66,7 +66,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   }
 
   @DoNotInline
-  private double node1() {
+  private synchronized double node1() {
     if ( !node1_allocated ) {
       node1_allocated = true;
       node1 = fragment8.$sting$_provideValue8();
@@ -75,7 +75,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   }
 
   @DoNotInline
-  private float node2() {
+  private synchronized float node2() {
     if ( !node2_allocated ) {
       node2_allocated = true;
       node2 = fragment8.$sting$_provideValue7();
@@ -84,7 +84,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   }
 
   @DoNotInline
-  private long node3() {
+  private synchronized long node3() {
     if ( !node3_allocated ) {
       node3_allocated = true;
       node3 = fragment8.$sting$_provideValue6();
@@ -93,7 +93,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   }
 
   @DoNotInline
-  private int node4() {
+  private synchronized int node4() {
     if ( !node4_allocated ) {
       node4_allocated = true;
       node4 = fragment8.$sting$_provideValue5();
@@ -102,7 +102,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   }
 
   @DoNotInline
-  private short node5() {
+  private synchronized short node5() {
     if ( !node5_allocated ) {
       node5_allocated = true;
       node5 = fragment8.$sting$_provideValue4();
@@ -111,7 +111,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   }
 
   @DoNotInline
-  private byte node6() {
+  private synchronized byte node6() {
     if ( !node6_allocated ) {
       node6_allocated = true;
       node6 = fragment8.$sting$_provideValue3();
@@ -120,7 +120,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   }
 
   @DoNotInline
-  private char node7() {
+  private synchronized char node7() {
     if ( !node7_allocated ) {
       node7_allocated = true;
       node7 = fragment8.$sting$_provideValue2();
@@ -129,7 +129,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   }
 
   @DoNotInline
-  private boolean node8() {
+  private synchronized boolean node8() {
     if ( !node8_allocated ) {
       node8_allocated = true;
       node8 = fragment8.$sting$_provideValue();

@@ -24,7 +24,7 @@ final class Sting_MultipleInputInjectorModel implements MultipleInputInjectorMod
 
   @Nonnull
   @DoNotInline
-  private Object node2() {
+  private synchronized Object node2() {
     if ( null == node2 ) {
       node2 = Objects.requireNonNull( MultipleInputInjectorModel_Sting_MyModel.create(node1) );
     }

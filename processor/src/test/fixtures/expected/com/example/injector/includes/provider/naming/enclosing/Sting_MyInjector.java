@@ -19,7 +19,7 @@ final class Sting_MyInjector implements MyInjector {
 
   @Nonnull
   @DoNotInline
-  private Outer.Middle.Leaf.MyFramework_MyModel2 node1() {
+  private synchronized Outer.Middle.Leaf.MyFramework_MyModel2 node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( Outer_Middle_Leaf_Sting_MyFramework_MyModel2.create() );
     }
@@ -29,7 +29,7 @@ final class Sting_MyInjector implements MyInjector {
 
   @Nonnull
   @DoNotInline
-  private MyFramework_MyModel node2() {
+  private synchronized MyFramework_MyModel node2() {
     if ( null == node2 ) {
       node2 = Objects.requireNonNull( Sting_MyFramework_MyModel.create() );
     }

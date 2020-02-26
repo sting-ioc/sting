@@ -20,7 +20,7 @@ final class Sting_OptionalProvidesOutputModel implements OptionalProvidesOutputM
 
   @Nullable
   @DoNotInline
-  private Object node1() {
+  private synchronized Object node1() {
     if ( !node1_allocated ) {
       node1_allocated = true;
       node1 = fragment1.$sting$_provideValue();

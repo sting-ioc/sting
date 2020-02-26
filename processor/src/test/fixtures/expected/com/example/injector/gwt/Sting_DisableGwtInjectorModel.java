@@ -14,7 +14,7 @@ final class Sting_DisableGwtInjectorModel implements DisableGwtInjectorModel {
   }
 
   @Nonnull
-  private Object node1() {
+  private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( DisableGwtInjectorModel_Sting_MyModel0.create() );
     }

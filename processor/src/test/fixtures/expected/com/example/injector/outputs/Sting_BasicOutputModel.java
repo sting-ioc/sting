@@ -16,7 +16,7 @@ final class Sting_BasicOutputModel implements BasicOutputModel {
 
   @Nonnull
   @DoNotInline
-  private Object node1() {
+  private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( BasicOutputModel_Sting_MyModel.create() );
     }

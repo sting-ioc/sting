@@ -189,7 +189,7 @@ final class InjectorGenerator
         final MethodSpec.Builder method =
           MethodSpec
             .methodBuilder( node.getName() )
-            .addModifiers( Modifier.PRIVATE )
+            .addModifiers( Modifier.PRIVATE, Modifier.SYNCHRONIZED )
             .returns( getPublicTypeName( node ) );
         final Binding binding = node.getBinding();
         final Element element = binding.getElement();

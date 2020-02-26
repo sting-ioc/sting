@@ -16,7 +16,7 @@ final class Sting_OptionalOutputModel implements OptionalOutputModel {
 
   @Nonnull
   @DoNotInline
-  private Object node1() {
+  private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( OptionalOutputModel_Sting_MyModel.create() );
     }

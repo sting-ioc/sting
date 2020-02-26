@@ -16,7 +16,7 @@ final class Sting_OptionalMissingOutputModel implements OptionalMissingOutputMod
 
   @Nonnull
   @DoNotInline
-  private OptionalMissingOutputModel.MyModel2 node1() {
+  private synchronized OptionalMissingOutputModel.MyModel2 node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( OptionalMissingOutputModel_Sting_MyModel2.create() );
     }
