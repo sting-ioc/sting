@@ -169,7 +169,7 @@ public @interface Injector
    * are services that need to be provided while the service methods will define services that this
    * injector provides.
    *
-   * @return true to make the injector able to be included in another injector, false otehrwise.
+   * @return true to make the injector able to be included in another injector, false otherwise.
    */
   boolean injectable() default false;
 
