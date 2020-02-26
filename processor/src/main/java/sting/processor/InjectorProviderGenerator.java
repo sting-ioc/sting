@@ -112,7 +112,7 @@ final class InjectorProviderGenerator
                              .build() );
 
         GeneratorUtil.copyWhitelistedAnnotations( service.getElement(), method );
-        final ArrayList<String> additionalSuppressions = new ArrayList<>();
+        final List<String> additionalSuppressions = new ArrayList<>();
         if ( ElementsUtil.isElementDeprecated( service.getElement() ) )
         {
           additionalSuppressions.add( "deprecation" );

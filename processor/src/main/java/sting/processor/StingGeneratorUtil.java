@@ -148,7 +148,7 @@ final class StingGeneratorUtil
     }
     code.append( ")" );
     method.addStatement( code.toString(), args.toArray() );
-    final ArrayList<String> additionalSuppressions = new ArrayList<>();
+    final List<String> additionalSuppressions = new ArrayList<>();
     if ( !allPublic )
     {
       additionalSuppressions.add( "unchecked" );

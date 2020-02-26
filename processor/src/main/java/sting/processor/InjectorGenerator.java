@@ -73,7 +73,7 @@ final class InjectorGenerator
                                                           Collections.emptyList(),
                                                           Collections.singletonList( element.asType() ) );
       final StringBuilder code = new StringBuilder();
-      final ArrayList<Object> args = new ArrayList<>();
+      final List<Object> args = new ArrayList<>();
       code.append( "return " );
       emitServiceValue( edge, true, code, args );
       method.addStatement( code.toString(), args.toArray() );
