@@ -43,11 +43,6 @@ public class SourceGeneratorTest
   {
     final Path workingDirectory = TestUtil.getWorkingDirectory();
     final int eagerCount = (int) ( ( layerCount * nodesPerLayer ) * eagerCountRatio );
-    BaselineSourceGenerator.createBaseScenarioSource( new Scenario( workingDirectory.resolve( "base/src" ),
-                                                                    layerCount,
-                                                                    nodesPerLayer,
-                                                                    5,
-                                                                    eagerCount ) );
     DaggerSourceGenerator.createDaggerInjectScenarioSource( new Scenario( workingDirectory.resolve( "dagger/src" ),
                                                                           layerCount,
                                                                           nodesPerLayer,

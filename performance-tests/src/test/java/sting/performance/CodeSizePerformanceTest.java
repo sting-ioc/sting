@@ -111,10 +111,6 @@ public class CodeSizePerformanceTest
       final Path src = FileUtil.getCurrentDirectory().resolve( "src" );
 
       performTests( label,
-                    TrialType.BASE,
-                    new Scenario( src, layerCount, nodesPerLayer, inputsPerNode, eagerCount ),
-                    statistics );
-      performTests( label,
                     TrialType.DAGGER,
                     new Scenario( src, layerCount, nodesPerLayer, inputsPerNode, eagerCount ),
                     statistics );
@@ -142,15 +138,10 @@ public class CodeSizePerformanceTest
       DaggerSourceGenerator.createDaggerInjectScenarioSource( scenario );
       variant = "dagger";
     }
-    else if ( TrialType.STING == type )
+    else
     {
       StingSourceGenerator.createStingInjectableScenarioSource( scenario );
       variant = "sting";
-    }
-    else
-    {
-      BaselineSourceGenerator.createBaseScenarioSource( scenario );
-      variant = "base";
     }
 
     final List<String> classnames = new ArrayList<>( scenario.getNodeClassNames() );
@@ -223,7 +214,6 @@ public class CodeSizePerformanceTest
 
   private enum TrialType
   {
-    BASE,
     STING,
     DAGGER
   }
