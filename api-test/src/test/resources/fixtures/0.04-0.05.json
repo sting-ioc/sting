@@ -1,5 +1,20 @@
 [
   {
+    "code": "java.class.added",
+    "description": "Class was added.",
+    "newElement": "enum sting.Feature",
+    "classification": {
+      "SOURCE": "NON_BREAKING",
+      "BINARY": "NON_BREAKING"
+    },
+    "attachments": {
+      "classQualifiedName": "sting.Feature",
+      "classSimpleName": "Feature",
+      "elementKind": "enum",
+      "package": "sting"
+    }
+  },
+  {
     "code": "java.method.attributeWithDefaultAddedToAnnotationType",
     "description": "The annotation has a new attribute with a default value.",
     "newElement": "method boolean sting.Injector::injectable()",
@@ -12,6 +27,98 @@
       "classSimpleName": "Injector",
       "elementKind": "method",
       "methodName": "injectable",
+      "package": "sting"
+    }
+  },
+  {
+    "code": "java.annotation.added",
+    "description": "Element newly annotated with 'javax.annotation.Nonnull'.",
+    "element": "method java.lang.Class<?>[] sting.Fragment::includes()",
+    "classification": {
+      "SOURCE": "EQUIVALENT",
+      "BINARY": "EQUIVALENT",
+      "SEMANTIC": "POTENTIALLY_BREAKING"
+    },
+    "attachments": {
+      "annotation": "@javax.annotation.Nonnull",
+      "annotationType": "javax.annotation.Nonnull",
+      "classQualifiedName": "sting.Fragment",
+      "classSimpleName": "Fragment",
+      "elementKind": "method",
+      "methodName": "includes",
+      "package": "sting"
+    }
+  },
+  {
+    "code": "java.annotation.added",
+    "description": "Element newly annotated with 'javax.annotation.Nonnull'.",
+    "element": "method java.lang.Class<?>[] sting.Injector::includes()",
+    "classification": {
+      "SOURCE": "EQUIVALENT",
+      "BINARY": "EQUIVALENT",
+      "SEMANTIC": "POTENTIALLY_BREAKING"
+    },
+    "attachments": {
+      "annotation": "@javax.annotation.Nonnull",
+      "annotationType": "javax.annotation.Nonnull",
+      "classQualifiedName": "sting.Injector",
+      "classSimpleName": "Injector",
+      "elementKind": "method",
+      "methodName": "includes",
+      "package": "sting"
+    }
+  },
+  {
+    "code": "java.annotation.added",
+    "description": "Element newly annotated with 'javax.annotation.Nonnull'.",
+    "element": "method java.lang.Class<?>[] sting.Typed::value()",
+    "classification": {
+      "SOURCE": "EQUIVALENT",
+      "BINARY": "EQUIVALENT",
+      "SEMANTIC": "POTENTIALLY_BREAKING"
+    },
+    "attachments": {
+      "annotation": "@javax.annotation.Nonnull",
+      "annotationType": "javax.annotation.Nonnull",
+      "classQualifiedName": "sting.Typed",
+      "classSimpleName": "Typed",
+      "elementKind": "method",
+      "methodName": "value",
+      "package": "sting"
+    }
+  },
+  {
+    "code": "java.method.attributeWithDefaultAddedToAnnotationType",
+    "description": "The annotation has a new attribute with a default value.",
+    "newElement": "method sting.Feature sting.Injector::gwt()",
+    "classification": {
+      "SOURCE": "NON_BREAKING",
+      "BINARY": "NON_BREAKING"
+    },
+    "attachments": {
+      "classQualifiedName": "sting.Injector",
+      "classSimpleName": "Injector",
+      "elementKind": "method",
+      "methodName": "gwt",
+      "package": "sting"
+    }
+  },
+  {
+    "code": "java.annotation.added",
+    "description": "Element newly annotated with 'javax.annotation.Nonnull'.",
+    "element": "method sting.Injector.Input[] sting.Injector::inputs()",
+    "classification": {
+      "SOURCE": "EQUIVALENT",
+      "BINARY": "EQUIVALENT",
+      "SEMANTIC": "POTENTIALLY_BREAKING"
+    },
+    "attachments": {
+      "annotation": "@javax.annotation.Nonnull",
+      "annotationType": "javax.annotation.Nonnull",
+      "classQualifiedName": "sting.Injector",
+      "classSimpleName": "Injector",
+      "elementKind": "method",
+      "methodName": "inputs",
       "package": "sting"
     }
   }
