@@ -137,10 +137,6 @@ public class CodeSizePerformanceTest
                     new Scenario( src, layerCount, nodesPerLayer, inputsPerNode, eagerCount ),
                     statistics );
     } );
-    final double ratio =
-      ( Long.parseLong( statistics.getProperty( "output.dagger.size" ) ) * 1.0 ) /
-      Long.parseLong( statistics.getProperty( "output.sting.size" ) );
-    statistics.setProperty( "output.sting2dagger.sizeRatio", String.format( "%.3f", ratio ) );
     return statistics;
   }
 
