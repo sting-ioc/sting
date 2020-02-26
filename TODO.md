@@ -47,7 +47,8 @@ complete as there is too much un-said.
 
 * Break up the generated constructor in the injector so that it initializes at most N (100?) values at a time
   to avoid overloading the optimizer or exceeding allowed method size. This will involve removing the final
-  qualifier from fields if there is more than N values present.
+  qualifier from fields if there is more than N values present. It is unclear whether this is needed as no
+  actual use cases have actually been exposed.
 
 * Add assertions to suppliers to verify supplier is not invoked prior to the Injector being initialized.
   This would involve adding a flag to Injector that is set when fully initialized and then checking this
