@@ -64,12 +64,6 @@ complete as there is too much un-said.
 * Generate a website where you can view the graph similar to [dagger-browser](https://github.com/Snapchat/dagger-browser).
   This could be built at build time or potentially at runtime via spy infrastructure.
 
-* Should we make it possible to close/dispose injectors? We could support bindings declaring how they
-  are closed/disposed/released. Something like `@DisposedBy(Closeable.class)`,
-  `@DisposedBy(value = arez.Disposable.class, method="dispose")`. Alternatively we could invoke methods on
-  a `@Fragment` type to dispose an instance. The injector would only generate the dispose operation if
-  explicitly requested.
-
 * We could add a "gathering" annotation processor that collected all the bindings into an injector.
   Each `@Injectable` and `@Fragment` etc could have an annotation like `@ContributeTo('SomeKey')` and we
   would have a type annotated with `@CollectContributors('SomeKey')` annotation that is converted into a
