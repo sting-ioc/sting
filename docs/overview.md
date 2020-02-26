@@ -19,3 +19,7 @@ types.) The second form is used when third-party objects can't be annotated, whe
 responsible for creating the object (i.e `GWT.create(MyGwtRpcService.class)` or when it is awkward to
 create the type (i.e. when publishing a component that is provided by calling a method on another
 component). Sting can also pass in components when creating the injector.
+
+Sting generates the code injector with no reference to sting-specific implementation classes other than
+the Sting annotations. The code generated is intended to be easy and very similar to the code a human
+would write by hand if given this task.
