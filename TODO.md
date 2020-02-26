@@ -23,8 +23,6 @@ complete as there is too much un-said.
 
 ### Performance Documentation and Tests
 
-* Compare "time to initialize and access the injector at runtime" between dagger and sting in jre mode and/or js mode.
-
 * Generate and {@include } performance data for build-times into performance doc.
 
 * regenerate performance data for compile times
