@@ -57,9 +57,6 @@ complete as there is too much un-said.
   object graph so that it can be fed into graphviz. This could be generated at build time or potentially
   at runtime via spy infrastructure.
 
-* Generate a website where you can view the graph similar to [dagger-browser](https://github.com/Snapchat/dagger-browser).
-  This could be built at build time or potentially at runtime via spy infrastructure.
-
 ## Differences from Dagger
 
 The significant differences from Dagger:
