@@ -44,6 +44,10 @@ complete as there is too much un-said.
 
 * regenerate performance data for compile times
 
+* Add assertions to suppliers to verify supplier is not invoked prior to the Injector being initialized.
+  This would involve adding a flag to Injector that is set when fully initialized and then checking this
+  flag inside supplier. This code should be stripped out in production builds.
+
 * Patch the tables in documentation with performance test data. Do this as part of the build. Patch version
   in documentation
 
