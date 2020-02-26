@@ -149,6 +149,7 @@ public @interface Injector
    *
    * @return a list of types that contribute to the injectors object graph.
    */
+  @Nonnull
   Class<?>[] includes() default {};
 
   /**
@@ -159,6 +160,7 @@ public @interface Injector
    *
    * @return a list of services that must be passed into the injector.
    */
+  @Nonnull
   Input[] inputs() default {};
 
   /**

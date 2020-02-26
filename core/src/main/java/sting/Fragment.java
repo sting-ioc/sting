@@ -5,6 +5,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import javax.annotation.Nonnull;
 
 /**
  * Identify an interface that can contribute to a component graph.
@@ -24,5 +25,6 @@ public @interface Fragment
    *
    * @return a list of types that contribute to the fragments component graph.
    */
+  @Nonnull
   Class<?>[] includes() default {};
 }
