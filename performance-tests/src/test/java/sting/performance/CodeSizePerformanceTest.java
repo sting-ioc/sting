@@ -111,11 +111,11 @@ public class CodeSizePerformanceTest
       final Path src = FileUtil.getCurrentDirectory().resolve( "src" );
 
       performTests( label,
-                    TrialType.DAGGER,
+                    true,
                     new Scenario( src, layerCount, nodesPerLayer, inputsPerNode, eagerCount ),
                     statistics );
       performTests( label,
-                    TrialType.STING,
+                    false,
                     new Scenario( src, layerCount, nodesPerLayer, inputsPerNode, eagerCount ),
                     statistics );
     } );
@@ -127,13 +127,13 @@ public class CodeSizePerformanceTest
   }
 
   private static void performTests( @Nonnull final String label,
-                                    @Nonnull final TrialType type,
+                                    final boolean isDagger,
                                     @Nonnull final Scenario scenario,
                                     @Nonnull final OrderedProperties results )
     throws IOException
   {
     final String variant;
-    if ( TrialType.DAGGER == type )
+    if ( isDagger )
     {
       DaggerSourceGenerator.createDaggerInjectScenarioSource( scenario );
       variant = "dagger";
@@ -147,7 +147,7 @@ public class CodeSizePerformanceTest
     final List<String> classnames = new ArrayList<>( scenario.getNodeClassNames() );
     classnames.addAll( scenario.getInjectorClassNames() );
     classnames.addAll( scenario.getEntryClassNames() );
-    TestEngine.compile( TrialType.DAGGER == type ? ComponentProcessor::new : StingProcessor::new,
+    TestEngine.compile( isDagger ? ComponentProcessor::new : StingProcessor::new,
                         classnames,
                         scenario.getOutputDirectory(),
                         scenario.getOutputDirectory() );
@@ -210,11 +210,5 @@ public class CodeSizePerformanceTest
   private static Path getArchivePath()
   {
     return TestUtil.getWorkingDirectory().resolve( "archive" );
-  }
-
-  private enum TrialType
-  {
-    STING,
-    DAGGER
   }
 }
