@@ -197,7 +197,6 @@ define 'sting' do
       cp = project.test.compile.dependencies.map(&:to_s) + [project.test.compile.target.to_s]
 
       %w(eager_tiny tiny lazy_tiny eager_small small lazy_small eager_medium medium lazy_medium eager_large large lazy_large eager_huge huge lazy_huge).each do |variant|
-
         properties = {
           'sting.perf.working_directory' => project._('generated/perf'),
           'sting.perf.fixture_dir' => project._('src/test/fixtures'),
