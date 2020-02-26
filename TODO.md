@@ -44,12 +44,6 @@ complete as there is too much un-said.
 
 * regenerate performance data for compile times
 
-* Add assertions to suppliers to verify supplier is not invoked prior to the Injector being initialized.
-  This would involve adding a flag to Injector that is set when fully initialized and then checking this
-  flag inside supplier. This code should be stripped out in production builds. We could also check in the
-  factory method that a supplier is not invoked in either the constructor for `@Injectable` types or the
-  provider method for `@Fragment` types.
-
 * Patch the tables in documentation with performance test data. Do this as part of the build. Patch version
   in documentation
 
@@ -57,6 +51,12 @@ complete as there is too much un-said.
   variable override.
 
 ## Other TODO
+
+* Add assertions to suppliers to verify supplier is not invoked prior to the Injector being initialized.
+  This would involve adding a flag to Injector that is set when fully initialized and then checking this
+  flag inside supplier. This code should be stripped out in production builds. We could also check in the
+  factory method that a supplier is not invoked in either the constructor for `@Injectable` types or the
+  provider method for `@Fragment` types.
 
 * Add support for different optional services in code generator. We should support the following patterns:
   - `@Nullable T`
