@@ -25,8 +25,10 @@ complete as there is too much un-said.
 
 * regenerate performance data for compile times
 
-## Other TODO
 
+
+
+## Other TODO
 
 * Add assertions to suppliers to verify supplier is not invoked prior to the Injector being initialized.
   This would involve adding a flag to Injector that is set when fully initialized and then checking this
