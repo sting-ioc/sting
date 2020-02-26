@@ -20,8 +20,11 @@ task 'gen_code_size_table' do
     end
   end
 
+  dagger_version = Buildr.artifact(:dagger_core).version
+
   str = <<HTML
 <table>
+  <caption align="bottom">Code Size Comparison between Sting v#{ENV['PRODUCT_VERSION']} and Dagger v#{dagger_version}</caption>
   <thead>
   <tr>
     <th>Scenario</th>
