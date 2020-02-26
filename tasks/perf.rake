@@ -103,25 +103,7 @@ task 'gen_build_time_table' do
   </thead>
   <tbody>
 HTML
-=begin
-| Scenario | Object Count | Full Compile | Incremental Recompile |
-|----------|--------------|--------------|-----------------------|
-| Tiny     | 10           | 1.017        | 1.099                 |
-| Small    | 50           | 0.648        | 1.716                 |
-| Medium   | 250          | 0.764        | 3.605                 |
-| Large    | 500          | 0.710        | 4.745                 |
-| Huge     | 1000         | 0.704        | 11.785                |
 
-0.05.huge.input.eagerCount=500
-0.05.huge.input.inputsPerNode=5
-0.05.huge.input.layerCount=10
-0.05.huge.input.measureTrials=10
-0.05.huge.input.nodesPerLayer=100
-0.05.huge.input.warmupTimeInSeconds=20
-0.05.huge.output.sting2dagger.all.min=0.705
-0.05.huge.output.sting2dagger.incremental.min=9.813
-
-=end
   BUILD_TIME_VARIANTS.each do |variant|
     label = (variant[0, 1].upcase + variant[1, variant.length]).gsub(/_[a-z]/) {|s| " #{s[1].upcase}"}
     layerCount = properties["#{variant}.input.layerCount"].to_i
