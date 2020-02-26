@@ -26,8 +26,20 @@ public class CodeSizePerformanceTest
       case "tiny":
         collectStatistics( "tiny", fixtureStatistics, 2, 5, 0.5 );
         break;
+      case "lazy_tiny":
+        collectStatistics( "lazy_tiny", fixtureStatistics, 2, 5, 0.0 );
+        break;
+      case "eager_tiny":
+        collectStatistics( "eager_tiny", fixtureStatistics, 2, 5, 1.0 );
+        break;
       case "small":
         collectStatistics( "small", fixtureStatistics, 5, 10, 0.5 );
+        break;
+      case "lazy_small":
+        collectStatistics( "lazy_small", fixtureStatistics, 5, 10, 0.0 );
+        break;
+      case "eager_small":
+        collectStatistics( "eager_small", fixtureStatistics, 5, 10, 1.0 );
         break;
       case "medium":
         collectStatistics( "medium", fixtureStatistics, 5, 50, 0.5 );
@@ -49,6 +61,12 @@ public class CodeSizePerformanceTest
         break;
       case "huge":
         collectStatistics( "huge", fixtureStatistics, 10, 100, 0.5 );
+        break;
+      case "lazy_huge":
+        collectStatistics( "lazy_huge", fixtureStatistics, 10, 100, 0.0 );
+        break;
+      case "eager_huge":
+        collectStatistics( "eager_huge", fixtureStatistics, 10, 100, 1.0 );
         break;
       default:
         System.out.println( "Unknown variant: " + variant );
