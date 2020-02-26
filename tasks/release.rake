@@ -88,9 +88,9 @@ task 'perform_release' do
         header += " · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=#{ENV['PREVIOUS_PRODUCT_VERSION']}&new=#{ENV['PRODUCT_VERSION']})"
 
         changes = JSON.parse(IO.read(api_diff_filename))
-        non_breaking_changes = changes.select {|j| j['classification']['SOURCE'] == 'NON_BREAKING'}.size
-        potentially_breaking_changes = changes.select {|j| j['classification']['SOURCE'] == 'POTENTIALLY_BREAKING'}.size
-        breaking_changes = changes.select {|j| j['classification']['SOURCE'] == 'BREAKING'}.size
+        non_breaking_changes = changes.select { |j| j['classification']['SOURCE'] == 'NON_BREAKING' }.size
+        potentially_breaking_changes = changes.select { |j| j['classification']['SOURCE'] == 'POTENTIALLY_BREAKING' }.size
+        breaking_changes = changes.select { |j| j['classification']['SOURCE'] == 'BREAKING' }.size
         change_descriptions = []
         change_descriptions << "#{non_breaking_changes} non breaking API change#{1 == non_breaking_changes ? '' : 's'}" unless 0 == non_breaking_changes
         change_descriptions << "#{potentially_breaking_changes} potentially breaking API change#{1 == potentially_breaking_changes ? '' : 's'}" unless 0 == potentially_breaking_changes
@@ -224,7 +224,7 @@ HEADER
       client.login
       client.create_release('sting-ioc/sting', tag, :name => tag, :body => changes, :draft => false, :prerelease => true)
 
-      candidates = client.list_milestones('sting-ioc/sting').select {|m| m[:title].to_s == tag}
+      candidates = client.list_milestones('sting-ioc/sting').select { |m| m[:title].to_s == tag }
       unless candidates.empty?
         milestone = candidates[0]
         unless milestone[:state] == 'closed'
