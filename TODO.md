@@ -38,13 +38,6 @@ complete as there is too much un-said.
   factory method that a supplier is not invoked in either the constructor for `@Injectable` types or the
   provider method for `@Fragment` types.
 
-* Consider whether the `synchronized` keyword on node accessors  is sufficient for concurrency within a
-  JRE setting. This can result in creates being limited to one create at a time. Instead, we could create
-  a separate lock per node, order the calls to node accessors for dependencies based on depth and this
-  would enable concurrent creation of objects within the graph. We could even make this code generation
-  optional based on a `@Injector.concurrent` parameter. However until we have a clear use case in a JRE
-  that actually requires parallel or concurrent construction of the injector, we should defer this work.
-
 * Add the mechanisms for overriding bindings already added to object graph. Perhaps by adding an
   `override=ENABLE|DISABLE|AUTODETECT` parameter which indicates whether the binding can override
   existing bindings. Order in `includes` matters in this scenario. This will default to `AUTODETECT`
