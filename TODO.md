@@ -4,15 +4,9 @@ This document is essentially a list of shorthand notes describing work yet to be
 Unfortunately it is not complete enough for other people to pick work off the list and
 complete as there is too much un-said.
 
-## Beta Release TODO Items
+## Beta-1 Release
 
-* We may need to add a separate phase at the end of compilation that detects when singular injection requests
-  result in multiple candidate bindings. Note that some of these bindings can be added during resolution process.
-
-* Integrate `@StingProvider` into auto-discovery process. We may need to add a flag to `@StingProvider` that
-  controls whether that provider is subject to auto-discovery ... if there is a valid use case. In this scenario
-  we will need to verify that the provider publishes a binding that exposes the originating type as a published
-  service.
+* regenerate performance data for compile times
 
 * Add some basic documentation
   * Usage documentation.
@@ -21,12 +15,15 @@ complete as there is too much un-said.
   * Development process FAQ - just like in Arez but reflective of Stings approach.
   * Maybe terminology should be (more) inspired by OSGI service ala https://www.osgi.org/developer/architecture/
 
-### Performance Documentation and Tests
+## Beta-2 Release
 
-* regenerate performance data for compile times
+* Integrate `@StingProvider` into auto-discovery process. We may need to add a flag to `@StingProvider` that
+  controls whether that provider is subject to auto-discovery ... if there is a valid use case. In this scenario
+  we will need to verify that the provider publishes a binding that exposes the originating type as a published
+  service.
 
-
-
+* We may need to add a separate phase at the end of compilation that detects when singular injection requests
+  result in multiple candidate bindings. Note that some of these bindings can be added during resolution process.
 
 ## Other TODO
 
