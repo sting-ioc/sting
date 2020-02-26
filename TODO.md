@@ -25,8 +25,6 @@ complete as there is too much un-said.
 
 * Write changelog entry describing performance document and performance testing.
 
-* Generate and {@include } performance data for build-times into performance doc.
-
 * regenerate performance data for compile times
 
 * Fail release if there is no performance data for current version UNLESS the user specifies a environment
