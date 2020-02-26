@@ -50,6 +50,19 @@ task 'perform_release' do
       task('todos:scan').invoke
     end
 
+    stage('PerformanceDataPresent', 'Verify that performance data is present for current version') do
+      unless ENV['SKIP_PERF_DATA'] == 'true'
+        derive_versions
+
+        %w(build-times code-size).each do |type|
+          filename = "#{WORKSPACE_DIR}/performance-tests/src/test/fixtures/#{type}.properties"
+          unless IO.read(filename).split("\n").any? { |line| line.split('=')[0] =~ /^#{ENV['PRODUCT_VERSION']}\./ }
+            raise "No performance data for version #{ENV['PRODUCT_VERSION']} present for performance type #{type}. Add performance data or suppress this check by passing SKIP_PERF_DATA=true"
+          end
+        end
+      end
+    end
+
     stage('StagingCleanup', 'Remove artifacts from staging repository') do
       task('staging:cleanup').invoke
     end

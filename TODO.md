@@ -27,9 +27,6 @@ complete as there is too much un-said.
 
 * regenerate performance data for compile times
 
-* Fail release if there is no performance data for current version UNLESS the user specifies a environment
-  variable override.
-
 ## Other TODO
 
 * Break up the generated constructor in the injector so that it initializes at most N (100?) values at a time
