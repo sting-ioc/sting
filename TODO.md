@@ -6,10 +6,6 @@ complete as there is too much un-said.
 
 ## Beta Release TODO Items
 
-* Break up the generated constructor in the injector so that it initializes at most N (100?) values at a time
-  to avoid overloading the optimizer or exceeding allowed method size. This will involve removing the final
-  qualifier from fields if there is more than N values present.
-
 * We may need to add a separate phase at the end of compilation that detects when singular injection requests
   result in multiple candidate bindings. Note that some of these bindings can be added during resolution process.
 
@@ -48,6 +44,10 @@ complete as there is too much un-said.
   variable override.
 
 ## Other TODO
+
+* Break up the generated constructor in the injector so that it initializes at most N (100?) values at a time
+  to avoid overloading the optimizer or exceeding allowed method size. This will involve removing the final
+  qualifier from fields if there is more than N values present.
 
 * Add assertions to suppliers to verify supplier is not invoked prior to the Injector being initialized.
   This would involve adding a flag to Injector that is set when fully initialized and then checking this
