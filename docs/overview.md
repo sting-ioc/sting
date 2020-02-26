@@ -18,4 +18,4 @@ or it can call out to user code to provide the component (i.e. methods in {@api_
 types.) The second form is used when third-party objects can't be annotated, when a different framework is
 responsible for creating the object (i.e `GWT.create(MyGwtRpcService.class)` or when it is awkward to
 create the type (i.e. when publishing a component that is provided by calling a method on another
-component). Sting can also pass in components when creating the injector.  
+component). Sting can also pass in components when creating the injector.
