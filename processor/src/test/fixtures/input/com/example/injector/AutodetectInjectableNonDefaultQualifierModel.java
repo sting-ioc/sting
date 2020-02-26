@@ -9,11 +9,11 @@ interface AutodetectInjectableNonDefaultQualifierModel
   @Injector
   interface MyInjector
   {
-    @Named( "BadQualifier" )
+    @Named( "MyQualifier" )
     MyModel1 getMyModel1();
   }
 
-  @Named( "BadQualifier" )
+  @Named( "MyQualifier" )
   @Injectable
   class MyModel1
   {
