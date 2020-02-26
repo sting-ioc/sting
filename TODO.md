@@ -64,13 +64,6 @@ complete as there is too much un-said.
 * Generate a website where you can view the graph similar to [dagger-browser](https://github.com/Snapchat/dagger-browser).
   This could be built at build time or potentially at runtime via spy infrastructure.
 
-* We could add a "gathering" annotation processor that collected all the bindings into an injector.
-  Each `@Injectable` and `@Fragment` etc could have an annotation like `@ContributeTo('SomeKey')` and we
-  would have a type annotated with `@CollectContributors('SomeKey')` annotation that is converted into a
-  `@Fragment` type that could be included. Emitting the generated `@Fragment` type before processing
-  completes may be difficult in normal adhoc builds but in more controlled build environments (i.e. Bazel),
-  this strategy would work well.
-
 ## Differences from Dagger
 
 The significant differences from Dagger:
