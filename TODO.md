@@ -23,8 +23,6 @@ complete as there is too much un-said.
 
 ### Performance Documentation and Tests
 
-* Write changelog entry describing performance document and performance testing.
-
 * regenerate performance data for compile times
 
 ## Other TODO
