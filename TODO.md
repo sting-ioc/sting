@@ -38,14 +38,6 @@ complete as there is too much un-said.
   factory method that a supplier is not invoked in either the constructor for `@Injectable` types or the
   provider method for `@Fragment` types.
 
-* Add support for different optional services in code generator. We should support the following patterns:
-  - `@Nullable T`
-  - `Optional<T>`
-  - `Supplier<Optional<T>`
-  - `Collection<Supplier<Optional<T>`
-
-  and we should also support nullability in `Collection<T>` by just not adding service to collection.
-
 * Consider whether the `synchronized` keyword on node accessors  is sufficient for concurrency within a
   JRE setting. This can result in creates being limited to one create at a time. Instead, we could create
   a separate lock per node, order the calls to node accessors for dependencies based on depth and this
