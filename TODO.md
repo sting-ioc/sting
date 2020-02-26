@@ -25,10 +25,9 @@ complete as there is too much un-said.
 
 * Compare "time to initialize and access the injector at runtime" between dagger and sting in jre mode and/or js mode.
 
-* regenerate performance data for compile times
+* Generate and {@include } performance data for build-times into performance doc.
 
-* Patch the tables in documentation with performance test data. Do this as part of the build. Patch version
-  in documentation
+* regenerate performance data for compile times
 
 * Fail release if there is no performance data for current version UNLESS the user specifies a environment
   variable override.
