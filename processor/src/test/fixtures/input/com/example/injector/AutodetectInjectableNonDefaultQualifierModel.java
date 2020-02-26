@@ -9,7 +9,6 @@ interface AutodetectInjectableNonDefaultQualifierModel
   @Injector
   interface MyInjector
   {
-    // The file has a binary descriptor but
     @Named( "BadQualifier" )
     MyModel1 getMyModel1();
   }
