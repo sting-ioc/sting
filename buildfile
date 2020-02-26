@@ -180,7 +180,7 @@ define 'sting' do
       project.test.compile.invoke
       cp = project.test.compile.dependencies.map(&:to_s) + [project.test.compile.target.to_s]
 
-      %w(tiny small medium large huge).each do |variant|
+      BUILD_TIME_VARIANTS.each do |variant|
 
         properties = {
           'sting.perf.working_directory' => project._('generated/perf'),

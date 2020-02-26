@@ -43,13 +43,7 @@ The table below compares the ratio of the speed of dagger in various scenarios w
 of `1` indicates that they are exactly the same speed while a value of `0.5` would indicate Sting takes twice as
 long as Dagger and a value of `2.0` indicates Sting takes half as long as dagger.
 
-| Scenario | Object Count | Full Compile | Incremental Recompile |
-|----------|--------------|--------------|-----------------------|
-| Tiny     | 10           | 1.017        | 1.099                 |
-| Small    | 50           | 0.648        | 1.716                 |
-| Medium   | 250          | 0.764        | 3.605                 |
-| Large    | 500          | 0.710        | 4.745                 |
-| Huge     | 1000         | 0.704        | 11.785                |
+{@include: BuildTimesTable.html}
 
 Stings architecture gives a nice little performance boost for incremental rebuilds in most circumstances with a
 slight performance penalty for the initial compile or full rebuilds. As Sting matures, it is expected that the
