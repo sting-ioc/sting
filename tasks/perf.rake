@@ -41,7 +41,6 @@ HTML
   CODE_SIZE_VARIANTS.each do |variant|
     label = (variant[0, 1].upcase + variant[1, variant.length]).gsub(/_[a-z]/) {|s| " #{s[1].upcase}"}
     eagerCount = properties["#{variant}.input.eagerCount"].to_i
-    inputsPerNode = properties["#{variant}.input.inputsPerNode"].to_i
     layerCount = properties["#{variant}.input.layerCount"].to_i
     nodesPerLayer = properties["#{variant}.input.nodesPerLayer"].to_i
     nodeCount = layerCount * nodesPerLayer
