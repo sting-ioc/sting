@@ -48,6 +48,7 @@ define 'sting' do
               :guava,
               :guava_failureaccess,
               :proton_qa,
+              :gwt_user,
               Java.tools_jar,
               :truth,
               :junit,

@@ -1,5 +1,6 @@
 package com.example.injector.outputs;
 
+import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 
@@ -64,6 +65,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   Sting_PrimitiveOutputModel() {
   }
 
+  @DoNotInline
   private double node1() {
     if ( !node1_allocated ) {
       node1_allocated = true;
@@ -72,6 +74,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
     return node1;
   }
 
+  @DoNotInline
   private float node2() {
     if ( !node2_allocated ) {
       node2_allocated = true;
@@ -80,6 +83,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
     return node2;
   }
 
+  @DoNotInline
   private long node3() {
     if ( !node3_allocated ) {
       node3_allocated = true;
@@ -88,6 +92,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
     return node3;
   }
 
+  @DoNotInline
   private int node4() {
     if ( !node4_allocated ) {
       node4_allocated = true;
@@ -96,6 +101,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
     return node4;
   }
 
+  @DoNotInline
   private short node5() {
     if ( !node5_allocated ) {
       node5_allocated = true;
@@ -104,6 +110,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
     return node5;
   }
 
+  @DoNotInline
   private byte node6() {
     if ( !node6_allocated ) {
       node6_allocated = true;
@@ -112,6 +119,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
     return node6;
   }
 
+  @DoNotInline
   private char node7() {
     if ( !node7_allocated ) {
       node7_allocated = true;
@@ -120,6 +128,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
     return node7;
   }
 
+  @DoNotInline
   private boolean node8() {
     if ( !node8_allocated ) {
       node8_allocated = true;

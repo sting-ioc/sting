@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Supplier;
+import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,6 +18,7 @@ final class Sting_SupplierCollectionOutputModel implements SupplierCollectionOut
   }
 
   @Nonnull
+  @DoNotInline
   private Object node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( SupplierCollectionOutputModel_Sting_MyModel.create() );

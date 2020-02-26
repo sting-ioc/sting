@@ -1,5 +1,6 @@
 package sting.processor;
 
+import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
@@ -27,6 +28,9 @@ import org.realityforge.proton.SuppressWarningsUtil;
 
 final class InjectorGenerator
 {
+  @Nonnull
+  private static final ClassName DO_NOT_INLINE = ClassName.get( "javaemul.internal.annotations", "DoNotInline" );
+
   private InjectorGenerator()
   {
   }
@@ -202,6 +206,17 @@ final class InjectorGenerator
         if ( isNonPrimitive )
         {
           method.addAnnotation( isNonnull ? GeneratorUtil.NONNULL_CLASSNAME : GeneratorUtil.NULLABLE_CLASSNAME );
+        }
+
+        if ( graph.getInjector().isGwt() )
+        {
+          // We avoid inlining as each lazy node accessor is typically a candidate for inlining and
+          // will be inlined which often results the entire transitive tree of lazy node accessors
+          // being inlined in successive passes. Then there will be too much code to run some of the
+          // other optimization passes such as DFA as the code size is too big. Without this annotation,
+          // there was one scenario where a piece of code was 4KB with @DonNotInline present and 1MB+
+          // without the annotation being present.
+          method.addAnnotation( DO_NOT_INLINE );
         }
 
         final CodeBlock.Builder block = CodeBlock.builder();

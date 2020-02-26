@@ -2,6 +2,7 @@ package com.example.injector.outputs;
 
 import java.util.Objects;
 import java.util.function.Supplier;
+import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -15,6 +16,7 @@ final class Sting_SupplierOutputModel implements SupplierOutputModel {
   }
 
   @Nonnull
+  @DoNotInline
   private Object node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( SupplierOutputModel_Sting_MyModel.create() );

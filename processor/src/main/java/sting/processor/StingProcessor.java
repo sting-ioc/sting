@@ -684,6 +684,7 @@ public final class StingProcessor
                                     element );
     }
 
+    final boolean gwt = isGwtEnabled( element );
     final boolean injectable =
       (boolean) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTOR_CLASSNAME, "injectable" ).getValue();
     final List<IncludeDescriptor> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
@@ -720,9 +721,17 @@ public final class StingProcessor
         }
       }
     }
-    final InjectorDescriptor injector = new InjectorDescriptor( element, injectable, includes, inputs, outputs );
+    final InjectorDescriptor injector = new InjectorDescriptor( element, gwt, injectable, includes, inputs, outputs );
     _registry.registerInjector( injector );
     emitInjectorJsonDescriptor( injector );
+  }
+
+  private boolean isGwtEnabled( @Nonnull final TypeElement element )
+  {
+    final String value = AnnotationsUtil.getEnumAnnotationParameter( element, Constants.INJECTOR_CLASSNAME, "gwt" );
+    return "ENABLE".equals( value ) ||
+           ( "AUTODETECT".equals( value ) &&
+             null != processingEnv.getElementUtils().getTypeElement( "javaemul.internal.annotations.DoNotInline" ) );
   }
 
   private void emitInjectorJsonDescriptor( @Nonnull final InjectorDescriptor injector )

@@ -1,6 +1,7 @@
 package com.example.injector.includes.provider.naming.compound;
 
 import java.util.Objects;
+import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,6 +18,7 @@ final class Sting_MyInjector implements MyInjector {
   }
 
   @Nonnull
+  @DoNotInline
   private Outer.Middle.Leaf.MyModel2Impl node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( Outer_Middle_Leaf_Sting_MyModel2Impl.create() );
@@ -26,6 +28,7 @@ final class Sting_MyInjector implements MyInjector {
   }
 
   @Nonnull
+  @DoNotInline
   private Object node2() {
     if ( null == node2 ) {
       node2 = Objects.requireNonNull( Sting_MyModel1Impl.create() );

@@ -8,6 +8,7 @@ import com.example.integration.todomvc.model.TodoRepository;
 import com.example.integration.todomvc.model.TodoService;
 import com.example.integration.todomvc.model.ViewService;
 import java.util.Objects;
+import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -34,6 +35,7 @@ final class Sting_TodoInjector implements TodoInjector {
   }
 
   @Nonnull
+  @DoNotInline
   private Object node2() {
     if ( null == node2 ) {
       node2 = Objects.requireNonNull( Sting_Arez_TodoRepository.create() );
@@ -43,6 +45,7 @@ final class Sting_TodoInjector implements TodoInjector {
   }
 
   @Nonnull
+  @DoNotInline
   private Object node3() {
     if ( null == node3 ) {
       node3 = Objects.requireNonNull( Sting_Arez_ViewService.create((TodoRepository) node2(), node1) );
@@ -52,6 +55,7 @@ final class Sting_TodoInjector implements TodoInjector {
   }
 
   @Nonnull
+  @DoNotInline
   private Object node4() {
     if ( null == node4 ) {
       node4 = Objects.requireNonNull( Sting_Arez_TodoService.create((TodoRepository) node2()) );

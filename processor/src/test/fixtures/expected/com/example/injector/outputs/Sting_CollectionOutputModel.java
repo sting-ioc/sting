@@ -3,6 +3,7 @@ package com.example.injector.outputs;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
+import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -16,6 +17,7 @@ final class Sting_CollectionOutputModel implements CollectionOutputModel {
   }
 
   @Nonnull
+  @DoNotInline
   private Object node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( CollectionOutputModel_Sting_MyModel.create() );

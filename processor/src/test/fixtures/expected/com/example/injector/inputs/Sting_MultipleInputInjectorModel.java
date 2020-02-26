@@ -1,6 +1,7 @@
 package com.example.injector.inputs;
 
 import java.util.Objects;
+import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,6 +23,7 @@ final class Sting_MultipleInputInjectorModel implements MultipleInputInjectorMod
   }
 
   @Nonnull
+  @DoNotInline
   private Object node2() {
     if ( null == node2 ) {
       node2 = Objects.requireNonNull( MultipleInputInjectorModel_Sting_MyModel.create(node1) );

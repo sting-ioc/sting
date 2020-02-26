@@ -16,6 +16,10 @@ final class InjectorDescriptor
   @Nonnull
   private final TypeElement _element;
   /**
+   * Should the injector be optimized for GWT.
+   */
+  private final boolean _gwt;
+  /**
    * Should this injector be able to be included i other injectors.
    */
   private final boolean _injectable;
@@ -40,12 +44,14 @@ final class InjectorDescriptor
   private boolean _containsError;
 
   InjectorDescriptor( @Nonnull final TypeElement element,
+                      final boolean gwt,
                       final boolean injectable,
                       @Nonnull final Collection<IncludeDescriptor> includes,
                       @Nonnull final List<InputDescriptor> inputs,
                       @Nonnull final List<ServiceDescriptor> outputs )
   {
     _element = Objects.requireNonNull( element );
+    _gwt = gwt;
     _injectable = injectable;
     _includes = Objects.requireNonNull( includes );
     _inputs = Objects.requireNonNull( inputs );
@@ -56,6 +62,11 @@ final class InjectorDescriptor
   TypeElement getElement()
   {
     return _element;
+  }
+
+  boolean isGwt()
+  {
+    return _gwt;
   }
 
   boolean isInjectable()

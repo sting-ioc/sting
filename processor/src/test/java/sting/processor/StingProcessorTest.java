@@ -100,6 +100,9 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel" },
         new Object[]{ "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel" },
 
+        new Object[]{ "com.example.injector.gwt.DisableGwtInjectorModel" },
+        new Object[]{ "com.example.injector.gwt.EnableGwtInjectorModel" },
+
         new Object[]{ "com.example.injector.includes.ExplicitIncludesOfNestedModel" },
 
         new Object[]{ "com.example.injector.outputs.BasicOutputModel" },

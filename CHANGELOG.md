@@ -4,6 +4,7 @@
 
 * Add the `@Injector.injectable` parameter that that controls whether the annotation processor will generate a provider so that the injector can be included in other injectors.
 * Add some nullability annotations to the parameters of annotations in the `core` package.
+* Add the `@Injector.gwt` parameter that that controls whether the annotation processor will customize injector implementation to work within the context of GWT. This primarily involves the addition of the `@DoNotInline` annotation to lazy component accessors within the injector implementation. This avoids the scenario where the GWT compiler could inline a component accessor and all transitive lazy component accessors, significantly increasing code-size, compilation time and run time.
 
 ### [v0.04](https://github.com/sting-ioc/sting/tree/v0.04) (2020-02-19) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.03...v0.04)
 

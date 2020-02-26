@@ -1,6 +1,7 @@
 package com.example.injector.outputs;
 
 import java.util.Objects;
+import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,6 +15,7 @@ final class Sting_OptionalMissingOutputModel implements OptionalMissingOutputMod
   }
 
   @Nonnull
+  @DoNotInline
   private OptionalMissingOutputModel.MyModel2 node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( OptionalMissingOutputModel_Sting_MyModel2.create() );

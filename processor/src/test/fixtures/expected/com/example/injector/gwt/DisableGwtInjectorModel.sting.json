@@ -1,0 +1,11 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.gwt.DisableGwtInjectorModel.MyModel0"
+  ],
+  "outputs": [
+    {
+      "type": "com.example.injector.gwt.DisableGwtInjectorModel.MyModel0"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 package com.example.injector;
 
 import java.util.Objects;
+import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -14,6 +15,7 @@ final class Sting_BasicInjectorModel implements BasicInjectorModel {
   }
 
   @Nonnull
+  @DoNotInline
   private Object node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( BasicInjectorModel_Sting_MyModel.create() );

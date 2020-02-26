@@ -1,6 +1,7 @@
 package com.example.injector.circular;
 
 import java.util.Objects;
+import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,6 +21,7 @@ final class Sting_SupplierBrokenChainedCircularDependencyModel implements Suppli
   }
 
   @Nonnull
+  @DoNotInline
   private Object node1() {
     if ( null == node1 ) {
       node1 = Objects.requireNonNull( SupplierBrokenChainedCircularDependencyModel_Sting_MyModel3.create(() -> node3()) );
@@ -29,6 +31,7 @@ final class Sting_SupplierBrokenChainedCircularDependencyModel implements Suppli
   }
 
   @Nonnull
+  @DoNotInline
   private Object node2() {
     if ( null == node2 ) {
       node2 = Objects.requireNonNull( SupplierBrokenChainedCircularDependencyModel_Sting_MyModel2.create(node1()) );
@@ -38,6 +41,7 @@ final class Sting_SupplierBrokenChainedCircularDependencyModel implements Suppli
   }
 
   @Nonnull
+  @DoNotInline
   private Object node3() {
     if ( null == node3 ) {
       node3 = Objects.requireNonNull( SupplierBrokenChainedCircularDependencyModel_Sting_MyModel1.create(node2()) );

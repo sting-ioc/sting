@@ -174,6 +174,20 @@ public @interface Injector
   boolean injectable() default false;
 
   /**
+   * A flag controlling whether the injector implementation will be optimized for compilation by GWT.
+   * This primarily involves the addition of the {@code @DoNotInline} annotation to lazy component accessors
+   * within the injector implementation to avoid inlining a component accessor and all transitive lazy component
+   * accessors that can increase code-size, compilation time and run time.
+   *
+   * <p>If set to {@link Feature#AUTODETECT} then the optimization for gwt will be enabled if the class
+   * {@code javaemul.internal.annotations.DoNotInline} is present on the classpath.</p>
+   *
+   * @return true to optimize the injector implementation for transpilation to javascript, false otherwise.
+   */
+  @Nonnull
+  Feature gwt() default Feature.AUTODETECT;
+
+  /**
    * A specification of a service that is supplied to an injector during construction.
    * The service is added to the the component graph and is made available for other components to consume
    */
