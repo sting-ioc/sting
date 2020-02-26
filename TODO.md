@@ -25,16 +25,6 @@ complete as there is too much un-said.
 
 * Compare "time to initialize and access the injector at runtime" between dagger and sting in jre mode and/or js mode.
 
-* Compare "Code size of the the injector when compiled to GWT" between dagger and sting. Add a section like
-  the following to docs and also possibly a graph
-
-| Scenario      | Object Count | Eager % | Sting size   | Dagger size           |
-|---------------|--------------|---------|--------------|-----------------------|
-| Tiny          | 10           | 50%     |              |                       |
-| Small         | 50           | 50%     |              |                       |
-| Medium        | 250          | 50%     |              |                       |
-...
-
 * regenerate performance data for compile times
 
 * Patch the tables in documentation with performance test data. Do this as part of the build. Patch version
