@@ -2,6 +2,7 @@ package sting.performance;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -40,6 +41,17 @@ final class BaselineSourceGenerator
         .addModifiers( Modifier.PUBLIC )
         .addSuperinterface( EntryPoint.class );
 
+    for ( int layer = 0; layer < layerCount; layer++ )
+    {
+      for ( int node = 0; node < nodesPerLayer; node++ )
+      {
+        final String name = nodeMethodName( nodesPerLayer, layer, node );
+        type.addField( FieldSpec.builder( ClassName.bestGuess( name ), name, Modifier.STATIC ).build() );
+
+        type.addType( TypeSpec.classBuilder( name ).build() );
+      }
+    }
+
     int currentInputNode = 0;
     for ( int layer = 0; layer < layerCount; layer++ )
     {
@@ -57,7 +69,7 @@ final class BaselineSourceGenerator
             final String name =
               nodeMethodName( nodesPerLayer, layer - 1, ( currentInputNode + input ) % nodesPerLayer );
             compute.addStatement( "$N()", name );
-            compute.addStatement( "$T.console.log( new $T().hashCode() )", DomGlobal.class, Object.class );
+            compute.addStatement( "$T.console.log( $N.hashCode() )", DomGlobal.class, name );
           }
           currentInputNode = ( currentInputNode + inputsPerNode ) % nodesPerLayer;
         }
@@ -69,6 +81,15 @@ final class BaselineSourceGenerator
         .methodBuilder( "onModuleLoad" )
         .addModifiers( Modifier.PUBLIC )
         .addAnnotation( Override.class );
+    for ( int layer = 0; layer < layerCount; layer++ )
+    {
+      for ( int node = 0; node < nodesPerLayer; node++ )
+      {
+        final String name = nodeMethodName( nodesPerLayer, layer, node );
+        method.addStatement( "$N = new $T()", name, ClassName.bestGuess( name ) );
+      }
+    }
+
     for ( int node = 0; node < nodesPerLayer; node++ )
     {
       final String methodName = nodeMethodName( nodesPerLayer, layerCount - 1, node );
