@@ -44,8 +44,6 @@ complete as there is too much un-said.
   which will evaluate to `DISABLE` all scenarios except when the binding is from a descriptor declared
   as nested class of the injector. Overrides can either be by id or published types.
 
-* Add support to dependencyType so that the boxed types and primitives interoperate. ie. Can have a collection of `Integer` that derived from `int` values.
-
 * Figure out terminology. Currently it is a mixed bag derived from various injector frameworks that it has
   been inspired from. Terms that are misused and should be cleaned up. This would involved cleaning up lots
   of code, tests and javadocs so should be done sooner rather than later.
