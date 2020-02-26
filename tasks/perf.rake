@@ -1,3 +1,5 @@
+CODE_SIZE_VARIANTS = %w(eager_tiny tiny lazy_tiny eager_small small lazy_small eager_medium medium lazy_medium eager_large large lazy_large eager_huge huge lazy_huge)
+
 desc 'Update the code-size statistics stored for next version'
 task 'update_code_size_statistics' do
   derive_versions
