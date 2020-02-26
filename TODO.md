@@ -23,6 +23,8 @@ complete as there is too much un-said.
 
 ### Performance Documentation and Tests
 
+* Write changelog entry describing performance document and performance testing.
+
 * Generate and {@include } performance data for build-times into performance doc.
 
 * regenerate performance data for compile times
