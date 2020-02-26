@@ -27,7 +27,7 @@ task 'gen_code_size_table' do
   <caption align="bottom">Code Size Comparison between Sting v#{ENV['PRODUCT_VERSION']} and Dagger v#{dagger_version}</caption>
   <thead>
   <tr>
-    <th>Scenario</th>
+    <th>Variant</th>
     <th>Component Count</th>
     <th>Eager %</th>
     <th>Sting Size</th>
