@@ -51,6 +51,10 @@ slight performance penalty for the initial compile or full rebuilds. As Sting ma
 performance penalty for full rebuilds will decrease slightly but will always exist. There are many further
 optimizations possible in incremental recompiles that will likely lead to even faster recompiles in the future.
 
+## Code Size
+
+{@include: CodeSizeTable.html}
+
 ## Sample Application Description
 
 The sample application used during performance testing is procedurally generated from a number of input
