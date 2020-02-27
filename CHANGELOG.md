@@ -1,6 +1,10 @@
 # Change Log
 
-### Unreleased
+### [v0.05](https://github.com/sting-ioc/sting/tree/v0.05) (2020-02-27) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.04...v0.05) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.04&new=0.05)
+
+The release includes 3 non breaking API changes.
+
+Changes in this release:
 
 * Add the `@Injector.injectable` parameter that that controls whether the annotation processor will generate a provider so that the injector can be included in other injectors.
 * Add some nullability annotations to the parameters of annotations in the `core` package.
