@@ -13,6 +13,8 @@ final class Sting_CollectionOutputModel implements CollectionOutputModel {
   @Nullable
   private Object node1;
 
+  private Collection<CollectionOutputModel.MyModel> $sting$_getMyModelCache;
+
   Sting_CollectionOutputModel() {
   }
 
@@ -28,6 +30,9 @@ final class Sting_CollectionOutputModel implements CollectionOutputModel {
 
   @Override
   public Collection<CollectionOutputModel.MyModel> getMyModel() {
-    return Collections.singletonList( (CollectionOutputModel.MyModel) node1() );
+    if ( null == $sting$_getMyModelCache ) {
+      $sting$_getMyModelCache = Collections.singletonList( (CollectionOutputModel.MyModel) node1() );
+    }
+    return $sting$_getMyModelCache;
   }
 }

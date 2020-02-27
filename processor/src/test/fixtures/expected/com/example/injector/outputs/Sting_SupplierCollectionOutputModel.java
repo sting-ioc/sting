@@ -14,6 +14,8 @@ final class Sting_SupplierCollectionOutputModel implements SupplierCollectionOut
   @Nullable
   private Object node1;
 
+  private Collection<Supplier<SupplierCollectionOutputModel.MyModel>> $sting$_getMyModelCache;
+
   Sting_SupplierCollectionOutputModel() {
   }
 
@@ -29,6 +31,9 @@ final class Sting_SupplierCollectionOutputModel implements SupplierCollectionOut
 
   @Override
   public Collection<Supplier<SupplierCollectionOutputModel.MyModel>> getMyModel() {
-    return Collections.singletonList( () -> (SupplierCollectionOutputModel.MyModel) node1() );
+    if ( null == $sting$_getMyModelCache ) {
+      $sting$_getMyModelCache = Collections.singletonList( () -> (SupplierCollectionOutputModel.MyModel) node1() );
+    }
+    return $sting$_getMyModelCache;
   }
 }

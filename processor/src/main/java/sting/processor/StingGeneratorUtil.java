@@ -24,7 +24,7 @@ import org.realityforge.proton.SuppressWarningsUtil;
 final class StingGeneratorUtil
 {
   @Nonnull
-  private static final String FRAMEWORK_PREFIX = "$sting$_";
+  static final String FRAMEWORK_PREFIX = "$sting$_";
   @Nonnull
   private static final ClassName COLLECTION = ClassName.get( Collection.class );
   @Nonnull

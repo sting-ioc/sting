@@ -52,6 +52,7 @@ final class InjectorGenerator
 
     emitFragmentFields( processingEnv, builder, graph );
     emitNodeFields( processingEnv, graph, builder );
+    emitOutputCollectionFields( graph, builder );
     emitConstructor( graph, builder );
     emitNodeAccessorMethod( processingEnv, graph, builder );
     emitOutputMethods( processingEnv, graph, builder );
@@ -76,11 +77,29 @@ final class InjectorGenerator
                                                           method,
                                                           Collections.emptyList(),
                                                           Collections.singletonList( element.asType() ) );
-      final StringBuilder code = new StringBuilder();
-      final List<Object> args = new ArrayList<>();
-      code.append( "return " );
-      emitServiceValue( edge, true, code, args );
-      method.addStatement( code.toString(), args.toArray() );
+      if ( service.getKind().isCollection() )
+      {
+        final String name = getOutputCollectionCacheName( edge );
+        final CodeBlock.Builder block = CodeBlock.builder();
+        block.beginControlFlow( "if ( null == $N )", name );
+        final StringBuilder code = new StringBuilder();
+        final List<Object> args = new ArrayList<>();
+        code.append( "$N = " );
+        args.add( name );
+        emitServiceValue( edge, true, code, args );
+        block.addStatement( code.toString(), args.toArray() );
+        block.endControlFlow();
+        method.addCode( block.build() );
+        method.addStatement( "return $N", name );
+      }
+      else
+      {
+        final StringBuilder code = new StringBuilder();
+        final List<Object> args = new ArrayList<>();
+        code.append( "return " );
+        emitServiceValue( edge, true, code, args );
+        method.addStatement( code.toString(), args.toArray() );
+      }
       builder.addMethod( method.build() );
     }
   }
@@ -171,6 +190,27 @@ final class InjectorGenerator
         builder.addField( FieldSpec.builder( TypeName.BOOLEAN, getFlagFieldName( node ), Modifier.PRIVATE ).build() );
       }
     }
+  }
+
+  private static void emitOutputCollectionFields( @Nonnull final ComponentGraph graph,
+                                                  @Nonnull final TypeSpec.Builder builder )
+  {
+    for ( final Edge edge : graph.getRootNode().getDependsOn() )
+    {
+      final ServiceDescriptor service = edge.getService();
+      if ( service.getKind().isCollection() )
+      {
+        final TypeName serviceType = StingGeneratorUtil.getServiceType( service );
+        builder.addField( FieldSpec.builder( serviceType, getOutputCollectionCacheName( edge ), Modifier.PRIVATE )
+                            .build() );
+      }
+    }
+  }
+
+  @Nonnull
+  private static String getOutputCollectionCacheName( @Nonnull final Edge edge )
+  {
+    return StingGeneratorUtil.FRAMEWORK_PREFIX + edge.getService().getElement().getSimpleName().toString() + "Cache";
   }
 
   private static TypeName getPublicTypeName( @Nonnull final Node node )

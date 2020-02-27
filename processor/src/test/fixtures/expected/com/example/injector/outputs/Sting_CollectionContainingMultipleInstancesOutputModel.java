@@ -28,6 +28,8 @@ final class Sting_CollectionContainingMultipleInstancesOutputModel implements Co
   @Nullable
   private Object node3;
 
+  private Collection<CollectionContainingMultipleInstancesOutputModel.MyModel> $sting$_getMyModelCache;
+
   Sting_CollectionContainingMultipleInstancesOutputModel() {
   }
 
@@ -63,6 +65,9 @@ final class Sting_CollectionContainingMultipleInstancesOutputModel implements Co
 
   @Override
   public Collection<CollectionContainingMultipleInstancesOutputModel.MyModel> getMyModel() {
-    return Arrays.asList( (CollectionContainingMultipleInstancesOutputModel.MyModel) node3(), (CollectionContainingMultipleInstancesOutputModel.MyModel) node2(), (CollectionContainingMultipleInstancesOutputModel.MyModel) node1() );
+    if ( null == $sting$_getMyModelCache ) {
+      $sting$_getMyModelCache = Arrays.asList( (CollectionContainingMultipleInstancesOutputModel.MyModel) node3(), (CollectionContainingMultipleInstancesOutputModel.MyModel) node2(), (CollectionContainingMultipleInstancesOutputModel.MyModel) node1() );
+    }
+    return $sting$_getMyModelCache;
   }
 }
