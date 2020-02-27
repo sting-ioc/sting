@@ -6,8 +6,6 @@ complete as there is too much un-said.
 
 ## Beta-1 Release
 
-* regenerate performance data for compile times
-
 * Add some basic documentation
   * Usage documentation.
   * Recipe style examples for how to solve specific problems.
