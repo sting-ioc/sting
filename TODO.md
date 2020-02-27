@@ -68,7 +68,6 @@ The significant differences from Dagger:
 * No parameterized types can be part of the object graph except specific framework types (i.e. `Supplier` and
   `Collection`)
 * No Array types can be part of the object graph.
-* Injectors may specify dependencies that accepts values from outside the injector but are added to the ObjectGraph
 * Can very easily extend an existing component and replace some beans in object with those used in testing.
 * Consuming and providing package access components is supported by generating glue in the package.
 * Generated code suppresses warnings and thus can be run with compiler linting enabled without generating any warnings. This is verified by the test suite.
