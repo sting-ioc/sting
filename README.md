@@ -15,7 +15,7 @@ the toolkit is to be easy to use, and this includes clear and concise documentat
 please [report it as a bug](https://github.com/sting-ioc/sting/issues) because it *is* a bug. If a new user
 has a hard time, then we need to fix the problem.
 
-For more information about Arez, please see the [Website](https://sting-ioc.github.io/). For the source code
+For more information about Sting, please see the [Website](https://sting-ioc.github.io/). For the source code
 and project support, please visit the [GitHub project](https://github.com/sting-ioc/sting).
 
 # Contributing
@@ -26,7 +26,7 @@ a [Contributing](CONTRIBUTING.md) document is under development.
 
 # License
 
-Arez is licensed under [Apache License, Version 2.0](LICENSE).
+Sting is licensed under [Apache License, Version 2.0](LICENSE).
 
 # Credit
 
