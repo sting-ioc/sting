@@ -36,12 +36,6 @@ complete as there is too much un-said.
 
 ## Other TODO
 
-* Add assertions to suppliers to verify supplier is not invoked prior to the Injector being initialized.
-  This would involve adding a flag to Injector that is set when fully initialized and then checking this
-  flag inside supplier. This code should be stripped out in production builds. We could also check in the
-  factory method that a supplier is not invoked in either the constructor for `@Injectable` types or the
-  provider method for `@Fragment` types.
-
 * Add the mechanisms for overriding bindings already added to object graph. Perhaps by adding an
   `override=ENABLE|DISABLE|AUTODETECT` parameter which indicates whether the binding can override
   existing bindings. Order in `includes` matters in this scenario. This will default to `AUTODETECT`
