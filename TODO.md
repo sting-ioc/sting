@@ -29,6 +29,10 @@ complete as there is too much un-said.
 * We may need to add a separate phase at the end of compilation that detects when singular injection requests
   result in multiple candidate bindings. Note that some of these bindings can be added during resolution process.
 
+* If an output method on a `@Injector` annotated type returns a collection then it should return the same
+  collection if invoked multiple times. To do this we will need to cache the results of constructing the
+  collection.
+
 ## Other TODO
 
 * Add the mechanisms for overriding bindings already added to object graph. Perhaps by adding an
