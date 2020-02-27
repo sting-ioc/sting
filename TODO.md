@@ -12,7 +12,6 @@ complete as there is too much un-said.
   * Usage documentation.
   * Recipe style examples for how to solve specific problems.
   * Comparison to other technologies (i.e. Dagger/IOC) in terms of functionality.
-  * Development process FAQ - just like in Arez but reflective of Stings approach.
   * Maybe terminology should be (more) inspired by OSGI service ala https://www.osgi.org/developer/architecture/
 
 ## Beta-2 Release

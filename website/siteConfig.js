@@ -15,7 +15,7 @@ function updateToc(filename) {
   }
 }
 
-// updateToc('faq.md');
+updateToc('development_process.md');
 
 const markdownInclude = function(code) {
   const filename = process.cwd() + '/includes/' + code;
