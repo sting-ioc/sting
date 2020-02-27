@@ -76,7 +76,7 @@ task 'site:link_check' do
     base_url = "http://#{address}:#{port}"
     excludes = []
     excludes << 'https://github.com/sting-ioc/sting/compare/'
-    excludes << 'https://github.com/sting-ioc/sting.github.io/settings'
+    excludes << 'https://github.com/sting-ioc/sting-ioc.github.io/settings'
     excludes << 'https://docs.oracle.com/javase/8/docs/api'
     excludes << 'https://buildr.apache.org'
     excludes << 'https://maven.apache.org'
