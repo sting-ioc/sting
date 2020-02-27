@@ -1,5 +1,7 @@
 # Change Log
 
+### Unreleased
+
 ### [v0.05](https://github.com/sting-ioc/sting/tree/v0.05) (2020-02-27) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.04...v0.05) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.04&new=0.05)
 
 The release includes 3 non breaking API changes.
