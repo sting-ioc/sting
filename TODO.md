@@ -48,10 +48,6 @@ complete as there is too much un-said.
   which will evaluate to `DISABLE` all scenarios except when the binding is from a descriptor declared
   as nested class of the injector. Overrides can either be by id or published types.
 
-* Generate a [.dot](https://en.wikipedia.org/wiki/DOT_(graph_description_language) formatted version of
-  object graph so that it can be fed into graphviz. This could be generated at build time or potentially
-  at runtime via spy infrastructure.
-
 ## Differences from Dagger
 
 The significant differences from Dagger:
