@@ -51,7 +51,7 @@ The significant differences from Dagger:
 * `Eager` and `Lazy` beans are supported with `Lazy` being the default.
 * `Typed` is used to shape the possible edges in graph.
 * Constructor injection the only form supported. No field or method injection.
-* Qualifiers are represented as a single string which is empty.
+* Qualifiers are represented as a single string.
 * `@Nullable` provider will provide for `@Nullable` dependency but a null will also be provided to dependency if it
   is not declared in graph.
 * No parameterized types can be part of the object graph except specific framework types (i.e. `Supplier` and
