@@ -64,7 +64,7 @@ snippet to configure the maven compiler plugin from within the `pom.xml`:
 
 ## Configure your IDE
 
-It is expected that most Sting applications are developed from within an IDE. The configuration of the IDE is
+It is expected that most Sting applications are developed from within an IDE. The configuration of the IDE
 can be done by importing the `pom.xml` into the IDE but further customizations will often need to be done by
 the user.
 
