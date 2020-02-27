@@ -13,6 +13,18 @@ complete as there is too much un-said.
   * Recipe style examples for how to solve specific problems.
   * Comparison to other technologies (i.e. Dagger/IOC) in terms of functionality.
   * Maybe terminology should be (more) inspired by OSGI service ala https://www.osgi.org/developer/architecture/
+    * Figure out terminology. Currently it is a mixed bag derived from various injector frameworks that it has
+      been inspired from. Terms that are misused and should be cleaned up. This would involved cleaning up lots
+      of code, tests and javadocs so should be done sooner rather than later.
+      * `Service` = the instances present in the object?
+      * `Type` = the java type that a service consumes or publishes.
+      * `Qualifier` = an arbitrary user-supplied string that is used to distinguish between services
+        that have the same `Type` but different semantics.
+      * `Coordinate` = the combination of `Type`+`Qualifier` used to address a service
+      * `Binding` = a mechanism for creating a value that can contribute to the object graph.
+      * `Dependency` = a declaration by a binding that indicates the services that it consumes.
+      * `Node` = the inclusion of a `Binding` in an object graph
+      * `Edge` = a list of nodes that provide a service to a `Node` to satisfy a `Dependency`
 
 ## Beta-2 Release
 
@@ -37,19 +49,6 @@ complete as there is too much un-said.
   existing bindings. Order in `includes` matters in this scenario. This will default to `AUTODETECT`
   which will evaluate to `DISABLE` all scenarios except when the binding is from a descriptor declared
   as nested class of the injector. Overrides can either be by id or published types.
-
-* Figure out terminology. Currently it is a mixed bag derived from various injector frameworks that it has
-  been inspired from. Terms that are misused and should be cleaned up. This would involved cleaning up lots
-  of code, tests and javadocs so should be done sooner rather than later.
-  * `Service` = the instances present in the object?
-  * `Type` = the java type that a service consumes or publishes.
-  * `Qualifier` = an arbitrary user-supplied string that is used to distinguish between services
-    that have the same `Type` but different semantics.
-  * `Coordinate` = the combination of `Type`+`Qualifier` used to address a service
-  * `Binding` = a mechanism for creating a value that can contribute to the object graph.
-  * `Dependency` = a declaration by a binding that indicates the services that it consumes.
-  * `Node` = the inclusion of a `Binding` in an object graph
-  * `Edge` = a list of nodes that provide a service to a `Node` to satisfy a `Dependency`
 
 * Generate a [.dot](https://en.wikipedia.org/wiki/DOT_(graph_description_language) formatted version of
   object graph so that it can be fed into graphviz. This could be generated at build time or potentially
