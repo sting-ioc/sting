@@ -14,8 +14,8 @@ Fast incremental build times make developers happy and increase productivity. Fa
 essential for modern web development. Small code size and fast initialization times make the end users
 of our websites happy.
 
-The performance is measure relative to [Dagger2](https://github.com/google/dagger) as most of the initial
-Sting applications were migrated from Dagger2. Dagger2 is a much more mature, established and reasonably
+The performance is measure relative to [Dagger](https://github.com/google/dagger) as most of the initial
+Sting applications were migrated from Dagger. Dagger is a much more mature, established and reasonably
 optimized library and thus is a great library to compare against.
 
 A procedurally generated ["sample application"](#sample-application-description) was developed to be
