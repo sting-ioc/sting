@@ -40,7 +40,7 @@ specific contexts. Some of the additional features present in Dagger and missing
 * Dagger supports arbitrary typed qualifier annotations. (See the javadocs of `@javax.inject.Qualifier` for
   further details). This eliminates the chance of accidental collision between qualifiers defined in different
   frameworks. Sting only supports string based qualifiers and relies on different toolkits using reverse DNS
-  qualified names to guarantee that no accidental collision occurs. 
+  qualified names to guarantee that no accidental collision occurs.
 
 * Dagger supports field-based, method-based and constructor based injection strategies. Sting only supports
   constructor based injection. This can result in Sting applications containing more user written boilerplate
@@ -63,7 +63,7 @@ specific contexts. Some of the additional features present in Dagger and missing
   [reusable scope](https://dagger.dev/users-guide#reusable-scope). Sting assumes every binding within the
   injector has a single instance (at most) which is conceptually similar to `@Singleton` scoped instances. It is
   possible to model similar behaviour in Sting but it is laborious and inefficient.
-  
+
 It is possible that Sting will gain the functionality of subcomponents and scopes in the future and may even
 improve on the Dagger model by adding features such as
 [disposable injectors](https://github.com/sting-ioc/sting/issues/4) but there is no concrete plans to implement
