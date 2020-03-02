@@ -34,4 +34,5 @@ complete as there is too much un-said.
   `override=ENABLE|DISABLE|AUTODETECT` parameter which indicates whether the binding can override
   existing bindings. Order in `includes` matters in this scenario. This will default to `AUTODETECT`
   which will evaluate to `DISABLE` all scenarios except when the binding is from a descriptor declared
-  as nested class of the injector. Overrides can either be by id or published types.
+  as nested class of the injector. Overrides can either be by id or published types. Once completed this
+  should be added as a pro for Sting when comparing with dagger.
