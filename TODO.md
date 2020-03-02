@@ -36,28 +36,3 @@ complete as there is too much un-said.
   existing bindings. Order in `includes` matters in this scenario. This will default to `AUTODETECT`
   which will evaluate to `DISABLE` all scenarios except when the binding is from a descriptor declared
   as nested class of the injector. Overrides can either be by id or published types.
-
-## Differences from Dagger
-
-The significant differences from Dagger:
-
-* The sting compiler is small, self-contained and vendors it's dependencies so it is easy to integrate and
-  does not collide with other annotation processors.
-* No scopes supported, a single instance of each binding is in the `Injector`.
-* `Eager` and `Lazy` beans are supported with `Lazy` being the default.
-* `Typed` is used to shape the possible edges in graph.
-* Constructor injection the only form supported. No field or method injection.
-* Qualifiers are represented as a single string.
-* `@Nullable` provider will provide for `@Nullable` dependency but a null will also be provided to dependency if it
-  is not declared in graph.
-* No parameterized types can be part of the object graph except specific framework types (i.e. `Supplier` and
-  `Collection`)
-* No Array types can be part of the object graph.
-* Can very easily extend an existing component and replace some beans in object with those used in testing.
-* Consuming and providing package access components is supported by generating glue in the package.
-* Generated code suppresses warnings and thus can be run with compiler linting enabled without generating any warnings. This is verified by the test suite.
-* Problems with the object graph are detected before the code is generated rather than generating incorrect code
-  and leaving it to javac to detect problems and for the user to work back from the javac error message to the
-  problem in the code. This is particularly problematic with code visibility.
-* Generates errors or (suppressable) warnings when problematic or confusing code constructs are present in the compiled code. i.e. `@Injectable` types should either not specify any constructor or should use package access constructors, annotations from other injection frameworks should not be intermingled with sting code etc.
-* Dagger has a lot more complexity to support features not useful in a web context such as producers, android integration etc.

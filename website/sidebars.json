@@ -6,6 +6,7 @@
       "getting_started"
     ],
     "Technical": [
+      "dagger",
       "framework_integration",
       "performance"
     ],
