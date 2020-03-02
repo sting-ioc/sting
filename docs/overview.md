@@ -23,3 +23,13 @@ component). Sting can also pass in components when creating the injector.
 Sting generates the code injector with no reference to sting-specific implementation classes other than
 the Sting annotations. The code generated is intended to be easy and very similar to the code a human
 would write by hand if given this task.
+
+Sting is an opinionated framework but the opinions are designed to make efficient code generation
+possible and/or to guide users away from practices that can lead to problems. Some of these "opinions"
+are effectively "code style" issues and can be suppressed but others are intrinsic to the way Sting
+is built.
+
+Sting attempts to give user-friendly error messages when things go wrong and helpful guides to get
+get started. A primary goal of Sting is to be easy to use, and this includes clear and concise documentation.
+If something is unclear please [report it as a bug](https://github.com/sting-ioc/sting/issues) because it *is*
+a bug. If a new user has a hard time, then we need to fix the problem.

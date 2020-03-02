@@ -3,6 +3,7 @@
 ### Unreleased
 
 * If an output method on a `@Injector` annotated type returns a collection then it will now return the same collection if invoked multiple times.
+* Improve the overview documentation.
 
 ### [v0.05](https://github.com/sting-ioc/sting/tree/v0.05) (2020-02-27) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.04...v0.05) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.04&new=0.05)
 
