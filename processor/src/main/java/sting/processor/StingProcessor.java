@@ -573,6 +573,7 @@ public final class StingProcessor
                               @Nonnull final TypeElement originator,
                               @Nonnull final Collection<IncludeDescriptor> includes )
   {
+    boolean resolved = true;
     // By the time we get here we can guarantee that the java types are correctly resolved
     // so we only have to check that the descriptors are present and valid in this method
     // Except for providers. Providers may be loaded a lot later
@@ -645,8 +646,8 @@ public final class StingProcessor
           MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME );
         throw new ProcessorException( message, originator, annotation );
       }
-      if ( null == _registry.findFragmentByClassName( classname ) &&
-           null == _registry.findInjectableByClassName( classname ) )
+      FragmentDescriptor fragment = _registry.findFragmentByClassName( classname );
+      if ( null == fragment && null == _registry.findInjectableByClassName( classname ) )
       {
         final byte[] data = tryLoadDescriptorData( element );
         if ( null == data )
@@ -658,7 +659,8 @@ public final class StingProcessor
           final Object loadedDescriptor = loadDescriptor( classname, data );
           if ( loadedDescriptor instanceof FragmentDescriptor )
           {
-            _registry.registerFragment( (FragmentDescriptor) loadedDescriptor );
+            fragment = (FragmentDescriptor) loadedDescriptor;
+            _registry.registerFragment( fragment );
           }
           else
           {
@@ -673,8 +675,12 @@ public final class StingProcessor
                                         originator );
         }
       }
+      if ( null != fragment && !isFragmentReady( env, fragment ) )
+      {
+        resolved = false;
+      }
     }
-    return true;
+    return resolved;
   }
 
   private void processInjector( @Nonnull final TypeElement element )

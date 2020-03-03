@@ -2,6 +2,7 @@ package sting.processor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.testing.compile.Compilation;
+import com.google.testing.compile.Compiler;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -13,6 +14,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.Processor;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import org.testng.annotations.DataProvider;
@@ -809,6 +811,42 @@ public final class StingProcessorTest
       .filter( d -> d.contains( "Failed to read the Sting descriptor for include: com.example.injector.MyFragment." ) )
       .findAny()
       .orElseThrow( AssertionError::new );
+  }
+
+  @Test
+  public void fragmentCreatedInLaterRound()
+    throws Exception
+  {
+    // This verifies that a fragment created by another annotation processor will be
+    // incorporated into the at the component graph without causing failures
+    final Processor synthesizingProcessor =
+      newSynthesizingProcessor( "com.example.multiround.MyGeneratedFragment", 0 );
+    final Compilation compilation =
+      Compiler.javac()
+        .withProcessors( Arrays.asList( synthesizingProcessor, processor() ) )
+        .withOptions( getOptions() )
+        .compile( inputs( "com.example.multiround.MyInjector",
+                          "com.example.multiround.MyFragment",
+                          "com.example.multiround.MyFramework",
+                          "com.example.multiround.SomeType" ) );
+
+    assertCompilationSuccessful( compilation );
+    final ImmutableList<JavaFileObject> generatedFiles = compilation.generatedFiles();
+
+    assertClassFile( generatedFiles, "com.example.multiround.MyInjector" );
+    assertJavaFile( generatedFiles, "com.example.multiround.Sting_MyInjector" );
+    assertClassFile( generatedFiles, "com.example.multiround.Sting_MyInjector" );
+    assertClassFile( generatedFiles, "com.example.multiround.MyFragment" );
+    assertDescriptorFile( generatedFiles, "com.example.multiround.MyFragment" );
+    assertJavaFile( generatedFiles, "com.example.multiround.Sting_MyFragment" );
+    assertClassFile( generatedFiles, "com.example.multiround.Sting_MyFragment" );
+    assertClassFile( generatedFiles, "com.example.multiround.MyFramework" );
+    assertClassFile( generatedFiles, "com.example.multiround.SomeType" );
+    assertJavaFile( generatedFiles, "com.example.multiround.MyGeneratedFragment" );
+    assertClassFile( generatedFiles, "com.example.multiround.MyGeneratedFragment" );
+    assertDescriptorFile( generatedFiles, "com.example.multiround.MyGeneratedFragment" );
+    assertJavaFile( generatedFiles, "com.example.multiround.Sting_MyGeneratedFragment" );
+    assertClassFile( generatedFiles, "com.example.multiround.Sting_MyGeneratedFragment" );
   }
 
   @Nonnull

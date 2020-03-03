@@ -7,6 +7,7 @@
 * Add some basic documentation comparing the features of Sting relative to Dagger.
 * Cache whether a fragment has been resolved across processor rounds. This avoids recalculating the "resolved" state of a fragment when it has already calculated as resolved within the current round or in a prior round.
 * Upgrade the `org.realityforge.proton` artifacts to version `0.41`.
+* Fix a bug where a fragment has not been "resolved" and thus processed before the annotation processor attempts to generate the injector that uses the fragment. This scenario can occur when another annotation processor is responsible for creating the fragment and the other annotation processor creates the fragment in a later round.
 
 ### [v0.05](https://github.com/sting-ioc/sting/tree/v0.05) (2020-02-27) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.04...v0.05) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.04&new=0.05)
 
