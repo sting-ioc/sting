@@ -9,12 +9,10 @@ Sting applications were migrated from Dagger so a comparison with Dagger would h
 moved from one toolkit to the other.
 
 Dagger began as an injection framework for Android applications and expanded into other domains while Sting
-is primarily focused on web applications and relatively small command line applications.
+is primarily focused on web applications and relatively small command line applications. Dagger is much more
+feature rich while Sting has a more narrow focus.
 
-### Dagger is feature rich, Sting is more focused
-
-Dagger has many more features which increases it's complexity but also increases the capabilities in
-specific contexts. Some of the additional features present in Dagger and missing from Sting include:
+Some of the additional features present in Dagger and missing from Sting include:
 
 * [Producers](https://dagger.dev/producers) or asynchronous dependency injection capabilities. Asynchronously
   produced types can exist within a normal application and there is limited control over scheduling construction
