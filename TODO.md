@@ -27,12 +27,3 @@ complete as there is too much un-said.
 
 * We may need to add a separate phase at the end of compilation that detects when singular injection requests
   result in multiple candidate bindings. Note that some of these bindings can be added during resolution process.
-
-## Other TODO
-
-* Add the mechanisms for overriding bindings already added to object graph. Perhaps by adding an
-  `override=ENABLE|DISABLE|AUTODETECT` parameter which indicates whether the binding can override
-  existing bindings. Order in `includes` matters in this scenario. This will default to `AUTODETECT`
-  which will evaluate to `DISABLE` all scenarios except when the binding is from a descriptor declared
-  as nested class of the injector. Overrides can either be by id or published types. Once completed this
-  should be added as a pro for Sting when comparing with dagger.
