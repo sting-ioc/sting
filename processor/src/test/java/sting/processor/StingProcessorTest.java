@@ -779,7 +779,7 @@ public final class StingProcessorTest
   }
 
   @Test
-  public void unresolvedDueToBadDiscriptorInjectorModel()
+  public void unresolvedDueToBadDescriptorInjectorModel()
     throws Exception
   {
     final Path targetDir = compileBindings();
