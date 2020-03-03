@@ -8,7 +8,6 @@ complete as there is too much un-said.
 
 * Add some basic documentation
   * Usage documentation maybe take inspiration from https://dagger.dev/users-guide.
-  * Recipe style examples for how to solve specific problems.
   * Maybe terminology should be (more) inspired by OSGI service ala https://www.osgi.org/developer/architecture/
     * Figure out terminology. Currently it is a mixed bag derived from various injector frameworks that it has
       been inspired from. Terms that are misused and should be cleaned up. This would involved cleaning up lots
