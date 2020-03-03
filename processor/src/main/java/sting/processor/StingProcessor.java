@@ -240,7 +240,7 @@ public final class StingProcessor
     for ( final FragmentDescriptor fragment : new ArrayList<>( _registry.getFragments() ) )
     {
       performAction( env, e -> {
-        if ( !fragment.isJavaStubGenerated() && !fragment.containsError() && isFragmentResolved( env, fragment ) )
+        if ( !fragment.isJavaStubGenerated() && isFragmentReady( env, fragment ) )
         {
           fragment.markJavaStubAsGenerated();
           writeBinaryDescriptor( fragment.getElement(), fragment );
@@ -249,6 +249,12 @@ public final class StingProcessor
         }
       }, fragment.getElement() );
     }
+  }
+
+  private boolean isFragmentReady( @Nonnull final RoundEnvironment env,
+                                   @Nonnull final FragmentDescriptor fragment )
+  {
+    return !fragment.containsError() && isFragmentResolved( env, fragment );
   }
 
   private void emitFragmentStub( @Nonnull final FragmentDescriptor fragment )
