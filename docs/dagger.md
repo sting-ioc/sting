@@ -66,3 +66,58 @@ It is possible that Sting will gain the functionality of subcomponents and scope
 improve on the Dagger model by adding features such as
 [disposable injectors](https://github.com/sting-ioc/sting/issues/4) but there is no concrete plans to implement
 this at this time.
+
+Sting does have some significant advantages over Dagger from a usability and performance perspective. Some
+strengths of Sting relative to Dagger include:
+
+* Sting optimizes for fast incremental build times. It is not unsurprising to see a 2x-3x build speed improvement
+  when using Sting rather than Dagger. See the [performance](performance.md) report for further details.
+
+* Small code size. Sting can generated injectors that are 50% to 70% the size of the equivalent dagger injector.
+
+* Fast initialization time. Sting is often faster to initialize and that speedup is typically proportional
+  to the code size improvement.
+
+* Sting generates code that has zero runtime dependencies other than the JRE. Dagger has a runtime dependency
+  on the `javax.inject` package as well as several dagger packages depending on which features of the framework
+  are used.
+
+* The sting annotation processor is small, self-contained and vendors it's dependencies. This makes it easy to add
+  a single dependency to the processor path that can not interfere with other annotation processors. As of version
+  `2.25.2`, the Dagger annotation processor requires ~14 artifacts to be added to the processor path including several
+  used by other annotation processors such as `com.google.auto:auto-common`, `com.google.guava:guava` and
+  `com.squareup:javapoet` which are commonly used in other annotation processors and occasionally cause conflicts
+  when different annotation processors are using different versions of these libraries.
+
+* Sting components can be annotated with the {@api_url: @Eager::Eager} annotation will result in the component being
+  constructed when the injector is constructed. Lazy components are those without this annotation and will be
+  constructed the first time they are accessed. This is particularly useful in a web context when components will
+  often register event listeners when they are constructed.
+
+* Sting supports the {@api_url: @Typed::Typed} annotation to control the types published by a component. The same
+  capability is present within dagger but it that the bindings are declared using a `@dagger.Module` annotated
+  type which is significantly more verbose.
+
+* Stings supports publishing and consuming package-access components, even when the package-access component is in
+  a different package from the injector.
+
+* Sting suppresses any warnings in the generated code to ensure that if the code is compiled with javac linting
+  enabled then no warnings will be generated. This is verified by enabling linting in tests and failing tests
+  when linting errors are detected.
+
+* Sting generates errors or (suppressable) warnings when problematic or confusing code constructs are present in
+  the compiled code. i.e. {@api_url: @Injectable::Injectable} should either not specify a constructor or should
+  use package access constructors, annotations from other injection frameworks should not be intermingled with
+  sting code etc.
+
+* Sting works hard to detect and report problems with the component graph before code generation occurs rather
+  than generating incorrect code and leaving it to javac to detect problems ... and for the user to work back
+  from the javac error message to the problem in the code.
+
+* Sting makes it easy to omit optional dependencies from the component graph and will just pass nulls or omit
+  the component from collections.
+
+* Sting has specific constructs designed to make [integration](framework_integration.md) into other frameworks easy.
+
+The goal of Sting is to have a great developer experience and a great end-user experience. It is particularly
+oriented towards challenges usually faced when developing modern web applications.
