@@ -33,6 +33,10 @@ final class FragmentDescriptor
    * True if the fragment has a fatal error and should not be reprocessed.
    */
   private boolean _containsError;
+  /**
+   * True if the fragment has a fatal error and should not be reprocessed.
+   */
+  private boolean _resolved;
 
   FragmentDescriptor( @Nonnull final TypeElement element,
                       @Nonnull final Collection<IncludeDescriptor> includes,
@@ -87,6 +91,16 @@ final class FragmentDescriptor
   void markAsContainsError()
   {
     _containsError = true;
+  }
+
+  boolean isResolved()
+  {
+    return _resolved;
+  }
+
+  void markAsResolved()
+  {
+    _resolved = true;
   }
 
   void write( @Nonnull final JsonGenerator g )

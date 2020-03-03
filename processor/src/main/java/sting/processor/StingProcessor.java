@@ -548,7 +548,19 @@ public final class StingProcessor
 
   private boolean isFragmentResolved( @Nonnull final RoundEnvironment env, @Nonnull final FragmentDescriptor fragment )
   {
-    return isResolved( env, fragment, fragment.getElement(), fragment.getIncludes() );
+    if ( fragment.isResolved() )
+    {
+      return true;
+    }
+    else if ( isResolved( env, fragment, fragment.getElement(), fragment.getIncludes() ) )
+    {
+      fragment.markAsResolved();
+      return true;
+    }
+    else
+    {
+      return false;
+    }
   }
 
   private boolean isInjectorResolved( @Nonnull final RoundEnvironment env, @Nonnull final InjectorDescriptor injector )

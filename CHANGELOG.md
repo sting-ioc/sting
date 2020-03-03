@@ -5,6 +5,7 @@
 * If an output method on a `@Injector` annotated type returns a collection then it will now return the same collection if invoked multiple times.
 * Improve the overview documentation.
 * Add some basic documentation comparing the features of Sting relative to Dagger.
+* Cache whether a fragment has been resolved across processor rounds. This avoids recalculating the "resolved" state of a fragment when it has already calculated as resolved within the current round or in a prior round.
 
 ### [v0.05](https://github.com/sting-ioc/sting/tree/v0.05) (2020-02-27) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.04...v0.05) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.04&new=0.05)
 
