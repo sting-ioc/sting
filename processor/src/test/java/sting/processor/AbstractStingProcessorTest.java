@@ -68,4 +68,26 @@ public abstract class AbstractStingProcessorTest
   {
     assertEquals( output.stream().filter( f -> JavaFileObject.Kind.CLASS == f.getKind() ).count(), count );
   }
+
+  final void assertJavaFile( @Nonnull final ImmutableList<JavaFileObject> outputs, @Nonnull final String classname )
+  {
+    final String filename = "/" + classname.replace( ".", "/" ) + ".java";
+    assertTrue( outputs.stream().anyMatch( f -> JavaFileObject.Kind.SOURCE == f.getKind() &&
+                                                f.getName().endsWith( filename ) ) );
+  }
+
+  final void assertClassFile( @Nonnull final ImmutableList<JavaFileObject> outputs, @Nonnull final String classname )
+  {
+    final String filename = "/" + classname.replace( ".", "/" ) + ".class";
+    assertTrue( outputs.stream().anyMatch( f -> JavaFileObject.Kind.CLASS == f.getKind() &&
+                                                f.getName().endsWith( filename ) ) );
+  }
+
+  final void assertDescriptorFile( @Nonnull final ImmutableList<JavaFileObject> outputs,
+                                   @Nonnull final String classname )
+  {
+    final String filename = "/" + classname.replace( ".", "/" ) + ".sbf";
+    assertTrue( outputs.stream().anyMatch( f -> JavaFileObject.Kind.OTHER == f.getKind() &&
+                                                f.getName().endsWith( filename ) ) );
+  }
 }
