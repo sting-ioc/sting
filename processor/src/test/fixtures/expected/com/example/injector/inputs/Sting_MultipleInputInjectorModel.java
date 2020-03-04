@@ -18,8 +18,8 @@ final class Sting_MultipleInputInjectorModel implements MultipleInputInjectorMod
   private final String node3;
 
   Sting_MultipleInputInjectorModel(@Nonnull final Runnable input1, @Nonnull final String input2) {
-    this.node1 = Objects.requireNonNull( input1 );
-    this.node3 = Objects.requireNonNull( input2 );
+    node1 = Objects.requireNonNull( input1 );
+    node3 = Objects.requireNonNull( input2 );
   }
 
   @Nonnull

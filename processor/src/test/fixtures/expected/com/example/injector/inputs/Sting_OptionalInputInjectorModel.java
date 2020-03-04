@@ -9,7 +9,7 @@ final class Sting_OptionalInputInjectorModel implements OptionalInputInjectorMod
   private final Runnable node1;
 
   Sting_OptionalInputInjectorModel(@Nullable final Runnable input1) {
-    this.node1 = input1;
+    node1 = input1;
   }
 
   @Override

@@ -136,11 +136,11 @@ final class InjectorGenerator
           final ServiceSpec serviceSpec = binding.getPublishedServices().get( 0 );
           if ( serviceSpec.isOptional() || serviceSpec.getCoordinate().getType().getKind().isPrimitive() )
           {
-            ctor.addStatement( "this.$N = $N", node.getName(), input.getName() );
+            ctor.addStatement( "$N = $N", node.getName(), input.getName() );
           }
           else
           {
-            ctor.addStatement( "this.$N = $T.requireNonNull( $N )", node.getName(), Objects.class, input.getName() );
+            ctor.addStatement( "$N = $T.requireNonNull( $N )", node.getName(), Objects.class, input.getName() );
           }
         }
         else

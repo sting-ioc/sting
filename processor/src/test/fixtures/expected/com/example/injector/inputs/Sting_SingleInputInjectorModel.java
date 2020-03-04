@@ -10,7 +10,7 @@ final class Sting_SingleInputInjectorModel implements SingleInputInjectorModel {
   private final Runnable node1;
 
   Sting_SingleInputInjectorModel(@Nonnull final Runnable input1) {
-    this.node1 = Objects.requireNonNull( input1 );
+    node1 = Objects.requireNonNull( input1 );
   }
 
   @Override
