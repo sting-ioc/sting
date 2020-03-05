@@ -1,0 +1,7 @@
+digraph "DisableGwtInjectorModel" {
+  overlap = false
+  splines = true
+  injector [label="DisableGwtInjectorModel",color=green];
+  node1 [label="MyModel0"];
+  injector -> node1 [];
+}

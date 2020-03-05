@@ -1,0 +1,9 @@
+digraph "ExplicitIncludesOfNestedModel" {
+  overlap = false
+  splines = true
+  injector [label="ExplicitIncludesOfNestedModel",color=green];
+  node2 [label="Runnable"];
+  node1 [label="MyModel"];
+  injector -> node2 [];
+  injector -> node1 [];
+}

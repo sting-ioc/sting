@@ -1,0 +1,9 @@
+digraph "MultipleOutputModel" {
+  overlap = false
+  splines = true
+  injector [label="MultipleOutputModel",color=green];
+  node1 [label="MyModel2"];
+  node2 [label="MyModel1"];
+  injector -> node2 [];
+  injector -> node1 [arrowhead=odot];
+}

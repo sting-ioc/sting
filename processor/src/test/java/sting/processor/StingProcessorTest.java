@@ -145,6 +145,7 @@ public final class StingProcessorTest
     return 0 != lastModified &&
            JavaFileObject.Kind.SOURCE == target.getKind() ||
            target.getName().endsWith( simpleClassName + StingProcessor.JSON_SUFFIX ) ||
+           target.getName().endsWith( simpleClassName + StingProcessor.DOT_SUFFIX ) ||
            target.getName().endsWith( simpleClassName + StingProcessor.GRAPH_SUFFIX );
   }
 
@@ -249,6 +250,23 @@ public final class StingProcessorTest
                                             javaOutput( pkg + ".MyFragment3" ),
                                             jsonOutput( pkg + ".MyModel" ),
                                             javaOutput( pkg + ".MyModel" ) ) );
+  }
+
+  @Test
+  public void graphvizNameCollision()
+    throws Exception
+  {
+    final String pkg = "com.example.injector.graphviz";
+    assertSuccessfulCompile( inputs( pkg + ".NameCollisionInjectorModel",
+                                     pkg + ".pkg1.MyModel",
+                                     pkg + ".pkg2.MyModel" ),
+                             Arrays.asList( jsonOutput( pkg + ".NameCollisionInjectorModel" ),
+                                            javaOutput( pkg + ".NameCollisionInjectorModel" ),
+                                            graphvizOutput( pkg + ".NameCollisionInjectorModel" ),
+                                            jsonOutput( pkg + ".pkg1.MyModel" ),
+                                            javaOutput( pkg + ".pkg1.MyModel" ),
+                                            jsonOutput( pkg + ".pkg2.MyModel" ),
+                                            javaOutput( pkg + ".pkg2.MyModel" ) ) );
   }
 
   @Test
@@ -887,6 +905,7 @@ public final class StingProcessorTest
   {
     final List<String> options = new ArrayList<>( super.getOptions() );
     options.add( "-Asting.emit_json_descriptors=true" );
+    options.add( "-Asting.emit_dot_reports=true" );
     return options;
   }
 

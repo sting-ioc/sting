@@ -1,0 +1,11 @@
+digraph "MultipleInputInjectorModel" {
+  overlap = false
+  splines = true
+  injector [label="MultipleInputInjectorModel",color=green];
+  node3 [label="String/hostname",color=blue];
+  node1 [label="Runnable",color=blue];
+  node2 [label="MyModel"];
+  injector -> node2 [];
+  injector -> node3 [];
+  node2 -> node1 [];
+}

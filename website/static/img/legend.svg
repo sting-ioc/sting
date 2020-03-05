@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="510pt" height="218pt" viewBox="0.00 0.00 510.00 218.00" xmlns="http://www.w3.org/2000/svg">
+  <g transform="scale(1 1) rotate(0) translate(4 214)">
+    <polygon fill="white" stroke="transparent" points="-4,4 -4,-214 506,-214 506,4 -4,4"/>
+    <g>
+      <polygon fill="none" stroke="black" points="8,-8 8,-202 494,-202 494,-8 8,-8"/>
+    </g>
+    <g>
+      <text x="41.08" y="-168.8" font-family="Times,serif" font-size="14.00">Required Instance Dependency</text>
+      <text x="43.4" y="-134.8" font-family="Times,serif" font-size="14.00">Optional Instance Dependency</text>
+      <text x="95.09" y="-100.8" font-family="Times,serif" font-size="14.00">Supplier Dependency</text>
+      <text x="84.21" y="-66.8" font-family="Times,serif" font-size="14.00">Collection Dependency</text>
+      <text x="33.63" y="-32.8" font-family="Times,serif" font-size="14.00">Supplier Collection Dependency</text>
+    </g>
+    <g transform="translate(0 8)">
+      <path fill="none" stroke="black" d="M234,-45.67C234,-45.67 468,-45.67 468,-45.67"/>
+      <ellipse fill="none" stroke="black" cx="474" cy="-45.67" rx="4" ry="4"/>
+      <polygon fill="black" stroke="black" points="236,-45.67 226,-41.17 231,-45.67 226,-45.67 226,-45.67 226,-45.67 231,-45.67 226,-50.17 236,-45.67 236,-45.67"/>
+    </g>
+    <g transform="translate(0 4)">
+      <path fill="none" stroke="black" d="M236,-75.33C236,-75.33 468,-75.33 468,-75.33"/>
+      <polygon fill="black" stroke="black" points="468,-78.83 478,-75.33 468,-71.83 468,-78.83"/>
+      <polygon fill="black" stroke="black" points="236,-75.33 226,-70.83 231,-75.33 226,-75.33 226,-75.33 226,-75.33 231,-75.33 226,-79.83 236,-75.33 236,-75.33"/>
+    </g>
+    <g>
+      <path fill="none" stroke="black" d="M226,-105C226,-105 470,-105 470,-105"/>
+      <ellipse fill="none" stroke="black" cx="474" cy="-105" rx="4" ry="4"/>
+    </g>
+    <g transform="translate(0 -4)">
+      <path fill="none" stroke="black" stroke-dasharray="1,5" d="M226,-134.67C226,-134.67 468,-134.67 468,-134.67"/>
+      <polygon fill="black" stroke="black" points="468,-138.17 478,-134.67 468,-131.17 468,-138.17"/>
+    </g>
+    <g transform="translate(0 -8)">
+      <path fill="none" stroke="black" d="M226,-164.33C226,-164.33 468,-164.33 468,-164.33"/>
+      <polygon fill="black" stroke="black" points="468,-167.83 478,-164.33 468,-160.83 468,-167.83"/>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,7 @@
+digraph "SingleInputInjectorModel" {
+  overlap = false
+  splines = true
+  injector [label="SingleInputInjectorModel",color=green];
+  node1 [label="Runnable",color=blue];
+  injector -> node1 [];
+}

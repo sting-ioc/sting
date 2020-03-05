@@ -1,0 +1,11 @@
+digraph "CollectionContainingMultipleInstancesOutputModel" {
+  overlap = false
+  splines = true
+  injector [label="CollectionContainingMultipleInstancesOutputModel",color=green];
+  node3 [label="MyModel"];
+  node1 [label="MyModel"];
+  node2 [label="MyModel"];
+  injector -> node3 [dir=both, arrowtail=normal, arrowhead=crow];
+  injector -> node2 [dir=both, arrowtail=normal, arrowhead=crow];
+  injector -> node1 [dir=both, arrowtail=normal, arrowhead=crow];
+}

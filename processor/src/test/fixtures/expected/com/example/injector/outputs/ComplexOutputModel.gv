@@ -1,0 +1,11 @@
+digraph "ComplexOutputModel" {
+  overlap = false
+  splines = true
+  injector [label="ComplexOutputModel",color=green];
+  node2 [label="MyModel2"];
+  node1 [label="MyModel3/foo"];
+  node3 [label="MyModel1"];
+  injector -> node3 [];
+  injector -> node2 [arrowhead=odot];
+  injector -> node1 [arrowhead=odot];
+}

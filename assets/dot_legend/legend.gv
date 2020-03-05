@@ -1,0 +1,27 @@
+digraph {
+  rankdir=LR
+  overlap = false;
+  node [shape=plaintext]
+  graph [splines=ortho]
+  subgraph cluster_01 {
+    key [label=<<table border="0" cellpadding="10" cellspacing="0" cellborder="0">
+      <tr><td height="32" align="right" port="i1">Required Instance Dependency</td></tr>
+      <tr><td height="32" align="right" port="i2">Optional Instance Dependency</td></tr>
+      <tr><td height="32" align="right" port="i3">Supplier Dependency</td></tr>
+      <tr><td height="32" align="right" port="i4">Collection Dependency</td></tr>
+      <tr><td height="32" align="right" port="i5">Supplier Collection Dependency</td></tr>
+      </table>>]
+    key2 [label=<<table border="0" cellpadding="10" cellspacing="0" cellborder="0">
+      <tr><td height="32" width="200" port="i1">&nbsp;</td></tr>
+      <tr><td height="32" width="200" port="i2">&nbsp;</td></tr>
+      <tr><td height="32" width="200" port="i3">&nbsp;</td></tr>
+      <tr><td height="32" width="200" port="i4">&nbsp;</td></tr>
+      <tr><td height="32" width="200" port="i5">&nbsp;</td></tr>
+      </table>>]
+    key:i5:e -> key2:i5:e [dir=both, arrowtail=odot, arrowhead=crow]
+    key:i4:e -> key2:i4:e [dir=both, arrowtail=normal, arrowhead=crow]
+    key:i3:e -> key2:i3:e [arrowhead=odot]
+    key:i2:e -> key2:i2:e [style=dotted]
+    key:i1:e -> key2:i1:e []
+  }
+}

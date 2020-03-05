@@ -1,0 +1,5 @@
+digraph "EmptyCollectionOutputModel" {
+  overlap = false
+  splines = true
+  injector [label="EmptyCollectionOutputModel",color=green];
+}

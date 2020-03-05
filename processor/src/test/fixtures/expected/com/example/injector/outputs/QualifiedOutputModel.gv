@@ -1,0 +1,7 @@
+digraph "QualifiedOutputModel" {
+  overlap = false
+  splines = true
+  injector [label="QualifiedOutputModel",color=green];
+  node1 [label="MyModel/Foo"];
+  injector -> node1 [];
+}

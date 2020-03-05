@@ -1,0 +1,7 @@
+digraph "OptionalProvidesOutputModel" {
+  overlap = false
+  splines = true
+  injector [label="OptionalProvidesOutputModel",color=green];
+  node1 [label="MyModel"];
+  injector -> node1 [style=dotted];
+}

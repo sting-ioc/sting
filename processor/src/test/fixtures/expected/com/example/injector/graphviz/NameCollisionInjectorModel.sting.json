@@ -1,0 +1,11 @@
+{
+  "schema": "injector/1",
+  "outputs": [
+    {
+      "type": "com.example.injector.graphviz.pkg1.MyModel"
+    },
+    {
+      "type": "com.example.injector.graphviz.pkg2.MyModel"
+    }
+  ]
+}

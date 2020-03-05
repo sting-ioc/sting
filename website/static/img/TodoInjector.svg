@@ -1,0 +1,154 @@
+<svg id="TodoInjector" width="100%" viewBox="0.00 0.00 1418.49 791.25" xmlns="http://www.w3.org/2000/svg">
+  <g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 787.25)">
+    <title>TodoInjector</title>
+    <polygon fill="white" stroke="transparent" points="-4,4 -4,-787.25 1414.49,-787.25 1414.49,4 -4,4"/>
+    <g id="node1" class="node">
+      <title>injector</title>
+      <ellipse fill="none" stroke="green" cx="957.65" cy="-346" rx="55.81" ry="18"/>
+      <text text-anchor="middle" x="957.65" y="-341.8" font-family="Times,serif" font-size="14.00">TodoInjector</text>
+    </g>
+    <!-- node6 -->
+    <g id="node2" class="node">
+      <title>node6</title>
+      <ellipse fill="none" stroke="blue" cx="647.84" cy="-737.79" rx="71.25" ry="18"/>
+      <text text-anchor="middle" x="647.84" y="-733.59" font-family="Times,serif" font-size="14.00">TodoItemFactory
+      </text>
+    </g>
+    <!-- node3 -->
+    <g id="node4" class="node">
+      <title>node3</title>
+      <ellipse fill="none" stroke="blue" cx="418.88" cy="-562.46" rx="55.01" ry="18"/>
+      <text text-anchor="middle" x="418.88" y="-558.26" font-family="Times,serif" font-size="14.00">ViewService</text>
+    </g>
+    <!-- node6&#45;&gt;node3 -->
+    <g id="edge3" class="edge">
+      <title>node6&#45;&gt;node3</title>
+      <path fill="none" stroke="black" d="M625.47,-720.66C584.05,-688.95 495.41,-621.07 448.85,-585.41"/>
+      <polygon fill="black" stroke="black" points="450.74,-582.45 440.67,-579.15 446.48,-588.01 450.74,-582.45"/>
+    </g>
+    <!-- node1 -->
+    <g id="node6" class="node">
+      <title>node1</title>
+      <ellipse fill="none" stroke="blue" cx="735.98" cy="-412.24" rx="66.94" ry="18"/>
+      <text text-anchor="middle" x="735.98" y="-408.04" font-family="Times,serif" font-size="14.00">TodoRepository
+      </text>
+    </g>
+    <!-- node6&#45;&gt;node1 -->
+    <g id="edge1" class="edge">
+      <title>node6&#45;&gt;node1</title>
+      <path fill="none" stroke="black" d="M652.71,-719.83C667.27,-666.04 710.61,-505.97 728.31,-440.56"/>
+      <polygon fill="black" stroke="black" points="731.79,-441.12 731.02,-430.56 725.03,-439.29 731.79,-441.12"/>
+    </g>
+    <!-- node4 -->
+    <g id="node9" class="node">
+      <title>node4</title>
+      <ellipse fill="none" stroke="blue" cx="974.76" cy="-516.21" rx="54.85" ry="18"/>
+      <text text-anchor="middle" x="974.76" y="-512.01" font-family="Times,serif" font-size="14.00">TodoService</text>
+    </g>
+    <!-- node6&#45;&gt;node4 -->
+    <g id="edge2" class="edge">
+      <title>node6&#45;&gt;node4</title>
+      <path fill="none" stroke="black" d="M672.95,-720.77C731.48,-681.11 876.92,-582.53 942.17,-538.3"/>
+      <polygon fill="black" stroke="black" points="944.15,-541.19 950.46,-532.68 940.22,-535.39 944.15,-541.19"/>
+    </g>
+    <!-- node7 -->
+    <g id="node3" class="node">
+      <title>node7</title>
+      <ellipse fill="none" stroke="blue" cx="1335.67" cy="-581.49" rx="74.64" ry="18"/>
+      <text text-anchor="middle" x="1335.67" y="-577.29" font-family="Times,serif" font-size="14.00">TodoEntryFactory
+      </text>
+    </g>
+    <!-- node7&#45;&gt;node4 -->
+    <g id="edge4" class="edge">
+      <title>node7&#45;&gt;node4</title>
+      <path fill="none" stroke="black" d="M1275.67,-570.63C1208.18,-558.43 1099.32,-538.74 1032.69,-526.68"/>
+      <polygon fill="black" stroke="black" points="1033.24,-523.23 1022.77,-524.89 1031.99,-530.12 1033.24,-523.23"/>
+    </g>
+    <!-- node2 -->
+    <g id="node5" class="node">
+      <title>node2</title>
+      <ellipse fill="none" stroke="blue" cx="71.5" cy="-655.98" rx="71.5" ry="18"/>
+      <text text-anchor="middle" x="71.5" y="-651.78" font-family="Times,serif" font-size="14.00">BrowserLocation</text>
+    </g>
+    <!-- node3&#45;&gt;node2 -->
+    <g id="edge6" class="edge">
+      <title>node3&#45;&gt;node2</title>
+      <path fill="none" stroke="black" d="M376.28,-573.93C314.64,-590.53 200.32,-621.3 130.56,-640.08"/>
+      <polygon fill="black" stroke="black" points="129.35,-636.78 120.6,-642.76 131.17,-643.54 129.35,-636.78"/>
+    </g>
+    <!-- node3&#45;&gt;node1 -->
+    <g id="edge5" class="edge">
+      <title>node3&#45;&gt;node1</title>
+      <path fill="none" stroke="black" d="M450.44,-547.51C507.78,-520.35 629.05,-462.9 693.55,-432.34"/>
+      <polygon fill="black" stroke="black" points="695.11,-435.48 702.64,-428.04 692.11,-429.15 695.11,-435.48"/>
+    </g>
+    <!-- node5 -->
+    <g id="node7" class="node">
+      <title>node5</title>
+      <ellipse fill="none" stroke="blue" cx="796.16" cy="-765.25" rx="68.86" ry="18"/>
+      <text text-anchor="middle" x="796.16" y="-761.05" font-family="Times,serif" font-size="14.00">TodoListFactory
+      </text>
+    </g>
+    <!-- node5&#45;&gt;node3 -->
+    <g id="edge9" class="edge">
+      <title>node5&#45;&gt;node3</title>
+      <path fill="none" stroke="black" d="M765.92,-749C697.68,-712.32 531.8,-623.16 456.81,-582.85"/>
+      <polygon fill="black" stroke="black" points="458.17,-579.61 447.7,-577.95 454.85,-585.77 458.17,-579.61"/>
+    </g>
+    <!-- node5&#45;&gt;node1 -->
+    <g id="edge7" class="edge">
+      <title>node5&#45;&gt;node1</title>
+      <path fill="none" stroke="black" d="M793.09,-747.26C783.3,-689.8 752.71,-510.35 740.8,-440.48"/>
+      <polygon fill="black" stroke="black" points="744.24,-439.89 739.11,-430.62 737.34,-441.07 744.24,-439.89"/>
+    </g>
+    <!-- node5&#45;&gt;node4 -->
+    <g id="edge8" class="edge">
+      <title>node5&#45;&gt;node4</title>
+      <path fill="none" stroke="black" d="M809.01,-747.34C840.16,-703.91 919.83,-592.81 956.18,-542.12"/>
+      <polygon fill="black" stroke="black" points="959.05,-544.12 962.04,-533.96 953.36,-540.04 959.05,-544.12"/>
+    </g>
+    <!-- node9 -->
+    <g id="node8" class="node">
+      <title>node9</title>
+      <ellipse fill="none" stroke="blue" cx="574.47" cy="-251.26" rx="60.42" ry="18"/>
+      <text text-anchor="middle" x="574.47" y="-247.06" font-family="Times,serif" font-size="14.00">FooterFactory</text>
+    </g>
+    <!-- node9&#45;&gt;node3 -->
+    <g id="edge12" class="edge">
+      <title>node9&#45;&gt;node3</title>
+      <path fill="none" stroke="black" d="M565.43,-269.34C539.33,-321.55 463.71,-472.8 432.55,-535.13"/>
+      <polygon fill="black" stroke="black" points="429.28,-533.83 427.94,-544.34 435.54,-536.96 429.28,-533.83"/>
+    </g>
+    <!-- node9&#45;&gt;node1 -->
+    <g id="edge10" class="edge">
+      <title>node9&#45;&gt;node1</title>
+      <path fill="none" stroke="black" d="M592.06,-268.8C620.82,-297.46 678.01,-354.46 710.98,-387.32"/>
+      <polygon fill="black" stroke="black" points="708.86,-390.15 718.41,-394.73 713.8,-385.19 708.86,-390.15"/>
+    </g>
+    <!-- node9&#45;&gt;node4 -->
+    <g id="edge11" class="edge">
+      <title>node9&#45;&gt;node4</title>
+      <path fill="none" stroke="black" d="M599.51,-267.84C668.89,-313.76 863.64,-442.66 941.75,-494.35"/>
+      <polygon fill="black" stroke="black" points="939.97,-497.38 950.24,-499.98 943.84,-491.54 939.97,-497.38"/>
+    </g>
+    <!-- node4&#45;&gt;node1 -->
+    <g id="edge13" class="edge">
+      <title>node4&#45;&gt;node1</title>
+      <path fill="none" stroke="black" d="M941.56,-501.75C899.6,-483.48 827.23,-451.97 780.5,-431.63"/>
+      <polygon fill="black" stroke="black" points="781.8,-428.37 771.23,-427.59 779,-434.79 781.8,-428.37"/>
+    </g>
+    <!-- node8 -->
+    <g id="node10" class="node">
+      <title>node8</title>
+      <ellipse fill="none" stroke="blue" cx="854.15" cy="-18" rx="99.76" ry="18"/>
+      <text text-anchor="middle" x="854.15" y="-13.8" font-family="Times,serif" font-size="14.00">
+        FooterTodoCountFactory
+      </text>
+    </g>
+    <g id="edge14" class="edge">
+      <title>node8&#45;&gt;node1</title>
+      <path fill="none" stroke="black" d="M848.69,-36.22C829.79,-99.29 767.08,-308.5 744.32,-384.41"/>
+      <polygon fill="black" stroke="black" points="740.9,-383.63 741.39,-394.21 747.61,-385.64 740.9,-383.63"/>
+    </g>
+  </g>
+</svg>

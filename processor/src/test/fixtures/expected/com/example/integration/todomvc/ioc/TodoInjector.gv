@@ -1,0 +1,14 @@
+digraph "TodoInjector" {
+  overlap = false
+  splines = true
+  injector [label="TodoInjector",color=green];
+  node2 [label="Arez_TodoRepository"];
+  node1 [label="BrowserLocation",color=blue];
+  node3 [label="Arez_ViewService"];
+  node4 [label="Arez_TodoService"];
+  injector -> node4 [label="TodoService"];
+  injector -> node3 [label="ViewService"];
+  node3 -> node2 [label="TodoRepository"];
+  node3 -> node1 [];
+  node4 -> node2 [label="TodoRepository"];
+}

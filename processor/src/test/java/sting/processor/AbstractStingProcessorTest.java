@@ -43,6 +43,12 @@ public abstract class AbstractStingProcessorTest
   }
 
   @Nonnull
+  final String graphvizOutput( @Nonnull final String classname )
+  {
+    return toFilename( "expected", classname, "", StingProcessor.DOT_SUFFIX );
+  }
+
+  @Nonnull
   final String jsonGraphOutput( @Nonnull final String classname )
   {
     return toFilename( "expected", classname, "", StingProcessor.GRAPH_SUFFIX );

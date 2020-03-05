@@ -51,6 +51,7 @@ import org.realityforge.proton.IOUtil;
 import org.realityforge.proton.JsonUtil;
 import org.realityforge.proton.MemberChecks;
 import org.realityforge.proton.ProcessorException;
+import org.realityforge.proton.ResourceUtil;
 import org.realityforge.proton.TypesUtil;
 
 /**
@@ -68,6 +69,7 @@ import org.realityforge.proton.TypesUtil;
                      "sting.defer.errors",
                      "sting.debug",
                      "sting.emit_json_descriptors",
+                     "sting.emit_dot_reports",
                      "sting.verbose_out_of_round.errors",
                      "sting.verify_descriptors" } )
 public final class StingProcessor
@@ -77,6 +79,10 @@ public final class StingProcessor
    * Extension for json descriptors.
    */
   static final String JSON_SUFFIX = ".sting.json";
+  /**
+   * Extension for graphviz .dot reports.
+   */
+  static final String DOT_SUFFIX = ".gv";
   /**
    * Extension for sting binary descriptors.
    */
@@ -113,6 +119,11 @@ public final class StingProcessor
    * A utility class for reading and writing the binary descriptors.
    */
   private DescriptorIO _descriptorIO;
+  /**
+   * Flag controlling whether .dot formatted report is emitted.
+   * The .dot report is typically used by end users who want to explore the graph.
+   */
+  private boolean _emitDotReports;
 
   @Nonnull
   @Override
@@ -134,6 +145,7 @@ public final class StingProcessor
     super.init( processingEnv );
     _descriptorIO = new DescriptorIO( processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
     _emitJsonDescriptors = readBooleanOption( "emit_json_descriptors", false );
+    _emitDotReports = readBooleanOption( "emit_dot_reports", false );
     _verifyDescriptors = readBooleanOption( "verify_descriptors", false );
   }
 
@@ -308,6 +320,19 @@ public final class StingProcessor
     if ( injector.isInjectable() )
     {
       emitTypeSpec( packageName, InjectorProviderGenerator.buildType( processingEnv, graph ) );
+    }
+    emitDotReport( graph );
+  }
+
+  private void emitDotReport( @Nonnull final ComponentGraph graph )
+    throws IOException
+  {
+    if ( _emitDotReports )
+    {
+      final TypeElement element = graph.getInjector().getElement();
+      final String filename = toFilename( element ) + DOT_SUFFIX;
+      final String report = InjectorDotReportGenerator.buildDotReport( processingEnv, graph );
+      ResourceUtil.writeResource( processingEnv, filename, report, element );
     }
   }
 
