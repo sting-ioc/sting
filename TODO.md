@@ -13,19 +13,12 @@ complete as there is too much un-said.
     * Pass in services to injector.
     * Publish an injector as a component.
     * Using StingProvider to integrate with other frameworks.
-  * Maybe terminology should be (more) inspired by OSGI service ala https://www.osgi.org/developer/architecture/
-    * Figure out terminology. Currently it is a mixed bag derived from various injector frameworks that it has
-      been inspired from. Terms that are misused and should be cleaned up. This would involved cleaning up lots
-      of code, tests and javadocs so should be done sooner rather than later.
-      * `Service` = the instances present in the object?
-      * `Type` = the java type that a service consumes or publishes.
+  * Terminology:
+      * `Component` = the values managed by the injector.
+      * `Binding` = a mechanism for creating components that can contribute to the component graph.
+      * `Service` = a java type combined with a `Qualifier` that describes a value that a component either consumes or publishes.
       * `Qualifier` = an arbitrary user-supplied string that is used to distinguish between services
         that have the same `Type` but different semantics.
-      * `Coordinate` = the combination of `Type`+`Qualifier` used to address a service
-      * `Binding` = a mechanism for creating a value that can contribute to the object graph.
-      * `Dependency` = a declaration by a binding that indicates the services that it consumes.
-      * `Node` = the inclusion of a `Binding` in an object graph
-      * `Edge` = a list of nodes that provide a service to a `Node` to satisfy a `Dependency`
 
 ## Beta-2 Release
 
