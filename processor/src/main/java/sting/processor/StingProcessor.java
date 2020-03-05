@@ -1445,12 +1445,13 @@ public final class StingProcessor
 
     if ( 0 == specs.length && !eager )
     {
-      throw new ProcessorException( MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
-                                    " target must not contain methods that specify zero types with the " +
-                                    MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                    " annotation and are not annotated with the " +
-                                    MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) +
-                                    " annotation otherwise the component can not be created by the injector",
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                          "contain methods that specify zero types with the " +
+                                                          MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                                          " annotation and are not annotated with the " +
+                                                          MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) +
+                                                          " annotation otherwise the component can not be created by " +
+                                                          "the injector" ),
                                     element );
     }
     if ( 0 == specs.length && !"".equals( qualifier ) )
