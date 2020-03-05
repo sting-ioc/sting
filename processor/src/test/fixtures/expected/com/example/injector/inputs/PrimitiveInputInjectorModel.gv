@@ -2,13 +2,13 @@ digraph "PrimitiveInputInjectorModel" {
   overlap = false
   splines = true
   injector [label="PrimitiveInputInjectorModel",color=green];
-  node7 [label="byte",color=blue];
-  node8 [label="char",color=blue];
-  node5 [label="int",color=blue];
-  node6 [label="short",color=blue];
-  node1 [label="boolean",color=blue];
+  node8 [label="byte",color=blue];
+  node7 [label="char",color=blue];
+  node6 [label="int",color=blue];
+  node5 [label="short",color=blue];
+  node4 [label="boolean",color=blue];
   node3 [label="float",color=blue];
-  node4 [label="long",color=blue];
-  node2 [label="double",color=blue];
-  injector -> node1 [];
+  node2 [label="long",color=blue];
+  node1 [label="double",color=blue];
+  injector -> node4 [];
 }

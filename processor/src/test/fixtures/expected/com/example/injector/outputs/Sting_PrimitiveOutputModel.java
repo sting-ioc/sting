@@ -38,27 +38,27 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
 
   private boolean node2_allocated;
 
-  private long node3;
+  private short node3;
 
   private boolean node3_allocated;
 
-  private int node4;
+  private byte node4;
 
   private boolean node4_allocated;
 
-  private short node5;
+  private long node5;
 
   private boolean node5_allocated;
 
-  private byte node6;
+  private int node6;
 
   private boolean node6_allocated;
 
-  private char node7;
+  private boolean node7;
 
   private boolean node7_allocated;
 
-  private boolean node8;
+  private char node8;
 
   private boolean node8_allocated;
 
@@ -84,87 +84,87 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   }
 
   @DoNotInline
-  private synchronized long node3() {
+  private synchronized short node3() {
     if ( !node3_allocated ) {
       node3_allocated = true;
-      node3 = fragment8.$sting$_provideValue6();
+      node3 = fragment8.$sting$_provideValue4();
     }
     return node3;
   }
 
   @DoNotInline
-  private synchronized int node4() {
+  private synchronized byte node4() {
     if ( !node4_allocated ) {
       node4_allocated = true;
-      node4 = fragment8.$sting$_provideValue5();
+      node4 = fragment8.$sting$_provideValue3();
     }
     return node4;
   }
 
   @DoNotInline
-  private synchronized short node5() {
+  private synchronized long node5() {
     if ( !node5_allocated ) {
       node5_allocated = true;
-      node5 = fragment8.$sting$_provideValue4();
+      node5 = fragment8.$sting$_provideValue6();
     }
     return node5;
   }
 
   @DoNotInline
-  private synchronized byte node6() {
+  private synchronized int node6() {
     if ( !node6_allocated ) {
       node6_allocated = true;
-      node6 = fragment8.$sting$_provideValue3();
+      node6 = fragment8.$sting$_provideValue5();
     }
     return node6;
   }
 
   @DoNotInline
-  private synchronized char node7() {
+  private synchronized boolean node7() {
     if ( !node7_allocated ) {
       node7_allocated = true;
-      node7 = fragment8.$sting$_provideValue2();
+      node7 = fragment8.$sting$_provideValue();
     }
     return node7;
   }
 
   @DoNotInline
-  private synchronized boolean node8() {
+  private synchronized char node8() {
     if ( !node8_allocated ) {
       node8_allocated = true;
-      node8 = fragment8.$sting$_provideValue();
+      node8 = fragment8.$sting$_provideValue2();
     }
     return node8;
   }
 
   @Override
   public boolean getValue1() {
-    return node8();
-  }
-
-  @Override
-  public char getValue2() {
     return node7();
   }
 
   @Override
+  public char getValue2() {
+    return node8();
+  }
+
+  @Override
   public byte getValue3() {
-    return node6();
-  }
-
-  @Override
-  public short getValue4() {
-    return node5();
-  }
-
-  @Override
-  public int getValue5() {
     return node4();
   }
 
   @Override
-  public long getValue6() {
+  public short getValue4() {
     return node3();
+  }
+
+  @Override
+  public int getValue5() {
+    return node6();
+  }
+
+  @Override
+  public long getValue6() {
+    return node5();
   }
 
   @Override

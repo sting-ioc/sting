@@ -143,19 +143,46 @@ final class ComponentGraph
       .peek( f -> fragmentMap.put( f.getFragment(), f ) )
       .collect( Collectors.toList() );
     index.set( 0 );
-    _orderedNodes = _nodesById
-      .values()
-      .stream()
-      .sorted( Comparator.comparing( Node::getDepth ).thenComparing( n -> n.getBinding().getId() ).reversed() )
-      .peek( n -> n.setName( "node" + index.incrementAndGet() ) )
-      .peek( n -> {
-        if ( n.isFromProvides() )
+    _orderedNodes = sortNodes( _nodesById.values() );
+    for ( final Node node : _orderedNodes )
+    {
+      node.setName( "node" + index.incrementAndGet() );
+      if ( node.isFromProvides() )
+      {
+        //noinspection SuspiciousMethodCalls
+        node.setFragment( fragmentMap.get( node.getBinding().getOwner() ) );
+      }
+    }
+  }
+
+  @Nonnull
+  private List<Node> sortNodes( @Nonnull final Collection<Node> nodes )
+  {
+    final List<Node> results = new ArrayList<>( nodes.size() );
+    final List<Node> workList = new ArrayList<>( nodes );
+    final Set<Node> done = new HashSet<>(  );
+    while ( !workList.isEmpty() )
+    {
+      final Node node = workList.remove( workList.size() - 1 );
+      processNode( node, results, done );
+    }
+    return results;
+  }
+
+  private void processNode( @Nonnull final Node node, @Nonnull final List<Node> results, @Nonnull final Set<Node> done )
+  {
+    if ( !done.contains( node ) )
+    {
+      done.add( node );
+      for ( final Edge edge : node.getDependsOn() )
+      {
+        for ( final Node other : edge.getSatisfiedBy() )
         {
-          //noinspection SuspiciousMethodCalls
-          n.setFragment( fragmentMap.get( n.getBinding().getOwner() ) );
+          processNode( other, results, done );
         }
-      } )
-      .collect( Collectors.toList() );
+      }
+      results.add( node );
+    }
   }
 
   /**

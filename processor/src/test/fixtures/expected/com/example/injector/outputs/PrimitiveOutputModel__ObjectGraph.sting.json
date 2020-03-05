@@ -10,14 +10,6 @@
       "kind": "PROVIDES"
     },
     {
-      "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue6",
-      "kind": "PROVIDES"
-    },
-    {
-      "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue5",
-      "kind": "PROVIDES"
-    },
-    {
       "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue4",
       "kind": "PROVIDES"
     },
@@ -26,11 +18,19 @@
       "kind": "PROVIDES"
     },
     {
-      "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue2",
+      "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue6",
+      "kind": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue5",
       "kind": "PROVIDES"
     },
     {
       "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue",
+      "kind": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.outputs.PrimitiveOutputModel.MyFragment#provideValue2",
       "kind": "PROVIDES"
     }
   ]

@@ -6,23 +6,23 @@
       "kind": "INJECTABLE"
     },
     {
-      "id": "com.example.injector.includes.recursive.MyModel2",
-      "kind": "INJECTABLE"
-    },
-    {
       "id": "com.example.injector.includes.recursive.MyModel1",
       "kind": "INJECTABLE"
-    },
-    {
-      "id": "com.example.injector.includes.recursive.MyFragment3#provideRunnable",
-      "kind": "PROVIDES"
     },
     {
       "id": "com.example.injector.includes.recursive.MyFragment2#provideRunnable",
       "kind": "PROVIDES"
     },
     {
+      "id": "com.example.injector.includes.recursive.MyModel2",
+      "kind": "INJECTABLE"
+    },
+    {
       "id": "com.example.injector.includes.recursive.MyFragment1#provideRunnable",
+      "kind": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.includes.recursive.MyFragment3#provideRunnable",
       "kind": "PROVIDES"
     }
   ]

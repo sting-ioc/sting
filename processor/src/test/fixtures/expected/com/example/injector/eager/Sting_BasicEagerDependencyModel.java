@@ -32,9 +32,9 @@ final class Sting_BasicEagerDependencyModel implements BasicEagerDependencyModel
   Sting_BasicEagerDependencyModel() {
     node1 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel2.create() );
     node4 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel1.create() );
-    node5 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel5.create(node1, () -> node3(), node4) );
-    node6 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel4.create(node1, () -> node3(), () -> node4) );
-    node7 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel6.create(node6, node5) );
+    node5 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel4.create(node1, () -> node3(), () -> node4) );
+    node6 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel5.create(node1, () -> node3(), node4) );
+    node7 = Objects.requireNonNull( BasicEagerDependencyModel_Sting_MyModel6.create(node5, node6) );
   }
 
   @Nonnull

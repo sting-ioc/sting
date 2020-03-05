@@ -2,17 +2,7 @@
   "schema": "graph/1",
   "nodes": [
     {
-      "id": "com.example.injector.inputs.PrimitiveInputInjectorModel#0",
-      "kind": "INPUT",
-      "eager": true
-    },
-    {
       "id": "com.example.injector.inputs.PrimitiveInputInjectorModel#7",
-      "kind": "INPUT",
-      "eager": true
-    },
-    {
-      "id": "com.example.injector.inputs.PrimitiveInputInjectorModel#6",
       "kind": "INPUT",
       "eager": true
     },
@@ -22,7 +12,12 @@
       "eager": true
     },
     {
-      "id": "com.example.injector.inputs.PrimitiveInputInjectorModel#4",
+      "id": "com.example.injector.inputs.PrimitiveInputInjectorModel#6",
+      "kind": "INPUT",
+      "eager": true
+    },
+    {
+      "id": "com.example.injector.inputs.PrimitiveInputInjectorModel#0",
       "kind": "INPUT",
       "eager": true
     },
@@ -32,12 +27,17 @@
       "eager": true
     },
     {
-      "id": "com.example.injector.inputs.PrimitiveInputInjectorModel#2",
+      "id": "com.example.injector.inputs.PrimitiveInputInjectorModel#4",
       "kind": "INPUT",
       "eager": true
     },
     {
       "id": "com.example.injector.inputs.PrimitiveInputInjectorModel#1",
+      "kind": "INPUT",
+      "eager": true
+    },
+    {
+      "id": "com.example.injector.inputs.PrimitiveInputInjectorModel#2",
       "kind": "INPUT",
       "eager": true
     }

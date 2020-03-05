@@ -22,7 +22,7 @@ final class Sting_MultipleOutputModel implements MultipleOutputModel {
   @DoNotInline
   private synchronized Object node1() {
     if ( null == node1 ) {
-      node1 = Objects.requireNonNull( MultipleOutputModel_Sting_MyModel2.create() );
+      node1 = Objects.requireNonNull( MultipleOutputModel_Sting_MyModel1.create() );
     }
     assert null != node1;
     return node1;
@@ -32,7 +32,7 @@ final class Sting_MultipleOutputModel implements MultipleOutputModel {
   @DoNotInline
   private synchronized Object node2() {
     if ( null == node2 ) {
-      node2 = Objects.requireNonNull( MultipleOutputModel_Sting_MyModel1.create() );
+      node2 = Objects.requireNonNull( MultipleOutputModel_Sting_MyModel2.create() );
     }
     assert null != node2;
     return node2;
@@ -40,11 +40,11 @@ final class Sting_MultipleOutputModel implements MultipleOutputModel {
 
   @Override
   public MultipleOutputModel.MyModel1 getMyModel() {
-    return (MultipleOutputModel.MyModel1) node2();
+    return (MultipleOutputModel.MyModel1) node1();
   }
 
   @Override
   public Supplier<MultipleOutputModel.MyModel2> getMyModelSupplier() {
-    return () -> (MultipleOutputModel.MyModel2) node1();
+    return () -> (MultipleOutputModel.MyModel2) node2();
   }
 }

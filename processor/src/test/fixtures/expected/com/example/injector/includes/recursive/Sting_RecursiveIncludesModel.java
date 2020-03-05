@@ -21,13 +21,13 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
   private Object node1;
 
   @Nullable
-  private Object node2;
+  private MyModel1 node2;
 
   @Nullable
-  private MyModel1 node3;
+  private Runnable node3;
 
   @Nullable
-  private Runnable node4;
+  private Object node4;
 
   @Nullable
   private Runnable node5;
@@ -50,9 +50,9 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
 
   @Nonnull
   @DoNotInline
-  private synchronized Object node2() {
+  private synchronized MyModel1 node2() {
     if ( null == node2 ) {
-      node2 = Objects.requireNonNull( Sting_MyModel2.create() );
+      node2 = Objects.requireNonNull( Sting_MyModel1.create() );
     }
     assert null != node2;
     return node2;
@@ -60,9 +60,9 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
 
   @Nonnull
   @DoNotInline
-  private synchronized MyModel1 node3() {
+  private synchronized Runnable node3() {
     if ( null == node3 ) {
-      node3 = Objects.requireNonNull( Sting_MyModel1.create() );
+      node3 = Objects.requireNonNull( fragment2.$sting$_provideRunnable() );
     }
     assert null != node3;
     return node3;
@@ -70,9 +70,9 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
 
   @Nonnull
   @DoNotInline
-  private synchronized Runnable node4() {
+  private synchronized Object node4() {
     if ( null == node4 ) {
-      node4 = Objects.requireNonNull( fragment3.$sting$_provideRunnable() );
+      node4 = Objects.requireNonNull( Sting_MyModel2.create() );
     }
     assert null != node4;
     return node4;
@@ -82,7 +82,7 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
   @DoNotInline
   private synchronized Runnable node5() {
     if ( null == node5 ) {
-      node5 = Objects.requireNonNull( fragment2.$sting$_provideRunnable() );
+      node5 = Objects.requireNonNull( fragment1.$sting$_provideRunnable() );
     }
     assert null != node5;
     return node5;
@@ -92,7 +92,7 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
   @DoNotInline
   private synchronized Runnable node6() {
     if ( null == node6 ) {
-      node6 = Objects.requireNonNull( fragment1.$sting$_provideRunnable() );
+      node6 = Objects.requireNonNull( fragment3.$sting$_provideRunnable() );
     }
     assert null != node6;
     return node6;
@@ -100,27 +100,27 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
 
   @Override
   public Runnable getRunnable1() {
-    return node6();
-  }
-
-  @Override
-  public Runnable getRunnable2() {
     return node5();
   }
 
   @Override
-  public Runnable getRunnable3() {
-    return node4();
-  }
-
-  @Override
-  public MyModel1 getMyModel1() {
+  public Runnable getRunnable2() {
     return node3();
   }
 
   @Override
+  public Runnable getRunnable3() {
+    return node6();
+  }
+
+  @Override
+  public MyModel1 getMyModel1() {
+    return node2();
+  }
+
+  @Override
   public MyModel2 getMyModel2() {
-    return (MyModel2) node2();
+    return (MyModel2) node4();
   }
 
   @Override

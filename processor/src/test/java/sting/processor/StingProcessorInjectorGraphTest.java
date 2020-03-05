@@ -38,8 +38,8 @@ public final class StingProcessorInjectorGraphTest
 
     // Order is stable and based on inverse of (depth of node from root dependencies + node id)
     assertIndex( nodes, classname, "MyModel6", 6 );
-    assertIndex( nodes, classname, "MyModel4", 5 );
-    assertIndex( nodes, classname, "MyModel5", 4 );
+    assertIndex( nodes, classname, "MyModel5", 5 );
+    assertIndex( nodes, classname, "MyModel4", 4 );
     assertIndex( nodes, classname, "MyModel1", 3 );
     assertIndex( nodes, classname, "MyModel3", 2 );
     assertIndex( nodes, classname, "MyModel0", 1 );

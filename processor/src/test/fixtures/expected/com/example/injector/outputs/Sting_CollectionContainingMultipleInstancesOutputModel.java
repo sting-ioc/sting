@@ -37,7 +37,7 @@ final class Sting_CollectionContainingMultipleInstancesOutputModel implements Co
   @DoNotInline
   private synchronized Object node1() {
     if ( null == node1 ) {
-      node1 = Objects.requireNonNull( fragment3.$sting$_myModel() );
+      node1 = Objects.requireNonNull( fragment2.$sting$_myModel() );
     }
     assert null != node1;
     return node1;
@@ -47,7 +47,7 @@ final class Sting_CollectionContainingMultipleInstancesOutputModel implements Co
   @DoNotInline
   private synchronized Object node2() {
     if ( null == node2 ) {
-      node2 = Objects.requireNonNull( fragment2.$sting$_myModel() );
+      node2 = Objects.requireNonNull( fragment3.$sting$_myModel() );
     }
     assert null != node2;
     return node2;
@@ -66,7 +66,7 @@ final class Sting_CollectionContainingMultipleInstancesOutputModel implements Co
   @Override
   public Collection<CollectionContainingMultipleInstancesOutputModel.MyModel> getMyModel() {
     if ( null == $sting$_getMyModelCache ) {
-      $sting$_getMyModelCache = Arrays.asList( (CollectionContainingMultipleInstancesOutputModel.MyModel) node3(), (CollectionContainingMultipleInstancesOutputModel.MyModel) node2(), (CollectionContainingMultipleInstancesOutputModel.MyModel) node1() );
+      $sting$_getMyModelCache = Arrays.asList( (CollectionContainingMultipleInstancesOutputModel.MyModel) node3(), (CollectionContainingMultipleInstancesOutputModel.MyModel) node1(), (CollectionContainingMultipleInstancesOutputModel.MyModel) node2() );
     }
     return $sting$_getMyModelCache;
   }

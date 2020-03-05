@@ -2,15 +2,15 @@
   "schema": "graph/1",
   "nodes": [
     {
+      "id": "com.example.injector.outputs.ComplexOutputModel.MyModel1",
+      "kind": "INJECTABLE"
+    },
+    {
       "id": "com.example.injector.outputs.ComplexOutputModel.MyModel3",
       "kind": "INJECTABLE"
     },
     {
       "id": "com.example.injector.outputs.ComplexOutputModel.MyModel2",
-      "kind": "INJECTABLE"
-    },
-    {
-      "id": "com.example.injector.outputs.ComplexOutputModel.MyModel1",
       "kind": "INJECTABLE"
     }
   ]

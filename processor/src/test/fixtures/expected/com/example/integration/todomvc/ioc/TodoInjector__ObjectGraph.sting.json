@@ -2,13 +2,25 @@
   "schema": "graph/1",
   "nodes": [
     {
+      "id": "com.example.integration.todomvc.model.Arez_TodoRepository",
+      "kind": "INJECTABLE"
+    },
+    {
+      "id": "com.example.integration.todomvc.model.Arez_TodoService",
+      "kind": "INJECTABLE",
+      "dependencies": [
+        {
+          "type": "com.example.integration.todomvc.model.TodoRepository",
+          "supportedBy": [
+            "com.example.integration.todomvc.model.Arez_TodoRepository"
+          ]
+        }
+      ]
+    },
+    {
       "id": "com.example.integration.todomvc.model.BrowserLocationFragment#createBrowserLocation",
       "kind": "PROVIDES",
       "eager": true
-    },
-    {
-      "id": "com.example.integration.todomvc.model.Arez_TodoRepository",
-      "kind": "INJECTABLE"
     },
     {
       "id": "com.example.integration.todomvc.model.Arez_ViewService",
@@ -24,18 +36,6 @@
           "type": "com.example.integration.todomvc.model.BrowserLocation",
           "supportedBy": [
             "com.example.integration.todomvc.model.BrowserLocationFragment#createBrowserLocation"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "com.example.integration.todomvc.model.Arez_TodoService",
-      "kind": "INJECTABLE",
-      "dependencies": [
-        {
-          "type": "com.example.integration.todomvc.model.TodoRepository",
-          "supportedBy": [
-            "com.example.integration.todomvc.model.Arez_TodoRepository"
           ]
         }
       ]

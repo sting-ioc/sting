@@ -2,13 +2,13 @@ digraph "SupplierBrokenChainedCircularDependencyModel" {
   overlap = false
   splines = true
   injector [label="SupplierBrokenChainedCircularDependencyModel",color=green];
-  node3 [label="MyModel1"];
-  node2 [label="MyModel2"];
-  node1 [label="MyModel3"];
-  injector -> node3 [];
+  node2 [label="MyModel1"];
+  node1 [label="MyModel2"];
+  node3 [label="MyModel3"];
   injector -> node2 [];
   injector -> node1 [];
-  node3 -> node2 [];
+  injector -> node3 [];
   node2 -> node1 [];
-  node1 -> node3 [arrowhead=odot];
+  node1 -> node3 [];
+  node3 -> node2 [arrowhead=odot];
 }

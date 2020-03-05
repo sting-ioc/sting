@@ -2,11 +2,11 @@
   "schema": "graph/1",
   "nodes": [
     {
-      "id": "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment3#myModel",
+      "id": "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment2#myModel",
       "kind": "PROVIDES"
     },
     {
-      "id": "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment2#myModel",
+      "id": "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment3#myModel",
       "kind": "PROVIDES"
     },
     {

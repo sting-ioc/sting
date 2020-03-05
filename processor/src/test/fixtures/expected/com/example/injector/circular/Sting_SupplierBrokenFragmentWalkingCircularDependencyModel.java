@@ -27,7 +27,7 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
   @DoNotInline
   private synchronized Object node1() {
     if ( null == node1 ) {
-      node1 = Objects.requireNonNull( fragment1.$sting$_provideMyModel2(() -> node3()) );
+      node1 = Objects.requireNonNull( SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel2.create(node3()) );
     }
     assert null != node1;
     return node1;
@@ -37,7 +37,7 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
   @DoNotInline
   private synchronized Object node2() {
     if ( null == node2 ) {
-      node2 = Objects.requireNonNull( SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel2.create(node1()) );
+      node2 = Objects.requireNonNull( SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel1.create(node1()) );
     }
     assert null != node2;
     return node2;
@@ -47,7 +47,7 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
   @DoNotInline
   private synchronized Object node3() {
     if ( null == node3 ) {
-      node3 = Objects.requireNonNull( SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel1.create(node2()) );
+      node3 = Objects.requireNonNull( fragment1.$sting$_provideMyModel2(() -> node2()) );
     }
     assert null != node3;
     return node3;
@@ -55,16 +55,16 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
 
   @Override
   public SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1 getMyModel1() {
-    return (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1) node3();
+    return (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1) node2();
   }
 
   @Override
   public SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2 getMyModel2() {
-    return (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2) node2();
+    return (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2) node1();
   }
 
   @Override
   public SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3 getMyModel3() {
-    return (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3) node1();
+    return (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3) node3();
   }
 }

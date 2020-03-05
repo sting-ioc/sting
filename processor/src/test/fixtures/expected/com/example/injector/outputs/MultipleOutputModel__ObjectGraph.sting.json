@@ -2,11 +2,11 @@
   "schema": "graph/1",
   "nodes": [
     {
-      "id": "com.example.injector.outputs.MultipleOutputModel.MyModel2",
+      "id": "com.example.injector.outputs.MultipleOutputModel.MyModel1",
       "kind": "INJECTABLE"
     },
     {
-      "id": "com.example.injector.outputs.MultipleOutputModel.MyModel1",
+      "id": "com.example.injector.outputs.MultipleOutputModel.MyModel2",
       "kind": "INJECTABLE"
     }
   ]

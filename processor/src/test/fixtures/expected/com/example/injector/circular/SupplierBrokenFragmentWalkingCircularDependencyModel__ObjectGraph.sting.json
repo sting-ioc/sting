@@ -2,18 +2,6 @@
   "schema": "graph/1",
   "nodes": [
     {
-      "id": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyFragment#provideMyModel2",
-      "kind": "PROVIDES",
-      "dependencies": [
-        {
-          "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1",
-          "supportedBy": [
-            "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1"
-          ]
-        }
-      ]
-    },
-    {
       "id": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2",
       "kind": "INJECTABLE",
       "dependencies": [
@@ -33,6 +21,18 @@
           "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2",
           "supportedBy": [
             "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyFragment#provideMyModel2",
+      "kind": "PROVIDES",
+      "dependencies": [
+        {
+          "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1",
+          "supportedBy": [
+            "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1"
           ]
         }
       ]
