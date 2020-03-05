@@ -1453,6 +1453,17 @@ public final class StingProcessor
                                     " annotation otherwise the component can not be created by the injector",
                                     element );
     }
+    if ( 0 == specs.length && !"".equals( qualifier ) )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
+                                                          "contain methods that specify zero types with the " +
+                                                          MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                                          " annotation and specify a qualifier with the " +
+                                                          MemberChecks.toSimpleName( Constants.NAMED_CLASSNAME ) +
+                                                          " annotation as the qualifier is meaningless" ),
+                                    element );
+    }
+
     final Binding binding =
       new Binding( Binding.Kind.PROVIDES,
                    element.getQualifiedName() + "#" + method.getSimpleName(),
@@ -1655,6 +1666,16 @@ public final class StingProcessor
                                                           " annotation or must be annotated with the " +
                                                           MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) +
                                                           " annotation otherwise the component can not be created by the injector" ),
+                                    element );
+    }
+    if ( 0 == specs.length && !"".equals( qualifier ) )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                          "specify zero types with the " +
+                                                          MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                                          " annotation and specify a qualifier with the " +
+                                                          MemberChecks.toSimpleName( Constants.NAMED_CLASSNAME ) +
+                                                          " annotation as the qualifier is meaningless" ),
                                     element );
     }
 

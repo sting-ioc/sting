@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Generate an error if a type annotated with `@Injectable` or a method in a `@Fragment` annotated type is annotated with `@Named` and specifies zero types with a `@Typed` annotation. There is no reason to specify a qualifier if the binding has no published types.
+
 ### [v0.06](https://github.com/sting-ioc/sting/tree/v0.06) (2020-03-06) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.05...v0.06)
 
 Changes in this release:

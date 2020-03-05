@@ -384,6 +384,8 @@ public final class StingProcessorTest
                       "@Fragment contains a method that is incorrectly annotated with @Nullable as the return type is a primitive value" },
         new Object[]{ "com.example.fragment.provides.ParameterizedProvidesModel",
                       "@Fragment target must not contain methods with a type parameter" },
+        new Object[]{ "com.example.fragment.provides.QualifiedAndNoTypesModel",
+                      "@Fragment target must not contain methods that specify zero types with the @Typed annotation and specify a qualifier with the @Named annotation as the qualifier is meaningless" },
         new Object[]{ "com.example.fragment.provides.StaticMethodProvidesModel",
                       "@Fragment target must only contain methods with a default modifier" },
         new Object[]{ "com.example.fragment.provides.VoidReturnTypeProvidesModel",
@@ -412,6 +414,8 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.NonStaticNestedModel",
                       "@Injectable target must not be a non-static nested class" },
         new Object[]{ "com.example.injectable.ParameterizedModel", "@Injectable target must not have type parameters" },
+        new Object[]{ "com.example.injectable.QualifiedWithNoTypesModel",
+                      "@Injectable target must not specify zero types with the @Typed annotation and specify a qualifier with the @Named annotation as the qualifier is meaningless" },
 
         new Object[]{ "com.example.injectable.inputs.ArrayTypeInputModel",
                       "@Injectable target must not contain a constructor with a parameter that contains an array type" },
