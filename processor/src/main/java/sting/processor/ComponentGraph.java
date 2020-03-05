@@ -52,6 +52,8 @@ final class ComponentGraph
   private boolean _complete;
   /**
    * The list of nodes included in graph in stable order based on depth in graph and node id.
+   * The ordering guarantees that non-supplier dependencies occur earlier than the components
+   * that consume the dependencies.
    */
   @Nullable
   private List<Node> _orderedNodes;
