@@ -9,6 +9,5 @@ complete as there is too much un-said.
 * Add some basic documentation
   * Recipe style examples for how to solve specific problems.
     * Changing the types published by a binding.
-    * Pass in services to injector.
     * Publish an injector as a component.
     * Using StingProvider to integrate with other frameworks.
