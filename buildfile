@@ -285,6 +285,18 @@ define 'sting' do
     project.jacoco.enabled = false
   end
 
+  desc 'Sting Examples used in documentation'
+  define 'doc-examples' do
+    project.enable_annotation_processor = true
+
+    compile.with project('processor').package(:jar),
+                 project('processor').compile.dependencies,
+                 project('core').package(:jar),
+                 project('core').compile.dependencies
+
+    project.jacoco.enabled = false
+  end
+
   doc.from(projects(%w(core processor))).
     using(:javadoc,
           :windowtitle => 'Sting API Documentation',
