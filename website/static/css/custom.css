@@ -23,6 +23,10 @@ footer.nav-footer {
   line-height: 1.5;
 }
 
+.mainContainer .wrapper ul {
+  max-width: 50rem;
+}
+
 code, pre code {
   font-family: 'Inconsolata', monospace;
   line-height: normal;
