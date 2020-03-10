@@ -1,25 +1,23 @@
-package sting.doc.examples.typing.injectable;
+package sting.doc.examples.typing;
 
 import sting.Fragment;
-import sting.Named;
 import sting.Typed;
 
 @Fragment
-public interface NamedApplicationFragment
+public interface ApplicationFragment
 {
-  @Named( "system" )
   @Typed( { MessageBroker.class, MessageSender.class } )
   default MessageService provideMessageService()
   {
     return new MessageService();
   }
 
-  default LoginService provideLoginService( @Named( "system" ) MessageSender sender )
+  default LoginService provideLoginService( MessageSender sender )
   {
     return new LoginService( sender );
   }
 
-  default UserHeaderItem provideUserHeaderItem( @Named( "system" ) MessageBroker broker )
+  default UserHeaderItem provideUserHeaderItem( MessageBroker broker )
   {
     return new UserHeaderItem( broker );
   }

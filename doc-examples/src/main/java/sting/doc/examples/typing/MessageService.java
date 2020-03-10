@@ -1,4 +1,4 @@
-package sting.doc.examples.typing.injectable;
+package sting.doc.examples.typing;
 
 import sting.Injectable;
 import sting.Typed;

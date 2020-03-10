@@ -1,4 +1,4 @@
-package sting.doc.examples.typing.injectable;
+package sting.doc.examples.typing;
 
 public interface Listener<T>
 {
