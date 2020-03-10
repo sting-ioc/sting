@@ -8,6 +8,7 @@
     "Technical": [
       "typing",
       "naming",
+      "inputs",
       "dagger",
       "framework_integration",
       "graphviz_integration",
