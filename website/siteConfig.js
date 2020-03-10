@@ -32,7 +32,7 @@ const apiUrl = function(code) {
     (elements[0].replace(/^.+\./, '') );
   const classname = elements.length > 1 ? elements[1] : elements[0];
   const url = '/api/sting/' +
-              classname.replace('.', '/').replace(/\/Flags$/, '.Flags') + '.html' +
+              classname.replace('.', '/') + '.html' +
               (elements.length > 2 ? '#' + elements[2].replace('(', '-').replace(',', '-').replace(')', '-') : '');
 
   return `<a href="${url}"><code>${label}</code></a>`;
