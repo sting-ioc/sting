@@ -172,7 +172,7 @@ embed.register({
 const siteConfig = {
   title: 'Sting',
   tagline: 'A fast, easy to use, compile-time dependency injection toolkit',
-  url: 'https://sting.github.io',
+  url: 'https://sting-ioc.github.io',
   baseUrl: '/',
   projectName: 'sting',
   headerLinks: [
