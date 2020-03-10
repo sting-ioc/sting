@@ -10,7 +10,7 @@ the {@link: sting.Named @Named} annotation. The {@link: sting.Named @Named} anno
 where a service is published or where a service is consumed.
 
 The publishing locations include on a type annotated by the {@link: sting.Injectable @Injectable}
-annotation or a provider method enclosed within a type annotated by the {@link: sting.Fragment @Fragment}  
+annotation or a provider method enclosed within a type annotated by the {@link: sting.Fragment @Fragment}
 annotation. A service is consumed by being passed as; constructor parameters in injectable components or
 as method parameters passed to provider methods. These parameter can also be annotated with the
 {@link: sting.Named @Named} annotation. When sting compiles the injector, it ensures that the consumer service
@@ -48,5 +48,4 @@ multiple parameters of type string for different configuration settings. For exa
 
 The actual value of the string is relatively arbitrary and you should use whatever makes sense
 within your application. Some projects use reverse DNS naming to guarantee uniqueness, others use
-short prefixes for namespacing while other projects use short local names. 
-
+short prefixes for namespacing while other projects use short local names.
