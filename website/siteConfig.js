@@ -156,7 +156,8 @@ const fileContent = function(params, options) {
   }
   const newContent = newSelectedLines.join('\n');
 
-  return '<pre><code>${options.highlight(newContent, language)}</code></pre>';
+  //noinspection CheckTagEmptyBody
+  return '<pre><code>' + options.highlight(newContent, language) + '</code></pre>';
 };
 
 const embed = new RemarkableEmbed.Plugin();
