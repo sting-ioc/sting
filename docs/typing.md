@@ -1,5 +1,5 @@
 ---
-title: Published Types
+title: Customizing Service Types
 ---
 
 When a component is included in an injector, it is published with zero or more "services". A service consists
