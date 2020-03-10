@@ -62,7 +62,7 @@ task 'site:link_check' do
 
   Dir["#{root}/**/*.html"].each do |filename|
     content = IO.read(filename)
-    content = content.gsub('https://sting.github.io', '')
+    content = content.gsub('https://sting-ioc.github.io', '')
     IO.write(filename, content)
   end
 
