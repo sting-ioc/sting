@@ -89,12 +89,12 @@ strengths of Sting relative to Dagger include:
   `com.squareup:javapoet` which are commonly used in other annotation processors and occasionally cause conflicts
   when different annotation processors are using different versions of these libraries.
 
-* Sting components can be annotated with the {@api_url: @Eager::Eager} annotation will result in the component being
+* Sting components can be annotated with the {@link: sting.Eager @Eager} annotation will result in the component being
   constructed when the injector is constructed. Lazy components are those without this annotation and will be
   constructed the first time they are accessed. This is particularly useful in a web context when components will
   often register event listeners when they are constructed.
 
-* Sting supports the {@api_url: @Typed::Typed} annotation to control the types published by a component. The same
+* Sting supports the {@link: sting.Typed @Typed} annotation to control the types published by a component. The same
   capability is present within dagger but it that the bindings are declared using a `@dagger.Module` annotated
   type which is significantly more verbose.
 
@@ -106,7 +106,7 @@ strengths of Sting relative to Dagger include:
   when linting errors are detected.
 
 * Sting generates errors or (suppressable) warnings when problematic or confusing code constructs are present in
-  the compiled code. i.e. {@api_url: @Injectable::Injectable} should either not specify a constructor or should
+  the compiled code. i.e. {@link: sting.Injectable @Injectable} should either not specify a constructor or should
   use package access constructors, annotations from other injection frameworks should not be intermingled with
   sting code etc.
 

@@ -6,21 +6,21 @@ Sometimes an injector contains multiple instances of a component that are publis
 (For details on how to customize service types see the ["Customizing Service Types"](typing.md) document.)
 In this scenario it is useful to distinguish different services of the same type bu different semantics
 using a "qualifier". Within Sting, a qualifier is an opaque, user-supplied string that is specified using
-the {@api_url: @Named::Named} annotation. The {@api_url: @Named::Named} annotation can be added to to
+the {@link: sting.Named @Named} annotation. The {@link: sting.Named @Named} annotation can be added to to
 where a service is published or where a service is consumed.
 
-The publishing locations include on a type annotated by the {@api_url: @Injectable::Injectable}
-annotation or a provider method enclosed within a type annotated by the {@api_url: @Fragment::Fragment}  
+The publishing locations include on a type annotated by the {@link: sting.Injectable @Injectable}
+annotation or a provider method enclosed within a type annotated by the {@link: sting.Fragment @Fragment}  
 annotation. A service is consumed by being passed as; constructor parameters in injectable components or
 as method parameters passed to provider methods. These parameter can also be annotated with the
-{@api_url: @Named::Named} annotation. When sting compiles the injector, it ensures that the consumer service
+{@link: sting.Named @Named} annotation. When sting compiles the injector, it ensures that the consumer service
 dependency can only be satisfied by producers if they have the same qualifier.
 
 ## Qualified Components
 
 Consider an application that consists of many components that all publish the same service interface
 `SimulationSystem` but need to be connected in specific topologies. This is possible to implement using
-the {@api_url: @Named::Named} annotation.
+the {@link: sting.Named @Named} annotation.
 
 The `DynamicLightingSystem` publishes a service with the `SimulationSystem` type and the qualifier
 `"system:lighting"`.
@@ -38,7 +38,7 @@ The component could also be consumed by other injectable components:
 ## Qualified Values
 
 While qualified components occasionally occur in applications, it is far more common to
-see the {@api_url: @Named::Named} annotation used to when configuring the application with
+see the {@link: sting.Named @Named} annotation used to when configuring the application with
 multiple instances of primitive or immutable values. For instance a component could accept
 multiple parameters of type string for different configuration settings. For example:
 

@@ -13,8 +13,8 @@ if another component requires the service. The compiler analyzes the graph to en
 formed and contains no cycles. If the analysis is successful then Sting will generate java source
 code to implement the injector.
 
-Sting can create components directly if they are annotated with the {@api_url: Injectable} annotation
-or it can call out to user code to provide the component (i.e. methods in {@api_url: Fragment} annotated
+Sting can create components directly if they are annotated with the {@link: sting.Injectable @Injectable} annotation
+or it can call out to user code to provide the component (i.e. methods in {@link: sting.Fragment @Fragment} annotated
 types.) The second form is used when third-party objects can't be annotated, when a different framework is
 responsible for creating the object (i.e `GWT.create(MyGwtRpcService.class)` or when it is awkward to
 create the type (i.e. when publishing a component that is provided by calling a method on another

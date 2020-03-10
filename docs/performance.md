@@ -25,19 +25,19 @@ keep the focus on Stings the performance goals.
 ## Build Time
 
 Sting optimizes incremental injector rebuilds over rebuilding an entire application. When Sting processes
-a type annotated with either the {@api_url: @Injectable::Injectable} annotation or the
-{@api_url: @Fragment::Fragment} annotation, the Sting annotation processor will generate a small, binary
+a type annotated with either the {@link: sting.Injectable @Injectable} annotation or the
+{@link: sting.Fragment @Fragment} annotation, the Sting annotation processor will generate a small, binary
 descriptor describing the type. The descriptor includes all the information required by Sting to bind the
 type to an injector. When the annotation processor attempts to process a type annotated by the
-{@api_url: @Injector::Injector} annotation, the annotation processor will load the binary descriptors rather
+{@link: sting.Injector @Injector} annotation, the annotation processor will load the binary descriptors rather
 than attempting to load and analyze the type.
 
-This results in a small increase in time compiling types annotated with the {@api_url: @Injectable::Injectable}
-annotation or the {@api_url: @Fragment::Fragment} annotation as the annotation processor needs to write
+This results in a small increase in time compiling types annotated with the {@link: sting.Injectable @Injectable}
+annotation or the {@link: sting.Fragment @Fragment} annotation as the annotation processor needs to write
 the binary descriptor file. As of Java 8, writing a non-java source file from an annotation processor is
 relatively slow as it forces a synchronous write to the filesystem from within the compiler. However, reading
 the binary descriptor rather than the java type when processing types annotated with the
-{@api_url: @Injector::Injector} annotation is significantly faster.
+{@link: sting.Injector @Injector} annotation is significantly faster.
 
 The table below compares the ratio of the speed of dagger in various scenarios with the speed of Sting. A value
 of `1` indicates that they are exactly the same speed while a value of `0.5` would indicate Sting takes twice as
@@ -52,7 +52,7 @@ optimizations possible in incremental recompiles that will likely lead to even f
 
 ## Code Size
 
-Sting prioritizes smaller code size and the builtin support for {@api_url: @Eager::Eager} components
+Sting prioritizes smaller code size and the builtin support for {@link: sting.Eager @Eager} components
 and the ease of optimizing when eager components are present is a significant contributor to Stings
 relatively good performance in this area.
 
@@ -198,6 +198,6 @@ tests do focus on incremental build time, initialization time and code-size whic
 primarily because this is what Sting is focused upon and intends to improve upon in the future.
 
 It should be noted that the example application only includes `@javax.inject.Inject` annotated types for Dagger
-and {@api_url: @Injectable::Injectable} annotated types for Sting and not components provided by `@dagger.Module`
-annotated types for Dagger or {@api_url: @Fragment::Fragment} annotated types for Sting. This is primarily because
+and {@link: sting.Injectable @Injectable} annotated types for Sting and not components provided by `@dagger.Module`
+annotated types for Dagger or {@link: sting.Fragment @Fragment} annotated types for Sting. This is primarily because
 it was too easy to introduce bias against Dagger in this scenario.
