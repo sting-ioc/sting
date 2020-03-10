@@ -40,22 +40,6 @@ const javaLink = function(code) {
   return `<a href="${url}"><code>${label}</code></a>`;
 };
 
-const apiUrl = function(code) {
-  const elements = code.split('::');
-
-  const label =
-    elements.length >
-    1 ?
-    elements[0] :
-    (elements[0].replace(/^.+\./, '') );
-  const classname = elements.length > 1 ? elements[1] : elements[0];
-  const url = '/api/sting/' +
-              classname.replace('.', '/') + '.html' +
-              (elements.length > 2 ? '#' + elements[2].replace('(', '-').replace(',', '-').replace(')', '-') : '');
-
-  return `<a href="${url}"><code>${label}</code></a>`;
-};
-
 function parseParams(params) {
   params = params.trim();
   let args = {};
@@ -180,7 +164,6 @@ embed.reg = /{@(\w+)\s*:\s*((([^\s"'][^\s}]*|"[^"]*"|'[^']*')\s*)+?)}/;
 embed.register({
   youtube: RemarkableEmbed.extensions.youtube,
   file_content: fileContent,
-  api_url: apiUrl,
   link: javaLink,
   include: markdownInclude
 });
