@@ -37,18 +37,18 @@ example demonstrates the `MessageService` that publishes two types. The `Message
 to enable some components in the application to send messages while the `MessageBroker` type is published
 so that other components can receive messages.
 
-{@file_content: file=sting/doc/examples/typing/MessageService.java start_line=@Injectable include_start_line=true}
+{@file_content: file=sting/doc/examples/typing/MessageService.java start_line=@Injectable}
 
 It is easy to imagine that we would have another component `LoginService` that performs the asynchronous
 login action and sends events as it progresses through each step of the process. This service would depend upon
 the `MessageSender` type. For example:
 
-{@file_content: file=sting/doc/examples/typing/LoginService.java start_line=@Injectable include_start_line=true}
+{@file_content: file=sting/doc/examples/typing/LoginService.java start_line=@Injectable}
 
 It also easy to imagine that there are multiple components within the application that will add listeners without
 ever needing to send messages. For example:
 
-{@file_content: file=sting/doc/examples/typing/UserHeaderItem.java start_line=@Injectable include_start_line=true}
+{@file_content: file=sting/doc/examples/typing/UserHeaderItem.java start_line=@Injectable}
 
 ## `@Typed` on provider methods
 
@@ -57,7 +57,7 @@ it is applied to an injectable type. We could re-implement the above example but
 annotated by the {@link: sting.Injectable @Injectable} annotation we could use use provider methods. Such an
 example would look like:
 
-{@file_content: file=sting/doc/examples/typing/ApplicationFragment.java start_line=@Fragment include_start_line=true}
+{@file_content: file=sting/doc/examples/typing/ApplicationFragment.java start_line=@Fragment}
 
 ## Combining `@Typed` and `@Named`
 
@@ -69,4 +69,4 @@ The example below publishes the component of type `MessageService` with two serv
 of type `MessageBroker` with the qualifier `system` and a service of type `MessageSender` with the qualifier
 `system`.
 
-{@file_content: file=sting/doc/examples/typing/NamedApplicationFragment.java start_line=@Fragment include_start_line=true}
+{@file_content: file=sting/doc/examples/typing/NamedApplicationFragment.java start_line=@Fragment}

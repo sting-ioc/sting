@@ -25,15 +25,15 @@ the {@link: sting.Named @Named} annotation.
 The `DynamicLightingSystem` publishes a service with the `SimulationSystem` type and the qualifier
 `"system:lighting"`.
 
-{@file_content: file=sting/doc/examples/naming/DynamicLightingSystem.java start_line=@Injectable include_start_line=true}
+{@file_content: file=sting/doc/examples/naming/DynamicLightingSystem.java start_line=@Injectable}
 
 This could be consumed by another component defined in a provider method:
 
-{@file_content: file=sting/doc/examples/naming/SimulationFragment.java start_line=@Fragment include_start_line=true}
+{@file_content: file=sting/doc/examples/naming/SimulationFragment.java start_line=@Fragment}
 
 The component could also be consumed by other injectable components:
 
-{@file_content: file=sting/doc/examples/naming/GeometryProcessor.java start_line=@Injectable include_start_line=true}
+{@file_content: file=sting/doc/examples/naming/GeometryProcessor.java start_line=@Injectable}
 
 ## Qualified Values
 
@@ -42,7 +42,7 @@ see the {@link: sting.Named @Named} annotation used to when configuring the appl
 multiple instances of primitive or immutable values. For instance a component could accept
 multiple parameters of type string for different configuration settings. For example:
 
-{@file_content: file=sting/doc/examples/naming/HttpClient.java start_line=@Injectable include_start_line=true}
+{@file_content: file=sting/doc/examples/naming/HttpClient.java start_line=@Injectable}
 
 ## Name Format
 
