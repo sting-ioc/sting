@@ -30,7 +30,6 @@ The easiest way to illustrate how this would work is to present some basic examp
 
 </nav>
 
-
 ## `@Typed` on `@Injectable` types
 
 Consider a scenario where you have a single component that provides multiple services. The following
