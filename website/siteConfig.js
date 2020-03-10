@@ -22,6 +22,24 @@ const markdownInclude = function(code) {
   return fs.readFileSync(filename, 'utf8');
 };
 
+const javaLink = function(code) {
+  const elements = code.trim().split(/ +/);
+
+  const spec = elements[0];
+  const parts = spec.split('#');
+  const classname = parts[0];
+  const member = parts.length > 1 ? parts[1] : '';
+
+  const label = elements.length > 1 ? elements[1] : (classname.replace(/^.+\./, '') + '.' + member );
+
+  const url =
+    '/api/' +
+    classname.replace('.', '/') + '.html' +
+    (member.length > 0 ? '#' + member.replace('(', '-').replace(',', '-').replace(')', '-') : '');
+
+  return `<a href="${url}"><code>${label}</code></a>`;
+};
+
 const apiUrl = function(code) {
   const elements = code.split('::');
 
@@ -163,6 +181,7 @@ embed.register({
   youtube: RemarkableEmbed.extensions.youtube,
   file_content: fileContent,
   api_url: apiUrl,
+  link: javaLink,
   include: markdownInclude
 });
 
