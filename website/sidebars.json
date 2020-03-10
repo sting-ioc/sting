@@ -6,6 +6,7 @@
       "getting_started"
     ],
     "Technical": [
+      "typing",
       "dagger",
       "framework_integration",
       "graphviz_integration",
