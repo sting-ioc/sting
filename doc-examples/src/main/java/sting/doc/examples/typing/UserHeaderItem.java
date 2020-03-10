@@ -5,7 +5,7 @@ import sting.Injectable;
 @Injectable
 public class UserHeaderItem
 {
-  public UserHeaderItem( MessageBroker broker )
+  UserHeaderItem( MessageBroker broker )
   {
     broker.addMessageListener( UserLoginStartedEvent.class,
                                e -> setText( "Authenticating " + e.getUsername() + " ..." ) );
