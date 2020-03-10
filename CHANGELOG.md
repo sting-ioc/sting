@@ -4,6 +4,7 @@
 
 * Generate an error if a type annotated with `@Injectable` or a method in a `@Fragment` annotated type is annotated with `@Named` and specifies zero types with a `@Typed` annotation. There is no reason to specify a qualifier if the binding has no published types.
 * Move all of the TODOs out of the project and into the Github issue tracker. Setup some milestones so the issues can be categorized according to expected releases.
+* Dramatically improve the usability of the documentation infrastructure to make writing documentation easier. This involved using java-style api links, making api docs available when running docusaurus locally, removing historical cruft from earlier projects that used the current docusaurus infrastructure.
 * Start to add some basic documentation on the following topics:
   - Typing of published services
   - Qualifying of consumed and published services
