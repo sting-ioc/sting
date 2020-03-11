@@ -303,7 +303,7 @@ define 'sting' do
           :linksource => true,
           :link => %w(https://sting-ioc.github.io/api https://docs.oracle.com/javase/8/docs/api),
           :group => {
-            'Core' => 'sting.*',
+            'Core' => 'sting*',
             'Compiler' => 'sting.processor*'
           }
     )
