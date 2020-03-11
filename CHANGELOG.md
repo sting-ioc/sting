@@ -1,6 +1,8 @@
 # Change Log
 
-### Unreleased
+### [v0.07](https://github.com/sting-ioc/sting/tree/v0.07) (2020-03-12) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.06...v0.07)
+
+Changes in this release:
 
 * Generate an error if a type annotated with `@Injectable` or a method in a `@Fragment` annotated type is annotated with `@Named` and specifies zero types with a `@Typed` annotation. There is no reason to specify a qualifier if the binding has no published types.
 * Move all of the TODOs out of the project and into the Github issue tracker. Setup some milestones so the issues can be categorized according to expected releases.
