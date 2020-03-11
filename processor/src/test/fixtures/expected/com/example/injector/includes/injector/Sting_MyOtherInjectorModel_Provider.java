@@ -12,7 +12,7 @@ public interface Sting_MyOtherInjectorModel_Provider {
     return new Sting_MyOtherInjectorModel();
   }
 
-  default MyModel getMyModel(final MyOtherInjectorModel injector) {
+  default MyModel getMyModel(@Nonnull final MyOtherInjectorModel injector) {
     return injector.getMyModel();
   }
 }

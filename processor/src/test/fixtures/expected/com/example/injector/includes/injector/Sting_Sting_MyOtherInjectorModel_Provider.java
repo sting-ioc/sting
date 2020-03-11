@@ -11,7 +11,7 @@ public final class Sting_Sting_MyOtherInjectorModel_Provider implements Sting_My
     return provide();
   }
 
-  public MyModel $sting$_getMyModel(final MyOtherInjectorModel injector) {
+  public MyModel $sting$_getMyModel(@Nonnull final MyOtherInjectorModel injector) {
     return getMyModel( Objects.requireNonNull( injector ) );
   }
 }

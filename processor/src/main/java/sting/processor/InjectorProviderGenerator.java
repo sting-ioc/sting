@@ -109,6 +109,7 @@ final class InjectorProviderGenerator
             .returns( TypeName.get( service.getService().getCoordinate().getType() ) )
             .addParameter( ParameterSpec
                              .builder( TypeName.get( element.asType() ), "injector", Modifier.FINAL )
+                             .addAnnotation( GeneratorUtil.NONNULL_CLASSNAME )
                              .build() );
 
         GeneratorUtil.copyWhitelistedAnnotations( service.getElement(), method );
