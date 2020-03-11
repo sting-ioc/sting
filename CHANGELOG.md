@@ -9,6 +9,7 @@
   - Typing of published services
   - Qualifying of consumed and published services
   - Passing services into the injector
+  - Including one injector in another injector
 * Fix a bug in the annotation processor which would stop Sting loading descriptor data from the platform or boot classpath. In an ideal world, there should be no sting annotated classes loaded from the platform classpath but some tools (i.e. the IDEA javac process invoked to compile test dependencies) will add dependencies to the platform classpath. As a result Sting has been updated to support this usecase.
 * Improve the grammar of the error messages when the Sting annotation processor can find a .class file but can not find the expected descriptor file.
 * Add additional debug messages to the Sting annotation processor that describe why a type is not yet resolved. This can help track down errors relating to unresolved injectors.

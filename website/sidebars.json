@@ -9,6 +9,7 @@
       "typing",
       "naming",
       "inputs",
+      "include_injector",
       "dagger",
       "framework_integration",
       "graphviz_integration",
