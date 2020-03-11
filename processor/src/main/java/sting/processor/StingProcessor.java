@@ -640,9 +640,10 @@ public final class StingProcessor
         }
         return false;
       }
-      if ( include.isProvider() &&
-           !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) &&
-           !AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
+      final boolean isInjectable = AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME );
+      final boolean isFragment =
+        !isInjectable && AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME );
+      if ( include.isProvider() && !isInjectable && !isFragment )
       {
         AnnotationMirror annotation =
           AnnotationsUtil.findAnnotationByType( originator, Constants.INJECTOR_CLASSNAME );
