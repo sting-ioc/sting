@@ -9,6 +9,7 @@
   - Typing of published services
   - Qualifying of consumed and published services
   - Passing services into the injector
+* Fix a bug in the annotation processor which would stop Sting loading descriptor data from the platform or boot classpath. In an ideal world, there should be no sting annotated classes loaded from the platform classpath but some tools (i.e. the IDEA javac process invoked to compile test dependencies) will add dependencies to the platform classpath. As a result Sting has been updated to support this usecase.
 
 ### [v0.06](https://github.com/sting-ioc/sting/tree/v0.06) (2020-03-06) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.05...v0.06)
 

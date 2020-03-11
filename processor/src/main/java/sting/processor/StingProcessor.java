@@ -1902,8 +1902,12 @@ public final class StingProcessor
   @Nullable
   private byte[] tryLoadDescriptorData( @Nonnull final TypeElement element )
   {
-    final byte[] data = tryLoadDescriptorData( StandardLocation.CLASS_PATH, element );
-    return null != data ? data : tryLoadDescriptorData( StandardLocation.CLASS_OUTPUT, element );
+    byte[] data = tryLoadDescriptorData( StandardLocation.CLASS_PATH, element );
+    data = null != data ? data : tryLoadDescriptorData( StandardLocation.CLASS_OUTPUT, element );
+    // Some tools (IDEA?) will actually put dependencies on the boot/platform class path. This
+    // seems like it should be an error but as long as the tools do this, the annotation processor
+    // must also be capable of loading descriptor data from the platform classpath
+    return null != data ? data : tryLoadDescriptorData( StandardLocation.PLATFORM_CLASS_PATH, element );
   }
 
   @Nullable
