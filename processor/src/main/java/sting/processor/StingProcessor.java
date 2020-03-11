@@ -438,33 +438,25 @@ public final class StingProcessor
           final byte[] data = tryLoadDescriptorData( typeElement );
           if ( null != data )
           {
-            try
+            final Node node = edge.getNode();
+            final Object owner = node.hasNoBinding() ? null : node.getBinding().getOwner();
+            final TypeElement ownerElement =
+              owner instanceof FragmentDescriptor ? ( (FragmentDescriptor) owner ).getElement() :
+              owner instanceof InjectableDescriptor ? ( (InjectableDescriptor) owner ).getElement() :
+              injector.getElement();
+
+            final Object descriptor = loadDescriptor( ownerElement, classname, data );
+            if ( descriptor instanceof InjectableDescriptor )
             {
-              final Object descriptor = loadDescriptor( classname, data );
-              if ( descriptor instanceof InjectableDescriptor )
+              final InjectableDescriptor injectableDescriptor = (InjectableDescriptor) descriptor;
+              if ( injectableDescriptor.getBinding()
+                .getPublishedServices()
+                .stream()
+                .anyMatch( s -> coordinate.equals( s.getCoordinate() ) ) )
               {
-                final InjectableDescriptor injectableDescriptor = (InjectableDescriptor) descriptor;
-                if ( injectableDescriptor.getBinding()
-                  .getPublishedServices()
-                  .stream()
-                  .anyMatch( s -> coordinate.equals( s.getCoordinate() ) ) )
-                {
-                  _registry.registerInjectable( injectableDescriptor );
-                  bindings.add( injectableDescriptor.getBinding() );
-                }
+                _registry.registerInjectable( injectableDescriptor );
+                bindings.add( injectableDescriptor.getBinding() );
               }
-            }
-            catch ( final IOException e )
-            {
-              final Node node = edge.getNode();
-              final Object owner = node.hasNoBinding() ? null : node.getBinding().getOwner();
-              final TypeElement ownerElement =
-                owner instanceof FragmentDescriptor ? ( (FragmentDescriptor) owner ).getElement() :
-                owner instanceof InjectableDescriptor ? ( (InjectableDescriptor) owner ).getElement() :
-                injector.getElement();
-              throw new ProcessorException( "Failed to read the Sting descriptor for " +
-                                            "type " + classname + ". Error: " + e,
-                                            ownerElement );
             }
           }
         }
@@ -672,17 +664,18 @@ public final class StingProcessor
           MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME );
         throw new ProcessorException( message, originator, annotation );
       }
-      FragmentDescriptor fragment = _registry.findFragmentByClassName( classname );
-      if ( null == fragment && null == _registry.findInjectableByClassName( classname ) )
+      if ( isFragment )
       {
-        final byte[] data = tryLoadDescriptorData( element );
-        if ( null == data )
+        FragmentDescriptor fragment = _registry.findFragmentByClassName( classname );
+        if ( null == fragment )
         {
-          return false;
-        }
-        try
-        {
-          final Object loadedDescriptor = loadDescriptor( classname, data );
+          final byte[] data = tryLoadDescriptorData( element );
+          if ( null == data )
+          {
+            debug( () -> "The fragment " + classname + " is compiled to a .class file but no descriptor is present" );
+            return false;
+          }
+          final Object loadedDescriptor = loadDescriptor( originator, classname, data );
           if ( loadedDescriptor instanceof FragmentDescriptor )
           {
             fragment = (FragmentDescriptor) loadedDescriptor;
@@ -690,20 +683,40 @@ public final class StingProcessor
           }
           else
           {
-            _registry.registerInjectable( (InjectableDescriptor) loadedDescriptor );
+            debug( () -> "The fragment " + classname + " is compiled to a .class " +
+                         "file but an invalid descriptor is present" );
+            return false;
           }
         }
-        catch ( final IOException e )
+        if ( !isFragmentReady( env, fragment ) )
         {
-          throw new ProcessorException( "Failed to read the Sting descriptor for " +
-                                        "include: " + classname + ". " +
-                                        "Error: " + e,
-                                        originator );
+          debug( () -> "Fragment include " + classname + " is present but not yet resolved" );
+          resolved = false;
         }
       }
-      if ( null != fragment && !isFragmentReady( env, fragment ) )
+      else
       {
-        resolved = false;
+        InjectableDescriptor injectable = _registry.findInjectableByClassName( classname );
+        if ( null == injectable )
+        {
+          final byte[] data = tryLoadDescriptorData( element );
+          if ( null == data )
+          {
+            debug( () -> "The injectable " + classname + " is compiled to a .class file but no descriptor is present" );
+            return false;
+          }
+          final Object loadedDescriptor = loadDescriptor( originator, classname, data );
+          if ( loadedDescriptor instanceof InjectableDescriptor )
+          {
+            _registry.registerInjectable( (InjectableDescriptor) loadedDescriptor );
+          }
+          else
+          {
+            debug( () -> "The injectable " + classname + " is compiled to a .class " +
+                         "file but an invalid descriptor is present" );
+            return false;
+          }
+        }
       }
     }
     return resolved;
@@ -1894,10 +1907,19 @@ public final class StingProcessor
   }
 
   @Nonnull
-  private Object loadDescriptor( final String classname, final byte[] data )
-    throws IOException
+  private Object loadDescriptor( @Nonnull final Element originator,
+                                 @Nonnull final String classname,
+                                 @Nonnull final byte[] data )
   {
-    return _descriptorIO.read( new DataInputStream( new ByteArrayInputStream( data ) ), classname );
+    try
+    {
+      return _descriptorIO.read( new DataInputStream( new ByteArrayInputStream( data ) ), classname );
+    }
+    catch ( final IOException e )
+    {
+      throw new ProcessorException( "Failed to read the Sting descriptor for the type " + classname + ". Error: " + e,
+                                    originator );
+    }
   }
 
   @Nullable

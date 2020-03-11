@@ -830,7 +830,7 @@ public final class StingProcessorTest
     diagnostics
       .stream()
       .map( d -> d.getMessage( Locale.getDefault() ) )
-      .filter( d -> d.contains( "Failed to read the Sting descriptor for include: com.example.injector.MyFragment." ) )
+      .filter( d -> d.contains( "Failed to read the Sting descriptor for the type com.example.injector.MyFragment." ) )
       .findAny()
       .orElseThrow( AssertionError::new );
   }

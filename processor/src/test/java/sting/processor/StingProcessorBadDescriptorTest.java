@@ -46,7 +46,7 @@ public final class StingProcessorBadDescriptorTest
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
     assertDiagnosticPresent( stage2,
-                             "Failed to read the Sting descriptor for type com.example.bad_descriptors.scenario1.Model1. Error: java.io.IOException: Descriptor for com.example.bad_descriptors.scenario1.Model1 is in an incorrect format. Bad header." );
+                             "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.IOException: Descriptor for com.example.bad_descriptors.scenario1.Model1 is in an incorrect format. Bad header." );
     assertDiagnosticPresent( stage2,
                              "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
@@ -85,7 +85,7 @@ public final class StingProcessorBadDescriptorTest
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
     assertDiagnosticPresent( stage2,
-                             "Failed to read the Sting descriptor for type com.example.bad_descriptors.scenario1.Model1. Error: java.io.IOException: Descriptor for com.example.bad_descriptors.scenario1.Model1 is in an unknown version: 255" );
+                             "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.IOException: Descriptor for com.example.bad_descriptors.scenario1.Model1 is in an unknown version: 255" );
     assertDiagnosticPresent( stage2,
                              "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
@@ -124,7 +124,7 @@ public final class StingProcessorBadDescriptorTest
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
     assertDiagnosticPresent( stage2,
-                             "Failed to read the Sting descriptor for type com.example.bad_descriptors.scenario1.Model1. Error: java.io.EOFException" );
+                             "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.EOFException" );
     assertDiagnosticPresent( stage2,
                              "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
@@ -158,7 +158,7 @@ public final class StingProcessorBadDescriptorTest
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
     assertDiagnosticPresent( stage2,
-                             "Failed to read the Sting descriptor for type com.example.bad_descriptors.scenario1.Model1. Error: java.io.EOFException" );
+                             "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.EOFException" );
     assertDiagnosticPresent( stage2,
                              "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
@@ -230,7 +230,7 @@ public final class StingProcessorBadDescriptorTest
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
     assertDiagnosticPresent( stage2,
-                             "Failed to read the Sting descriptor for type com.example.bad_descriptors.scenario2.Model1. Error: java.io.EOFException" );
+                             "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario2.Model1. Error: java.io.EOFException" );
     assertDiagnosticPresent( stage2,
                              "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
@@ -266,7 +266,7 @@ public final class StingProcessorBadDescriptorTest
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
     assertDiagnosticPresent( stage2,
-                             "Failed to read the Sting descriptor for type com.example.bad_descriptors.scenario3.Model1. Error: java.io.EOFException" );
+                             "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario3.Model1. Error: java.io.EOFException" );
     assertDiagnosticPresent( stage2,
                              "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
