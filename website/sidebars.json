@@ -10,6 +10,7 @@
       "naming",
       "inputs",
       "include_injector",
+      "processor_options",
       "dagger",
       "framework_integration",
       "graphviz_integration",
