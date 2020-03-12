@@ -2,6 +2,9 @@
 
 ### Unreleased
 
+* Add some basic documentation on the following topics:
+  - Accessing services managed by the injector
+
 ### [v0.07](https://github.com/sting-ioc/sting/tree/v0.07) (2020-03-12) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.06...v0.07)
 
 Changes in this release:

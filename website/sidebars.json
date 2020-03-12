@@ -9,6 +9,7 @@
       "typing",
       "naming",
       "inputs",
+      "outputs",
       "include_injector",
       "processor_options",
       "dagger",
