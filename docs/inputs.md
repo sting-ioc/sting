@@ -1,5 +1,6 @@
 ---
 title: Injecting Services into Injector
+sidebar_label: Injector Service Inputs
 ---
 
 When creating creating an injector it is common to want to pass services and values into the injector
