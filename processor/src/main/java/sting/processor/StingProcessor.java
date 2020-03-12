@@ -212,7 +212,8 @@ public final class StingProcessor
                          "as not all of their dependencies could be resolved. The java code resolved but the " +
                          "descriptors were missing or in the incorrect format. Ensure that the included " +
                          "typed have been compiled with a compatible version of Sting and that the .sbf " +
-                         "descriptors have been packaged with the .class files." );
+                         "descriptors have been packaged with the .class files. If the problem is not " +
+                         "obvious, consider passing the annotation option sting.debug=true" );
         for ( final InjectorDescriptor injector : injectors )
         {
           processingEnv
