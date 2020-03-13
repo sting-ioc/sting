@@ -2,6 +2,9 @@
 
 ### Unreleased
 
+* Add some basic documentation on the following topics:
+  - Fragments
+
 ### [v0.08](https://github.com/sting-ioc/sting/tree/v0.08) (2020-03-13) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.07...v0.08)
 
 Changes in this release:
