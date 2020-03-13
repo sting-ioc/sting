@@ -83,7 +83,7 @@ strengths of Sting relative to Dagger include:
   are used.
 
 * The sting annotation processor is small, self-contained and vendors it's dependencies. This makes it easy to add
-  a single dependency to the processor path that can not interfere with other annotation processors. As of version
+  a single dependency to the processor path that does not interfere with other annotation processors. As of version
   `2.25.2`, the Dagger annotation processor requires ~14 artifacts to be added to the processor path including several
   used by other annotation processors such as `com.google.auto:auto-common`, `com.google.guava:guava` and
   `com.squareup:javapoet` which are commonly used in other annotation processors and occasionally cause conflicts
