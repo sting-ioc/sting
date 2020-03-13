@@ -13,6 +13,5 @@ public class Main
     {
       System.out.println( "Huzzah! The book is available" );
     }
-    //0434023396
   }
 }
