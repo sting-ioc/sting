@@ -96,8 +96,8 @@ strengths of Sting relative to Dagger include:
   application is initializing.
 
 * Sting supports the {@link: sting.Typed @Typed} annotation to control the types published by a component. The same
-  capability is present within dagger but it that the bindings are declared using a `@dagger.Module` annotated
-  type which is significantly more verbose.
+  capability is present within dagger but this capability requires that the bindings are declared using a
+  `@dagger.Module` annotated type which is significantly more verbose.
 
 * Stings supports publishing and consuming package-access components, even when the package-access component is in
   a different package from the injector.
