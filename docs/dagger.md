@@ -23,7 +23,7 @@ Some of the additional features present in Dagger and missing from Sting include
 
 * [Android integration](https://dagger.dev/android) exists to make it relatively easy to integrate into
   Android applications and expose Android specific types into the Dagger component graph and to expose Dagger
-  components to Android framework. Sting provides no builtin support although providing Android types to a
+  components to the Android framework. Sting provides no builtin support although providing Android types to a
   Sting injector is trivial.
 
 * [gRPC integration](https://dagger.dev/grpc). Sting provides no integration with gRPC.
