@@ -334,12 +334,14 @@ public final class StingProcessor
 
     final String packageName = GeneratorUtil.getQualifiedPackageName( graph.getInjector().getElement() );
 
-    debug( () -> "Emitting injector implementation for the injector " + graph.getInjector().getElement().getQualifiedName() );
+    debug( () -> "Emitting injector implementation for the injector " +
+                 graph.getInjector().getElement().getQualifiedName() );
     emitTypeSpec( packageName, InjectorGenerator.buildType( processingEnv, graph ) );
 
     if ( injector.isInjectable() )
     {
-      debug( () -> "Emitting injector provider for the injector " + graph.getInjector().getElement().getQualifiedName() );
+      debug( () -> "Emitting injector provider for the injector " +
+                   graph.getInjector().getElement().getQualifiedName() );
       emitTypeSpec( packageName, InjectorProviderGenerator.buildType( processingEnv, graph ) );
     }
     emitDotReport( graph );
