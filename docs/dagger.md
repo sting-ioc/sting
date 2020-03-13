@@ -16,7 +16,7 @@ Some of the additional features present in Dagger and missing from Sting include
 
 * [Producers](https://dagger.dev/producers) or asynchronous dependency injection capabilities. Asynchronously
   produced types can exist within a normal application and there is limited control over scheduling construction
-  of these asynchronous types within the application. The only real constrain is that non-asynchronous types
+  of these asynchronous types within the application. The only real constraint is that non-asynchronous types
   can not be **directly** dependent on asynchronous types. This is not supported within Sting as asynchronicity
   is handled differently within a web application if it is ever required. Even if there was a valid use case for
   asynchronous injector construction, a radically different implementation is required.
