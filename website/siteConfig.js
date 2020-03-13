@@ -193,7 +193,7 @@ const siteConfig = {
     primaryColor: '#050505',
     secondaryColor: '#3E885B'
   },
-  // This copyright info is used in /core/Footer.js and blog rss/atom feeds.
+  // This copyright info is used in /core/Footer.js
   copyright: 'Copyright © ' + new Date().getFullYear() + ' the Sting Project',
   organizationName: 'sting',
   highlight: {
