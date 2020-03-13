@@ -851,6 +851,7 @@ public final class StingProcessorTest
         .withOptions( getOptions() )
         .compile( inputs( "com.example.multiround.fragment.MyInjector",
                           "com.example.multiround.fragment.MyFragment",
+                          // The following inputs exist so that the synthesizing processor has types to "process"
                           "com.example.multiround.fragment.MyFramework",
                           "com.example.multiround.fragment.SomeType" ) );
 
