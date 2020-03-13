@@ -60,7 +60,7 @@ Some of the additional features present in Dagger and missing from Sting include
 * Dagger has much better support for scopes as well as the (dagger specific) caching
   [reusable scope](https://dagger.dev/users-guide#reusable-scope). Sting assumes every binding within the
   injector has a single instance (at most) which is conceptually similar to `@Singleton` scoped instances. It is
-  possible to model similar behaviour in Sting but it is laborious and inefficient.
+  possible to model scopes in Sting but it is laborious and inefficient.
 
 It is possible that Sting will gain the functionality of subcomponents and scopes in the future and may even
 improve on the Dagger model by adding features such as
