@@ -30,7 +30,7 @@ const javaLink = function(code) {
   const classname = parts[0];
   const member = parts.length > 1 ? parts[1] : '';
 
-  const label = elements.length > 1 ? elements[1] : (classname.replace(/^.+\./, '') + '.' + member );
+  const label = elements.length > 1 ? elements.slice(1).join(' ') : (classname.replace(/^.+\./, '') + '.' + member );
 
   const url =
     '/api/' +
