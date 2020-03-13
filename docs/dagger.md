@@ -107,9 +107,9 @@ strengths of Sting relative to Dagger include:
   failing tests when linting errors are detected.
 
 * Sting generates errors or (suppressable) warnings when problematic or confusing code constructs are present in
-  the compiled code. i.e. {@link: sting.Injectable @Injectable} should either not specify a constructor or should
-  use package access constructors, annotations from other injection frameworks should not be intermingled with
-  sting code etc.
+  the analyzed code. i.e. {@link: sting.Injectable @Injectable} annotated types should either not specify a
+  constructor or should specify a single package access constructor, annotations from other injection frameworks
+  should not be intermingled with sting code etc.
 
 * Sting works hard to detect and report problems with the component graph before code generation occurs rather
   than generating incorrect code and leaving it to javac to detect problems ... and for the user to work back
