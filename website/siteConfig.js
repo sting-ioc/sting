@@ -178,7 +178,6 @@ const siteConfig = {
   headerLinks: [
     { doc: 'overview', label: 'Docs' },
     { href: '/api', label: 'API' },
-    { blog: true, label: 'Blog' },
     { href: 'https://github.com/sting-ioc/sting/releases', label: 'Releases', external: true },
     { href: 'https://github.com/sting-ioc/sting', label: 'GitHub', external: true },
     { search: true }
