@@ -52,6 +52,7 @@ import org.realityforge.proton.JsonUtil;
 import org.realityforge.proton.MemberChecks;
 import org.realityforge.proton.ProcessorException;
 import org.realityforge.proton.ResourceUtil;
+import org.realityforge.proton.SuperficialValidation;
 import org.realityforge.proton.TypesUtil;
 
 /**
@@ -282,10 +283,18 @@ public final class StingProcessor
     for ( final InjectorDescriptor injector : new ArrayList<>( _registry.getInjectors() ) )
     {
       performAction( env, e -> {
-        if ( !injector.containsError() && isInjectorResolved( env, injector ) )
+        if ( !injector.containsError() )
         {
-          _registry.deregisterInjector( injector );
-          buildAndEmitObjectGraph( injector );
+          if ( isInjectorResolved( env, injector ) )
+          {
+            _registry.deregisterInjector( injector );
+            buildAndEmitObjectGraph( injector );
+          }
+          else
+          {
+            debug( () -> "Defer analysis of the injector " + injector.getElement().getQualifiedName() +
+                         " as it is not yet resolved" );
+          }
         }
       }, injector.getElement() );
     }
@@ -294,10 +303,13 @@ public final class StingProcessor
   private void buildAndEmitObjectGraph( @Nonnull final InjectorDescriptor injector )
     throws Exception
   {
+    debug( () -> "Preparing to build component graph for the injector " + injector.getElement().getQualifiedName() );
     final ComponentGraph graph = new ComponentGraph( injector );
     registerIncludesComponents( graph );
 
     registerInputs( graph );
+
+    debug( () -> "Building component graph for the injector " + injector.getElement().getQualifiedName() );
 
     buildObjectGraphNodes( graph );
 
@@ -310,16 +322,24 @@ public final class StingProcessor
                                     graph.getInjector().getElement() );
     }
 
+    debug( () -> "Propagating eager-ness for the injector " + injector.getElement().getQualifiedName() );
+
     propagateEagerFlagUpstream( graph );
+
+    debug( () -> "Verifying no circular dependencies for the injector " + injector.getElement().getQualifiedName() );
 
     CircularDependencyChecker.verifyNoCircularDependencyLoops( graph );
 
     emitObjectGraphJsonDescriptor( graph );
 
     final String packageName = GeneratorUtil.getQualifiedPackageName( graph.getInjector().getElement() );
+
+    debug( () -> "Emitting injector implementation for the injector " + graph.getInjector().getElement().getQualifiedName() );
     emitTypeSpec( packageName, InjectorGenerator.buildType( processingEnv, graph ) );
+
     if ( injector.isInjectable() )
     {
+      debug( () -> "Emitting injector provider for the injector " + graph.getInjector().getElement().getQualifiedName() );
       emitTypeSpec( packageName, InjectorProviderGenerator.buildType( processingEnv, graph ) );
     }
     emitDotReport( graph );
@@ -332,6 +352,8 @@ public final class StingProcessor
     {
       final TypeElement element = graph.getInjector().getElement();
       final String filename = toFilename( element ) + DOT_SUFFIX;
+      debug( () -> "Emitting .dot report for the injector " + graph.getInjector().getElement().getQualifiedName() );
+
       final String report = InjectorDotReportGenerator.buildDotReport( processingEnv, graph );
       ResourceUtil.writeResource( processingEnv, filename, report, element );
     }
@@ -560,6 +582,7 @@ public final class StingProcessor
     {
       final TypeElement element = graph.getInjector().getElement();
       final String filename = toFilename( element ) + GRAPH_SUFFIX;
+      debug( () -> "Emitting json descriptor for the injector " + graph.getInjector().getElement().getQualifiedName() );
       JsonUtil.writeJsonResource( processingEnv, element, filename, graph::write );
     }
   }
@@ -673,7 +696,8 @@ public final class StingProcessor
           final byte[] data = tryLoadDescriptorData( element );
           if ( null == data )
           {
-            debug( () -> "The fragment " + classname + " is compiled to a .class file but no descriptor is present" );
+            debug( () -> "The fragment " + classname + " is compiled to a .class file but no descriptor is present. " +
+                         "Marking " + originator.getQualifiedName() + " as unresolved" );
             return false;
           }
           final Object loadedDescriptor = loadDescriptor( originator, classname, data );
@@ -685,13 +709,15 @@ public final class StingProcessor
           else
           {
             debug( () -> "The fragment " + classname + " is compiled to a .class " +
-                         "file but an invalid descriptor is present" );
+                         "file but an invalid descriptor is present. " +
+                         "Marking " + originator.getQualifiedName() + " as unresolved" );
             return false;
           }
         }
         if ( !isFragmentReady( env, fragment ) )
         {
-          debug( () -> "Fragment include " + classname + " is present but not yet resolved" );
+          debug( () -> "Fragment include " + classname + " is present but not yet resolved. " +
+                       "Marking " + originator.getQualifiedName() + " as unresolved" );
           resolved = false;
         }
       }
@@ -703,7 +729,8 @@ public final class StingProcessor
           final byte[] data = tryLoadDescriptorData( element );
           if ( null == data )
           {
-            debug( () -> "The injectable " + classname + " is compiled to a .class file but no descriptor is present" );
+            debug( () -> "The injectable " + classname + " is compiled to a .class file but no descriptor is present." +
+                         "Marking " + originator.getQualifiedName() + " as unresolved" );
             return false;
           }
           final Object loadedDescriptor = loadDescriptor( originator, classname, data );
@@ -714,7 +741,8 @@ public final class StingProcessor
           else
           {
             debug( () -> "The injectable " + classname + " is compiled to a .class " +
-                         "file but an invalid descriptor is present" );
+                         "file but an invalid descriptor is present. " +
+                         "Marking " + originator.getQualifiedName() + " as unresolved" );
             return false;
           }
         }
