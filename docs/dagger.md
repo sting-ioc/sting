@@ -103,8 +103,8 @@ strengths of Sting relative to Dagger include:
   a different package from the injector.
 
 * Sting suppresses any warnings in the generated code to ensure that if the code is compiled with javac linting
-  enabled then no warnings will be generated. This is verified by enabling linting in tests and failing tests
-  when linting errors are detected.
+  enabled then no warnings will be generated. Sting verifies this behaviour by enabling linting in tests and
+  failing tests when linting errors are detected.
 
 * Sting generates errors or (suppressable) warnings when problematic or confusing code constructs are present in
   the compiled code. i.e. {@link: sting.Injectable @Injectable} should either not specify a constructor or should
