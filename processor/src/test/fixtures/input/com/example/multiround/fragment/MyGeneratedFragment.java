@@ -1,6 +1,8 @@
-package com.example.multiround;
+package com.example.multiround.fragment;
 
-@sting.Fragment
+import sting.Fragment;
+
+@Fragment
 public interface MyGeneratedFragment
 {
   default Object provideObject()
