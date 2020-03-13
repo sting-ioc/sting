@@ -84,15 +84,16 @@ strengths of Sting relative to Dagger include:
 
 * The sting annotation processor is small, self-contained and vendors it's dependencies. This makes it easy to add
   a single dependency to the processor path that does not interfere with other annotation processors. As of version
-  `2.25.2`, the Dagger annotation processor requires ~14 artifacts to be added to the processor path including several
-  used by other annotation processors such as `com.google.auto:auto-common`, `com.google.guava:guava` and
-  `com.squareup:javapoet` which are commonly used in other annotation processors and occasionally cause conflicts
+  `2.25.2`, the Dagger annotation processor requires ~14 artifacts to be added to the processor path including
+  several artifacts that are commonly used by other annotation processors such as `com.google.auto:auto-common`,
+  `com.google.guava:guava` and `com.squareup:javapoet`. Version conflicts can occasionally cause conflicts
   when different annotation processors are using different versions of these libraries.
 
-* Sting components can be annotated with the {@link: sting.Eager @Eager} annotation will result in the component being
-  constructed when the injector is constructed. Lazy components are those without this annotation and will be
-  constructed the first time they are accessed. This is particularly useful in a web context when components will
-  often register event listeners when they are constructed.
+* Sting components can be annotated with the {@link: sting.Eager @Eager} annotation. This will result in the
+  component being constructed when the injector is constructed. Lazy components are those without this annotation
+  and will be constructed the first time they are accessed. This is particularly useful in a web context when
+  components will often register event listeners when they are constructed and thus need to be created when the
+  application is initializing.
 
 * Sting supports the {@link: sting.Typed @Typed} annotation to control the types published by a component. The same
   capability is present within dagger but it that the bindings are declared using a `@dagger.Module` annotated
