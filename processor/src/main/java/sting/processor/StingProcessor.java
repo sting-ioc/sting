@@ -738,7 +738,8 @@ public final class StingProcessor
           final Object loadedDescriptor = loadDescriptor( originator, classname, data );
           if ( loadedDescriptor instanceof InjectableDescriptor )
           {
-            _registry.registerInjectable( (InjectableDescriptor) loadedDescriptor );
+            injectable = (InjectableDescriptor) loadedDescriptor;
+            _registry.registerInjectable( injectable );
           }
           else
           {
@@ -747,6 +748,12 @@ public final class StingProcessor
                          "Marking " + originator.getQualifiedName() + " as unresolved" );
             return false;
           }
+        }
+        if ( !SuperficialValidation.validateElement( processingEnv, injectable.getElement() ) )
+        {
+          debug( () -> "Injectable include " + classname + " is not yet resolved. " +
+                       "Marking " + originator.getQualifiedName() + " as unresolved" );
+          resolved = false;
         }
       }
     }

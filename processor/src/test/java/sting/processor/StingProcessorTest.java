@@ -874,6 +874,41 @@ public final class StingProcessorTest
     assertClassFile( generatedFiles, "com.example.multiround.fragment.Sting_MyGeneratedFragment" );
   }
 
+  @Test
+  public void injectableCreatedInLaterRound()
+    throws Exception
+  {
+    // This verifies that a fragment created by another annotation processor will be
+    // incorporated into the at the component graph without causing failures
+    final Processor synthesizingProcessor =
+      newSynthesizingProcessor( "com.example.multiround.injectable.MyGeneratedInjectable", 0 );
+    final Compilation compilation =
+      Compiler.javac()
+        .withProcessors( Arrays.asList( processor(), synthesizingProcessor ) )
+        .withOptions( getOptions() )
+        .compile( inputs( "com.example.multiround.injectable.MyInjector",
+                          "com.example.multiround.injectable.MyFragment",
+                          // The following inputs exist so that the synthesizing processor has types to "process"
+                          "com.example.multiround.fragment.MyFramework",
+                          "com.example.multiround.fragment.SomeType" ) );
+
+    assertCompilationSuccessful( compilation );
+    final ImmutableList<JavaFileObject> generatedFiles = compilation.generatedFiles();
+
+    assertClassFile( generatedFiles, "com.example.multiround.injectable.MyInjector" );
+    assertJavaFile( generatedFiles, "com.example.multiround.injectable.Sting_MyInjector" );
+    assertClassFile( generatedFiles, "com.example.multiround.injectable.Sting_MyInjector" );
+    assertClassFile( generatedFiles, "com.example.multiround.injectable.MyFragment" );
+    assertDescriptorFile( generatedFiles, "com.example.multiround.injectable.MyFragment" );
+    assertJavaFile( generatedFiles, "com.example.multiround.injectable.Sting_MyFragment" );
+    assertClassFile( generatedFiles, "com.example.multiround.injectable.Sting_MyFragment" );
+    assertJavaFile( generatedFiles, "com.example.multiround.injectable.MyGeneratedInjectable" );
+    assertClassFile( generatedFiles, "com.example.multiround.injectable.MyGeneratedInjectable" );
+    assertDescriptorFile( generatedFiles, "com.example.multiround.injectable.MyGeneratedInjectable" );
+    assertJavaFile( generatedFiles, "com.example.multiround.injectable.Sting_MyGeneratedInjectable" );
+    assertClassFile( generatedFiles, "com.example.multiround.injectable.Sting_MyGeneratedInjectable" );
+  }
+
   @Nonnull
   private Compilation compileInjector( @Nonnull final Path targetDir )
   {
