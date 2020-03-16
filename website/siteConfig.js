@@ -35,8 +35,7 @@ const javaLink = function(code) {
   var indexOfClassNameStart = 0;
   for (indexOfClassNameStart = 0; indexOfClassNameStart < nameParts.length; indexOfClassNameStart++) {
     var ch = nameParts[indexOfClassNameStart].charAt(0);
-    if(ch === ch.toUpperCase() )
-    {
+    if (ch === ch.toUpperCase()) {
       break;
     }
   }
@@ -71,8 +70,7 @@ function parseParams(params) {
       const key = param.slice(0, eqIndex);
       args[key] = param.slice(eqIndex + 1);
       paramsLeft = paramsLeft.slice(result[0].length);
-    }
-    else {
+    } else {
       break;
     }
   }
@@ -153,11 +151,9 @@ const fileContent = function(params, options) {
     if (!inElission && elideStartRegex.test(line)) {
       inElission = true;
       newSelectedLines.push(Array(lastWhitespaceAtStart + 1).join(' ') + elideReplacement);
-    }
-    else if (inElission && elideEndRegex.test(line)) {
+    } else if (inElission && elideEndRegex.test(line)) {
       inElission = false;
-    }
-    else if (!inElission) {
+    } else if (!inElission) {
       if (0 !== line.length) {
         lastWhitespaceAtStart = line.search(/\S|$/);
         whitespaceAtStart = Math.min(whitespaceAtStart, lastWhitespaceAtStart);
