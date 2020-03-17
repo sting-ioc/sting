@@ -408,7 +408,7 @@ public final class StingProcessor
   {
     final Set<Node> completed = new HashSet<>();
     final Stack<WorkEntry> workList = new Stack<>();
-    // At this stage the "rootNode" contains dependencies for all the service methods declared on the injector
+    // At this stage the "rootNode" contains dependencies for all the output methods declared on the injector
     // and all the eager services declared in includes have already been added to the nodes list.
     //
     // We start at the rootNode and expand all of the dependencies. And then we take any of the eager dependencies
