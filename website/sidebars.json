@@ -1,26 +1,28 @@
 {
   "docs": {
-    "About": [
+    "Sting": [
       "overview",
       "project_setup",
       "getting_started"
     ],
-    "Technical": [
+    "Essentials": [
       "fragments",
       "typing",
       "naming",
+      "dependency_kinds",
       "inputs",
       "outputs",
-      "dependency_kinds",
-      "include_injector",
-      "processor_options",
-      "dagger",
+      "include_injector"
+    ],
+    "Advanced Topics": [
       "framework_integration",
       "graphviz_integration",
-      "performance"
+      "processor_options"
     ],
     "Project Documentation": [
-      "development_process"
+      "development_process",
+      "dagger",
+      "performance"
     ]
   }
 }
