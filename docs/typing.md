@@ -22,15 +22,15 @@ The easiest way to illustrate how this would work is to present some basic examp
 <!-- toc -->
 
 * <a>Examples</a>
-  - [`@Typed` on `@Injectable` types](#typed-on-injectable-types)
-  - [`@Typed` on provider methods](#typed-on-provider-methods)
-  - [Combining `@Typed` and `@Named`](#combining-typed-and-named)
+  - [@Typed on @Injectable types](#typed-on-injectable-types)
+  - [@Typed on provider methods](#typed-on-provider-methods)
+  - [Combining @Typed and @Named](#combining-typed-and-named)
 
 <!-- tocstop -->
 
 </nav>
 
-## `@Typed` on `@Injectable` types
+## @Typed on @Injectable types
 
 Consider a scenario where you have a single component that provides multiple services. The following
 example demonstrates the `MessageService` that publishes two types. The `MessageSender` type is published
@@ -50,7 +50,7 @@ ever needing to send messages. For example:
 
 {@file_content: file=sting/doc/examples/typing/UserHeaderItem.java start_line=@Injectable}
 
-## `@Typed` on provider methods
+## @Typed on provider methods
 
 The {@link: sting.Typed @Typed} annotation can be applied to provider methods with the same impacts as when
 it is applied to an injectable type. We could re-implement the above example but instead of using types
@@ -59,7 +59,7 @@ example would look like:
 
 {@file_content: file=sting/doc/examples/typing/ApplicationFragment.java start_line=@Fragment}
 
-## Combining `@Typed` and `@Named`
+## Combining @Typed and @Named
 
 The {@link: sting.Typed @Typed} annotation can be combined with the {@link: sting.Named @Named} annotation.
 The qualifier specified by the {@link: sting.Named @Named} annotation is applied to all the types published
