@@ -19,7 +19,7 @@ Some of the additional features present in Dagger and missing from Sting include
   of these asynchronous types within the application. The only real constraint is that non-asynchronous types
   can not be **directly** dependent on asynchronous types. This is not supported within Sting as asynchronicity
   is handled differently within a web application if it is ever required. Even if there was a valid use case for
-  asynchronous injector construction, a radically different implementation is required.
+  asynchronous injector construction on the web, a radically different implementation is required.
 
 * [Android integration](https://dagger.dev/android) exists to make it relatively easy to integrate into
   Android applications and expose Android specific types into the Dagger component graph and to expose Dagger
