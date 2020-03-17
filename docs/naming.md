@@ -4,7 +4,7 @@ title: Customizing Service Qualifiers
 
 Sometimes an injector contains multiple instances of a component that are published using the same type.
 (For details on how to customize service types see the ["Customizing Service Types"](typing.md) document.)
-In this scenario it is useful to distinguish different services of the same type bu different semantics
+In this scenario it is useful to distinguish different services of the same type but different semantics
 using a "qualifier". Within Sting, a qualifier is an opaque, user-supplied string that is specified using
 the {@link: sting.Named @Named} annotation. The {@link: sting.Named @Named} annotation can be added to to
 where a service is published or where a service is consumed.
