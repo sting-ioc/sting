@@ -106,9 +106,9 @@ final class InjectorDotReportGenerator
       .append( toNode.getName() )
       .append( " [" );
     boolean hasAttributes = false;
-    final ServiceDescriptor service = edge.getService();
-    final ServiceSpec serviceSpec = service.getService();
-    final Coordinate coordinate = serviceSpec.getCoordinate();
+    final ServiceRequest serviceRequest = edge.getServiceRequest();
+    final ServiceSpec service = serviceRequest.getService();
+    final Coordinate coordinate = service.getCoordinate();
     final TypeMirror serviceType = coordinate.getType();
     if ( !processingEnv.getTypeUtils().isSameType( serviceType, toNode.getType() ) )
     {
@@ -122,7 +122,7 @@ final class InjectorDotReportGenerator
       sb.append( "\"" );
       hasAttributes = true;
     }
-    if ( serviceSpec.isOptional() )
+    if ( service.isOptional() )
     {
       if ( hasAttributes )
       {
@@ -131,7 +131,8 @@ final class InjectorDotReportGenerator
       sb.append( "style=dotted" );
       hasAttributes = true;
     }
-    if ( service.getKind().isCollection() && service.getKind().isSupplier() )
+    final ServiceRequest.Kind kind = serviceRequest.getKind();
+    if ( kind.isCollection() && kind.isSupplier() )
     {
       if ( hasAttributes )
       {
@@ -140,7 +141,7 @@ final class InjectorDotReportGenerator
       sb.append( "dir=both, arrowtail=odot, arrowhead=crow" );
       hasAttributes = true;
     }
-    else if ( service.getKind().isCollection() )
+    else if ( kind.isCollection() )
     {
       if ( hasAttributes )
       {
@@ -149,7 +150,7 @@ final class InjectorDotReportGenerator
       sb.append( "dir=both, arrowtail=normal, arrowhead=crow" );
       hasAttributes = true;
     }
-    else if ( service.getKind().isSupplier() )
+    else if ( kind.isSupplier() )
     {
       if ( hasAttributes )
       {
@@ -182,7 +183,7 @@ final class InjectorDotReportGenerator
   {
     for ( final Edge edge : node.getDependsOn() )
     {
-      recordType( types, edge.getService().getService().getCoordinate().getType().toString() );
+      recordType( types, edge.getServiceRequest().getService().getCoordinate().getType().toString() );
     }
   }
 

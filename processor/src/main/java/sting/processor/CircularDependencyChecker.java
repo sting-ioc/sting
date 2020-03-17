@@ -105,7 +105,7 @@ final class CircularDependencyChecker
    */
   private static boolean doesEdgeBreakDependencyChain( @Nullable final Edge edge )
   {
-    return null == edge || edge.getService().getKind().isSupplier();
+    return null == edge || edge.getServiceRequest().getKind().isSupplier();
   }
 
   /**

@@ -66,7 +66,7 @@ final class InjectorGenerator
   {
     for ( final Edge edge : graph.getRootNode().getDependsOn() )
     {
-      final ServiceDescriptor service = edge.getService();
+      final ServiceRequest service = edge.getServiceRequest();
       final ExecutableElement element = (ExecutableElement) service.getElement();
       final MethodSpec.Builder method =
         MethodSpec.overriding( element,
@@ -197,10 +197,10 @@ final class InjectorGenerator
   {
     for ( final Edge edge : graph.getRootNode().getDependsOn() )
     {
-      final ServiceDescriptor service = edge.getService();
-      if ( service.getKind().isCollection() )
+      final ServiceRequest serviceRequest = edge.getServiceRequest();
+      if ( serviceRequest.getKind().isCollection() )
       {
-        final TypeName serviceType = StingGeneratorUtil.getServiceType( service );
+        final TypeName serviceType = StingGeneratorUtil.getServiceType( serviceRequest );
         builder.addField( FieldSpec.builder( serviceType, getOutputCollectionCacheName( edge ), Modifier.PRIVATE )
                             .build() );
       }
@@ -210,7 +210,7 @@ final class InjectorGenerator
   @Nonnull
   private static String getOutputCollectionCacheName( @Nonnull final Edge edge )
   {
-    return StingGeneratorUtil.FRAMEWORK_PREFIX + edge.getService().getElement().getSimpleName().toString() + "Cache";
+    return StingGeneratorUtil.FRAMEWORK_PREFIX + edge.getServiceRequest().getElement().getSimpleName().toString() + "Cache";
   }
 
   private static TypeName getPublicTypeName( @Nonnull final Node node )
@@ -345,8 +345,8 @@ final class InjectorGenerator
                                         @Nonnull final List<Object> args )
   {
     final Collection<Node> satisfiedBy = edge.getSatisfiedBy();
-    final ServiceDescriptor service = edge.getService();
-    final ServiceDescriptor.Kind kind = service.getKind();
+    final ServiceRequest service = edge.getServiceRequest();
+    final ServiceRequest.Kind kind = service.getKind();
     if ( !kind.isCollection() )
     {
       if ( satisfiedBy.isEmpty() )
@@ -398,13 +398,13 @@ final class InjectorGenerator
    * @param code the code template to append to.
    * @param args the args that passed to javapoet template.
    */
-  private static void emitNodeAccessor( @Nonnull final ServiceDescriptor service,
+  private static void emitNodeAccessor( @Nonnull final ServiceRequest service,
                                         @Nonnull final Node node,
                                         final boolean isOutput,
                                         @Nonnull final StringBuilder code,
                                         @Nonnull final List<Object> args )
   {
-    final ServiceDescriptor.Kind kind = service.getKind();
+    final ServiceRequest.Kind kind = service.getKind();
     if ( kind.isSupplier() )
     {
       code.append( "() -> " );

@@ -34,7 +34,7 @@ final class Node
    * The edges to nodes that this node depends upon.
    */
   @Nonnull
-  private final Map<ServiceDescriptor, Edge> _dependsOn = new LinkedHashMap<>();
+  private final Map<ServiceRequest, Edge> _dependsOn = new LinkedHashMap<>();
   /**
    * The edges to nodes that use this node.
    */
@@ -80,7 +80,7 @@ final class Node
   {
     this( componentGraph,
           null,
-          componentGraph.getInjector().getOutputs().toArray( new ServiceDescriptor[ 0 ] ) );
+          componentGraph.getInjector().getOutputs().toArray( new ServiceRequest[ 0 ] ) );
   }
 
   /**
@@ -95,11 +95,11 @@ final class Node
 
   private Node( @Nonnull final ComponentGraph componentGraph,
                 @Nullable final Binding binding,
-                @Nonnull final ServiceDescriptor[] dependencies )
+                @Nonnull final ServiceRequest[] dependencies )
   {
     _componentGraph = Objects.requireNonNull( componentGraph );
     _binding = binding;
-    for ( final ServiceDescriptor dependency : dependencies )
+    for ( final ServiceRequest dependency : dependencies )
     {
       _dependsOn.put( dependency, new Edge( this, dependency ) );
     }
@@ -165,7 +165,7 @@ final class Node
       // as they do not need to be created until they are accessed
       for ( final Edge edge : _dependsOn.values() )
       {
-        if ( !edge.getService().getKind().isSupplier() )
+        if ( !edge.getServiceRequest().getKind().isSupplier() )
         {
           edge.getSatisfiedBy().forEach( Node::markNodeAndUpstreamAsEager );
         }
@@ -277,7 +277,7 @@ final class Node
       for ( final Edge edge : _dependsOn.values() )
       {
         g.writeStartObject();
-        edge.getService().getService().getCoordinate().write( g );
+        edge.getServiceRequest().getService().getCoordinate().write( g );
         g.writeStartArray( "supportedBy" );
         for ( final Node node : edge.getSatisfiedBy() )
         {

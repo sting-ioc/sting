@@ -441,8 +441,8 @@ public final class StingProcessor
       final WorkEntry workEntry = workList.pop();
       final Edge edge = workEntry.getEntry().getEdge();
       assert null != edge;
-      final ServiceDescriptor service = edge.getService();
-      final Coordinate coordinate = service.getService().getCoordinate();
+      final ServiceRequest serviceRequest = edge.getServiceRequest();
+      final Coordinate coordinate = serviceRequest.getService().getCoordinate();
       final List<Binding> bindings = new ArrayList<>( graph.findAllBindingsByCoordinate( coordinate ) );
 
       if ( bindings.isEmpty() )
@@ -490,7 +490,7 @@ public final class StingProcessor
       final List<Binding> nullableProviders = bindings.stream()
         .filter( b -> b.getPublishedServices().stream().anyMatch( ServiceSpec::isOptional ) )
         .collect( Collectors.toList() );
-      if ( !service.getService().isOptional() && !nullableProviders.isEmpty() )
+      if ( !serviceRequest.getService().isOptional() && !nullableProviders.isEmpty() )
       {
         final String message =
           MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
@@ -499,11 +499,11 @@ public final class StingProcessor
                                 "Dependency Path:\n" + workEntry.describePathFromRoot() + "\n" +
                                 "Binding" + ( nullableProviders.size() > 1 ? "s" : "" ) + ":\n" +
                                 bindingsToString( nullableProviders ) );
-        throw new ProcessorException( message, service.getElement() );
+        throw new ProcessorException( message, serviceRequest.getElement() );
       }
       if ( bindings.isEmpty() )
       {
-        if ( service.getService().isOptional() || service.getKind().isCollection() )
+        if ( serviceRequest.getService().isOptional() || serviceRequest.getKind().isCollection() )
         {
           edge.setSatisfiedBy( Collections.emptyList() );
         }
@@ -514,12 +514,12 @@ public final class StingProcessor
                                   "contain a non-optional dependency " + coordinate +
                                   " that can not be satisfied.\n" +
                                   "Dependency Path:\n" + workEntry.describePathFromRoot() );
-          throw new ProcessorException( message, service.getElement() );
+          throw new ProcessorException( message, serviceRequest.getElement() );
         }
       }
       else
       {
-        final ServiceDescriptor.Kind kind = service.getKind();
+        final ServiceRequest.Kind kind = serviceRequest.getKind();
         if ( 1 == bindings.size() || kind.isCollection() )
         {
           final List<Node> nodes = new ArrayList<>();
@@ -545,7 +545,7 @@ public final class StingProcessor
                                   " that can be satisfied by multiple nodes.\n" +
                                   "Dependency Path:\n" + workEntry.describePathFromRoot() + "\n" +
                                   "Candidate Nodes:\n" + bindingsToString( bindings ) );
-          throw new ProcessorException( message, service.getElement() );
+          throw new ProcessorException( message, serviceRequest.getElement() );
         }
       }
     }
@@ -791,7 +791,7 @@ public final class StingProcessor
     final List<IncludeDescriptor> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
     final List<InputDescriptor> inputs = extractInputs( element );
 
-    final List<ServiceDescriptor> outputs = new ArrayList<>();
+    final List<ServiceRequest> outputs = new ArrayList<>();
     final List<ExecutableElement> methods =
       ElementsUtil.getMethods( element, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
     for ( final ExecutableElement method : methods )
@@ -846,7 +846,7 @@ public final class StingProcessor
     }
   }
 
-  private void processInjectorOutputMethod( @Nonnull final List<ServiceDescriptor> outputs,
+  private void processInjectorOutputMethod( @Nonnull final List<ServiceRequest> outputs,
                                             @Nonnull final ExecutableElement method )
   {
     assert method.getModifiers().contains( Modifier.ABSTRACT );
@@ -888,7 +888,7 @@ public final class StingProcessor
   }
 
   @Nonnull
-  private ServiceDescriptor processOutputMethod( @Nonnull final ExecutableElement method )
+  private ServiceRequest processOutputMethod( @Nonnull final ExecutableElement method )
   {
     final TypeMirror type = method.getReturnType();
     if ( TypesUtil.containsArrayType( type ) )
@@ -912,8 +912,8 @@ public final class StingProcessor
     else
     {
       TypeMirror dependencyType = null;
-      ServiceDescriptor.Kind kind = null;
-      for ( final ServiceDescriptor.Kind candidate : ServiceDescriptor.Kind.values() )
+      ServiceRequest.Kind kind = null;
+      for ( final ServiceRequest.Kind candidate : ServiceRequest.Kind.values() )
       {
         dependencyType = candidate.extractType( type );
         if ( null != dependencyType )
@@ -931,7 +931,7 @@ public final class StingProcessor
       else
       {
         final boolean optional = AnnotationsUtil.hasNullableAnnotation( method );
-        if ( optional && ServiceDescriptor.Kind.INSTANCE != kind )
+        if ( optional && ServiceRequest.Kind.INSTANCE != kind )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
                                                               "contain a method annotated with " +
@@ -952,7 +952,7 @@ public final class StingProcessor
 
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
         final ServiceSpec service = new ServiceSpec( coordinate, optional );
-        return new ServiceDescriptor( kind, service, method, -1 );
+        return new ServiceRequest( kind, service, method, -1 );
       }
     }
   }
@@ -1219,7 +1219,7 @@ public final class StingProcessor
                      Collections.singletonList( service ),
                      true,
                      element,
-                     new ServiceDescriptor[ 0 ] );
+                     new ServiceRequest[ 0 ] );
       results.add( new InputDescriptor( service, binding, "input" + ( i + 1 ) ) );
     }
     return results;
@@ -1432,7 +1432,7 @@ public final class StingProcessor
 
     final boolean eager = AnnotationsUtil.hasAnnotationOfType( method, Constants.EAGER_CLASSNAME );
 
-    final List<ServiceDescriptor> dependencies = new ArrayList<>();
+    final List<ServiceRequest> dependencies = new ArrayList<>();
     int index = 0;
     final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) method.asType() ).getParameterTypes();
     for ( final VariableElement parameter : method.getParameters() )
@@ -1523,14 +1523,14 @@ public final class StingProcessor
                    Arrays.asList( specs ),
                    eager,
                    method,
-                   dependencies.toArray( new ServiceDescriptor[ 0 ] ) );
+                   dependencies.toArray( new ServiceRequest[ 0 ] ) );
     bindings.put( method, binding );
   }
 
   @Nonnull
-  private ServiceDescriptor processFragmentServiceParameter( @Nonnull final VariableElement parameter,
-                                                             @Nonnull final TypeMirror type,
-                                                             final int parameterIndex )
+  private ServiceRequest processFragmentServiceParameter( @Nonnull final VariableElement parameter,
+                                                          @Nonnull final TypeMirror type,
+                                                          final int parameterIndex )
   {
     if ( TypesUtil.containsArrayType( type ) )
     {
@@ -1553,8 +1553,8 @@ public final class StingProcessor
     else
     {
       TypeMirror dependencyType = null;
-      ServiceDescriptor.Kind kind = null;
-      for ( final ServiceDescriptor.Kind candidate : ServiceDescriptor.Kind.values() )
+      ServiceRequest.Kind kind = null;
+      for ( final ServiceRequest.Kind candidate : ServiceRequest.Kind.values() )
       {
         dependencyType = candidate.extractType( type );
         if ( null != dependencyType )
@@ -1572,7 +1572,7 @@ public final class StingProcessor
       else
       {
         final boolean optional = AnnotationsUtil.hasNullableAnnotation( parameter );
-        if ( optional && ServiceDescriptor.Kind.INSTANCE != kind )
+        if ( optional && ServiceRequest.Kind.INSTANCE != kind )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                               "contain a method with a parameter annotated with the " +
@@ -1592,7 +1592,7 @@ public final class StingProcessor
         }
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
         final ServiceSpec service = new ServiceSpec( coordinate, optional );
-        return new ServiceDescriptor( kind, service, parameter, parameterIndex );
+        return new ServiceRequest( kind, service, parameter, parameterIndex );
       }
     }
   }
@@ -1635,7 +1635,7 @@ public final class StingProcessor
 
     final boolean eager = AnnotationsUtil.hasAnnotationOfType( element, Constants.EAGER_CLASSNAME );
 
-    final List<ServiceDescriptor> dependencies = new ArrayList<>();
+    final List<ServiceRequest> dependencies = new ArrayList<>();
     int index = 0;
     final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) constructor.asType() ).getParameterTypes();
     for ( final VariableElement parameter : constructor.getParameters() )
@@ -1738,7 +1738,7 @@ public final class StingProcessor
                    Arrays.asList( specs ),
                    eager,
                    constructor,
-                   dependencies.toArray( new ServiceDescriptor[ 0 ] ) );
+                   dependencies.toArray( new ServiceRequest[ 0 ] ) );
     final InjectableDescriptor injectable = new InjectableDescriptor( binding );
     _registry.registerInjectable( injectable );
   }
@@ -1822,9 +1822,9 @@ public final class StingProcessor
   }
 
   @Nonnull
-  private ServiceDescriptor handleConstructorParameter( @Nonnull final VariableElement parameter,
-                                                        @Nonnull final TypeMirror type,
-                                                        final int parameterIndex )
+  private ServiceRequest handleConstructorParameter( @Nonnull final VariableElement parameter,
+                                                     @Nonnull final TypeMirror type,
+                                                     final int parameterIndex )
   {
     if ( TypesUtil.containsArrayType( type ) )
     {
@@ -1847,8 +1847,8 @@ public final class StingProcessor
     else
     {
       TypeMirror dependencyType = null;
-      ServiceDescriptor.Kind kind = null;
-      for ( final ServiceDescriptor.Kind candidate : ServiceDescriptor.Kind.values() )
+      ServiceRequest.Kind kind = null;
+      for ( final ServiceRequest.Kind candidate : ServiceRequest.Kind.values() )
       {
         dependencyType = candidate.extractType( type );
         if ( null != dependencyType )
@@ -1866,7 +1866,7 @@ public final class StingProcessor
       else
       {
         final boolean optional = AnnotationsUtil.hasNullableAnnotation( parameter );
-        if ( optional && ServiceDescriptor.Kind.INSTANCE != kind )
+        if ( optional && ServiceRequest.Kind.INSTANCE != kind )
         {
           throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
                                                               "contain a constructor with a parameter annotated with " +
@@ -1888,7 +1888,7 @@ public final class StingProcessor
         }
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
         final ServiceSpec service = new ServiceSpec( coordinate, optional );
-        return new ServiceDescriptor( kind, service, parameter, parameterIndex );
+        return new ServiceRequest( kind, service, parameter, parameterIndex );
       }
     }
   }

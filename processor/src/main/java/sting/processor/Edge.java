@@ -8,15 +8,15 @@ import javax.annotation.Nullable;
 final class Edge
 {
   /**
-   * The node that declared the service dependency.
+   * The node that declared the service request.
    */
   @Nonnull
   private final Node _node;
   /**
-   * The service that needs to be satisfied.
+   * The service that has been requested by the node.
    */
   @Nonnull
-  private final ServiceDescriptor _service;
+  private final ServiceRequest _serviceRequest;
   /**
    * The node(s) used to satisfy the service .
    * May be null if the service is optional and no node exists to satisfy service.
@@ -24,15 +24,15 @@ final class Edge
   @Nullable
   private Collection<Node> _satisfiedBy;
 
-  Edge( @Nonnull final Node node, @Nonnull final ServiceDescriptor service )
+  Edge( @Nonnull final Node node, @Nonnull final ServiceRequest serviceRequest )
   {
     _node = Objects.requireNonNull( node );
-    _service = Objects.requireNonNull( service );
+    _serviceRequest = Objects.requireNonNull( serviceRequest );
   }
 
   void setSatisfiedBy( @Nonnull final Collection<Node> satisfiedBy )
   {
-    assert !satisfiedBy.isEmpty() || _service.getService().isOptional() || _service.getKind().isCollection();
+    assert !satisfiedBy.isEmpty() || _serviceRequest.getService().isOptional() || _serviceRequest.getKind().isCollection();
     _satisfiedBy = satisfiedBy;
     for ( final Node node : satisfiedBy )
     {
@@ -48,16 +48,16 @@ final class Edge
   }
 
   @Nonnull
-  ServiceDescriptor getService()
+  ServiceRequest getServiceRequest()
   {
-    return _service;
+    return _serviceRequest;
   }
 
   @Nonnull
   Collection<Node> getSatisfiedBy()
   {
     assert null != _satisfiedBy;
-    assert !_satisfiedBy.isEmpty() || _service.getService().isOptional() || _service.getKind().isCollection();
+    assert !_satisfiedBy.isEmpty() || _serviceRequest.getService().isOptional() || _serviceRequest.getKind().isCollection();
     return _satisfiedBy;
   }
 }

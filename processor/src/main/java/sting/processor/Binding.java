@@ -42,7 +42,7 @@ final class Binding
    * The dependencies that need to be supplied when creating a binding instance.
    */
   @Nonnull
-  private final ServiceDescriptor[] _dependencies;
+  private final ServiceRequest[] _dependencies;
   /**
    * The service specifications published by this binding.
    */
@@ -62,7 +62,7 @@ final class Binding
            @Nonnull final List<ServiceSpec> publishedServices,
            final boolean eager,
            @Nonnull final Element element,
-           @Nonnull final ServiceDescriptor[] dependencies )
+           @Nonnull final ServiceRequest[] dependencies )
   {
     assert ( Kind.INPUT == kind && ElementKind.INTERFACE == element.getKind() ) ||
            ( Kind.INJECTABLE == kind && ElementKind.CONSTRUCTOR == element.getKind() ) ||
@@ -128,7 +128,7 @@ final class Binding
   }
 
   @Nonnull
-  ServiceDescriptor[] getDependencies()
+  ServiceRequest[] getDependencies()
   {
     return _dependencies;
   }
@@ -154,7 +154,7 @@ final class Binding
     if ( _dependencies.length > 0 )
     {
       g.writeStartArray( "dependencies" );
-      for ( final ServiceDescriptor dependency : _dependencies )
+      for ( final ServiceRequest dependency : _dependencies )
       {
         dependency.write( g );
       }

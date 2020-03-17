@@ -13,7 +13,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
-final class ServiceDescriptor
+final class ServiceRequest
 {
   /**
    * The kind of the service request.
@@ -26,7 +26,7 @@ final class ServiceDescriptor
   @Nonnull
   private final ServiceSpec _service;
   /**
-   * The element that declares the service.
+   * The element that declares the service request.
    * The element will either be:
    * <ul>
    *   <li>a parameter (of type {@link javax.lang.model.element.VariableElement}) of a method in a @Fragment annotated type</li>
@@ -42,10 +42,10 @@ final class ServiceDescriptor
    */
   private final int _parameterIndex;
 
-  ServiceDescriptor( @Nonnull final Kind kind,
-                     @Nonnull final ServiceSpec service,
-                     @Nonnull final Element element,
-                     final int parameterIndex )
+  ServiceRequest( @Nonnull final Kind kind,
+                  @Nonnull final ServiceSpec service,
+                  @Nonnull final Element element,
+                  final int parameterIndex )
   {
     _kind = Objects.requireNonNull( kind );
     _service = Objects.requireNonNull( service );

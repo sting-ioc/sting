@@ -159,9 +159,9 @@ final class DescriptorIO
     }
     dos.writeBoolean( binding.isEager() );
     dos.writeUTF( Binding.Kind.PROVIDES == kind ? binding.getElement().getSimpleName().toString() : "" );
-    final ServiceDescriptor[] dependencies = binding.getDependencies();
+    final ServiceRequest[] dependencies = binding.getDependencies();
     dos.writeShort( dependencies.length );
-    for ( final ServiceDescriptor dependency : dependencies )
+    for ( final ServiceRequest dependency : dependencies )
     {
       writeService( dos, dependency );
     }
@@ -205,7 +205,7 @@ final class DescriptorIO
     assert null != element;
 
     final short dependencyCount = dis.readShort();
-    final ServiceDescriptor[] dependencies = new ServiceDescriptor[ dependencyCount ];
+    final ServiceRequest[] dependencies = new ServiceRequest[ dependencyCount ];
     for ( int i = 0; i < dependencies.length; i++ )
     {
       dependencies[ i ] = readService( dis, element );
@@ -214,7 +214,7 @@ final class DescriptorIO
     return new Binding( kind, id, Arrays.asList( specs ), eager, element, dependencies );
   }
 
-  private void writeService( @Nonnull final DataOutputStream dos, @Nonnull final ServiceDescriptor service )
+  private void writeService( @Nonnull final DataOutputStream dos, @Nonnull final ServiceRequest service )
     throws IOException
   {
     dos.writeByte( service.getKind().ordinal() );
@@ -228,10 +228,10 @@ final class DescriptorIO
   }
 
   @Nonnull
-  private ServiceDescriptor readService( @Nonnull final DataInputStream dis, @Nonnull final Element enclosingElement )
+  private ServiceRequest readService( @Nonnull final DataInputStream dis, @Nonnull final Element enclosingElement )
     throws IOException
   {
-    final ServiceDescriptor.Kind type = ServiceDescriptor.Kind.values()[ dis.readByte() ];
+    final ServiceRequest.Kind type = ServiceRequest.Kind.values()[ dis.readByte() ];
     final Coordinate coordinate = readCoordinate( dis );
     final boolean optional = dis.readBoolean();
     final short parameterIndex = dis.readShort();
@@ -239,7 +239,7 @@ final class DescriptorIO
     final Element element = ( (ExecutableElement) enclosingElement ).getParameters().get( parameterIndex );
     assert null != element;
 
-    return new ServiceDescriptor( type, new ServiceSpec( coordinate, optional ), element, parameterIndex );
+    return new ServiceRequest( type, new ServiceSpec( coordinate, optional ), element, parameterIndex );
   }
 
   private void writeCoordinate( @Nonnull final DataOutputStream dos, @Nonnull final Coordinate coordinate )

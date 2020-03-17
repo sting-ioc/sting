@@ -34,25 +34,25 @@ final class StingGeneratorUtil
   {
   }
 
-  static TypeName getServiceType( @Nonnull final ServiceDescriptor service )
+  static TypeName getServiceType( @Nonnull final ServiceRequest serviceRequest )
   {
-    final ServiceDescriptor.Kind kind = service.getKind();
-    final TypeName baseType = TypeName.get( service.getService().getCoordinate().getType() );
-    if ( ServiceDescriptor.Kind.INSTANCE == kind )
+    final ServiceRequest.Kind kind = serviceRequest.getKind();
+    final TypeName baseType = TypeName.get( serviceRequest.getService().getCoordinate().getType() );
+    if ( ServiceRequest.Kind.INSTANCE == kind )
     {
       return baseType;
     }
-    else if ( ServiceDescriptor.Kind.SUPPLIER == kind )
+    else if ( ServiceRequest.Kind.SUPPLIER == kind )
     {
       return ParameterizedTypeName.get( SUPPLIER, baseType );
     }
-    else if ( ServiceDescriptor.Kind.COLLECTION == kind )
+    else if ( ServiceRequest.Kind.COLLECTION == kind )
     {
       return ParameterizedTypeName.get( COLLECTION, baseType );
     }
     else
     {
-      assert ServiceDescriptor.Kind.SUPPLIER_COLLECTION == kind;
+      assert ServiceRequest.Kind.SUPPLIER_COLLECTION == kind;
       return ParameterizedTypeName.get( COLLECTION,
                                         ParameterizedTypeName.get( SUPPLIER, baseType ) );
     }
@@ -66,7 +66,7 @@ final class StingGeneratorUtil
                                          @Nonnull final TypeMirror typeProduced,
                                          @Nonnull final Binding binding )
   {
-    final ServiceDescriptor[] dependencies = binding.getDependencies();
+    final ServiceRequest[] dependencies = binding.getDependencies();
 
     final List<TypeMirror> typesProcessed = new ArrayList<>();
     typesProcessed.add( typeProduced );
@@ -79,7 +79,7 @@ final class StingGeneratorUtil
     boolean allPublic = true;
     boolean anyNonPublicNonInstance = false;
     boolean firstParam = true;
-    for ( final ServiceDescriptor service : dependencies )
+    for ( final ServiceRequest service : dependencies )
     {
       final VariableElement parameter = (VariableElement) service.getElement();
       final String paramName = parameter.getSimpleName().toString();
@@ -90,29 +90,29 @@ final class StingGeneratorUtil
 
       final TypeName actualTypeName = getServiceType( service );
 
-      final ServiceDescriptor.Kind kind = service.getKind();
+      final ServiceRequest.Kind kind = service.getKind();
       final TypeName paramType;
       if ( isPublic )
       {
         paramType = actualTypeName;
       }
-      else if ( ServiceDescriptor.Kind.INSTANCE == kind )
+      else if ( ServiceRequest.Kind.INSTANCE == kind )
       {
         paramType = TypeName.OBJECT;
       }
-      else if ( ServiceDescriptor.Kind.SUPPLIER == kind )
+      else if ( ServiceRequest.Kind.SUPPLIER == kind )
       {
         anyNonPublicNonInstance = true;
         paramType = SUPPLIER;
       }
-      else if ( ServiceDescriptor.Kind.COLLECTION == kind )
+      else if ( ServiceRequest.Kind.COLLECTION == kind )
       {
         anyNonPublicNonInstance = true;
         paramType = COLLECTION;
       }
       else
       {
-        assert ServiceDescriptor.Kind.SUPPLIER_COLLECTION == kind;
+        assert ServiceRequest.Kind.SUPPLIER_COLLECTION == kind;
         anyNonPublicNonInstance = true;
         paramType = COLLECTION;
       }

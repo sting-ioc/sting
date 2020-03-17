@@ -99,29 +99,29 @@ final class InjectorProviderGenerator
 
     for ( final Edge edge : graph.getRootNode().getDependsOn() )
     {
-      final ServiceDescriptor service = edge.getService();
-      if ( ServiceDescriptor.Kind.INSTANCE == service.getKind() )
+      final ServiceRequest serviceRequest = edge.getServiceRequest();
+      if ( ServiceRequest.Kind.INSTANCE == serviceRequest.getKind() )
       {
         final MethodSpec.Builder method =
           MethodSpec
-            .methodBuilder( service.getElement().getSimpleName().toString() )
+            .methodBuilder( serviceRequest.getElement().getSimpleName().toString() )
             .addModifiers( Modifier.PUBLIC, Modifier.DEFAULT )
-            .returns( TypeName.get( service.getService().getCoordinate().getType() ) )
+            .returns( TypeName.get( serviceRequest.getService().getCoordinate().getType() ) )
             .addParameter( ParameterSpec
                              .builder( TypeName.get( element.asType() ), "injector", Modifier.FINAL )
                              .addAnnotation( GeneratorUtil.NONNULL_CLASSNAME )
                              .build() );
 
-        GeneratorUtil.copyWhitelistedAnnotations( service.getElement(), method );
+        GeneratorUtil.copyWhitelistedAnnotations( serviceRequest.getElement(), method );
         final List<String> additionalSuppressions = new ArrayList<>();
-        if ( ElementsUtil.isElementDeprecated( service.getElement() ) )
+        if ( ElementsUtil.isElementDeprecated( serviceRequest.getElement() ) )
         {
           additionalSuppressions.add( "deprecation" );
         }
         final List<TypeMirror> types =
-          Arrays.asList( element.asType(), service.getService().getCoordinate().getType() );
+          Arrays.asList( element.asType(), serviceRequest.getService().getCoordinate().getType() );
         SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv, method, additionalSuppressions, types );
-        method.addStatement( "return injector.$N()", service.getElement().getSimpleName().toString() );
+        method.addStatement( "return injector.$N()", serviceRequest.getElement().getSimpleName().toString() );
         builder.addMethod( method.build() );
       }
     }

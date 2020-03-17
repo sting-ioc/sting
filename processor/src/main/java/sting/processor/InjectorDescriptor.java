@@ -37,7 +37,7 @@ final class InjectorDescriptor
    * The collection of services made available from the injector.
    */
   @Nonnull
-  private final List<ServiceDescriptor> _outputs;
+  private final List<ServiceRequest> _outputs;
   /**
    * True if the injector has a fatal error and should not be reprocessed.
    */
@@ -48,7 +48,7 @@ final class InjectorDescriptor
                       final boolean injectable,
                       @Nonnull final Collection<IncludeDescriptor> includes,
                       @Nonnull final List<InputDescriptor> inputs,
-                      @Nonnull final List<ServiceDescriptor> outputs )
+                      @Nonnull final List<ServiceRequest> outputs )
   {
     _element = Objects.requireNonNull( element );
     _gwt = gwt;
@@ -87,7 +87,7 @@ final class InjectorDescriptor
   }
 
   @Nonnull
-  List<ServiceDescriptor> getOutputs()
+  List<ServiceRequest> getOutputs()
   {
     return _outputs;
   }
@@ -131,7 +131,7 @@ final class InjectorDescriptor
     if ( !_outputs.isEmpty() )
     {
       g.writeStartArray( "outputs" );
-      for ( final ServiceDescriptor dependency : _outputs )
+      for ( final ServiceRequest dependency : _outputs )
       {
         dependency.write( g );
       }
