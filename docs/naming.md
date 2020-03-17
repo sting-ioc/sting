@@ -18,7 +18,7 @@ dependency can only be satisfied by services published by a producer component i
 
 ## Qualified Components
 
-Consider an application that consists of many components that all publish the same service interface
+Consider an application that consists of many components that all publish the same service interface of type
 `SimulationSystem` but need to be connected in specific topologies. This is possible to implement using
 the {@link: sting.Named @Named} annotation.
 
