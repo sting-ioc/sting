@@ -9,6 +9,7 @@
       "fragments",
       "typing",
       "naming",
+      "autodiscovery",
       "dependency_kinds",
       "inputs",
       "outputs",
