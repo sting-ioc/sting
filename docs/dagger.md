@@ -62,9 +62,9 @@ Some of the additional features present in Dagger and missing from Sting include
   injector has a single instance (at most) which is conceptually similar to `@Singleton` scoped instances. It is
   possible to model scopes in Sting but it is laborious and inefficient.
 
-It is possible that Sting will gain the functionality of subcomponents and scopes in the future and may even
+It should be noted that Sting may gain the functionality of subcomponents and scopes in the future and may even
 improve on the Dagger model by adding features such as
-[disposable injectors](https://github.com/sting-ioc/sting/issues/4) but there is no concrete plans to implement
+[disposable injectors](https://github.com/sting-ioc/sting/issues/4) ... but there is no concrete plans to implement
 this at this time.
 
 Sting does have some significant advantages over Dagger from a usability and performance perspective. Some
