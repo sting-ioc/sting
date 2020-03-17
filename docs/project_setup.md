@@ -9,8 +9,8 @@ as that tool is relatively well known within the Java ecosystem.
 
 ## Configure Maven
 
-To configure Maven to support Sting you need to add a dependency on the library as well as
-configure the compiler to use the Sting annotation processor.
+To configure Maven to support Sting you need to add a dependency on the annotations library as well as
+configure the javac compiler to use the Sting annotation processor.
 
 The Sting annotations are included in the `sting-core` artifact. To add this library to
 your Maven project, simply add the following to your `pom.xml`:
