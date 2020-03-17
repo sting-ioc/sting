@@ -14,7 +14,7 @@ annotation or a provider method enclosed within a type annotated by the {@link: 
 annotation. A service is consumed by being passed as; constructor parameters in injectable components or
 as method parameters passed to provider methods. These parameters can also be annotated with the
 {@link: sting.Named @Named} annotation. When sting compiles the injector, it ensures that the consumer service
-dependency can only be satisfied by producers if they have the same qualifier.
+dependency can only be satisfied by services published by a producer component if they have the same qualifier.
 
 ## Qualified Components
 
