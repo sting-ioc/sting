@@ -18,7 +18,7 @@ final class Edge
   @Nonnull
   private final ServiceRequest _serviceRequest;
   /**
-   * The node(s) used to satisfy the service .
+   * The node(s) used to satisfy the service.
    * May be null if the service is optional and no node exists to satisfy service.
    */
   @Nullable
