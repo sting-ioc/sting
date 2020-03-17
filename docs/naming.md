@@ -44,8 +44,8 @@ multiple parameters of type string for different configuration settings. For exa
 
 {@file_content: file=sting/doc/examples/naming/HttpClient.java start_line=@Injectable}
 
-## Name Format
+## Qualifier Format
 
-The actual value of the string is relatively arbitrary and you should use whatever makes sense
+The actual value of the qualifier string is relatively arbitrary and you should use whatever makes sense
 within your application. Some projects use reverse DNS naming to guarantee uniqueness, others use
 short prefixes for namespacing while other projects use short local names.
