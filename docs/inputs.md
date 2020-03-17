@@ -16,7 +16,7 @@ Sting will generate an injector with a constructor that accepts the input servic
 the order specified and using the types specified. Optional service inputs will also be annotated
 with the `@Nullable` annotation.
 
-For example, the injector defined by
+For example, the injector defined by:
 
 {@file_content: file=sting/doc/examples/inputs/MyInjector.java start_line=@Injector}
 
