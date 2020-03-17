@@ -8,7 +8,8 @@ it is desirable for the injector to expose services so that they can be accessed
 application. This is done by adding an getter method on the injector. The annotation processor
 will treat these getter methods as dependencies that must be resolved. These methods can also
 return qualified services if they are annotated with the {@link: sting.Named @Named} annotation
-as described in the [naming](naming.md) document.
+as described in the [naming](naming.md) document. These output methods can also be the different
+types of dependency described in the [dependency kinds](dependency_kinds.md) document.
 
 A simple example to illustrate how services can be accessed from an injector follows.
 
