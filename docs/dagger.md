@@ -73,7 +73,8 @@ strengths of Sting relative to Dagger include:
 * Sting optimizes for fast incremental build times. It is not unsurprising to see a 2x-3x build speed improvement
   when using Sting rather than Dagger. See the [performance](performance.md) report for further details.
 
-* Small code size. Sting can generated injectors that are 50% to 70% the size of the equivalent dagger injector.
+* Small code size. Sting generates injectors that are 50% to 70% the size of the equivalent dagger injector
+  in many circumstances.
 
 * Fast initialization time. Sting is often faster to initialize and that speedup is typically proportional
   to the code size improvement.
