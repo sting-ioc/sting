@@ -15,7 +15,7 @@ This injector could be exposed using a fragment such as:
 {@file_content: file=sting/doc/examples/include_injector/manual/LibraryApplicationFragment.java start_line=@Fragment}
 
 Rather than mechanically translating the injectors inputs and outputs into a fragment, Sting can generate
-an equivalent infrastructure infrastructure for you if you set the {@link: sting.Injector#injectable() @Injector.injectable}
+the fragment for you if you set the {@link: sting.Injector#injectable() @Injector.injectable}
 parameter to `true`. The generated code is of the form:
 
 {@file_content: path=generated/processors/main/java file=sting/doc/examples/include_injector/auto/Sting_LibraryApplication_Provider.java start_line=@Fragment}
