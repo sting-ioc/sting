@@ -4,7 +4,7 @@ title: Dagger Comparison
 
 [Dagger](https://github.com/google/dagger) is a mature, established and widely used injection toolkit
 for Java. Like Sting, Dagger is a compile-time framework that uses "...no reflection or runtime bytecode
-generation, does all its analysis at compile-time, and generates plain Java source code.". Most of the original
+generation, does all its analysis at compile-time, and generates plain Java source code." Most of the original
 Sting applications were migrated from Dagger so a comparison with Dagger would help explain why applications
 moved from one toolkit to the other.
 
