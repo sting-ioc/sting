@@ -3,8 +3,8 @@ title: Customizing Service Types
 ---
 
 When a component is included in an injector, it is published with zero or more "services". A service consists
-of a java type and an optional qualifier. By default, Sting publishes a single service with the java type is
-equal to the type that is annotated by the {@link: sting.Injectable @Injectable} annotation or the return type
+of a java type and an optional qualifier. By default, Sting publishes a single service with the java type set
+to the type that is annotated by the {@link: sting.Injectable @Injectable} annotation or the return type
 of the provider method. Sting makes it possible to customize the service types published by using the
 {@link: sting.Typed @Typed} annotation.
 
@@ -12,8 +12,9 @@ The {@link: sting.Typed @Typed} annotation can be applied to either the injectab
 Zero or more types can be specified and thus a single component can publish multiple services or no services.
 
 It should be noted that if a component does not publish any services then it must be annotated with
-{@link: sting.Eager @Eager}. Otherwise the component could not be depended upon by other components and nor would
-the component be eagerly created and thus would never be instantiated.
+{@link: sting.Eager @Eager}. If a component publishes zero services that it will never be a dependency of any
+other component and if the component is not annotated with the {@link: sting.Eager @Eager} annotation, it would
+would never be instantiated.
 
 The easiest way to illustrate how this would work is to present some basic examples.
 
@@ -40,8 +41,8 @@ so that other components can receive messages.
 {@file_content: file=sting/doc/examples/typing/MessageService.java start_line=@Injectable}
 
 It is easy to imagine that we would have another component `LoginService` that performs the asynchronous
-login action and sends events as it progresses through each step of the process. This service would depend upon
-the `MessageSender` type. For example:
+login action and sends events as it progresses through each step of the process. The `LoginService` component
+would depend upon the `MessageSender` type. For example:
 
 {@file_content: file=sting/doc/examples/typing/LoginService.java start_line=@Injectable}
 
