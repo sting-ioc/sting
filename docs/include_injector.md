@@ -4,7 +4,7 @@ title: Including an Injector
 
 An injector defines a graph of components with service [inputs](inputs.md) and service [outputs](outputs.md).
 So it would be possible to create a fragment with appropriate provider methods so that the injector can be
-included within a different injector.
+included in a different injector.
 
 Imagine an injector defined by:
 
