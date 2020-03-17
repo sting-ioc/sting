@@ -5,7 +5,7 @@ sidebar_label: Injector Service Inputs
 
 When creating creating an injector it is common to want to pass services and values into the injector
 that are managed externally. You can pass in environment-specific components such as a `ServletContext`
-when running in a servlet container or configuration setting.
+when running in a servlet container or configuration settings in other contexts.
 
 To implement this in Sting, the developer must specify the required services using the
 {@link: sting.Injector#inputs() @Injector.inputs} parameter. The {@link: sting.Injector#inputs() @Injector.inputs}
