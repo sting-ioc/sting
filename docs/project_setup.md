@@ -3,9 +3,8 @@ title: Project Setup
 ---
 
 A Sting project can be setup using any build system that supports configuration of annotation
-processors. The authors prefer [Apache Buildr](https://buildr.apache.org) but this is a relatively
-fringe build system so the project setup will be detailed using [Apache Maven](https://maven.apache.org)
-as that tool is relatively well known within the Java ecosystem.
+processors. The following instructions describe how to set up the project using the
+[Apache Maven](https://maven.apache.org) build tool as it is relatively well known within the Java ecosystem.
 
 ## Configure Maven
 
