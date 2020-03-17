@@ -12,7 +12,7 @@ where a service is published or where a service is consumed.
 The publishing locations include on a type annotated by the {@link: sting.Injectable @Injectable}
 annotation or a provider method enclosed within a type annotated by the {@link: sting.Fragment @Fragment}
 annotation. A service is consumed by being passed as; constructor parameters in injectable components or
-as method parameters passed to provider methods. These parameter can also be annotated with the
+as method parameters passed to provider methods. These parameters can also be annotated with the
 {@link: sting.Named @Named} annotation. When sting compiles the injector, it ensures that the consumer service
 dependency can only be satisfied by producers if they have the same qualifier.
 
