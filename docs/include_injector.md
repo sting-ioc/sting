@@ -26,6 +26,7 @@ uses the ["external" framework integration](framework_integration.md) techniques
 include the injector class directly in the includes. This avoids the developer having to remember the name of
 the generated fragment.
 
-For example, the following is perfectly acceptable:
+For example, the following demonstrates it is perfectly acceptable to include an injector
+(i.e. `LibraryApplication`) in another injectors includes:
 
 {@file_content: file=sting/doc/examples/include_injector/auto/AcademyApplication.java start_line=@Injector}
