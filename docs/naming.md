@@ -38,7 +38,7 @@ The component could also be consumed by other injectable components:
 ## Qualified Values
 
 While qualified components occasionally occur in applications, it is far more common to
-see the {@link: sting.Named @Named} annotation used to when configuring the application with
+see the {@link: sting.Named @Named} annotation used when configuring the application with
 multiple instances of primitive or immutable values. For instance a component could accept
 multiple parameters of type string for different configuration settings. For example:
 
