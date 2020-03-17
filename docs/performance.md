@@ -10,17 +10,17 @@ developed with specific performance goals in mind.
 * Small code size.
 * Fast initialization time.
 
-Fast incremental build times make developers happy and increase productivity. Fast refresh times is
+Fast incremental build times make developers happy and increase productivity. Fast refresh times are
 essential for modern web development. Small code size and fast initialization times make the end users
 of our websites happy.
 
-The performance is measure relative to [Dagger](https://github.com/google/dagger) as most of the initial
+The performance is measured relative to [Dagger](https://github.com/google/dagger) as most of the initial
 Sting applications were migrated from Dagger. Dagger is a much more mature, established and reasonably
 optimized library and thus is a great library to compare against.
 
 A procedurally generated ["sample application"](#sample-application-description) was developed to be
 representative of real world application usage of dependency injectors. This sample application helped
-keep the focus on Stings the performance goals.
+keep the focus on Stings performance goals.
 
 ## Build Time
 
@@ -52,14 +52,14 @@ optimizations possible in incremental recompiles that will likely lead to even f
 
 ## Code Size
 
-Sting prioritizes smaller code size and the builtin support for {@link: sting.Eager @Eager} components
+Sting prioritizes smaller code size. The builtin support for {@link: sting.Eager @Eager} components
 and the ease of optimizing when eager components are present is a significant contributor to Stings
 relatively good performance in this area.
 
 Most web applications contain "eager" components that are expected to be instantiated on application
 startup to perform actions like subscribing to an event broker, adding listeners for browser events,
 initializing graphics contexts etc. Dagger-based applications often implement eager components by
-adding an accessor for the eager component onto the dagger injector and that accessor is invoked early
+adding an accessor for the eager component onto the dagger injector and the invoking that accessor early
 in the application lifecycle.
 
 {@include: CodeSizeTable.html}
@@ -82,7 +82,7 @@ components as eager. We also developed variants where 0% or 100% of the componen
 variants had names prefixed with "lazy_" and "eager_" respectively.
 
 It is expected that most applications that use Sting are in the "medium" or "eager_medium" category. Although
-it should be noted that when the Sting authors were migrating applications to Sting, almost all of the
+it should be noted that when the Sting authors were migrating applications to Sting, all but one of the
 applications where closer to the "large" category.
 
 The number of inputs into a component seemed to have no significant performance impact in either application
