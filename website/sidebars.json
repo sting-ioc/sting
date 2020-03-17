@@ -11,6 +11,7 @@
       "naming",
       "inputs",
       "outputs",
+      "dependency_kinds",
       "include_injector",
       "processor_options",
       "dagger",
