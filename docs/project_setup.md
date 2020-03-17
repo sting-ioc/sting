@@ -29,8 +29,8 @@ your Maven project, simply add the following to your `pom.xml`:
 </project>
 ```
 
-To enable the annotation processor used by the component framework, you need add the following
-snippet to configure the maven compiler plugin from within the `pom.xml`:
+To enable the Sting annotation processor, you need add the following snippet to configure the maven
+compiler plugin from within the `pom.xml`:
 
 ```xml
 <project>
