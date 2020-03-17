@@ -77,3 +77,6 @@ If you are using Sting within a GWT application you will also need to inherit th
   ...
 </module>
 ```
+
+Now that the build environment is setup, you can move on to [getting started](getting_started.md) creating
+the application code.
