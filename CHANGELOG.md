@@ -3,6 +3,7 @@
 ### Unreleased
 
 * Add some basic documentation on the following topics:
+  - Getting Started
   - Fragments
   - Kinds of Dependencies
 
