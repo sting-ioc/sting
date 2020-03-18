@@ -292,7 +292,7 @@ public final class StingProcessor
           }
           else
           {
-            debug( () -> "Defer analysis of the injector " + injector.getElement().getQualifiedName() +
+            debug( () -> "Defer generation for the injector " + injector.getElement().getQualifiedName() +
                          " as it is not yet resolved" );
           }
         }
