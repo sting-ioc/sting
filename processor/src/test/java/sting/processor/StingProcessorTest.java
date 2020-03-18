@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.Processor;
 import javax.tools.Diagnostic;
@@ -757,7 +758,10 @@ public final class StingProcessorTest
 
     final Compilation compilation = compileInjector( targetDir );
     assertCompilationUnsuccessful( compilation );
-    final ImmutableList<Diagnostic<? extends JavaFileObject>> diagnostics = compilation.diagnostics();
+    final List<Diagnostic<? extends JavaFileObject>> diagnostics = compilation.diagnostics()
+      .stream()
+      .filter( d -> d.getKind() != Diagnostic.Kind.NOTE )
+      .collect( Collectors.toList() );
     assertEquals( diagnostics.size(), 2 );
     assertEquals( diagnostics.get( 0 ).getMessage( Locale.getDefault() ),
                   "StingProcessor failed to process 1 injectors " +
@@ -790,7 +794,10 @@ public final class StingProcessorTest
 
     final Compilation compilation = compileInjector( targetDir );
     assertCompilationUnsuccessful( compilation );
-    final ImmutableList<Diagnostic<? extends JavaFileObject>> diagnostics = compilation.diagnostics();
+    final List<Diagnostic<? extends JavaFileObject>> diagnostics = compilation.diagnostics()
+      .stream()
+      .filter( d -> d.getKind() != Diagnostic.Kind.NOTE )
+      .collect( Collectors.toList() );
     assertEquals( diagnostics.size(), 2 );
     assertEquals( diagnostics.get( 0 ).getMessage( Locale.getDefault() ),
                   "StingProcessor failed to process 1 injectors " +
@@ -948,6 +955,7 @@ public final class StingProcessorTest
     final List<String> options = new ArrayList<>( super.getOptions() );
     options.add( "-Asting.emit_json_descriptors=true" );
     options.add( "-Asting.emit_dot_reports=true" );
+    options.add( "-Asting.debug=true" );
     return options;
   }
 
