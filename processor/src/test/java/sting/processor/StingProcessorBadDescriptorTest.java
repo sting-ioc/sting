@@ -45,10 +45,10 @@ public final class StingProcessorBadDescriptorTest
 
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
-    assertDiagnosticPresent( stage2,
-                             "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.IOException: Descriptor for com.example.bad_descriptors.scenario1.Model1 is in an incorrect format. Bad header." );
-    assertDiagnosticPresent( stage2,
-                             "StingProcessor failed to process 1 types. See earlier warnings for further details." );
+    assertErrorDiagnostic( stage2,
+                           "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.IOException: Descriptor for com.example.bad_descriptors.scenario1.Model1 is in an incorrect format. Bad header." );
+    assertErrorDiagnostic( stage2,
+                           "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
 
   @Test
@@ -84,10 +84,10 @@ public final class StingProcessorBadDescriptorTest
 
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
-    assertDiagnosticPresent( stage2,
-                             "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.IOException: Descriptor for com.example.bad_descriptors.scenario1.Model1 is in an unknown version: 255" );
-    assertDiagnosticPresent( stage2,
-                             "StingProcessor failed to process 1 types. See earlier warnings for further details." );
+    assertErrorDiagnostic( stage2,
+                           "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.IOException: Descriptor for com.example.bad_descriptors.scenario1.Model1 is in an unknown version: 255" );
+    assertErrorDiagnostic( stage2,
+                           "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
 
   @Test
@@ -123,10 +123,10 @@ public final class StingProcessorBadDescriptorTest
 
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
-    assertDiagnosticPresent( stage2,
-                             "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.EOFException" );
-    assertDiagnosticPresent( stage2,
-                             "StingProcessor failed to process 1 types. See earlier warnings for further details." );
+    assertErrorDiagnostic( stage2,
+                           "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.EOFException" );
+    assertErrorDiagnostic( stage2,
+                           "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
 
   @Test
@@ -157,10 +157,10 @@ public final class StingProcessorBadDescriptorTest
 
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
-    assertDiagnosticPresent( stage2,
-                             "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.EOFException" );
-    assertDiagnosticPresent( stage2,
-                             "StingProcessor failed to process 1 types. See earlier warnings for further details." );
+    assertErrorDiagnostic( stage2,
+                           "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.EOFException" );
+    assertErrorDiagnostic( stage2,
+                           "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
 
   @Test
@@ -192,12 +192,12 @@ public final class StingProcessorBadDescriptorTest
 
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
-    assertDiagnosticPresent( stage2,
-                             "@Injector target must not contain a non-optional dependency [com.example.bad_descriptors.scenario1.Model1] that can not be satisfied.\n" +
-                             "  Dependency Path:\n" +
-                             "    [Injector]       com.example.bad_descriptors.scenario1.MyInjectorModel" );
-    assertDiagnosticPresent( stage2,
-                             "StingProcessor failed to process 1 types. See earlier warnings for further details." );
+    assertErrorDiagnostic( stage2,
+                           "@Injector target must not contain a non-optional dependency [com.example.bad_descriptors.scenario1.Model1] that can not be satisfied.\n" +
+                           "  Dependency Path:\n" +
+                           "    [Injector]       com.example.bad_descriptors.scenario1.MyInjectorModel" );
+    assertErrorDiagnostic( stage2,
+                           "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
 
   @Test
@@ -229,10 +229,10 @@ public final class StingProcessorBadDescriptorTest
 
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
-    assertDiagnosticPresent( stage2,
-                             "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario2.Model1. Error: java.io.EOFException" );
-    assertDiagnosticPresent( stage2,
-                             "StingProcessor failed to process 1 types. See earlier warnings for further details." );
+    assertErrorDiagnostic( stage2,
+                           "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario2.Model1. Error: java.io.EOFException" );
+    assertErrorDiagnostic( stage2,
+                           "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
 
   @Test
@@ -265,10 +265,10 @@ public final class StingProcessorBadDescriptorTest
 
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
-    assertDiagnosticPresent( stage2,
-                             "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario3.Model1. Error: java.io.EOFException" );
-    assertDiagnosticPresent( stage2,
-                             "StingProcessor failed to process 1 types. See earlier warnings for further details." );
+    assertErrorDiagnostic( stage2,
+                           "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario3.Model1. Error: java.io.EOFException" );
+    assertErrorDiagnostic( stage2,
+                           "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
 
   private void truncateDescriptor( @Nonnull final Path descriptor )
