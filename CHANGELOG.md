@@ -2,7 +2,7 @@
 
 ### Unreleased
 
-* Upgrade the `org.realityforge.proton` artifacts to version `0.42`.
+* Upgrade the `org.realityforge.proton` artifacts to version `0.43`.
 * Add some basic documentation on the following topics:
   - Getting Started
   - Fragments
