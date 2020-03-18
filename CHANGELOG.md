@@ -6,6 +6,7 @@
   - Getting Started
   - Fragments
   - Kinds of Dependencies
+* Cleanup the organization of the documentation by introducing the "Essential" and "Advanced" sections.
 
 ### [v0.08](https://github.com/sting-ioc/sting/tree/v0.08) (2020-03-13) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.07...v0.08)
 
