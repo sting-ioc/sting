@@ -505,6 +505,16 @@ public final class StingProcessor
     for ( final IncludeDescriptor include : includes )
     {
       final String classname = include.getActualTypeName();
+      if ( isDebugEnabled() && include.isProvider() )
+      {
+        debug( () -> "Registering include " + classname + " via provider " + include.getIncludedType() +
+                     " into graph " + graph.getInjector().getElement().getQualifiedName() );
+      }
+      else
+      {
+        debug( () -> "Registering include " + classname + " into graph " +
+                     graph.getInjector().getElement().getQualifiedName() );
+      }
       final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
       assert null != element;
       if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
