@@ -2,12 +2,16 @@ package sting.processor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.lang.model.element.TypeElement;
 
 final class Registry
 {
@@ -26,6 +30,16 @@ final class Registry
    */
   @Nonnull
   private final List<InjectorDescriptor> _injectors = new ArrayList<>();
+  /**
+   * The set of auto-fragments registered.
+   */
+  @Nonnull
+  private final Map<String, AutoFragmentDescriptor> _autoFragments = new HashMap<>();
+  /**
+   * The set of auto-fragments contributors registered.
+   */
+  @Nonnull
+  private final Map<String, Set<TypeElement>> _contributors = new HashMap<>();
 
   /**
    * Register the Injectable in the local cache.
@@ -104,10 +118,60 @@ final class Registry
     return _injectors;
   }
 
+  /**
+   * Register the auto-fragment in the local cache.
+   *
+   * @param autoFragment the auto-fragment.
+   */
+  void registerAutoFragment( @Nonnull final AutoFragmentDescriptor autoFragment )
+  {
+    final String key = autoFragment.getKey();
+    _autoFragments.put( key, autoFragment );
+    autoFragment.markAsModified();
+    autoFragment.getContributors().addAll( getContributorsByKey( key ) );
+  }
+
+  @Nullable
+  AutoFragmentDescriptor findAutoFragmentByKey( @Nonnull final String key )
+  {
+    return _autoFragments.get( key );
+  }
+
+  @Nonnull
+  Collection<AutoFragmentDescriptor> getAutoFragments()
+  {
+    return _autoFragments.values();
+  }
+
+  /**
+   * Register the auto-fragment in the local cache.
+   *
+   * @param key         the auto-fragment key.
+   * @param contributor the type element contributing to the auto-fragment.
+   */
+  void registerContributor( @Nonnull final String key, @Nonnull final TypeElement contributor )
+  {
+    _contributors.computeIfAbsent( key, k -> new HashSet<>() ).add( contributor );
+  }
+
+  @Nonnull
+  Set<TypeElement> getContributorsByKey( @Nonnull final String key )
+  {
+    return _contributors.getOrDefault( key, Collections.emptySet() );
+  }
+
+  @Nonnull
+  Set<String> getContributorKeys()
+  {
+    return _contributors.keySet();
+  }
+
   void clear()
   {
     _injectables.clear();
     _fragments.clear();
     _injectors.clear();
+    _autoFragments.clear();
+    _contributors.clear();
   }
 }

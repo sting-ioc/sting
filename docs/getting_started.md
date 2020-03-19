@@ -79,3 +79,6 @@ Here are some links to other documents that you may want to look at next.
 
 * [Injector Inputs](inputs.md): A host application can pass in services when constructing the injector and
   these services can be made available to other components within the injector.
+
+* [Auto-Fragments](autofragments.md): Generate fragments from annotated classes to avoid the need to edit
+  long lists of included modules.

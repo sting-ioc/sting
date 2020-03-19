@@ -15,6 +15,10 @@ final class Constants
   @Nonnull
   static final String NAMED_CLASSNAME = "sting.Named";
   @Nonnull
+  static final String AUTO_FRAGMENT_CLASSNAME = "sting.AutoFragment";
+  @Nonnull
+  static final String CONTRIBUTE_TO_CLASSNAME = "sting.ContributeTo";
+  @Nonnull
   static final String JSR_330_NAMED_CLASSNAME = "javax.inject.Named";
   @Nonnull
   static final String JSR_330_INJECT_CLASSNAME = "javax.inject.Inject";

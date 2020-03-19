@@ -17,6 +17,7 @@
       "include_injector"
     ],
     "Advanced Topics": [
+      "autofragments",
       "framework_integration",
       "graphviz_integration",
       "processor_options"

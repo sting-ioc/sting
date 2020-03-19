@@ -64,7 +64,9 @@ import org.realityforge.proton.TypesUtil;
                              Constants.FRAGMENT_CLASSNAME,
                              Constants.EAGER_CLASSNAME,
                              Constants.TYPED_CLASSNAME,
-                             Constants.NAMED_CLASSNAME } )
+                             Constants.NAMED_CLASSNAME,
+                             Constants.AUTO_FRAGMENT_CLASSNAME,
+                             Constants.CONTRIBUTE_TO_CLASSNAME } )
 @SupportedSourceVersion( SourceVersion.RELEASE_8 )
 @SupportedOptions( { "sting.defer.unresolved",
                      "sting.defer.errors",
@@ -153,6 +155,14 @@ public final class StingProcessor
   @Override
   public boolean process( @Nonnull final Set<? extends TypeElement> annotations, @Nonnull final RoundEnvironment env )
   {
+    // Reset modified flag for auto-fragment so we can determine
+    // whether we should generate fragment this round
+    _registry.getAutoFragments().forEach( AutoFragmentDescriptor::resetModified );
+
+    processAutoFragments( annotations, env );
+
+    processContributeTos( annotations, env );
+
     processTypeElements( annotations,
                          env,
                          Constants.INJECTABLE_CLASSNAME,
@@ -186,17 +196,96 @@ public final class StingProcessor
                          _deferredInjectorTypes,
                          this::processInjector );
 
+    processUnmodifiedAutoFragment( env );
     processResolvedInjectables( env );
     processResolvedFragments( env );
     processResolvedInjectors( env );
 
     errorIfProcessingOverAndInvalidTypesDetected( env );
     errorIfProcessingOverAndUnprocessedInjectorDetected( env );
+    errorIfProcessingOverAndUnprocessedAutoFragmentsDetected( env );
+    errorIfProcessingOverAndUnprocessedContributeTosDetected( env );
     if ( env.processingOver() || env.errorRaised() )
     {
       _registry.clear();
     }
     return true;
+  }
+
+  private void processAutoFragments( @Nonnull final Set<? extends TypeElement> annotations,
+                                     @Nonnull final RoundEnvironment env )
+  {
+    final Collection<TypeElement> autoFragments =
+      getNewTypeElementsToProcess( annotations, env, Constants.AUTO_FRAGMENT_CLASSNAME );
+    for ( final TypeElement element : autoFragments )
+    {
+      performAction( env, this::processAutoFragment, element );
+    }
+  }
+
+  private void processContributeTos( @Nonnull final Set<? extends TypeElement> annotations,
+                                     @Nonnull final RoundEnvironment env )
+  {
+    final Collection<TypeElement> contributeTos =
+      getNewTypeElementsToProcess( annotations, env, Constants.CONTRIBUTE_TO_CLASSNAME );
+    for ( final TypeElement element : contributeTos )
+    {
+      performAction( env, this::processContributeTo, element );
+    }
+  }
+
+  private void errorIfProcessingOverAndUnprocessedAutoFragmentsDetected( @Nonnull final RoundEnvironment env )
+  {
+    if ( env.processingOver() && !env.errorRaised() )
+    {
+      final Collection<AutoFragmentDescriptor> autoFragments =
+        _registry.getAutoFragments().stream().filter( a -> !a.isFragmentGenerated() ).collect( Collectors.toList() );
+      if ( !autoFragments.isEmpty() )
+      {
+        processingEnv
+          .getMessager()
+          .printMessage( Diagnostic.Kind.ERROR,
+                         getClass().getSimpleName() + " failed to process " + autoFragments.size() +
+                         " @AutoFragment annotated types as the fragments either contained no contributors " +
+                         "or only had contributors added in the last annotation processor round which is not " +
+                         "supported by the @AutoFragment annotation. If the problem is not obvious, consider " +
+                         "passing the annotation option sting.debug=true" );
+        for ( final AutoFragmentDescriptor autoFragment : autoFragments )
+        {
+          processingEnv
+            .getMessager()
+            .printMessage( Diagnostic.Kind.ERROR,
+                           "Failed to process the " + autoFragment.getElement().getQualifiedName() +
+                           " @AutoFragment as 0 @ContributeTo annotations reference the @AutoFragment" );
+        }
+      }
+    }
+  }
+
+  private void errorIfProcessingOverAndUnprocessedContributeTosDetected( @Nonnull final RoundEnvironment env )
+  {
+    if ( env.processingOver() && !env.errorRaised() )
+    {
+      final Collection<String> contributorKeys =
+        _registry.getContributorKeys()
+          .stream()
+          .filter( key -> null == _registry.findAutoFragmentByKey( key ) )
+          .collect( Collectors.toList() );
+      if ( !contributorKeys.isEmpty() )
+      {
+        for ( final String contributorKey : contributorKeys )
+        {
+          processingEnv
+            .getMessager()
+            .printMessage( Diagnostic.Kind.ERROR,
+                           "Failed to process the @ContributeTo contributors for key '" + contributorKey +
+                           "' as no associated @AutoFragment is on the class path. Impacted contributors included: " +
+                           _registry.getContributorsByKey( contributorKey ).stream()
+                             .map( TypeElement::getQualifiedName )
+                             .collect( Collectors.joining( ", " ) ) );
+        }
+      }
+    }
   }
 
   private void errorIfProcessingOverAndUnprocessedInjectorDetected( @Nonnull final RoundEnvironment env )
@@ -223,6 +312,34 @@ public final class StingProcessor
                            "Failed to process the " + injector.getElement().getQualifiedName() + " injector." );
         }
       }
+    }
+  }
+
+  private void processUnmodifiedAutoFragment( @Nonnull final RoundEnvironment env )
+  {
+    for ( final AutoFragmentDescriptor autoFragment : new ArrayList<>( _registry.getAutoFragments() ) )
+    {
+      performAction( env, e -> {
+        if ( !autoFragment.isFragmentGenerated() )
+        {
+          if ( !autoFragment.isModified() &&
+               !autoFragment.getContributors().isEmpty() )
+          {
+            autoFragment.markFragmentGenerated();
+            final String packageName = GeneratorUtil.getQualifiedPackageName( autoFragment.getElement() );
+            emitTypeSpec( packageName, AutoFragmentGenerator.buildType( processingEnv, autoFragment ) );
+          }
+          else
+          {
+            debug( () -> "Defer generation for the auto-fragment " +
+                         autoFragment.getElement().getQualifiedName() +
+                         " as it " +
+                         ( autoFragment.isModified() ?
+                           "has been modified in the current round" :
+                           "has zero contributors" ) );
+          }
+        }
+      }, autoFragment.getElement() );
     }
   }
 
@@ -1166,6 +1283,99 @@ public final class StingProcessor
                                     element );
     }
     _registry.registerFragment( new FragmentDescriptor( element, includes, bindings.values() ) );
+  }
+
+  private void processAutoFragment( @Nonnull final TypeElement element )
+  {
+    debug( () -> "Processing Auto-Fragment: " + element );
+    if ( ElementKind.INTERFACE != element.getKind() )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.AUTO_FRAGMENT_CLASSNAME, "be an interface" ),
+                                    element );
+    }
+    else if ( !element.getTypeParameters().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.AUTO_FRAGMENT_CLASSNAME, "have type parameters" ),
+                                    element );
+    }
+    else if ( !element.getInterfaces().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.AUTO_FRAGMENT_CLASSNAME, "extend any interfaces" ),
+                                    element );
+    }
+    if ( !element.getEnclosedElements().isEmpty() )
+    {
+      final Element enclosedElement = element.getEnclosedElements().get( 0 );
+      final ElementKind kind = enclosedElement.getKind();
+      if ( kind.isField() )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.AUTO_FRAGMENT_CLASSNAME, "contain any fields" ),
+                                      element );
+      }
+      else if ( ElementKind.METHOD == kind )
+      {
+        throw new ProcessorException( MemberChecks.mustNot( Constants.AUTO_FRAGMENT_CLASSNAME, "contain any methods" ),
+                                      element );
+      }
+      else
+      {
+        assert kind.isClass() || kind.isInterface();
+        throw new ProcessorException( MemberChecks.mustNot( Constants.AUTO_FRAGMENT_CLASSNAME, "contain any types" ),
+                                      element );
+      }
+    }
+    final String key = (String)
+      AnnotationsUtil.getAnnotationValue( element, Constants.AUTO_FRAGMENT_CLASSNAME, "value" ).getValue();
+
+    final AutoFragmentDescriptor existing = _registry.findAutoFragmentByKey( key );
+    if ( null != existing )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.AUTO_FRAGMENT_CLASSNAME,
+                                                          "have the same key as an existing AutoFragment " +
+                                                          "of type " + existing.getElement().getQualifiedName() ),
+                                    element );
+    }
+
+    _registry.registerAutoFragment( new AutoFragmentDescriptor( key, element ) );
+  }
+
+  private void processContributeTo( @Nonnull final TypeElement element )
+  {
+    debug( () -> "Processing ContributeTo: " + element );
+    if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) &&
+         !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) &&
+         !hasStingProvider( element ) )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.CONTRIBUTE_TO_CLASSNAME,
+                                                       "be annotated with " +
+                                                       MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                                       ", " +
+                                                       MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
+                                                       " or be annotated with an annotation annotated by " +
+                                                       "@StingProvider" ),
+                                    element );
+    }
+    final String key = (String)
+      AnnotationsUtil.getAnnotationValue( element, Constants.CONTRIBUTE_TO_CLASSNAME, "value" ).getValue();
+
+    final AutoFragmentDescriptor autoFragment = _registry.findAutoFragmentByKey( key );
+    if ( null != autoFragment && autoFragment.isFragmentGenerated() )
+    {
+      throw new ProcessorException( MemberChecks.toSimpleName( Constants.CONTRIBUTE_TO_CLASSNAME ) +
+                                    " target attempted to be added to the " +
+                                    MemberChecks.toSimpleName( Constants.AUTO_FRAGMENT_CLASSNAME ) +
+                                    " annotated type " + autoFragment.getElement().getQualifiedName() +
+                                    " but the " + MemberChecks.toSimpleName( Constants.AUTO_FRAGMENT_CLASSNAME ) +
+                                    " annotated type has already generated fragment",
+                                    element );
+    }
+
+    _registry.registerContributor( key, element );
+    if ( null != autoFragment )
+    {
+      autoFragment.markAsModified();
+      autoFragment.getContributors().add( element );
+    }
   }
 
   @SuppressWarnings( "unchecked" )
