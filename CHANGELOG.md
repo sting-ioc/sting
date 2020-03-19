@@ -11,6 +11,7 @@
 * Significantly improve the language and grammar in existing documentation.
 * Add some additional debug logging in the annotation processor to make debugging the processor in downstream applications easier.
 * Generate an error if a dependency of a component is attempts to recompile fails without causing the consumer component to recompile and the injector attempts to build a component graph using the component. Prior to this fix, Sting would generate a null pointer exception. After this fix, Sting produces a more reasonable error message.
+* Fix a bug where `@Eager` annotated components that included in an injector transitively via `@Fragment` annotated types.
 
 ### [v0.08](https://github.com/sting-ioc/sting/tree/v0.08) (2020-03-13) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.07...v0.08)
 

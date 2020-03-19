@@ -28,13 +28,13 @@ public final class StingProcessorInjectorGraphTest
     final List<String> expectedOutputs = Collections.singletonList( objectGraphFilename );
     assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
     final JsonArray nodes = readInjectorGraph( objectGraphFilename );
-    assertEager( nodes, classname, "MyModel0", false );
-    assertEager( nodes, classname, "MyModel1", true );
-    assertEager( nodes, classname, "MyModel2", true );
-    assertEager( nodes, classname, "MyModel3", false );
-    assertEager( nodes, classname, "MyModel4", true );
-    assertEager( nodes, classname, "MyModel5", true );
-    assertEager( nodes, classname, "MyModel6", true );
+    assertLazy( nodes, classname + ".MyModel0" );
+    assertEager( nodes, classname + ".MyModel1" );
+    assertEager( nodes, classname + ".MyModel2" );
+    assertLazy( nodes, classname + ".MyModel3" );
+    assertEager( nodes, classname + ".MyModel4" );
+    assertEager( nodes, classname + ".MyModel5" );
+    assertEager( nodes, classname + ".MyModel6" );
 
     // Order is stable and based on inverse of (depth of node from root dependencies + node id)
     assertIndex( nodes, classname, "MyModel6", 6 );
@@ -50,15 +50,23 @@ public final class StingProcessorInjectorGraphTest
   public void eagerInjectablesAddedWhenAddedViaIncludes()
     throws Exception
   {
-    final String classname = "com.example.injector.eager.EagerInjectableViaIncludesModel";
+    final String pkg = "com.example.injector.eager.fragment";
+    final String classname = pkg + ".EagerInjectableViaIncludesModel";
     final String objectGraphFilename = jsonGraphOutput( classname );
-    assertSuccessfulCompile( inputs( classname ),
+    assertSuccessfulCompile( inputs( classname,
+                                     pkg + ".MyFragment1",
+                                     pkg + ".MyFragment2",
+                                     pkg + ".MyModel1",
+                                     pkg + ".MyModel2",
+                                     pkg + ".MyModel3" ),
                              Collections.singletonList( objectGraphFilename ),
                              t -> emitInjectorGeneratedFile( classname, t ) );
     final JsonArray nodes = readInjectorGraph( objectGraphFilename );
-    assertEager( nodes, classname, "MyModel1", true );
-    assertNodeWithIdNotPresent( nodes, classname, "MyModel2" );
-    assertEager( nodes, classname, "MyModel3", true );
+    // MyModel1 never included
+    assertNodeWithIdNotPresent( nodes, pkg + ".MyModel1" );
+    // MyModel2 included but is not @Eager and not referenced by a root
+    assertNodeWithIdNotPresent( nodes, pkg + ".MyModel2" );
+    assertEager( nodes, pkg + ".MyModel3" );
   }
 
   @SuppressWarnings( "SameParameterValue" )
@@ -78,12 +86,14 @@ public final class StingProcessorInjectorGraphTest
                   "found id " + id );
   }
 
-  private void assertEager( @Nonnull final JsonArray nodes,
-                            @Nonnull final String classname,
-                            @Nonnull final String idSuffix,
-                            final boolean eager )
+  private void assertEager( @Nonnull final JsonArray nodes, @Nonnull final String classname )
   {
-    assertEquals( getNodeById( nodes, classname, idSuffix ).getBoolean( "eager", false ), eager );
+    assertTrue( getNodeById( nodes, classname ).getBoolean( "eager", false ) );
+  }
+
+  private void assertLazy( @Nonnull final JsonArray nodes, @Nonnull final String classname )
+  {
+    assertFalse( getNodeById( nodes, classname ).getBoolean( "eager", false ) );
   }
 
   @Test
@@ -177,18 +187,9 @@ public final class StingProcessorInjectorGraphTest
 
   @SuppressWarnings( "SameParameterValue" )
   private void assertNodeWithIdNotPresent( @Nonnull final JsonArray nodes,
-                                           @Nonnull final String classname,
-                                           @Nonnull final String idSuffix )
+                                           @Nonnull final String classname )
   {
-    assertNull( findNodeById( nodes, classname, idSuffix ) );
-  }
-
-  @Nonnull
-  private JsonObject getNodeById( @Nonnull final JsonArray nodes,
-                                  @Nonnull final String classname,
-                                  @Nonnull final String idSuffix )
-  {
-    return getNodeById( nodes, classname + "." + idSuffix );
+    assertNull( findNodeById( nodes, classname ) );
   }
 
   @Nonnull
@@ -197,14 +198,6 @@ public final class StingProcessorInjectorGraphTest
     final JsonObject node = findNodeById( nodes, id );
     assertNotNull( node );
     return node;
-  }
-
-  @Nullable
-  private JsonObject findNodeById( @Nonnull final JsonArray nodes,
-                                   @Nonnull final String classname,
-                                   @Nonnull final String idSuffix )
-  {
-    return findNodeById( nodes, classname + "." + idSuffix );
   }
 
   @Nullable

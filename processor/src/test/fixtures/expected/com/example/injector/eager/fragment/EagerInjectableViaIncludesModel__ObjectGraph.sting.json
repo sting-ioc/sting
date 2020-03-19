@@ -1,0 +1,10 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.eager.fragment.MyModel3",
+      "kind": "INJECTABLE",
+      "eager": true
+    }
+  ]
+}

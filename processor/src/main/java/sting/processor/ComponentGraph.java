@@ -251,6 +251,10 @@ final class ComponentGraph
       for ( final Binding binding : fragment.getBindings() )
       {
         registerBinding( binding );
+        if ( binding.isEager() )
+        {
+          findOrCreateNode( binding );
+        }
       }
     }
   }
