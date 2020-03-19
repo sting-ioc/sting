@@ -15,7 +15,7 @@ spend time resolving the conflicts.
 Auto-fragments allow the developer to define a {@link: sting.AutoFragment @AutoFragment} annotated interface such as:
 
 {@file_content: file=sting/doc/examples/autofragments/EntitiesAutoFragment.java start_line=@AutoFragment}
- 
+
 And then define components separately and ensure that they are annotated with the
 {@link: sting.ContributeTo @ContributeTo} with a value matching the {@link: sting.AutoFragment#value() @AutoFragment.value}
 parameter.
