@@ -993,6 +993,7 @@ public final class StingProcessorTest
         .compile( inputs( "com.example.multiround.autofragment.MyAutoFragment",
                           "com.example.multiround.autofragment.MyInjectableModel",
                           "com.example.multiround.autofragment.MyFragment",
+                          "com.example.multiround.autofragment.MyFrameworkModel",
                           // The following input exists so that the synthesizing processor has types to "process"
                           "com.example.multiround.autofragment.MyFramework" ) );
 
