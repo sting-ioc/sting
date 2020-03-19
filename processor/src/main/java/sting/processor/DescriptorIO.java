@@ -295,6 +295,7 @@ final class DescriptorIO
    */
   @Nonnull
   private TypeMirror fromFieldDescriptor( @Nonnull final String descriptor )
+    throws IOException
   {
     switch ( descriptor )
     {
@@ -321,13 +322,21 @@ final class DescriptorIO
 
   @Nonnull
   private DeclaredType readDeclaredType( @Nonnull final String descriptor )
+    throws IOException
   {
     assert descriptor.startsWith( "L" );
     assert descriptor.endsWith( ";" );
     // Injected types do NOT contain arrays and thus the only other valid parameterized type is DECLARED
     final String classname = descriptor.substring( 1, descriptor.length() - 1 ).replace( "$", "." );
     final TypeElement typeElement = _elements.getTypeElement( classname );
-    assert null != typeElement;
+    if( null == typeElement )
+    {
+      // Maybe this should mark the type as unresolved so can try again. This scenario probably means that
+      // a dependency has attempted to recompile and failed without forcing this component to recompile.
+      // This scenario is not uncommon when incremental builds are used in a not-Bazel world
+      throw new IOException( "Descriptor references declared type " + descriptor +
+                             " but that type is not on the classpath or has not yet been compiled" );
+    }
     return (DeclaredType) typeElement.asType();
   }
 }
