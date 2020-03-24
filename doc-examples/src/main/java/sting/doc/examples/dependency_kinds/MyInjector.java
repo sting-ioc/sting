@@ -19,7 +19,8 @@ public interface MyInjector
   {
   }
 
-  interface FaultAuditService
+  @Injectable
+  class FaultAuditService
   {
   }
   //DOC ELIDE END
