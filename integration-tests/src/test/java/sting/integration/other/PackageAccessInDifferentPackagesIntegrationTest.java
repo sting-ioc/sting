@@ -66,7 +66,6 @@ public final class PackageAccessInDifferentPackagesIntegrationTest
 
     assertSame( service3, model3 );
 
-
     assertEquals( objects.size(), 4 );
     assertTrue( objects.contains( model1 ) );
     assertTrue( objects.contains( model2 ) );
