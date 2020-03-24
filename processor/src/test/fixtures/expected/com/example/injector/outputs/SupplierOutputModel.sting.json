@@ -5,7 +5,7 @@
   ],
   "outputs": [
     {
-      "type": "SUPPLIER",
+      "kind": "SUPPLIER",
       "type": "com.example.injector.outputs.SupplierOutputModel.MyModel"
     }
   ]

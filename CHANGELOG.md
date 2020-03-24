@@ -7,6 +7,7 @@
 * Generate an error if an auto-included type is explicitly included in the includes of an `@Injector`. This means that any `@Injectable` or `@Fragment` directly enclosed within an injector type will generate an error.
 * Generate an error if an `includes` parameter of either the `@Injector` annotation or the `@Fragment` annotation contains duplicate values.
 * Generate an error if a `@Fragment` annotated type encloses any types.
+* Rename the field that contains the dependency kind from "type" to "kind" in the json output.
 
 ### [v0.09](https://github.com/sting-ioc/sting/tree/v0.09) (2020-03-19) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.08...v0.09) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.08&new=0.09)
 

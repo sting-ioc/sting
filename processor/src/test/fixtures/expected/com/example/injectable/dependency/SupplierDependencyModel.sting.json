@@ -8,7 +8,7 @@
   ],
   "dependencies": [
     {
-      "type": "SUPPLIER",
+      "kind": "SUPPLIER",
       "type": "java.lang.Runnable"
     }
   ]

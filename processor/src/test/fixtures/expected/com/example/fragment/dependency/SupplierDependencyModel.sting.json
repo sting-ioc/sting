@@ -10,7 +10,7 @@
       ],
       "dependencies": [
         {
-          "type": "SUPPLIER",
+          "kind": "SUPPLIER",
           "type": "java.lang.String"
         }
       ]

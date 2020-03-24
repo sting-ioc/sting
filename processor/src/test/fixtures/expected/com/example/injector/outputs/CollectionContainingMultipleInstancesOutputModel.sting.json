@@ -7,7 +7,7 @@
   ],
   "outputs": [
     {
-      "type": "COLLECTION",
+      "kind": "COLLECTION",
       "type": "java.lang.Runnable"
     }
   ]

@@ -10,7 +10,7 @@
       ],
       "dependencies": [
         {
-          "type": "COLLECTION",
+          "kind": "COLLECTION",
           "type": "java.lang.String"
         }
       ]

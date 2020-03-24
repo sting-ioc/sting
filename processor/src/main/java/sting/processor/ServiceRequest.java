@@ -80,7 +80,7 @@ final class ServiceRequest
     g.writeStartObject();
     if ( Kind.INSTANCE != _kind )
     {
-      g.write( "type", _kind.name() );
+      g.write( "kind", _kind.name() );
     }
     _service.write( g );
     g.writeEnd();

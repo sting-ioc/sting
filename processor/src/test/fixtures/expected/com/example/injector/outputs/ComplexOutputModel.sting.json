@@ -10,11 +10,11 @@
       "type": "com.example.injector.outputs.ComplexOutputModel.MyModel1"
     },
     {
-      "type": "SUPPLIER",
+      "kind": "SUPPLIER",
       "type": "com.example.injector.outputs.ComplexOutputModel.MyModel2"
     },
     {
-      "type": "SUPPLIER",
+      "kind": "SUPPLIER",
       "qualifier": "foo",
       "type": "com.example.injector.outputs.ComplexOutputModel.MyModel3"
     },

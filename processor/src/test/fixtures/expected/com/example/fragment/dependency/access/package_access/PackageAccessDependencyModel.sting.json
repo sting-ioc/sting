@@ -23,7 +23,7 @@
       ],
       "dependencies": [
         {
-          "type": "SUPPLIER",
+          "kind": "SUPPLIER",
           "type": "com.example.fragment.dependency.access.package_access.MyType3"
         }
       ]
@@ -37,7 +37,7 @@
       ],
       "dependencies": [
         {
-          "type": "COLLECTION",
+          "kind": "COLLECTION",
           "type": "com.example.fragment.dependency.access.package_access.MyType4"
         }
       ]
@@ -51,7 +51,7 @@
       ],
       "dependencies": [
         {
-          "type": "SUPPLIER_COLLECTION",
+          "kind": "SUPPLIER_COLLECTION",
           "type": "com.example.fragment.dependency.access.package_access.MyType5"
         }
       ]
