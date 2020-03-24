@@ -939,6 +939,14 @@ public final class StingProcessor
         {
           includes.add( new IncludeDescriptor( type, type.toString() ) );
         }
+        else
+        {
+          throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) +
+                                        " target must not include a " +
+                                        MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " annotated " +
+                                        "type that is auto-included as it is enclosed within the injector type",
+                                        element );
+        }
       }
       else if ( ElementKind.CLASS == enclosedElementKind &&
                 AnnotationsUtil.hasAnnotationOfType( enclosedElement, Constants.INJECTABLE_CLASSNAME ) )
@@ -947,6 +955,14 @@ public final class StingProcessor
         if ( includes.stream().noneMatch( d -> Objects.equals( d.getIncludedType(), type ) ) )
         {
           includes.add( new IncludeDescriptor( type, type.toString() ) );
+        }
+        else
+        {
+          throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) +
+                                        " target must not include an " +
+                                        MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) + " annotated " +
+                                        "type that is auto-included as it is enclosed within the injector type",
+                                        element );
         }
       }
       else if ( enclosedElementKind.isClass() || enclosedElementKind.isInterface() )
