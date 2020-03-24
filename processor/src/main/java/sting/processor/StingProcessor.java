@@ -930,7 +930,8 @@ public final class StingProcessor
     }
     for ( final Element enclosedElement : element.getEnclosedElements() )
     {
-      if ( ElementKind.INTERFACE == enclosedElement.getKind() &&
+      final ElementKind enclosedElementKind = enclosedElement.getKind();
+      if ( ElementKind.INTERFACE == enclosedElementKind &&
            AnnotationsUtil.hasAnnotationOfType( enclosedElement, Constants.FRAGMENT_CLASSNAME ) )
       {
         final DeclaredType type = (DeclaredType) enclosedElement.asType();
@@ -939,7 +940,7 @@ public final class StingProcessor
           includes.add( new IncludeDescriptor( type, type.toString() ) );
         }
       }
-      else if ( ElementKind.CLASS == enclosedElement.getKind() &&
+      else if ( ElementKind.CLASS == enclosedElementKind &&
                 AnnotationsUtil.hasAnnotationOfType( enclosedElement, Constants.INJECTABLE_CLASSNAME ) )
       {
         final DeclaredType type = (DeclaredType) enclosedElement.asType();
