@@ -13,7 +13,7 @@ interface NullableProvidesWithNonOptionalSingularDependencyModel
   @Injectable
   class MyModel1
   {
-    MyModel1( MyModel2 model )
+    MyModel1( Runnable model )
     {
     }
   }
@@ -21,16 +21,9 @@ interface NullableProvidesWithNonOptionalSingularDependencyModel
   @Fragment
   interface MyFragment1
   {
-    default MyModel2 provideMyModel2( /* This should be @Nullable annotated */ MyModel3 model )
+    default Runnable provideRunnable( /* This should be @Nullable annotated */ String config )
     {
-      return new MyModel2( model );
-    }
-  }
-
-  class MyModel2
-  {
-    MyModel2( MyModel3 model )
-    {
+      return null;
     }
   }
 
@@ -39,13 +32,9 @@ interface NullableProvidesWithNonOptionalSingularDependencyModel
   {
     // Nullable provides
     @Nullable
-    default MyModel3 provideMyModel3()
+    default String provideConfig()
     {
-      return new MyModel3();
+      return null;
     }
-  }
-
-  class MyModel3
-  {
   }
 }

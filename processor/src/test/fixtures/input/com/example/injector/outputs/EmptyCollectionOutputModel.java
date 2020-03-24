@@ -4,11 +4,7 @@ import java.util.Collection;
 import sting.Injector;
 
 @Injector
-interface EmptyCollectionOutputModel
+public interface EmptyCollectionOutputModel
 {
-  Collection<MyModel> getMyModel();
-
-  class MyModel
-  {
-  }
+  Collection<Runnable> getRunnables();
 }

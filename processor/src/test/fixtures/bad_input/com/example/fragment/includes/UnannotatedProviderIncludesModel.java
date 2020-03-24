@@ -3,9 +3,13 @@ package com.example.fragment.includes;
 import sting.Fragment;
 import sting.StingProvider;
 
-@Fragment( includes = UnannotatedProviderIncludesModel.MyComponent.class )
 public interface UnannotatedProviderIncludesModel
 {
+  @Fragment( includes = MyComponent.class )
+  interface MyInjector
+  {
+  }
+
   @StingProvider( "[EnclosingName][SimpleName]_Provider" )
   @interface MyFrameworkComponent1
   {

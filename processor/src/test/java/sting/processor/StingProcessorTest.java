@@ -534,24 +534,24 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.NoDirectDependenciesAndNoEagerInIncludesModel",
                       "@Injector target produced an empty object graph. This means that there are no eager nodes in the includes and there are no dependencies or only unsatisfied optional dependencies defined by the injector" },
         new Object[]{ "com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel",
-                      "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyModel3]\n" +
+                      "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [java.lang.Integer]\n" +
                       "  Dependency Path:\n" +
                       "    [Injector]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel\n" +
                       "    [Injectable]     com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyModel1\n" +
-                      "    [Provides]    *  com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment1.provideMyModel2\n" +
+                      "    [Provides]    *  com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment1.provideConfig\n" +
                       "  \n" +
                       "  Bindings:\n" +
-                      "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment2.provideMyModel3\n" +
-                      "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment4.provideMyModel3" },
+                      "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment2.provideInteger\n" +
+                      "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment4.provideInteger" },
         new Object[]{ "com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel",
-                      "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyModel3]\n" +
+                      "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [java.lang.String]\n" +
                       "  Dependency Path:\n" +
                       "    [Injector]       com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel\n" +
                       "    [Injectable]     com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyModel1\n" +
-                      "    [Provides]    *  com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment1.provideMyModel2\n" +
+                      "    [Provides]    *  com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment1.provideRunnable\n" +
                       "  \n" +
                       "  Binding:\n" +
-                      "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment2.provideMyModel3" },
+                      "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment2.provideConfig" },
         new Object[]{ "com.example.injector.TypeParametersInjectorModel",
                       "@Injector target must not have type parameters" },
 
@@ -560,8 +560,8 @@ public final class StingProcessorTest
                       "  Path:\n" +
                       "    [Injector]       com.example.injector.circular.ChainedCircularDependencyModel\n" +
                       "    [Injectable] +-< com.example.injector.circular.ChainedCircularDependencyModel.MyModel1\n" +
-                      "    [Provides]   |   com.example.injector.circular.ChainedCircularDependencyModel.MyFragment1.provideMyModel2\n" +
-                      "    [Provides]   |   com.example.injector.circular.ChainedCircularDependencyModel.MyFragment2.provideMyModel3\n" +
+                      "    [Provides]   |   com.example.injector.circular.ChainedCircularDependencyModel.MyFragment1.provideConfig\n" +
+                      "    [Provides]   |   com.example.injector.circular.ChainedCircularDependencyModel.MyFragment2.provideInteger\n" +
                       "    [Injectable] |   com.example.injector.circular.ChainedCircularDependencyModel.MyModel4\n" +
                       "    [Injectable] +-> com.example.injector.circular.ChainedCircularDependencyModel.MyModel1" },
         new Object[]{ "com.example.injector.circular.DirectlyCircularDependencyModel",
@@ -579,7 +579,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.includes.InvalidProvider2IncludesModel",
                       "@Injector target has an 'includes' parameter containing the value com.example.injector.includes.InvalidProvider2IncludesModel.MyComponent that is annotated by @com.example.injector.includes.InvalidProvider2IncludesModel.StingProvider(42) that is annotated by an invalid @StingProvider annotation missing a 'value' parameter of type string." },
         new Object[]{ "com.example.injector.includes.MissingProviderIncludesModel",
-                      "@Injector target has an parameter named 'includes' containing the value com.example.injector.includes.MissingProviderIncludesModel.MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.injector.includes.MissingProviderIncludesModel_MF1_MyComponent_Provider but no such class exists. The type need to be removed from the includes or the provider class needs to be present." },
+                      "@Injector target has an parameter named 'includes' containing the value com.example.injector.includes.MissingProviderIncludesModel_MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.injector.includes.MF1_MissingProviderIncludesModel_MyComponent_Provider but no such class exists. The type need to be removed from the includes or the provider class needs to be present." },
         new Object[]{ "com.example.injector.includes.MultipleProvidersIncludesModel",
                       "@Injector target has an 'includes' parameter containing the value com.example.injector.includes.MultipleProvidersIncludesModel.MyComponent that is annotated by multiple @StingProvider annotations. Matching annotations:\n" +
                       "    com.example.injector.includes.MultipleProvidersIncludesModel.MyFrameworkComponent1\n" +
@@ -622,12 +622,12 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.outputs.MethodWithTypeParametersOutputModel",
                       "@Injector target must not contain a method that has any type parameters" },
         new Object[]{ "com.example.injector.outputs.MissingOutputModel",
-                      "@Injector target must not contain a non-optional dependency [com.example.injector.outputs.MissingOutputModel.MyModel4] that can not be satisfied.\n" +
+                      "@Injector target must not contain a non-optional dependency [java.lang.Integer] that can not be satisfied.\n" +
                       "  Dependency Path:\n" +
                       "    [Injector]       com.example.injector.outputs.MissingOutputModel\n" +
                       "    [Injectable]     com.example.injector.outputs.MissingOutputModel.MyModel1\n" +
-                      "    [Provides]       com.example.injector.outputs.MissingOutputModel.MyFragment1.provideMyModel2\n" +
-                      "    [Provides]    *  com.example.injector.outputs.MissingOutputModel.MyFragment2.provideMyModel3" },
+                      "    [Provides]       com.example.injector.outputs.MissingOutputModel.MyFragment1.provideRunnable\n" +
+                      "    [Provides]    *  com.example.injector.outputs.MissingOutputModel.MyFragment2.provideConfig" },
         new Object[]{ "com.example.injector.outputs.ParameterizedCollectionOutputModel",
                       "@Injector target must not contain a method with a return type that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
         new Object[]{ "com.example.injector.outputs.ParameterizedOutputModel",

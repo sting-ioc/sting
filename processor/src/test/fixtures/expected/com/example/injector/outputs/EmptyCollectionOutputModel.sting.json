@@ -3,7 +3,7 @@
   "outputs": [
     {
       "type": "COLLECTION",
-      "type": "com.example.injector.outputs.EmptyCollectionOutputModel.MyModel"
+      "type": "java.lang.Runnable"
     }
   ]
 }

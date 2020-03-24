@@ -6,17 +6,13 @@ import sting.Injector;
 @Injector
 public interface DeprecatedFragmentNodeInjectorModel
 {
-  MyModel getMyModel();
-
-  class MyModel
-  {
-  }
+  Runnable getRunnable();
 
   @Deprecated
   @Fragment
   interface MyFragment
   {
-    default MyModel provideMyModel()
+    default Runnable provideRunnable()
     {
       return null;
     }

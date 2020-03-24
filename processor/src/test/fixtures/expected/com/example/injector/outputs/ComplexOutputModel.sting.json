@@ -19,7 +19,7 @@
       "type": "com.example.injector.outputs.ComplexOutputModel.MyModel3"
     },
     {
-      "type": "com.example.injector.outputs.ComplexOutputModel.MyModel4",
+      "type": "java.lang.Runnable",
       "optional": true
     }
   ]

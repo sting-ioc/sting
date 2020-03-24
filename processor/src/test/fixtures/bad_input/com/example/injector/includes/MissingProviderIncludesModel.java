@@ -3,18 +3,18 @@ package com.example.injector.includes;
 import sting.Injector;
 import sting.StingProvider;
 
-@Injector( includes = MissingProviderIncludesModel.MyComponent.class )
+@Injector( includes = MissingProviderIncludesModel_MyComponent.class )
 public interface MissingProviderIncludesModel
 {
-  MyComponent getMyComponent();
+  MissingProviderIncludesModel_MyComponent getMyComponent();
+}
 
-  @StingProvider( "[FlatEnclosingName]MF1_[SimpleName]_Provider" )
-  @interface MyFrameworkComponent1
-  {
-  }
+@StingProvider( "[FlatEnclosingName]MF1_[SimpleName]_Provider" )
+@interface MissingProviderIncludesModel_MyFramework
+{
+}
 
-  @MyFrameworkComponent1
-  class MyComponent
-  {
-  }
+@MissingProviderIncludesModel_MyFramework
+class MissingProviderIncludesModel_MyComponent
+{
 }

@@ -5,7 +5,7 @@
   ],
   "outputs": [
     {
-      "type": "com.example.injector.outputs.OptionalProvidesOutputModel.MyModel",
+      "type": "java.lang.Runnable",
       "optional": true
     }
   ]

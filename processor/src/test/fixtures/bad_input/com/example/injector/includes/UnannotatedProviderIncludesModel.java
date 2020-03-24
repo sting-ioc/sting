@@ -3,10 +3,13 @@ package com.example.injector.includes;
 import sting.Injector;
 import sting.StingProvider;
 
-@Injector( includes = UnannotatedProviderIncludesModel.MyComponent.class )
 public interface UnannotatedProviderIncludesModel
 {
-  MyComponent getMyComponent();
+  @Injector( includes = MyComponent.class )
+  interface MyInjector
+  {
+    MyComponent getMyComponent();
+  }
 
   @StingProvider( "[EnclosingName][SimpleName]_Provider" )
   @interface MyFrameworkComponent1

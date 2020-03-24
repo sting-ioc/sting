@@ -6,16 +6,16 @@ import javax.annotation.Generated;
 
 @Generated("sting.processor.StingProcessor")
 final class Sting_EmptyCollectionOutputModel implements EmptyCollectionOutputModel {
-  private Collection<EmptyCollectionOutputModel.MyModel> $sting$_getMyModelCache;
+  private Collection<Runnable> $sting$_getRunnablesCache;
 
   Sting_EmptyCollectionOutputModel() {
   }
 
   @Override
-  public Collection<EmptyCollectionOutputModel.MyModel> getMyModel() {
-    if ( null == $sting$_getMyModelCache ) {
-      $sting$_getMyModelCache = Collections.emptyList();
+  public Collection<Runnable> getRunnables() {
+    if ( null == $sting$_getRunnablesCache ) {
+      $sting$_getRunnablesCache = Collections.emptyList();
     }
-    return $sting$_getMyModelCache;
+    return $sting$_getRunnablesCache;
   }
 }

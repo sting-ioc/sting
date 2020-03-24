@@ -18,7 +18,7 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
   private Object node2;
 
   @Nullable
-  private Object node3;
+  private Runnable node3;
 
   Sting_SupplierBrokenFragmentWalkingCircularDependencyModel() {
   }
@@ -45,9 +45,9 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
 
   @Nonnull
   @DoNotInline
-  private synchronized Object node3() {
+  private synchronized Runnable node3() {
     if ( null == node3 ) {
-      node3 = Objects.requireNonNull( fragment1.$sting$_provideMyModel2(() -> node2()) );
+      node3 = Objects.requireNonNull( fragment1.$sting$_provideRunnable(() -> node2()) );
     }
     assert null != node3;
     return node3;
@@ -64,7 +64,7 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
   }
 
   @Override
-  public SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3 getMyModel3() {
-    return (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3) node3();
+  public Runnable getRunnable() {
+    return node3();
   }
 }

@@ -20,24 +20,24 @@ final class Sting_CollectionContainingMultipleInstancesOutputModel implements Co
   private final CollectionContainingMultipleInstancesOutputModel_Sting_MyFragment3 fragment3 = new CollectionContainingMultipleInstancesOutputModel_Sting_MyFragment3();
 
   @Nullable
-  private Object node1;
+  private Runnable node1;
 
   @Nullable
-  private Object node2;
+  private Runnable node2;
 
   @Nullable
-  private Object node3;
+  private Runnable node3;
 
-  private Collection<CollectionContainingMultipleInstancesOutputModel.MyModel> $sting$_getMyModelCache;
+  private Collection<Runnable> $sting$_getRunnablesCache;
 
   Sting_CollectionContainingMultipleInstancesOutputModel() {
   }
 
   @Nonnull
   @DoNotInline
-  private synchronized Object node1() {
+  private synchronized Runnable node1() {
     if ( null == node1 ) {
-      node1 = Objects.requireNonNull( fragment2.$sting$_myModel() );
+      node1 = Objects.requireNonNull( fragment1.$sting$_provideRunnable() );
     }
     assert null != node1;
     return node1;
@@ -45,9 +45,9 @@ final class Sting_CollectionContainingMultipleInstancesOutputModel implements Co
 
   @Nonnull
   @DoNotInline
-  private synchronized Object node2() {
+  private synchronized Runnable node2() {
     if ( null == node2 ) {
-      node2 = Objects.requireNonNull( fragment3.$sting$_myModel() );
+      node2 = Objects.requireNonNull( fragment3.$sting$_provideRunnable() );
     }
     assert null != node2;
     return node2;
@@ -55,19 +55,19 @@ final class Sting_CollectionContainingMultipleInstancesOutputModel implements Co
 
   @Nonnull
   @DoNotInline
-  private synchronized Object node3() {
+  private synchronized Runnable node3() {
     if ( null == node3 ) {
-      node3 = Objects.requireNonNull( fragment1.$sting$_myModel() );
+      node3 = Objects.requireNonNull( fragment2.$sting$_provideRunnable() );
     }
     assert null != node3;
     return node3;
   }
 
   @Override
-  public Collection<CollectionContainingMultipleInstancesOutputModel.MyModel> getMyModel() {
-    if ( null == $sting$_getMyModelCache ) {
-      $sting$_getMyModelCache = Arrays.asList( (CollectionContainingMultipleInstancesOutputModel.MyModel) node3(), (CollectionContainingMultipleInstancesOutputModel.MyModel) node1(), (CollectionContainingMultipleInstancesOutputModel.MyModel) node2() );
+  public Collection<Runnable> getRunnables() {
+    if ( null == $sting$_getRunnablesCache ) {
+      $sting$_getRunnablesCache = Arrays.asList( node1(), node3(), node2() );
     }
-    return $sting$_getMyModelCache;
+    return $sting$_getRunnablesCache;
   }
 }

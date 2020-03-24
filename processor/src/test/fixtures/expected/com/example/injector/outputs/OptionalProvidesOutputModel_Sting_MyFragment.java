@@ -6,7 +6,7 @@ import javax.annotation.Nullable;
 @Generated("sting.processor.StingProcessor")
 public final class OptionalProvidesOutputModel_Sting_MyFragment implements OptionalProvidesOutputModel.MyFragment {
   @Nullable
-  public Object $sting$_provideValue() {
-    return provideValue();
+  public Runnable $sting$_provideRunnable() {
+    return provideRunnable();
   }
 }

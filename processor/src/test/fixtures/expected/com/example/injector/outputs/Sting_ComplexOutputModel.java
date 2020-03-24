@@ -68,7 +68,7 @@ final class Sting_ComplexOutputModel implements ComplexOutputModel {
 
   @Override
   @Nullable
-  public ComplexOutputModel.MyModel4 getMyModel4() {
+  public Runnable getRunnable() {
     return null;
   }
 }

@@ -10,17 +10,17 @@ interface ChainedCircularDependencyModel
 {
   MyModel1 getMyModel1();
 
-  MyModel2 getMyModel2();
+  String getConfig();
 
   @Nullable
-  MyModel3 getMyModel3();
+  Integer getInteger();
 
   MyModel4 getMyModel4();
 
   @Injectable
   class MyModel1
   {
-    MyModel1( MyModel2 model )
+    MyModel1( String model )
     {
     }
   }
@@ -28,16 +28,9 @@ interface ChainedCircularDependencyModel
   @Fragment
   interface MyFragment1
   {
-    default MyModel2 provideMyModel2( @Nullable MyModel3 model )
+    default String provideConfig( @Nullable Integer model )
     {
-      return new MyModel2( model );
-    }
-  }
-
-  class MyModel2
-  {
-    MyModel2( @Nullable MyModel3 model )
-    {
+      return null;
     }
   }
 
@@ -46,16 +39,9 @@ interface ChainedCircularDependencyModel
   {
     // Nullable provides
     @Nullable
-    default MyModel3 provideMyModel3( MyModel4 model )
+    default Integer provideInteger( MyModel4 model )
     {
-      return new MyModel3( model );
-    }
-  }
-
-  class MyModel3
-  {
-    MyModel3( MyModel4 model )
-    {
+      return null;
     }
   }
 

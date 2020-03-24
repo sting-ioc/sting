@@ -4,7 +4,7 @@ digraph "SupplierBrokenFragmentWalkingCircularDependencyModel" {
   injector [label="SupplierBrokenFragmentWalkingCircularDependencyModel",color=green];
   node2 [label="MyModel1"];
   node1 [label="MyModel2"];
-  node3 [label="MyModel3"];
+  node3 [label="Runnable"];
   injector -> node2 [];
   injector -> node1 [];
   injector -> node3 [];

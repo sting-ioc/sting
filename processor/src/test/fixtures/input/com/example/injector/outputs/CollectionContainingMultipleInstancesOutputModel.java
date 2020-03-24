@@ -7,16 +7,12 @@ import sting.Injector;
 @Injector
 interface CollectionContainingMultipleInstancesOutputModel
 {
-  Collection<MyModel> getMyModel();
-
-  class MyModel
-  {
-  }
+  Collection<Runnable> getRunnables();
 
   @Fragment
   interface MyFragment1
   {
-    default MyModel myModel()
+    default Runnable provideRunnable()
     {
       return null;
     }
@@ -25,7 +21,7 @@ interface CollectionContainingMultipleInstancesOutputModel
   @Fragment
   interface MyFragment2
   {
-    default MyModel myModel()
+    default Runnable provideRunnable()
     {
       return null;
     }
@@ -34,7 +30,7 @@ interface CollectionContainingMultipleInstancesOutputModel
   @Fragment
   interface MyFragment3
   {
-    default MyModel myModel()
+    default Runnable provideRunnable()
     {
       return null;
     }

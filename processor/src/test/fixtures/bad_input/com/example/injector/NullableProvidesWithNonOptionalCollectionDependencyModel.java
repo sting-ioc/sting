@@ -14,7 +14,7 @@ interface NullableProvidesWithNonOptionalCollectionDependencyModel
   @Injectable
   class MyModel1
   {
-    MyModel1( MyModel2 model )
+    MyModel1( String config )
     {
     }
   }
@@ -22,16 +22,9 @@ interface NullableProvidesWithNonOptionalCollectionDependencyModel
   @Fragment
   interface MyFragment1
   {
-    default MyModel2 provideMyModel2( /* This should be @Nullable annotated */ Collection<MyModel3> models )
+    default String provideConfig( /* This should be @Nullable annotated */ Collection<Integer> models )
     {
-      return new MyModel2( models );
-    }
-  }
-
-  class MyModel2
-  {
-    MyModel2( Collection<MyModel3> models )
-    {
+      return null;
     }
   }
 
@@ -40,18 +33,18 @@ interface NullableProvidesWithNonOptionalCollectionDependencyModel
   {
     // Nullable provides
     @Nullable
-    default MyModel3 provideMyModel3()
+    default Integer provideInteger()
     {
-      return new MyModel3();
+      return null;
     }
   }
 
   @Fragment
   interface MyFragment3
   {
-    default MyModel3 provideMyModel3()
+    default Integer provideInteger()
     {
-      return new MyModel3();
+      return null;
     }
   }
 
@@ -60,13 +53,9 @@ interface NullableProvidesWithNonOptionalCollectionDependencyModel
   {
     // Nullable provides
     @Nullable
-    default MyModel3 provideMyModel3()
+    default Integer provideInteger()
     {
-      return new MyModel3();
+      return null;
     }
-  }
-
-  class MyModel3
-  {
   }
 }

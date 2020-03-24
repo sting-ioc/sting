@@ -2,15 +2,15 @@
   "schema": "graph/1",
   "nodes": [
     {
-      "id": "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment2#myModel",
+      "id": "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment1#provideRunnable",
       "kind": "PROVIDES"
     },
     {
-      "id": "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment3#myModel",
+      "id": "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment3#provideRunnable",
       "kind": "PROVIDES"
     },
     {
-      "id": "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment1#myModel",
+      "id": "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment2#provideRunnable",
       "kind": "PROVIDES"
     }
   ]

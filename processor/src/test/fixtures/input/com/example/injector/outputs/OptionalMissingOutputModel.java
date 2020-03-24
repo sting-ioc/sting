@@ -8,13 +8,9 @@ import sting.Injector;
 public interface OptionalMissingOutputModel
 {
   @Nullable
-  MyModel1 getMyModel1();
+  Runnable getRunnable();
 
   MyModel2 getMyModel2();
-
-  class MyModel1
-  {
-  }
 
   @Injectable
   class MyModel2

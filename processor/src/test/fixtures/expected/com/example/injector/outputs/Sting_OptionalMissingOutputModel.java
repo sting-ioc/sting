@@ -26,7 +26,7 @@ final class Sting_OptionalMissingOutputModel implements OptionalMissingOutputMod
 
   @Override
   @Nullable
-  public OptionalMissingOutputModel.MyModel1 getMyModel1() {
+  public Runnable getRunnable() {
     return null;
   }
 

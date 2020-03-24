@@ -11,7 +11,7 @@ final class Sting_OptionalProvidesOutputModel implements OptionalProvidesOutputM
   private final OptionalProvidesOutputModel_Sting_MyFragment fragment1 = new OptionalProvidesOutputModel_Sting_MyFragment();
 
   @Nullable
-  private Object node1;
+  private Runnable node1;
 
   private boolean node1_allocated;
 
@@ -20,17 +20,17 @@ final class Sting_OptionalProvidesOutputModel implements OptionalProvidesOutputM
 
   @Nullable
   @DoNotInline
-  private synchronized Object node1() {
+  private synchronized Runnable node1() {
     if ( !node1_allocated ) {
       node1_allocated = true;
-      node1 = fragment1.$sting$_provideValue();
+      node1 = fragment1.$sting$_provideRunnable();
     }
     return node1;
   }
 
   @Override
   @Nullable
-  public OptionalProvidesOutputModel.MyModel getMyModel() {
-    return (OptionalProvidesOutputModel.MyModel) node1();
+  public Runnable getRunnable() {
+    return node1();
   }
 }

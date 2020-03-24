@@ -10,8 +10,7 @@ public final class SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_My
   }
 
   @Nonnull
-  @SuppressWarnings("unchecked")
-  public static Object create(final Object model) {
-    return new SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2( Objects.requireNonNull( (SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3) model ) );
+  public static Object create(final Runnable model) {
+    return new SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2( Objects.requireNonNull( model ) );
   }
 }

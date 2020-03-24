@@ -6,9 +6,9 @@
       "kind": "INJECTABLE",
       "dependencies": [
         {
-          "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3",
+          "type": "java.lang.Runnable",
           "supportedBy": [
-            "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyFragment#provideMyModel2"
+            "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyFragment#provideRunnable"
           ]
         }
       ]
@@ -26,7 +26,7 @@
       ]
     },
     {
-      "id": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyFragment#provideMyModel2",
+      "id": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyFragment#provideRunnable",
       "kind": "PROVIDES",
       "dependencies": [
         {

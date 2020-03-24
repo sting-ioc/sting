@@ -7,11 +7,7 @@ import sting.Injector;
 @Injector
 public interface DeprecatedProvidesDependencyNodeInjectorModel
 {
-  MyModel getMyModel();
-
-  class MyModel
-  {
-  }
+  Runnable getRunnable();
 
   @SuppressWarnings( "DeprecatedIsStillUsed" )
   @Injectable
@@ -23,7 +19,7 @@ public interface DeprecatedProvidesDependencyNodeInjectorModel
   @Fragment
   interface MyFragment
   {
-    default MyModel provideMyModel( MyOtherModel other )
+    default Runnable provideRunnable( MyOtherModel other )
     {
       return null;
     }

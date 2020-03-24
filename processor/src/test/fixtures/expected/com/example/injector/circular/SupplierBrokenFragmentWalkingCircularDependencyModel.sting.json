@@ -13,7 +13,7 @@
       "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2"
     },
     {
-      "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel3"
+      "type": "java.lang.Runnable"
     }
   ]
 }

@@ -13,7 +13,7 @@ interface MissingOutputModel
   @Injectable
   class MyModel1
   {
-    MyModel1( MyModel2 model )
+    MyModel1( Runnable model )
     {
     }
   }
@@ -21,16 +21,9 @@ interface MissingOutputModel
   @Fragment
   interface MyFragment1
   {
-    default MyModel2 provideMyModel2( @Nullable MyModel3 model )
+    default Runnable provideRunnable( @Nullable String config )
     {
-      return new MyModel2( model );
-    }
-  }
-
-  class MyModel2
-  {
-    MyModel2( @Nullable MyModel3 model )
-    {
+      return null;
     }
   }
 
@@ -39,20 +32,9 @@ interface MissingOutputModel
   {
     // Nullable provides
     @Nullable
-    default MyModel3 provideMyModel3( MyModel4 model )
+    default String provideConfig( Integer number )
     {
-      return new MyModel3( model );
+      return "V" + number;
     }
-  }
-
-  class MyModel3
-  {
-    MyModel3( MyModel4 model )
-    {
-    }
-  }
-
-  class MyModel4
-  {
   }
 }

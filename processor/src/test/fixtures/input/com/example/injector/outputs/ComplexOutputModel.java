@@ -17,7 +17,7 @@ interface ComplexOutputModel
   Supplier<MyModel3> getMyModel3Supplier();
 
   @Nullable
-  MyModel4 getMyModel4();
+  Runnable getRunnable();
 
   @Injectable
   class MyModel1
@@ -32,12 +32,6 @@ interface ComplexOutputModel
   @Injectable
   @Named( "foo" )
   class MyModel3
-  {
-  }
-
-  // Not @Injectable and thus would need to be provided if used
-  // but not used and nullable Dependency
-  class MyModel4
   {
   }
 }
