@@ -1298,9 +1298,19 @@ public final class StingProcessor
     final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
     final List<ExecutableElement> methods =
       ElementsUtil.getMethods( element, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
-    for ( final ExecutableElement method : methods )
+    for ( final Element enclosedElement : element.getEnclosedElements() )
     {
-      processProvidesMethod( element, bindings, method );
+      final ElementKind enclosedElementKind = enclosedElement.getKind();
+      if ( ElementKind.METHOD == enclosedElementKind )
+      {
+        processProvidesMethod( element, bindings, (ExecutableElement) enclosedElement );
+      }
+      if ( enclosedElementKind.isClass() || enclosedElementKind.isInterface() )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
+                                      " target must not contain any types",
+                                      element );
+      }
     }
     if ( bindings.isEmpty() && includes.isEmpty() )
     {
@@ -1316,16 +1326,6 @@ public final class StingProcessor
                                                           "annotated with the " + Constants.JSR_330_SCOPE_CLASSNAME +
                                                           " annotation such as " + scopedAnnotations ),
                                     element );
-    }
-    for ( final Element enclosedElement : element.getEnclosedElements() )
-    {
-      final ElementKind enclosedElementKind = enclosedElement.getKind();
-      if ( enclosedElementKind.isClass() || enclosedElementKind.isInterface() )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
-                                      " target must not contain any types",
-                                      element );
-      }
     }
     _registry.registerFragment( new FragmentDescriptor( element, includes, bindings.values() ) );
   }
