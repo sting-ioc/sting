@@ -949,6 +949,14 @@ public final class StingProcessor
           includes.add( new IncludeDescriptor( type, type.toString() ) );
         }
       }
+      else if ( enclosedElementKind.isClass() || enclosedElementKind.isInterface() )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) +
+                                      " target must not contain a type that is not annotated " +
+                                      "by either " + MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                      " or " + MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ),
+                                      element );
+      }
     }
     final InjectorDescriptor injector = new InjectorDescriptor( element, gwt, injectable, includes, inputs, outputs );
     _registry.registerInjector( injector );
