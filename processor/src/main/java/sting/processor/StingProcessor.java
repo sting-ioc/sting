@@ -574,8 +574,8 @@ public final class StingProcessor
 
       if ( bindings.isEmpty() )
       {
-        final String classname = coordinate.getType().toString();
-        final InjectableDescriptor injectable = _registry.findInjectableByClassName( classname );
+        final String typename = coordinate.getType().toString();
+        final InjectableDescriptor injectable = _registry.findInjectableByClassName( typename );
         if ( null != injectable &&
              injectable.getBinding()
                .getPublishedServices()
@@ -586,7 +586,7 @@ public final class StingProcessor
         }
         if ( bindings.isEmpty() )
         {
-          final TypeElement typeElement = processingEnv.getElementUtils().getTypeElement( classname );
+          final TypeElement typeElement = processingEnv.getElementUtils().getTypeElement( typename );
           final byte[] data = null != typeElement ? tryLoadDescriptorData( typeElement ) : null;
           if ( null != data )
           {
@@ -597,7 +597,7 @@ public final class StingProcessor
               owner instanceof InjectableDescriptor ? ( (InjectableDescriptor) owner ).getElement() :
               injector.getElement();
 
-            final Object descriptor = loadDescriptor( ownerElement, classname, data );
+            final Object descriptor = loadDescriptor( ownerElement, typename, data );
             if ( descriptor instanceof InjectableDescriptor )
             {
               final InjectableDescriptor injectableDescriptor = (InjectableDescriptor) descriptor;
