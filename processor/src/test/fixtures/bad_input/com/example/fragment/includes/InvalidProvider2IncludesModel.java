@@ -1,6 +1,5 @@
 package com.example.fragment.includes;
 
-import javax.annotation.Nonnull;
 import sting.Fragment;
 
 @Fragment( includes = InvalidProvider2IncludesModel.MyComponent.class )

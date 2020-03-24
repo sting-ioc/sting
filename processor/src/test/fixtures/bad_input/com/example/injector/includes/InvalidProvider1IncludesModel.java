@@ -1,7 +1,5 @@
 package com.example.injector.includes;
 
-import java.util.EventListener;
-import sting.Injectable;
 import sting.Injector;
 
 @Injector( includes = InvalidProvider1IncludesModel.MyComponent.class )
