@@ -1317,6 +1317,16 @@ public final class StingProcessor
                                                           " annotation such as " + scopedAnnotations ),
                                     element );
     }
+    for ( final Element enclosedElement : element.getEnclosedElements() )
+    {
+      final ElementKind enclosedElementKind = enclosedElement.getKind();
+      if ( enclosedElementKind.isClass() || enclosedElementKind.isInterface() )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
+                                      " target must not contain any types",
+                                      element );
+      }
+    }
     _registry.registerFragment( new FragmentDescriptor( element, includes, bindings.values() ) );
   }
 

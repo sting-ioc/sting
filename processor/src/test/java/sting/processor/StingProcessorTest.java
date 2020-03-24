@@ -378,6 +378,10 @@ public final class StingProcessorTest
                       "@ContributeTo target must be annotated with @Injectable, @Fragment or be annotated with an annotation annotated by @StingProvider" },
 
         new Object[]{ "com.example.fragment.ClassModel", "@Fragment target must be an interface" },
+        new Object[]{ "com.example.fragment.EnclosedAnnotationFragmentModel", "@Fragment target must not contain any types" },
+        new Object[]{ "com.example.fragment.EnclosedClassFragmentModel", "@Fragment target must not contain any types" },
+        new Object[]{ "com.example.fragment.EnclosedEnumFragmentModel", "@Fragment target must not contain any types" },
+        new Object[]{ "com.example.fragment.EnclosedInterfaceFragmentModel", "@Fragment target must not contain any types" },
         new Object[]{ "com.example.fragment.FragmentExtendsSuperinterfaceModel",
                       "@Fragment target must not extend any interfaces" },
         new Object[]{ "com.example.fragment.Jsr330ScopedFragmentModel",
