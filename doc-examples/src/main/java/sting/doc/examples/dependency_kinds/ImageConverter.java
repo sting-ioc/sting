@@ -13,14 +13,6 @@ public class ImageConverter
     //DOC ELIDE START
     //DOC ELIDE END
   }
-
   //DOC ELIDE START
-  interface ImageReader
-  {
-  }
-
-  interface ImageWriter
-  {
-  }
   //DOC ELIDE END
 }

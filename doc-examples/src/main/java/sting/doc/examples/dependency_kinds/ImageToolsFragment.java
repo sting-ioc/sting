@@ -14,20 +14,5 @@ public interface ImageToolsFragment
   }
 
   //DOC ELIDE START
-  class ImageConverter
-  {
-    ImageConverter( Collection<ImageReader> readers,
-                    Collection<Supplier<ImageWriter>> writers )
-    {
-    }
-  }
-
-  interface ImageReader
-  {
-  }
-
-  interface ImageWriter
-  {
-  }
   //DOC ELIDE END
 }
