@@ -3,6 +3,7 @@
 ### Unreleased
 
 * Generate an error if an `@Injector` annotated type encloses a type that is not annotated with either `@Injectable` or `@Fragment`.
+* Eliminate a crash when a primitive type dependency was missing and the processor attempted to auto-discover the type.
 
 ### [v0.09](https://github.com/sting-ioc/sting/tree/v0.09) (2020-03-19) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.08...v0.09) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.08&new=0.09)
 

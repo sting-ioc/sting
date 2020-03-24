@@ -587,7 +587,7 @@ public final class StingProcessor
         if ( bindings.isEmpty() )
         {
           final TypeElement typeElement = processingEnv.getElementUtils().getTypeElement( classname );
-          final byte[] data = tryLoadDescriptorData( typeElement );
+          final byte[] data = null != typeElement ? tryLoadDescriptorData( typeElement ) : null;
           if ( null != data )
           {
             final Node node = edge.getNode();

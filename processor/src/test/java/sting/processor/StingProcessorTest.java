@@ -531,6 +531,12 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.EnumInjector", "@Injector target must be an interface" },
         new Object[]{ "com.example.injector.Jsr330ScopedInjectorModel",
                       "@Injector target must not be annotated with an annotation that is annotated with the javax.inject.Scope annotation such as [@javax.inject.Singleton]" },
+        new Object[]{ "com.example.injector.MissingPrimitiveDependencyModel",
+                      "@Injector target must not contain a non-optional dependency [int] that can not be satisfied.\n" +
+                      "  Dependency Path:\n" +
+                      "    [Injector]       com.example.injector.MissingPrimitiveDependencyModel\n" +
+                      "    [Injectable]     com.example.injector.MissingPrimitiveDependencyModel.MyModel1\n" +
+                      "    [Provides]    *  com.example.injector.MissingPrimitiveDependencyModel.MyFragment.provideConfig" },
         new Object[]{ "com.example.injector.MultipleCandidatesForSingularDependencyModel",
                       "@Injector target must not contain a non-collection dependency [java.lang.Runnable] that can be satisfied by multiple nodes.\n" +
                       "  Dependency Path:\n" +
