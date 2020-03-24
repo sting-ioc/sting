@@ -1,0 +1,60 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.fragment.dependency.access.public_access.PublicAccessDependencyModel#provideMyType1",
+      "publishedServices": [
+        {
+          "type": "com.example.fragment.dependency.access.public_access.MyType1"
+        }
+      ],
+      "dependencies": [
+        {
+          "type": "com.example.fragment.dependency.access.public_access.MyType2"
+        }
+      ]
+    },
+    {
+      "id": "com.example.fragment.dependency.access.public_access.PublicAccessDependencyModel#provideMyType2",
+      "publishedServices": [
+        {
+          "type": "com.example.fragment.dependency.access.public_access.MyType2"
+        }
+      ],
+      "dependencies": [
+        {
+          "type": "SUPPLIER",
+          "type": "com.example.fragment.dependency.access.public_access.MyType3"
+        }
+      ]
+    },
+    {
+      "id": "com.example.fragment.dependency.access.public_access.PublicAccessDependencyModel#provideMyType3",
+      "publishedServices": [
+        {
+          "type": "com.example.fragment.dependency.access.public_access.MyType3"
+        }
+      ],
+      "dependencies": [
+        {
+          "type": "COLLECTION",
+          "type": "com.example.fragment.dependency.access.public_access.MyType4"
+        }
+      ]
+    },
+    {
+      "id": "com.example.fragment.dependency.access.public_access.PublicAccessDependencyModel#provideMyType4",
+      "publishedServices": [
+        {
+          "type": "com.example.fragment.dependency.access.public_access.MyType4"
+        }
+      ],
+      "dependencies": [
+        {
+          "type": "SUPPLIER_COLLECTION",
+          "type": "com.example.fragment.dependency.access.public_access.MyType5"
+        }
+      ]
+    }
+  ]
+}
