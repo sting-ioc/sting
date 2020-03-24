@@ -40,9 +40,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.dependency.MultipleDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.NullableDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.NonnullDependencyModel" },
-        new Object[]{ "com.example.fragment.dependency.PackageAccessDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.PrimitiveDependencyModel" },
-        new Object[]{ "com.example.fragment.dependency.PublicAccessDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.QualifiedDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.SupplierDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.SupplierCollectionDependencyModel" },
@@ -54,7 +52,6 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.qualifier.EmptyQualifierModel" },
         new Object[]{ "com.example.fragment.qualifier.NonStandardQualifierModel" },
 
-        new Object[]{ "com.example.fragment.types.BasicTypesModel" },
         new Object[]{ "com.example.fragment.types.NoTypesModel" },
 
         new Object[]{ "com.example.injectable.BasicModel" },
@@ -210,6 +207,48 @@ public final class StingProcessorTest
   {
     assertSuccessfulCompile( "com.example.fragment.NestedNestedModel",
                              jsonOutput( "com.example.fragment.NestedNestedModel_Middle_MyModel" ) );
+  }
+
+  @Test
+  public void multipleTypedProviderMethod()
+    throws Exception
+  {
+    final String pkg = "com.example.fragment.types";
+    final String classname = pkg + ".BasicTypesModel";
+    assertSuccessfulCompile( inputs( classname, pkg + ".MyModel" ),
+                             Arrays.asList( javaOutput( classname ), jsonOutput( classname ) ) );
+  }
+
+  @Test
+  public void packageAccessFragmentDependency()
+    throws Exception
+  {
+    final String pkg = "com.example.fragment.dependency.access.package_access";
+    final String classname = pkg + ".PackageAccessDependencyModel";
+    assertSuccessfulCompile( inputs( classname,
+                                     pkg + ".MyType1",
+                                     pkg + ".MyType2",
+                                     pkg + ".MyType3",
+                                     pkg + ".MyType4",
+                                     pkg + ".MyType5" ),
+                             Arrays.asList( javaOutput( classname ),
+                                            jsonOutput( classname ) ) );
+  }
+
+  @Test
+  public void publicAccessFragmentDependency()
+    throws Exception
+  {
+    final String pkg = "com.example.fragment.dependency.access.public_access";
+    final String classname = pkg + ".PublicAccessDependencyModel";
+    assertSuccessfulCompile( inputs( classname,
+                                     pkg + ".MyType1",
+                                     pkg + ".MyType2",
+                                     pkg + ".MyType3",
+                                     pkg + ".MyType4",
+                                     pkg + ".MyType5" ),
+                             Arrays.asList( javaOutput( classname ),
+                                            jsonOutput( classname ) ) );
   }
 
   @Test
@@ -378,10 +417,13 @@ public final class StingProcessorTest
                       "@ContributeTo target must be annotated with @Injectable, @Fragment or be annotated with an annotation annotated by @StingProvider" },
 
         new Object[]{ "com.example.fragment.ClassModel", "@Fragment target must be an interface" },
-        new Object[]{ "com.example.fragment.EnclosedAnnotationFragmentModel", "@Fragment target must not contain any types" },
-        new Object[]{ "com.example.fragment.EnclosedClassFragmentModel", "@Fragment target must not contain any types" },
+        new Object[]{ "com.example.fragment.EnclosedAnnotationFragmentModel",
+                      "@Fragment target must not contain any types" },
+        new Object[]{ "com.example.fragment.EnclosedClassFragmentModel",
+                      "@Fragment target must not contain any types" },
         new Object[]{ "com.example.fragment.EnclosedEnumFragmentModel", "@Fragment target must not contain any types" },
-        new Object[]{ "com.example.fragment.EnclosedInterfaceFragmentModel", "@Fragment target must not contain any types" },
+        new Object[]{ "com.example.fragment.EnclosedInterfaceFragmentModel",
+                      "@Fragment target must not contain any types" },
         new Object[]{ "com.example.fragment.FragmentExtendsSuperinterfaceModel",
                       "@Fragment target must not extend any interfaces" },
         new Object[]{ "com.example.fragment.Jsr330ScopedFragmentModel",

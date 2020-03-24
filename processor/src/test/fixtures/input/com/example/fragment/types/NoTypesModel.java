@@ -7,13 +7,9 @@ import sting.Typed;
 @Fragment
 public interface NoTypesModel
 {
-  class MyModel
-  {
-  }
-
   @Eager
   @Typed( {} )
-  default MyModel provideMyModel()
+  default String provideConfig()
   {
     return null;
   }

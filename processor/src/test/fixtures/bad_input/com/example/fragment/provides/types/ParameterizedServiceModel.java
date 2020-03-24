@@ -5,7 +5,6 @@ import java.util.Collection;
 import sting.Fragment;
 import sting.Typed;
 
-@Fragment
 public interface ParameterizedServiceModel
 {
   class Foo
@@ -13,9 +12,13 @@ public interface ParameterizedServiceModel
   {
   }
 
-  @Typed( Collection.class )
-  default Foo provideX()
+  @Fragment
+  interface MyFragment
   {
-    return null;
+    @Typed( Collection.class )
+    default Foo provideX()
+    {
+      return null;
+    }
   }
 }

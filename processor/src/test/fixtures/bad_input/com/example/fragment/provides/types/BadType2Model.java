@@ -4,7 +4,6 @@ import java.util.concurrent.Callable;
 import sting.Fragment;
 import sting.Typed;
 
-@Fragment
 public interface BadType2Model
 {
   class Foo
@@ -16,9 +15,13 @@ public interface BadType2Model
     }
   }
 
-  @Typed( { Foo.class, Runnable.class, Callable.class } )
-  default Foo provideX()
+  @Fragment
+  interface MyFragment
   {
-    return null;
+    @Typed( { Foo.class, Runnable.class, Callable.class } )
+    default Foo provideX()
+    {
+      return null;
+    }
   }
 }

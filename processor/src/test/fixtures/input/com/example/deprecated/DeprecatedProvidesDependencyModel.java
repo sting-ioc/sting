@@ -2,7 +2,6 @@ package com.example.deprecated;
 
 import sting.Fragment;
 
-@Fragment
 public interface DeprecatedProvidesDependencyModel
 {
   @SuppressWarnings( "DeprecatedIsStillUsed" )
@@ -11,8 +10,12 @@ public interface DeprecatedProvidesDependencyModel
   {
   }
 
-  default Runnable provideRunnable( MyDeprecatedValue value )
+  @Fragment
+  interface MyFragment
   {
-    return null;
+    default Runnable provideRunnable( MyDeprecatedValue value )
+    {
+      return null;
+    }
   }
 }
