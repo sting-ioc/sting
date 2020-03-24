@@ -1477,6 +1477,7 @@ public final class StingProcessor
     final List<IncludeDescriptor> results = new ArrayList<>();
     final List<TypeMirror> includes =
       AnnotationsUtil.getTypeMirrorsAnnotationParameter( element, annotationClassname, "includes" );
+    final Set<String> included = new HashSet<>();
     for ( final TypeMirror include : includes )
     {
       final Element includeElement = processingEnv.getTypeUtils().asElement( include );
@@ -1543,6 +1544,18 @@ public final class StingProcessor
                                           element );
           }
         }
+      }
+      final String includedType = include.toString();
+      if ( included.contains( includedType ) )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( annotationClassname ) +
+                                      " target has an includes parameter containing duplicate " +
+                                      "includes with the type " + includedType,
+                                      element );
+      }
+      else
+      {
+        included.add( includedType );
       }
     }
     return results;

@@ -388,6 +388,8 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.fragment.includes.BadTypesInIncludesModel",
                       "@Fragment target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment or @Injectable" },
+        new Object[]{ "com.example.fragment.includes.DuplicateIncludesModel",
+                      "@Fragment target has an includes parameter containing duplicate includes with the type com.example.fragment.includes.DuplicateIncludesModel.MyComponent" },
         new Object[]{ "com.example.fragment.includes.InvalidProvider1IncludesModel",
                       "@Fragment target has an 'includes' parameter containing the value com.example.fragment.includes.InvalidProvider1IncludesModel.MyComponent that is annotated by @com.example.fragment.includes.InvalidProvider1IncludesModel.StingProvider(name=\"[FlatEnclosingName]MF1_[SimpleName]_Provider\") that is annotated by an invalid @StingProvider annotation missing a 'value' parameter of type string." },
         new Object[]{ "com.example.fragment.includes.InvalidProvider2IncludesModel",
@@ -586,6 +588,8 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injector.includes.BadTypesInIncludesModel",
                       "@Injector target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment or @Injectable" },
+        new Object[]{ "com.example.injector.includes.DuplicateIncludesModel",
+                      "@Injector target has an includes parameter containing duplicate includes with the type com.example.injector.includes.DuplicateIncludesModel.MyComponent" },
         new Object[]{ "com.example.injector.includes.ExplicitIncludesOfEnclosedFragmentModel",
                       "@Injector target must not include a @Fragment annotated type that is auto-included as it is enclosed within the injector type" },
         new Object[]{ "com.example.injector.includes.ExplicitIncludesOfEnclosedInjectableModel",
