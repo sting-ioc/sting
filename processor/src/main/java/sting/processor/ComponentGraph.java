@@ -162,7 +162,7 @@ final class ComponentGraph
   {
     final List<Node> results = new ArrayList<>( nodes.size() );
     final List<Node> workList = new ArrayList<>( nodes );
-    final Set<Node> done = new HashSet<>(  );
+    final Set<Node> done = new HashSet<>();
     while ( !workList.isEmpty() )
     {
       final Node node = workList.remove( workList.size() - 1 );

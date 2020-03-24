@@ -91,7 +91,7 @@ final class DescriptorIO
     for ( final IncludeDescriptor include : includes )
     {
       dos.writeUTF( toFieldDescriptor( include.getIncludedType() ) );
-      dos.writeUTF( include.getActualTypeName()  );
+      dos.writeUTF( include.getActualTypeName() );
     }
     final Collection<Binding> bindings = fragment.getBindings();
     dos.writeShort( bindings.size() );
@@ -329,7 +329,7 @@ final class DescriptorIO
     // Injected types do NOT contain arrays and thus the only other valid parameterized type is DECLARED
     final String classname = descriptor.substring( 1, descriptor.length() - 1 ).replace( "$", "." );
     final TypeElement typeElement = _elements.getTypeElement( classname );
-    if( null == typeElement )
+    if ( null == typeElement )
     {
       // Maybe this should mark the type as unresolved so can try again. This scenario probably means that
       // a dependency has attempted to recompile and failed without forcing this component to recompile.

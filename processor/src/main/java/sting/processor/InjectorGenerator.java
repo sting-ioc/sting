@@ -210,7 +210,9 @@ final class InjectorGenerator
   @Nonnull
   private static String getOutputCollectionCacheName( @Nonnull final Edge edge )
   {
-    return StingGeneratorUtil.FRAMEWORK_PREFIX + edge.getServiceRequest().getElement().getSimpleName().toString() + "Cache";
+    return StingGeneratorUtil.FRAMEWORK_PREFIX +
+           edge.getServiceRequest().getElement().getSimpleName().toString() +
+           "Cache";
   }
 
   private static TypeName getPublicTypeName( @Nonnull final Node node )
