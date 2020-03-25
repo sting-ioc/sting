@@ -331,11 +331,12 @@ final class DescriptorIO
     final TypeElement typeElement = _elements.getTypeElement( classname );
     if ( null == typeElement )
     {
-      // Maybe this should mark the type as unresolved so can try again. This scenario probably means that
-      // a dependency has attempted to recompile and failed without forcing this component to recompile.
-      // This scenario is not uncommon when incremental builds are used in a not-Bazel world
-      throw new IOException( "Descriptor references declared type " + descriptor +
-                             " but that type is not on the classpath or has not yet been compiled" );
+      // This scenario probably means that a dependency has attempted to recompile and failed without
+      // forcing this component to recompile. Or that a provider has yet to be compiled but the original
+      // type has been compiled. This scenario is particularly common when incremental builds are used
+      // in a non-Bazel world
+      throw new UnresolvedDeclaredTypeException( "Descriptor references declared type " + descriptor +
+                                                 " but that type is not on the classpath or has not yet been compiled" );
     }
     return (DeclaredType) typeElement.asType();
   }

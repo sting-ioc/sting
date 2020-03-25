@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -368,24 +369,65 @@ public final class StingProcessor
 
   private void processResolvedFragments( @Nonnull final RoundEnvironment env )
   {
-    for ( final FragmentDescriptor fragment : new ArrayList<>( _registry.getFragments() ) )
+    final List<FragmentDescriptor> deferred = new ArrayList<>();
+    final List<FragmentDescriptor> current = new ArrayList<>( _registry.getFragments() );
+    final AtomicBoolean resolvedType = new AtomicBoolean();
+
+    while ( !current.isEmpty() )
     {
-      performAction( env, e -> {
-        if ( !fragment.isJavaStubGenerated() && isFragmentReady( env, fragment ) )
-        {
-          fragment.markJavaStubAsGenerated();
-          writeBinaryDescriptor( fragment.getElement(), fragment );
-          emitFragmentJsonDescriptor( fragment );
-          emitFragmentStub( fragment );
-        }
-      }, fragment.getElement() );
+      for ( final FragmentDescriptor fragment : current )
+      {
+        performAction( env, e -> {
+          if ( !fragment.isJavaStubGenerated() && !fragment.containsError() )
+          {
+            final ResolveType resolveType = isFragmentResolved( env, fragment );
+            if ( ResolveType.RESOLVED == resolveType )
+            {
+              fragment.markJavaStubAsGenerated();
+              writeBinaryDescriptor( fragment.getElement(), fragment );
+              emitFragmentJsonDescriptor( fragment );
+              emitFragmentStub( fragment );
+            }
+            else if ( ResolveType.MAYBE_UNRESOLVED == resolveType )
+            {
+              debug( () -> "The fragment " + fragment.getElement().getQualifiedName() +
+                           " has resolved java types but unresolved descriptors. Deferring processing " +
+                           "until later in the round" );
+              deferred.add( fragment );
+            }
+            else
+            {
+              debug( () -> "Defer generation for the fragment " + fragment.getElement().getQualifiedName() +
+                           " as it is not yet resolved" );
+            }
+          }
+        }, fragment.getElement() );
+      }
+      current.clear();
+      if ( resolvedType.get() )
+      {
+        current.addAll( deferred );
+        deferred.clear();
+      }
+      else
+      {
+        break;
+      }
     }
   }
 
-  private boolean isFragmentReady( @Nonnull final RoundEnvironment env,
-                                   @Nonnull final FragmentDescriptor fragment )
+  @Nonnull
+  private ResolveType isFragmentReady( @Nonnull final RoundEnvironment env,
+                                       @Nonnull final FragmentDescriptor fragment )
   {
-    return !fragment.containsError() && isFragmentResolved( env, fragment );
+    if ( fragment.containsError() )
+    {
+      return ResolveType.UNRESOLVED;
+    }
+    else
+    {
+      return isFragmentResolved( env, fragment );
+    }
   }
 
   private void emitFragmentStub( @Nonnull final FragmentDescriptor fragment )
@@ -397,23 +439,49 @@ public final class StingProcessor
 
   private void processResolvedInjectors( @Nonnull final RoundEnvironment env )
   {
-    for ( final InjectorDescriptor injector : new ArrayList<>( _registry.getInjectors() ) )
+    final List<InjectorDescriptor> deferred = new ArrayList<>();
+    final List<InjectorDescriptor> current = new ArrayList<>( _registry.getInjectors() );
+    final AtomicBoolean resolvedType = new AtomicBoolean();
+
+    while ( !current.isEmpty() )
     {
-      performAction( env, e -> {
-        if ( !injector.containsError() )
-        {
-          if ( isInjectorResolved( env, injector ) )
+      for ( final InjectorDescriptor injector : current )
+      {
+        performAction( env, e -> {
+          if ( !injector.containsError() )
           {
-            _registry.deregisterInjector( injector );
-            buildAndEmitObjectGraph( injector );
+            final ResolveType resolveType = isInjectorResolved( env, injector );
+            if ( ResolveType.RESOLVED == resolveType )
+            {
+              _registry.deregisterInjector( injector );
+              buildAndEmitObjectGraph( injector );
+              resolvedType.set( true );
+            }
+            else if ( ResolveType.MAYBE_UNRESOLVED == resolveType )
+            {
+              debug( () -> "The injector " + injector.getElement().getQualifiedName() +
+                           " has resolved java types but unresolved descriptors. Deferring processing " +
+                           "until later in the round" );
+              deferred.add( injector );
+            }
+            else
+            {
+              debug( () -> "Defer generation for the injector " + injector.getElement().getQualifiedName() +
+                           " as it is not yet resolved" );
+            }
           }
-          else
-          {
-            debug( () -> "Defer generation for the injector " + injector.getElement().getQualifiedName() +
-                         " as it is not yet resolved" );
-          }
-        }
-      }, injector.getElement() );
+        }, injector.getElement() );
+      }
+      current.clear();
+      if ( resolvedType.get() )
+      {
+        current.addAll( deferred );
+        deferred.clear();
+      }
+      else
+      {
+        break;
+      }
     }
   }
 
@@ -716,79 +784,67 @@ public final class StingProcessor
     }
   }
 
-  private boolean isFragmentResolved( @Nonnull final RoundEnvironment env, @Nonnull final FragmentDescriptor fragment )
+  @Nonnull
+  private ResolveType isFragmentResolved( @Nonnull final RoundEnvironment env,
+                                          @Nonnull final FragmentDescriptor fragment )
   {
     if ( fragment.isResolved() )
     {
-      return true;
-    }
-    else if ( isResolved( env, fragment, fragment.getElement(), fragment.getIncludes() ) )
-    {
-      fragment.markAsResolved();
-      return true;
+      return ResolveType.RESOLVED;
     }
     else
     {
-      return false;
+      final ResolveType resolveType = isResolved( env, fragment, fragment.getElement(), fragment.getIncludes() );
+      if ( resolveType == ResolveType.RESOLVED )
+      {
+        fragment.markAsResolved();
+      }
+      return resolveType;
     }
   }
 
-  private boolean isInjectorResolved( @Nonnull final RoundEnvironment env, @Nonnull final InjectorDescriptor injector )
+  @Nonnull
+  private ResolveType isInjectorResolved( @Nonnull final RoundEnvironment env,
+                                          @Nonnull final InjectorDescriptor injector )
   {
     return isResolved( env, injector, injector.getElement(), injector.getIncludes() );
   }
 
-  private boolean isResolved( @Nonnull final RoundEnvironment env,
-                              @Nonnull final Object descriptor,
-                              @Nonnull final TypeElement originator,
-                              @Nonnull final Collection<IncludeDescriptor> includes )
+  @Nonnull
+  private <T> ResolveType isResolved( @Nonnull final RoundEnvironment env,
+                                      @Nonnull final T descriptor,
+                                      @Nonnull final TypeElement originator,
+                                      @Nonnull final Collection<IncludeDescriptor> includes )
   {
-    boolean resolved = true;
-    // By the time we get here we can guarantee that the java types are correctly resolved
-    // so we only have to check that the descriptors are present and valid in this method
-    // Except for providers. Providers may be loaded a lot later
+    // By the time we get here we can guarantee that the java types for includes are correctly resolved
+    // but they may not have passed through annotation processor and thus the descriptors may be absent
+    // so we go through a few iterations and as long as one include is resolved in each iteration we should
+    // keep going as we may be able to resolve all includes. Also if one of the includes is a provider
+    // we need to check the associated provider type is resolved.
     for ( final IncludeDescriptor include : includes )
     {
-      final String classname = include.getActualTypeName();
-      final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
-      if ( null == element )
+      final ResolveType resolveType = isIncludeResolved( env, descriptor, originator, include );
+      if ( ResolveType.RESOLVED != resolveType )
       {
-        assert include.isProvider();
-        if ( env.processingOver() )
-        {
-          AnnotationMirror annotation =
-            AnnotationsUtil.findAnnotationByType( originator, Constants.INJECTOR_CLASSNAME );
-
-          final String annotationClassname =
-            null != annotation ? Constants.INJECTOR_CLASSNAME : Constants.FRAGMENT_CLASSNAME;
-          if ( null == annotation )
-          {
-            annotation = AnnotationsUtil.getAnnotationByType( originator, Constants.FRAGMENT_CLASSNAME );
-          }
-
-          if ( descriptor instanceof FragmentDescriptor )
-          {
-            ( (FragmentDescriptor) descriptor ).markAsContainsError();
-          }
-          else
-          {
-            ( (InjectorDescriptor) descriptor ).markAsContainsError();
-          }
-
-          final String message =
-            MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
-            "parameter named 'includes' containing the value " + include.getIncludedType() +
-            " and that type is annotated by the @StingProvider annotation. The provider annotation expects a " +
-            "provider class named " + include.getActualTypeName() + " but no such class exists. The " +
-            "type need to be removed from the includes or the provider class needs to be present.";
-          reportError( env, message, originator, annotation, null );
-        }
-        return false;
+        return resolveType;
       }
-      final boolean isInjectable = AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME );
-      final boolean isFragment =
-        !isInjectable && AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME );
-      if ( include.isProvider() && !isInjectable && !isFragment )
+    }
+
+    return ResolveType.RESOLVED;
+  }
+
+  @Nonnull
+  private ResolveType isIncludeResolved( @Nonnull final RoundEnvironment env,
+                                         @Nonnull final Object descriptor,
+                                         @Nonnull final TypeElement originator,
+                                         @Nonnull final IncludeDescriptor include )
+  {
+    final String classname = include.getActualTypeName();
+    final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
+    if ( null == element )
+    {
+      assert include.isProvider();
+      if ( env.processingOver() )
       {
         AnnotationMirror annotation =
           AnnotationsUtil.findAnnotationByType( originator, Constants.INJECTOR_CLASSNAME );
@@ -799,6 +855,7 @@ public final class StingProcessor
         {
           annotation = AnnotationsUtil.getAnnotationByType( originator, Constants.FRAGMENT_CLASSNAME );
         }
+
         if ( descriptor instanceof FragmentDescriptor )
         {
           ( (FragmentDescriptor) descriptor ).markAsContainsError();
@@ -812,79 +869,117 @@ public final class StingProcessor
           MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
           "parameter named 'includes' containing the value " + include.getIncludedType() +
           " and that type is annotated by the @StingProvider annotation. The provider annotation expects a " +
-          "provider class named " + include.getActualTypeName() + " but that class is not annotated with either " +
-          MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " or " +
-          MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME );
-        throw new ProcessorException( message, originator, annotation );
+          "provider class named " + include.getActualTypeName() + " but no such class exists. The " +
+          "type need to be removed from the includes or the provider class needs to be present.";
+        reportError( env, message, originator, annotation, null );
       }
-      if ( isFragment )
+      return ResolveType.UNRESOLVED;
+    }
+    final boolean isInjectable = AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME );
+    final boolean isFragment =
+      !isInjectable && AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME );
+    if ( include.isProvider() && !isInjectable && !isFragment )
+    {
+      AnnotationMirror annotation =
+        AnnotationsUtil.findAnnotationByType( originator, Constants.INJECTOR_CLASSNAME );
+
+      final String annotationClassname =
+        null != annotation ? Constants.INJECTOR_CLASSNAME : Constants.FRAGMENT_CLASSNAME;
+      if ( null == annotation )
       {
-        FragmentDescriptor fragment = _registry.findFragmentByClassName( classname );
-        if ( null == fragment )
-        {
-          final byte[] data = tryLoadDescriptorData( element );
-          if ( null == data )
-          {
-            debug( () -> "The fragment " + classname + " is compiled to a .class file but no descriptor is present. " +
-                         "Marking " + originator.getQualifiedName() + " as unresolved" );
-            return false;
-          }
-          final Object loadedDescriptor = loadDescriptor( originator, classname, data );
-          if ( loadedDescriptor instanceof FragmentDescriptor )
-          {
-            fragment = (FragmentDescriptor) loadedDescriptor;
-            _registry.registerFragment( fragment );
-          }
-          else
-          {
-            debug( () -> "The fragment " + classname + " is compiled to a .class " +
-                         "file but an invalid descriptor is present. " +
-                         "Marking " + originator.getQualifiedName() + " as unresolved" );
-            return false;
-          }
-        }
-        if ( !isFragmentReady( env, fragment ) )
-        {
-          debug( () -> "Fragment include " + classname + " is present but not yet resolved. " +
-                       "Marking " + originator.getQualifiedName() + " as unresolved" );
-          resolved = false;
-        }
+        annotation = AnnotationsUtil.getAnnotationByType( originator, Constants.FRAGMENT_CLASSNAME );
+      }
+      if ( descriptor instanceof FragmentDescriptor )
+      {
+        ( (FragmentDescriptor) descriptor ).markAsContainsError();
       }
       else
       {
-        InjectableDescriptor injectable = _registry.findInjectableByClassName( classname );
-        if ( null == injectable )
+        ( (InjectorDescriptor) descriptor ).markAsContainsError();
+      }
+
+      final String message =
+        MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
+        "parameter named 'includes' containing the value " + include.getIncludedType() +
+        " and that type is annotated by the @StingProvider annotation. The provider annotation expects a " +
+        "provider class named " + include.getActualTypeName() + " but that class is not annotated with either " +
+        MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " or " +
+        MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME );
+      throw new ProcessorException( message, originator, annotation );
+    }
+    if ( isFragment )
+    {
+      FragmentDescriptor fragment = _registry.findFragmentByClassName( classname );
+      if ( null == fragment )
+      {
+        final byte[] data = tryLoadDescriptorData( element );
+        if ( null == data )
         {
-          final byte[] data = tryLoadDescriptorData( element );
-          if ( null == data )
-          {
-            debug( () -> "The injectable " + classname + " is compiled to a .class file but no descriptor is present." +
-                         "Marking " + originator.getQualifiedName() + " as unresolved" );
-            return false;
-          }
-          final Object loadedDescriptor = loadDescriptor( originator, classname, data );
-          if ( loadedDescriptor instanceof InjectableDescriptor )
-          {
-            injectable = (InjectableDescriptor) loadedDescriptor;
-            _registry.registerInjectable( injectable );
-          }
-          else
-          {
-            debug( () -> "The injectable " + classname + " is compiled to a .class " +
-                         "file but an invalid descriptor is present. " +
-                         "Marking " + originator.getQualifiedName() + " as unresolved" );
-            return false;
-          }
-        }
-        if ( !SuperficialValidation.validateElement( processingEnv, injectable.getElement() ) )
-        {
-          debug( () -> "Injectable include " + classname + " is not yet resolved. " +
+          debug( () -> "The fragment " + classname + " is compiled to a .class file but no descriptor is present. " +
                        "Marking " + originator.getQualifiedName() + " as unresolved" );
-          resolved = false;
+          return ResolveType.MAYBE_UNRESOLVED;
+        }
+        final Object loadedDescriptor = loadDescriptor( originator, classname, data );
+        if ( loadedDescriptor instanceof FragmentDescriptor )
+        {
+          fragment = (FragmentDescriptor) loadedDescriptor;
+          _registry.registerFragment( fragment );
+        }
+        else if ( null == loadedDescriptor )
+        {
+          debug( () -> "The fragment " + classname + " is compiled to a .class file no descriptor is present. " +
+                       "Marking " + originator.getQualifiedName() + " as unresolved" );
+          return ResolveType.MAYBE_UNRESOLVED;
+        }
+        else
+        {
+          debug( () -> "The fragment " + classname + " is compiled to a .class " +
+                       "file but an invalid descriptor is present. " +
+                       "Marking " + originator.getQualifiedName() + " as unresolved" );
+          return ResolveType.MAYBE_UNRESOLVED;
         }
       }
+      if ( ResolveType.RESOLVED != isFragmentReady( env, fragment ) )
+      {
+        debug( () -> "Fragment include " + classname + " is present but not yet resolved. " +
+                     "Marking " + originator.getQualifiedName() + " as unresolved" );
+        return ResolveType.UNRESOLVED;
+      }
     }
-    return resolved;
+    else
+    {
+      InjectableDescriptor injectable = _registry.findInjectableByClassName( classname );
+      if ( null == injectable )
+      {
+        final byte[] data = tryLoadDescriptorData( element );
+        if ( null == data )
+        {
+          debug( () -> "The injectable " + classname + " is compiled to a .class file but no descriptor is present." +
+                       "Marking " + originator.getQualifiedName() + " as unresolved" );
+          return ResolveType.MAYBE_UNRESOLVED;
+        }
+        final Object loadedDescriptor = loadDescriptor( originator, classname, data );
+        if ( loadedDescriptor instanceof InjectableDescriptor )
+        {
+          injectable = (InjectableDescriptor) loadedDescriptor;
+          _registry.registerInjectable( injectable );
+        }
+        else
+        {
+          debug( () -> "The injectable " + classname + " is compiled to a .class " +
+                       "file but an invalid descriptor is present. " +
+                       "Marking " + originator.getQualifiedName() + " as unresolved" );
+          return ResolveType.MAYBE_UNRESOLVED;
+        }
+      }
+      if ( !SuperficialValidation.validateElement( processingEnv, injectable.getElement() ) )
+      {
+        debug( () -> "Injectable include " + classname + " is not yet resolved. " +
+                     "Marking " + originator.getQualifiedName() + " as unresolved" );
+        return ResolveType.UNRESOLVED;
+      }
+    }
+    return ResolveType.RESOLVED;
   }
 
   private void processInjector( @Nonnull final TypeElement element )
@@ -1296,8 +1391,6 @@ public final class StingProcessor
     }
     final List<IncludeDescriptor> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME );
     final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
-    final List<ExecutableElement> methods =
-      ElementsUtil.getMethods( element, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
     for ( final Element enclosedElement : element.getEnclosedElements() )
     {
       final ElementKind enclosedElementKind = enclosedElement.getKind();
@@ -2212,7 +2305,7 @@ public final class StingProcessor
     }
   }
 
-  @Nonnull
+  @Nullable
   private Object loadDescriptor( @Nonnull final Element originator,
                                  @Nonnull final String classname,
                                  @Nonnull final byte[] data )
@@ -2220,6 +2313,10 @@ public final class StingProcessor
     try
     {
       return _descriptorIO.read( new DataInputStream( new ByteArrayInputStream( data ) ), classname );
+    }
+    catch ( final UnresolvedDeclaredTypeException e )
+    {
+      return null;
     }
     catch ( final IOException e )
     {

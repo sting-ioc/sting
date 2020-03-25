@@ -2,6 +2,9 @@
 
 ### Unreleased
 
+* Add some additional debug logging in the annotation processor to make debugging the processor in downstream applications easier.
+* Injectors and fragments that are unresolved within a single annotation processing round due to missing descriptors could be due to the class being compiled but the annotation processor not processing the class yet. The annotation processor has been changed to iterate over the injectors and fragments within a round multiple times until an iteration fails to resolve an element.
+
 ### [v0.10](https://github.com/sting-ioc/sting/tree/v0.10) (2020-03-25) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.09...v0.10)
 
 Changes in this release:
