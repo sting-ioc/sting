@@ -1,8 +1,10 @@
 package sting.doc.examples.getting_started.step2;
 
+import sting.Eager;
 import sting.Injectable;
 
 @Injectable
+@Eager
 public class WelcomePage
 {
   private final AuthenticationService _authenticationService;
