@@ -295,7 +295,6 @@ final class DescriptorIO
    */
   @Nonnull
   private TypeMirror fromFieldDescriptor( @Nonnull final String descriptor )
-    throws IOException
   {
     switch ( descriptor )
     {
@@ -322,7 +321,6 @@ final class DescriptorIO
 
   @Nonnull
   private DeclaredType readDeclaredType( @Nonnull final String descriptor )
-    throws IOException
   {
     assert descriptor.startsWith( "L" );
     assert descriptor.endsWith( ";" );
