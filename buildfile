@@ -10,6 +10,7 @@ define 'sting' do
   compile.options.source = '1.8'
   compile.options.target = '1.8'
   compile.options.lint = 'all,-processing,-serial'
+  compile.options.warnings = true
   project.compile.options.other = %w(-Werror -Xmaxerrs 10000 -Xmaxwarns 10000)
 
   project.version = ENV['PRODUCT_VERSION'] if ENV['PRODUCT_VERSION']
