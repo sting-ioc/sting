@@ -3,6 +3,7 @@ package sting.processor;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.TypeSpec;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -33,9 +34,14 @@ final class AutoFragmentGenerator
     GeneratorUtil.addGeneratedAnnotation( processingEnv, builder, StingProcessor.class.getName() );
 
     GeneratorUtil.copyWhitelistedAnnotations( element, builder );
+    final List<String> additionalSuppressions = new ArrayList<>();
+    if ( autoFragment.hasAutoDiscoverableContributors() )
+    {
+      additionalSuppressions.add( "Sting:AutoDiscoverableIncluded" );
+    }
     SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv,
                                                         builder,
-                                                        Collections.emptyList(),
+                                                        additionalSuppressions,
                                                         Collections.singletonList( element.asType() ) );
 
     final AnnotationSpec.Builder annotation =
@@ -43,6 +49,7 @@ final class AutoFragmentGenerator
     final List<TypeElement> contributors =
       autoFragment.getContributors()
         .stream()
+        .map( ContributorDescriptor::getElement )
         .sorted( Comparator.comparing( e -> e.getQualifiedName().toString() ) )
         .collect( Collectors.toList() );
     for ( final TypeElement contributor : contributors )

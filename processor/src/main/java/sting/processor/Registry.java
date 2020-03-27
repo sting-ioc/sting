@@ -11,7 +11,6 @@ import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.lang.model.element.TypeElement;
 
 final class Registry
 {
@@ -39,7 +38,7 @@ final class Registry
    * The set of auto-fragments contributors registered.
    */
   @Nonnull
-  private final Map<String, Set<TypeElement>> _contributors = new HashMap<>();
+  private final Map<String, Set<ContributorDescriptor>> _contributors = new HashMap<>();
 
   /**
    * Register the Injectable in the local cache.
@@ -144,18 +143,17 @@ final class Registry
   }
 
   /**
-   * Register the auto-fragment in the local cache.
+   * Register the contributor in the local cache.
    *
-   * @param key         the auto-fragment key.
-   * @param contributor the type element contributing to the auto-fragment.
+   * @param contributor the contributor contributing to the auto-fragment.
    */
-  void registerContributor( @Nonnull final String key, @Nonnull final TypeElement contributor )
+  void registerContributor( @Nonnull final ContributorDescriptor contributor )
   {
-    _contributors.computeIfAbsent( key, k -> new HashSet<>() ).add( contributor );
+    _contributors.computeIfAbsent( contributor.getKey(), k -> new HashSet<>() ).add( contributor );
   }
 
   @Nonnull
-  Set<TypeElement> getContributorsByKey( @Nonnull final String key )
+  Set<ContributorDescriptor> getContributorsByKey( @Nonnull final String key )
   {
     return _contributors.getOrDefault( key, Collections.emptySet() );
   }

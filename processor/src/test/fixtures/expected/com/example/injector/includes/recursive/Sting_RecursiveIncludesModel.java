@@ -17,17 +17,17 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
   @Nonnull
   private final Sting_MyFragment3 fragment3 = new Sting_MyFragment3();
 
-  @Nullable
-  private Object node1;
+  @Nonnull
+  private final Object node1;
 
-  @Nullable
-  private MyModel1 node2;
+  @Nonnull
+  private final MyModel1 node2;
 
   @Nullable
   private Runnable node3;
 
-  @Nullable
-  private Object node4;
+  @Nonnull
+  private final Object node4;
 
   @Nullable
   private Runnable node5;
@@ -36,26 +36,9 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
   private Runnable node6;
 
   Sting_RecursiveIncludesModel() {
-  }
-
-  @Nonnull
-  @DoNotInline
-  private synchronized Object node1() {
-    if ( null == node1 ) {
-      node1 = Objects.requireNonNull( Sting_MyModel3.create() );
-    }
-    assert null != node1;
-    return node1;
-  }
-
-  @Nonnull
-  @DoNotInline
-  private synchronized MyModel1 node2() {
-    if ( null == node2 ) {
-      node2 = Objects.requireNonNull( Sting_MyModel1.create() );
-    }
-    assert null != node2;
-    return node2;
+    node1 = Objects.requireNonNull( Sting_MyModel3.create() );
+    node2 = Objects.requireNonNull( Sting_MyModel1.create() );
+    node4 = Objects.requireNonNull( Sting_MyModel2.create() );
   }
 
   @Nonnull
@@ -66,16 +49,6 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
     }
     assert null != node3;
     return node3;
-  }
-
-  @Nonnull
-  @DoNotInline
-  private synchronized Object node4() {
-    if ( null == node4 ) {
-      node4 = Objects.requireNonNull( Sting_MyModel2.create() );
-    }
-    assert null != node4;
-    return node4;
   }
 
   @Nonnull
@@ -115,16 +88,16 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
 
   @Override
   public MyModel1 getMyModel1() {
-    return node2();
+    return node2;
   }
 
   @Override
   public MyModel2 getMyModel2() {
-    return (MyModel2) node4();
+    return (MyModel2) node4;
   }
 
   @Override
   public MyModel3 getMyModel3() {
-    return (MyModel3) node1();
+    return (MyModel3) node1;
   }
 }

@@ -42,6 +42,10 @@ final class Constants
   static final String WARNING_JSR_330_SCOPED = "Sting:Jsr330ScopedPresent";
   @Nonnull
   static final String WARNING_CDI_TYPED = "Sting:CdiTypedPresent";
+  @Nonnull
+  static final String WARNING_AUTO_DISCOVERABLE_INCLUDED = "Sting:AutoDiscoverableIncluded";
+  @Nonnull
+  static final String WARNING_AUTO_DISCOVERABLE_CONTRIBUTED = "Sting:AutoDiscoverableContributed";
 
   private Constants()
   {

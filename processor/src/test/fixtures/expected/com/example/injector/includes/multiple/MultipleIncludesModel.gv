@@ -2,6 +2,7 @@ digraph "MultipleIncludesModel" {
   overlap = false
   splines = true
   injector [label="MultipleIncludesModel",color=green];
-  node1 [label="Runnable"];
-  injector -> node1 [];
+  node2 [label="Runnable"];
+  node1 [label="MyModel",color=blue];
+  injector -> node2 [];
 }

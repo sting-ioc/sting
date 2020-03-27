@@ -162,8 +162,6 @@ public final class StingProcessor
 
     processAutoFragments( annotations, env );
 
-    processContributeTos( annotations, env );
-
     processTypeElements( annotations,
                          env,
                          Constants.INJECTABLE_CLASSNAME,
@@ -175,6 +173,8 @@ public final class StingProcessor
                          Constants.FRAGMENT_CLASSNAME,
                          _deferredFragmentTypes,
                          this::processFragment );
+
+    processContributeTos( annotations, env );
 
     annotations.stream()
       .filter( a -> a.getQualifiedName().toString().equals( Constants.NAMED_CLASSNAME ) )
@@ -282,7 +282,7 @@ public final class StingProcessor
                            "Failed to process the @ContributeTo contributors for key '" + contributorKey +
                            "' as no associated @AutoFragment is on the class path. Impacted contributors included: " +
                            _registry.getContributorsByKey( contributorKey ).stream()
-                             .map( TypeElement::getQualifiedName )
+                             .map( c -> c.getElement().getQualifiedName() )
                              .collect( Collectors.joining( ", " ) ) );
         }
       }
@@ -327,6 +327,18 @@ public final class StingProcessor
                !autoFragment.getContributors().isEmpty() )
           {
             autoFragment.markFragmentGenerated();
+
+            final boolean autoDiscoverableContributors = autoFragment.getContributors()
+              .stream()
+              .map( ContributorDescriptor::getElement )
+              .map( c -> _registry.findInjectableByClassName( c.getQualifiedName().toString() ) )
+              .filter( Objects::nonNull )
+              .anyMatch( InjectableDescriptor::isAutoDiscoverable );
+            if ( autoDiscoverableContributors )
+            {
+              autoFragment.markAsAutoDiscoverableContributors();
+            }
+
             final String packageName = GeneratorUtil.getQualifiedPackageName( autoFragment.getElement() );
             emitTypeSpec( packageName, AutoFragmentGenerator.buildType( processingEnv, autoFragment ) );
           }
@@ -970,6 +982,17 @@ public final class StingProcessor
                      "Marking " + originator.getQualifiedName() + " as unresolved" );
         return ResolveType.UNRESOLVED;
       }
+
+      if ( !include.isAuto() &&
+           injectable.isAutoDiscoverable() &&
+           ElementsUtil.isWarningNotSuppressed( originator, Constants.WARNING_AUTO_DISCOVERABLE_INCLUDED ) )
+      {
+        final String message =
+          MemberChecks.shouldNot( annotationClassname,
+                                  "include an auto-discoverable type " + classname + ". " +
+                                  MemberChecks.suppressedBy( Constants.WARNING_AUTO_DISCOVERABLE_INCLUDED ) );
+        processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, originator );
+      }
     }
     return ResolveType.RESOLVED;
   }
@@ -1500,11 +1523,28 @@ public final class StingProcessor
                                     element );
     }
 
-    _registry.registerContributor( key, element );
+    boolean autoDiscoverable = false;
+    final InjectableDescriptor injectable =
+      _registry.findInjectableByClassName( element.getQualifiedName().toString() );
+    if ( null != injectable && injectable.isAutoDiscoverable() )
+    {
+      autoDiscoverable = true;
+      if ( ElementsUtil.isWarningNotSuppressed( element, Constants.WARNING_AUTO_DISCOVERABLE_CONTRIBUTED ) )
+      {
+        final String message =
+          MemberChecks.shouldNot( Constants.CONTRIBUTE_TO_CLASSNAME,
+                                  "be an auto-discoverable type. " +
+                                  MemberChecks.suppressedBy( Constants.WARNING_AUTO_DISCOVERABLE_CONTRIBUTED ) );
+        processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, element );
+      }
+    }
+
+    final ContributorDescriptor contributor = new ContributorDescriptor( key, element, autoDiscoverable );
+    _registry.registerContributor( contributor );
     if ( null != autoFragment )
     {
       autoFragment.markAsModified();
-      autoFragment.getContributors().add( element );
+      autoFragment.getContributors().add( contributor );
     }
   }
 

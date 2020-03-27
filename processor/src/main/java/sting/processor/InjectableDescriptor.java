@@ -20,6 +20,20 @@ final class InjectableDescriptor
     _binding.setOwner( this );
   }
 
+  boolean isAutoDiscoverable()
+  {
+    if ( _binding.isEager() || 1 != _binding.getPublishedServices().size() )
+    {
+      return false;
+    }
+    else
+    {
+      final Coordinate coordinate = _binding.getPublishedServices().get( 0 ).getCoordinate();
+      return coordinate.getQualifier().isEmpty() &&
+             coordinate.getType().toString().equals( getElement().asType().toString() );
+    }
+  }
+
   @Nonnull
   TypeElement getElement()
   {

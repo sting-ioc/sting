@@ -11,24 +11,28 @@ final class Sting_MultipleIncludesModel implements MultipleIncludesModel {
   @Nonnull
   private final Sting_MyFragment fragment1 = new Sting_MyFragment();
 
+  @Nonnull
+  private final MyModel node1;
+
   @Nullable
-  private Runnable node1;
+  private Runnable node2;
 
   Sting_MultipleIncludesModel() {
+    node1 = Objects.requireNonNull( Sting_MyModel.create() );
   }
 
   @Nonnull
   @DoNotInline
-  private synchronized Runnable node1() {
-    if ( null == node1 ) {
-      node1 = Objects.requireNonNull( fragment1.$sting$_provideRunnable() );
+  private synchronized Runnable node2() {
+    if ( null == node2 ) {
+      node2 = Objects.requireNonNull( fragment1.$sting$_provideRunnable() );
     }
-    assert null != node1;
-    return node1;
+    assert null != node2;
+    return node2;
   }
 
   @Override
   public Runnable getRunnable() {
-    return node1();
+    return node2();
   }
 }

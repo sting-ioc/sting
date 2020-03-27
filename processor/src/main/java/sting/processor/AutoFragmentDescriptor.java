@@ -24,7 +24,7 @@ final class AutoFragmentDescriptor
    * The list of types contributing to the fragment.
    */
   @Nonnull
-  private final Collection<TypeElement> _contributors = new HashSet<>();
+  private final Collection<ContributorDescriptor> _contributors = new HashSet<>();
   /**
    * True if the fragment has been generated.
    */
@@ -33,6 +33,13 @@ final class AutoFragmentDescriptor
    * Has the auto-fragment been modified in the current round.
    */
   private boolean _modified;
+  /**
+   * Are any of the contributors auto-discoverable.
+   * If they are we should suppress the warning when generating the fragment.
+   * It is expected that AutoFragments when generated should never cause code
+   * warnings in generated code.
+   */
+  private boolean _autoDiscoverableContributors;
 
   AutoFragmentDescriptor( @Nonnull final String key, @Nonnull final TypeElement element )
   {
@@ -54,7 +61,7 @@ final class AutoFragmentDescriptor
   }
 
   @Nonnull
-  Collection<TypeElement> getContributors()
+  Collection<ContributorDescriptor> getContributors()
   {
     return _contributors;
   }
@@ -82,5 +89,15 @@ final class AutoFragmentDescriptor
   void markFragmentGenerated()
   {
     _fragmentGenerated = true;
+  }
+
+  boolean hasAutoDiscoverableContributors()
+  {
+    return _autoDiscoverableContributors;
+  }
+
+  void markAsAutoDiscoverableContributors()
+  {
+    _autoDiscoverableContributors = true;
   }
 }

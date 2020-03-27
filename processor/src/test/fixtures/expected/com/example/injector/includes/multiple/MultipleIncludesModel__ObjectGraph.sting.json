@@ -2,6 +2,11 @@
   "schema": "graph/1",
   "nodes": [
     {
+      "id": "com.example.injector.includes.multiple.MyModel",
+      "kind": "INJECTABLE",
+      "eager": true
+    },
+    {
       "id": "com.example.injector.includes.multiple.MyFragment#provideRunnable",
       "kind": "PROVIDES"
     }

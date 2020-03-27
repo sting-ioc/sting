@@ -761,6 +761,12 @@ public final class StingProcessorTest
   {
     return new Object[][]
       {
+        new Object[]{ "com.example.autofragment.IncludeAutoDiscoverableAutoFragmentModel",
+                      "@ContributeTo target should not be an auto-discoverable type. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:AutoDiscoverableContributed\" )" },
+
+        new Object[]{ "com.example.fragment.includes.IncludeAutoDiscoverableModel",
+                      "@Fragment target should not include an auto-discoverable type com.example.fragment.includes.IncludeAutoDiscoverableModel.MyAutoDiscoverableModel. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:AutoDiscoverableIncluded\" )" },
+
         new Object[]{ "com.example.injectable.CdiTypedModel",
                       "@Injectable target must not be annotated with the javax.enterprise.inject.Typed annotation. Use the sting.Typed annotation instead. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:CdiTypedPresent\" )" },
         new Object[]{ "com.example.injectable.Jsr330InjectModel",
@@ -793,6 +799,8 @@ public final class StingProcessorTest
       {
         new Object[]{ "NoPackageModel" },
 
+        new Object[]{ "com.example.autofragment.SuppressedIncludeAutoDiscoverableAutoFragmentModel" },
+
         new Object[]{ "com.example.deprecated.DeprecatedConstructorInjectableModel" },
         new Object[]{ "com.example.deprecated.DeprecatedDependencyInjectableModel" },
         new Object[]{ "com.example.deprecated.DeprecatedDependencyInjectorModel" },
@@ -807,6 +815,8 @@ public final class StingProcessorTest
         new Object[]{ "com.example.deprecated.DeprecatedProvidesNodeInjectorModel" },
 
         new Object[]{ "com.example.fragment.PackageAccessModel" },
+
+        new Object[]{ "com.example.fragment.includes.SuppressedIncludeAutoDiscoverableModel" },
 
         new Object[]{ "com.example.injectable.ExposeTypesModel" },
         new Object[]{ "com.example.injectable.FinalModel" },

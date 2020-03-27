@@ -3,11 +3,13 @@
   "nodes": [
     {
       "id": "com.example.injector.includes.recursive.MyModel3",
-      "kind": "INJECTABLE"
+      "kind": "INJECTABLE",
+      "eager": true
     },
     {
       "id": "com.example.injector.includes.recursive.MyModel1",
-      "kind": "INJECTABLE"
+      "kind": "INJECTABLE",
+      "eager": true
     },
     {
       "id": "com.example.injector.includes.recursive.MyFragment2#provideRunnable",
@@ -15,7 +17,8 @@
     },
     {
       "id": "com.example.injector.includes.recursive.MyModel2",
-      "kind": "INJECTABLE"
+      "kind": "INJECTABLE",
+      "eager": true
     },
     {
       "id": "com.example.injector.includes.recursive.MyFragment1#provideRunnable",
