@@ -7,10 +7,10 @@ require 'buildr/jacoco'
 desc 'sting: A fast, easy to use, compile-time dependency injection toolkit'
 define 'sting' do
   project.group = 'org.realityforge.sting'
-  compile.options.source = '1.8'
-  compile.options.target = '1.8'
-  compile.options.lint = 'all,-processing,-serial'
-  compile.options.warnings = true
+  project.compile.options.source = '1.8'
+  project.compile.options.target = '1.8'
+  project.compile.options.lint = 'all,-processing,-serial'
+  project.compile.options.warnings = true
   project.compile.options.other = %w(-Werror -Xmaxerrs 10000 -Xmaxwarns 10000)
 
   project.version = ENV['PRODUCT_VERSION'] if ENV['PRODUCT_VERSION']
