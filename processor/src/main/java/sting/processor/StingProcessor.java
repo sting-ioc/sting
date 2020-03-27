@@ -839,6 +839,16 @@ public final class StingProcessor
                                          @Nonnull final TypeElement originator,
                                          @Nonnull final IncludeDescriptor include )
   {
+    AnnotationMirror annotation =
+      AnnotationsUtil.findAnnotationByType( originator, Constants.INJECTOR_CLASSNAME );
+
+    final String annotationClassname =
+      null != annotation ? Constants.INJECTOR_CLASSNAME : Constants.FRAGMENT_CLASSNAME;
+    if ( null == annotation )
+    {
+      annotation = AnnotationsUtil.getAnnotationByType( originator, Constants.FRAGMENT_CLASSNAME );
+    }
+
     final String classname = include.getActualTypeName();
     final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
     if ( null == element )
@@ -846,16 +856,6 @@ public final class StingProcessor
       assert include.isProvider();
       if ( env.processingOver() )
       {
-        AnnotationMirror annotation =
-          AnnotationsUtil.findAnnotationByType( originator, Constants.INJECTOR_CLASSNAME );
-
-        final String annotationClassname =
-          null != annotation ? Constants.INJECTOR_CLASSNAME : Constants.FRAGMENT_CLASSNAME;
-        if ( null == annotation )
-        {
-          annotation = AnnotationsUtil.getAnnotationByType( originator, Constants.FRAGMENT_CLASSNAME );
-        }
-
         if ( descriptor instanceof FragmentDescriptor )
         {
           ( (FragmentDescriptor) descriptor ).markAsContainsError();
@@ -880,15 +880,6 @@ public final class StingProcessor
       !isInjectable && AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME );
     if ( include.isProvider() && !isInjectable && !isFragment )
     {
-      AnnotationMirror annotation =
-        AnnotationsUtil.findAnnotationByType( originator, Constants.INJECTOR_CLASSNAME );
-
-      final String annotationClassname =
-        null != annotation ? Constants.INJECTOR_CLASSNAME : Constants.FRAGMENT_CLASSNAME;
-      if ( null == annotation )
-      {
-        annotation = AnnotationsUtil.getAnnotationByType( originator, Constants.FRAGMENT_CLASSNAME );
-      }
       if ( descriptor instanceof FragmentDescriptor )
       {
         ( (FragmentDescriptor) descriptor ).markAsContainsError();
