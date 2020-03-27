@@ -1023,7 +1023,7 @@ public final class StingProcessor
         final DeclaredType type = (DeclaredType) enclosedElement.asType();
         if ( includes.stream().noneMatch( d -> Objects.equals( d.getIncludedType(), type ) ) )
         {
-          includes.add( new IncludeDescriptor( type, type.toString() ) );
+          includes.add( new IncludeDescriptor( type, type.toString(), true ) );
         }
         else
         {
@@ -1040,7 +1040,7 @@ public final class StingProcessor
         final DeclaredType type = (DeclaredType) enclosedElement.asType();
         if ( includes.stream().noneMatch( d -> Objects.equals( d.getIncludedType(), type ) ) )
         {
-          includes.add( new IncludeDescriptor( type, type.toString() ) );
+          includes.add( new IncludeDescriptor( type, type.toString(), true ) );
         }
         else
         {
@@ -1584,7 +1584,7 @@ public final class StingProcessor
       if ( AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FRAGMENT_CLASSNAME ) ||
            AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) )
       {
-        results.add( new IncludeDescriptor( (DeclaredType) include, include.toString() ) );
+        results.add( new IncludeDescriptor( (DeclaredType) include, include.toString(), false ) );
       }
       else
       {
@@ -1630,7 +1630,7 @@ public final class StingProcessor
             final String targetQualifiedName =
               ElementsUtil.getPackageElement( includeElement ).getQualifiedName().toString() + "." + targetCompoundType;
 
-            results.add( new IncludeDescriptor( (DeclaredType) include, targetQualifiedName ) );
+            results.add( new IncludeDescriptor( (DeclaredType) include, targetQualifiedName, false ) );
           }
           else
           {

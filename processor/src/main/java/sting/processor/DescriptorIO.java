@@ -112,7 +112,7 @@ final class DescriptorIO
     {
       final DeclaredType includedType = readDeclaredType( dis.readUTF() );
       final String actualTypeName = dis.readUTF();
-      types[ i ] = new IncludeDescriptor( includedType, actualTypeName );
+      types[ i ] = new IncludeDescriptor( includedType, actualTypeName, false );
     }
     final short bindingCount = dis.readShort();
     final Binding[] bindings = new Binding[ bindingCount ];

@@ -17,11 +17,16 @@ final class IncludeDescriptor
    */
   @Nonnull
   private final String _actualTypeName;
+  /**
+   * Is the include an auto-include that is the result of being enclosed within an injector or is it an explicit include.
+   */
+  private final boolean _auto;
 
-  IncludeDescriptor( @Nonnull final DeclaredType includedType, @Nonnull final String actualTypeName )
+  IncludeDescriptor( @Nonnull final DeclaredType includedType, @Nonnull final String actualTypeName, final boolean auto )
   {
     _includedType = Objects.requireNonNull( includedType );
     _actualTypeName = Objects.requireNonNull( actualTypeName );
+    _auto = auto;
   }
 
   @Nonnull
@@ -34,6 +39,11 @@ final class IncludeDescriptor
   String getActualTypeName()
   {
     return _actualTypeName;
+  }
+
+  boolean isAuto()
+  {
+    return _auto;
   }
 
   boolean isProvider()
