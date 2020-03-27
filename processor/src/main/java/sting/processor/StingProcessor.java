@@ -475,6 +475,7 @@ public final class StingProcessor
       current.clear();
       if ( resolvedType.get() )
       {
+        resolvedType.set( false );
         current.addAll( deferred );
         deferred.clear();
       }
