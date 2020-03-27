@@ -10,6 +10,7 @@ define 'sting' do
   compile.options.source = '1.8'
   compile.options.target = '1.8'
   compile.options.lint = 'all'
+  project.compile.options.other = %w(-Werror -Xmaxerrs 10000 -Xmaxwarns 10000)
 
   project.version = ENV['PRODUCT_VERSION'] if ENV['PRODUCT_VERSION']
 
@@ -279,6 +280,7 @@ define 'sting' do
     test.compile.with :javax_annotation,
                       :javacsv,
                       :gwt_symbolmap,
+                      :jetbrains_annotations,
                       :javax_json,
                       :testng
 
@@ -333,7 +335,7 @@ define 'sting' do
   end
 
   ipr.add_component('JavacSettings') do |xml|
-    xml.option(:name => 'ADDITIONAL_OPTIONS_STRING', :value => '-Xlint:all,-processing,-serial')
+    xml.option(:name => 'ADDITIONAL_OPTIONS_STRING', :value => '-Xlint:all,-processing,-serial -Werror')
   end
 
   ipr.add_component('JavaProjectCodeInsightSettings') do |xml|
