@@ -79,21 +79,24 @@ public abstract class AbstractStingProcessorTest
   {
     final String filename = "/" + classname.replace( ".", "/" ) + ".java";
     assertTrue( outputs.stream().anyMatch( f -> JavaFileObject.Kind.SOURCE == f.getKind() &&
-                                                f.getName().endsWith( filename ) ) );
+                                                f.getName().endsWith( filename ) ),
+                "Missing java source " + filename );
   }
 
   final void assertClassFile( @Nonnull final ImmutableList<JavaFileObject> outputs, @Nonnull final String classname )
   {
     final String filename = "/" + classname.replace( ".", "/" ) + ".class";
     assertTrue( outputs.stream().anyMatch( f -> JavaFileObject.Kind.CLASS == f.getKind() &&
-                                                f.getName().endsWith( filename ) ) );
+                                                f.getName().endsWith( filename ) ),
+                "Missing java class " + filename );
   }
 
   final void assertDescriptorFile( @Nonnull final ImmutableList<JavaFileObject> outputs,
                                    @Nonnull final String classname )
   {
     final String filename = "/" + classname.replace( ".", "/" ) + ".sbf";
-    assertTrue( outputs.stream().anyMatch( f -> JavaFileObject.Kind.OTHER == f.getKind() &&
-                                                f.getName().endsWith( filename ) ) );
+    assertTrue( outputs.stream()
+                  .anyMatch( f -> JavaFileObject.Kind.OTHER == f.getKind() && f.getName().endsWith( filename ) ),
+                "Missing sting descriptor " + filename );
   }
 }
