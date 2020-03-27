@@ -1583,6 +1583,12 @@ public final class StingProcessor
     final Set<String> included = new HashSet<>();
     for ( final TypeMirror include : includes )
     {
+      if ( include.getKind().isPrimitive() )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( annotationClassname ) +
+                                      " target must not include a primitive in the includes parameter",
+                                      element );
+      }
       final Element includeElement = processingEnv.getTypeUtils().asElement( include );
       if ( AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FRAGMENT_CLASSNAME ) ||
            AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) )

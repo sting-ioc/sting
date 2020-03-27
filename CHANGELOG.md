@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Generate an error if a primitive type is added to `includes` parameter of either the `@Fragment` annotation or the `@Injector` annotation.
+
 ### [v0.11](https://github.com/sting-ioc/sting/tree/v0.11) (2020-03-25) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.10...v0.11)
 
 Changes in this release:
