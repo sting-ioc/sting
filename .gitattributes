@@ -11,6 +11,7 @@
 *.properties text
 *.rake text
 *.rb text
+*.txt text
 *.xml text
 *.yaml text
 *.yml text

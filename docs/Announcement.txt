@@ -1,0 +1,51 @@
+To: google-web-toolkit@googlegroups.com
+Subject: [ANN] Sting v0.13 (Beta) release
+
+Sting is a fast, easy to use, compile-time dependency injection toolkit.
+If you are familiar with Dagger, it is a replacement for Dagger that is
+more optimized for the web context and GWT/J2CL.
+
+We have been developing Sting for a while as we were not satisfied with
+existing solutions but we have recently reached a point where we have
+replaced all of our existing dependency injection solutions (GIN,
+Dagger2 and some home-grown variants) with Sting and we think it is
+ready for other people to give it a try. So we are looking for feedback
+from anyone who is interested in giving it a try.
+
+We have set up a documentation site at
+
+  https://sting-ioc.github.io/docs/overview.html
+
+But to get a feel for what the code looks like. A component is
+defined by adding the @Injectable annotation to the class such as:
+
+  @Injectable
+  class MyFancyService { ... }
+
+However, we also support a @Named annotation and @Typed annotation
+that is similar in practice to the same-named annotations in CDI
+applications that add a qualifier to a component or control the types
+with which a component is published. We also support an @Eager
+annotation to ensure a component is instantiated when the injector is
+constructed.
+
+We also have the equivalent of daggers modules in the form of
+fragments where you can programmatically create components by writing
+code such as GWT.create(MyBackendServiceAsync.class)
+
+So why choose Sting over something like Dagger? We did write up a
+comparison at
+
+  https://sting-ioc.github.io/docs/dagger.html
+
+However, it is a little blunt and I will probably soften the points in
+it a little (it was written for an internal audience initially).
+The main reason to adopt Sting is that it is easier to use and it
+produces smaller, faster and easier to optimize code.
+
+Anyhoo, if anyone is looking for a dependency injection framework,
+here is another to try and we would really appreciate the feedback.
+
+Thanks,
+
+Peter Donald
