@@ -22,7 +22,7 @@ your Maven project, simply add the following to your `pom.xml`:
     <dependency>
       <groupId>org.realityforge.sting</groupId>
       <artifactId>sting-core</artifactId>
-      <version>0.12</version>
+      <version>0.13</version>
     </dependency>
     ...
   </dependencies>
@@ -49,7 +49,7 @@ compiler plugin from within the `pom.xml`:
             <path>
               <groupId>org.realityforge.sting</groupId>
               <artifactId>sting-processor</artifactId>
-              <version>0.12</version>
+              <version>0.13</version>
             </path>
           </annotationProcessorPaths>
         </configuration>
