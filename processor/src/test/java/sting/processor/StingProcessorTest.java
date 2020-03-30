@@ -616,6 +616,14 @@ public final class StingProcessorTest
                       "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment2.provideConfig" },
         new Object[]{ "com.example.injector.TypeParametersInjectorModel",
                       "@Injector target must not have type parameters" },
+        new Object[]{ "com.example.injector.NamedInjectablesAreNotAutoDiscoverableInjectorModel",
+                      "@Injector target must not contain a non-optional dependency [com.example.injector.NamedInjectablesAreNotAutoDiscoverableInjectorModel.MyModel] that can not be satisfied.\n" +
+                      "  Dependency Path:\n" +
+                      "    [Injector]       com.example.injector.NamedInjectablesAreNotAutoDiscoverableInjectorModel.MyInjector" },
+        new Object[]{ "com.example.injector.TypedInjectablesAreNotAutoDiscoverableInjectorModel",
+                      "@Injector target must not contain a non-optional dependency [com.example.injector.TypedInjectablesAreNotAutoDiscoverableInjectorModel.MyModel] that can not be satisfied.\n" +
+                      "  Dependency Path:\n" +
+                      "    [Injector]       com.example.injector.TypedInjectablesAreNotAutoDiscoverableInjectorModel.MyInjector" },
 
         new Object[]{ "com.example.injector.circular.ChainedCircularDependencyModel",
                       "Injector contains a circular dependency.\n" +
@@ -831,7 +839,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.named.SuppressedJsr330NamedInputModel" },
         new Object[]{ "com.example.injectable.named.SuppressedJsr330NamedInjectableModel" },
 
-        new Object[]{ "com.example.injector.AutodetectInjectableNonDefaultQualifierModel" }
+        new Object[]{ "com.example.injector.AutodetectInjectableModel" }
       };
   }
 

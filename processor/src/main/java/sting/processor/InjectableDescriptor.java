@@ -22,7 +22,7 @@ final class InjectableDescriptor
 
   boolean isAutoDiscoverable()
   {
-    if ( _binding.isEager() || 1 != _binding.getPublishedServices().size() )
+    if ( 1 != _binding.getPublishedServices().size() )
     {
       return false;
     }

@@ -333,7 +333,7 @@ public final class StingProcessor
               .map( ContributorDescriptor::getElement )
               .map( c -> _registry.findInjectableByClassName( c.getQualifiedName().toString() ) )
               .filter( Objects::nonNull )
-              .anyMatch( InjectableDescriptor::isAutoDiscoverable );
+              .anyMatch( c -> !c.getBinding().isEager() && c.isAutoDiscoverable() );
             if ( autoDiscoverableContributors )
             {
               autoFragment.markAsAutoDiscoverableContributors();
@@ -653,15 +653,11 @@ public final class StingProcessor
       final Coordinate coordinate = serviceRequest.getService().getCoordinate();
       final List<Binding> bindings = new ArrayList<>( graph.findAllBindingsByCoordinate( coordinate ) );
 
-      if ( bindings.isEmpty() )
+      if ( bindings.isEmpty() && coordinate.getQualifier().isEmpty() )
       {
         final String typename = coordinate.getType().toString();
         final InjectableDescriptor injectable = _registry.findInjectableByClassName( typename );
-        if ( null != injectable &&
-             injectable.getBinding()
-               .getPublishedServices()
-               .stream()
-               .anyMatch( s -> coordinate.equals( s.getCoordinate() ) ) )
+        if ( null != injectable && injectable.isAutoDiscoverable() )
         {
           bindings.add( injectable.getBinding() );
         }
@@ -681,14 +677,12 @@ public final class StingProcessor
             final Object descriptor = loadDescriptor( ownerElement, typename, data );
             if ( descriptor instanceof InjectableDescriptor )
             {
-              final InjectableDescriptor injectableDescriptor = (InjectableDescriptor) descriptor;
-              if ( injectableDescriptor.getBinding()
-                .getPublishedServices()
-                .stream()
-                .anyMatch( s -> coordinate.equals( s.getCoordinate() ) ) )
+              final InjectableDescriptor candidate = (InjectableDescriptor) descriptor;
+              if ( candidate.isAutoDiscoverable() )
               {
-                _registry.registerInjectable( injectableDescriptor );
-                bindings.add( injectableDescriptor.getBinding() );
+                assert coordinate.equals( candidate.getBinding().getPublishedServices().get( 0 ).getCoordinate() );
+                _registry.registerInjectable( candidate );
+                bindings.add( candidate.getBinding() );
               }
             }
           }
@@ -984,6 +978,7 @@ public final class StingProcessor
       }
 
       if ( !include.isAuto() &&
+           !injectable.getBinding().isEager() &&
            injectable.isAutoDiscoverable() &&
            ElementsUtil.isWarningNotSuppressed( originator, Constants.WARNING_AUTO_DISCOVERABLE_INCLUDED ) )
       {
@@ -1526,7 +1521,7 @@ public final class StingProcessor
     boolean autoDiscoverable = false;
     final InjectableDescriptor injectable =
       _registry.findInjectableByClassName( element.getQualifiedName().toString() );
-    if ( null != injectable && injectable.isAutoDiscoverable() )
+    if ( null != injectable && !injectable.getBinding().isEager() && injectable.isAutoDiscoverable() )
     {
       autoDiscoverable = true;
       if ( ElementsUtil.isWarningNotSuppressed( element, Constants.WARNING_AUTO_DISCOVERABLE_CONTRIBUTED ) )

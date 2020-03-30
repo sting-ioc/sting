@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Fix the implementation of auto-discovery so that it behaves as documented. Prior to this fix auto-discovering would work if the qualifiers matched and at least one of the published types matched. This behaviour meant that another pass would be required to validate that auto-discovered types did not validate previously processed components dependency resolution.
+
 ### [v0.12](https://github.com/sting-ioc/sting/tree/v0.12) (2020-03-30) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.11...v0.12)
 
 Changes in this release:
