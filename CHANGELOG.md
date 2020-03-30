@@ -8,6 +8,7 @@
 * Generate a suppressable warning if an auto-discoverable `@Injectable` annotated type is annotated with `@ContributeTo` or is added to the `includes` parameter of either the `@Fragment` annotation or the `@Injector` annotation.
 * Add some basic documentation on the following topics:
   - The algorithm for creating the Component Graph
+  - Auto-Discovery of Components
 
 ### [v0.11](https://github.com/sting-ioc/sting/tree/v0.11) (2020-03-25) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.10...v0.11)
 
