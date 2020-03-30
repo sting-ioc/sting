@@ -1,5 +1,5 @@
 ---
-title: Component Autodiscovery
+title: Component Auto-Discovery
 ---
 
 TODO
