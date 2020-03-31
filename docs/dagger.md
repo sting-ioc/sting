@@ -112,9 +112,10 @@ strengths of Sting relative to Dagger include:
   constructor or should specify a single package access constructor, annotations from other injection frameworks
   should not be intermingled with sting code etc.
 
-* Sting works hard to detect and report problems with the component graph before code generation occurs rather
-  than generating incorrect code and leaving it to javac to detect problems ... and for the user to work back
-  from the javac error message to the problem in the code.
+* Sting attempts to detect and report problems with the component graph before code generation occurs rather
+  than generating incorrect code and leaving it to javac to detect problems. Contrast this with Dagger that
+  can generate bad code if incorrectly configured. The developer is often left trying to work back from javac
+  errors in the generated code to the real source of the problem.
 
 * Sting makes it easy to omit optional dependencies from the component graph and will just pass nulls or omit
   the component from collections.
