@@ -87,8 +87,8 @@ strengths of Sting relative to Dagger include:
   a single dependency to the processor path that does not interfere with other annotation processors. As of version
   `2.25.2`, the Dagger annotation processor requires ~14 artifacts to be added to the processor path including
   several artifacts that are commonly used by other annotation processors such as `com.google.auto:auto-common`,
-  `com.google.guava:guava` and `com.squareup:javapoet`. Version conflicts can occasionally cause conflicts
-  when different annotation processors are using different versions of these libraries.
+  `com.google.guava:guava` and `com.squareup:javapoet`. If multiple annotation processors are present and they
+  use different versions of these shared libraries, then problems can occur.
 
 * Sting components can be annotated with the {@link: sting.Eager @Eager} annotation. This will result in the
   component being constructed when the injector is constructed. Lazy components are those without this annotation
