@@ -44,7 +44,7 @@ Some of the additional features present in Dagger and missing from Sting include
   constructor based injection. This can result in Sting applications containing more user written boilerplate
   code to accept dependencies in the constructor and assign the dependencies to fields. Sting takes this approach
   as it makes it easier for users to understand the initialization sequence and it makes it easy to integrate
-  Sting into downstream frameworks that contain a `@PostConstruct` style annotation. Before  Stin added this
+  Sting into downstream frameworks that contain a `@PostConstruct` style annotation. Before  Sting added this
   restriction, developers needed to be aware of the order that dependencies are injected in (i.e. the order of
   field-versus-method injections, are superclass injections resolved first, do injections occur in declaration
   order or are they sorted etc). The injection ordering differs between different injection toolkits which can
