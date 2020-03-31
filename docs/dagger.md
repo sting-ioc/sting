@@ -100,7 +100,7 @@ strengths of Sting relative to Dagger include:
   capability is present within dagger but this capability requires that the bindings are declared using a
   `@dagger.Module` annotated type which is significantly more verbose.
 
-* Stings supports publishing and consuming package-access components, even when the package-access component is in
+* Stings supports publishing and consuming package-access components, even when the package-access component are in
   a different package from the injector.
 
 * Sting suppresses any warnings in the generated code to ensure that if the code is compiled with javac linting
