@@ -1234,7 +1234,10 @@ public final class StingProcessor
         final boolean isProvider =
           !injectableType && !isFragmentType && hasStingProvider( executableElement.getEnclosingElement() );
         final boolean isActAsStingComponent =
-          !injectableType && !isFragmentType && !isProvider && hasActAsStingComponent( executableElement.getEnclosingElement() );
+          !injectableType &&
+          !isFragmentType &&
+          !isProvider &&
+          hasActAsStingComponent( executableElement.getEnclosingElement() );
         if ( !injectableType && ElementKind.CONSTRUCTOR == executableKind && !isProvider && !isActAsStingComponent )
         {
           reportError( env,
