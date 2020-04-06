@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,6 +27,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.AnnotatedConstruct;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
@@ -1293,6 +1295,16 @@ public final class StingProcessor
 
   private boolean hasStingProvider( @Nonnull final Element element )
   {
+    return hasAnnotationWithAnnotationMatching( element,
+                                                ca -> ca.getAnnotationType()
+                                                  .asElement()
+                                                  .getSimpleName()
+                                                  .contentEquals( "StingProvider" ) );
+  }
+
+  private boolean hasAnnotationWithAnnotationMatching( @Nonnull final AnnotatedConstruct element,
+                                                       @Nonnull final Predicate<? super AnnotationMirror> predicate )
+  {
     return element
       .getAnnotationMirrors()
       .stream()
@@ -1300,7 +1312,7 @@ public final class StingProcessor
         .asElement()
         .getAnnotationMirrors()
         .stream()
-        .anyMatch( ca -> ca.getAnnotationType().asElement().getSimpleName().contentEquals( "StingProvider" ) ) );
+        .anyMatch( predicate ) );
   }
 
   private void verifyTypedElements( @Nonnull final RoundEnvironment env,
