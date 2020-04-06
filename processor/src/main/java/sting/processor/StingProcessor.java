@@ -1347,7 +1347,7 @@ public final class StingProcessor
                        MemberChecks.must( Constants.TYPED_CLASSNAME,
                                           "only be present on a type if the type is annotated with " +
                                           MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                          " or the type has an associated provider" ),
+                                          " or the type is annotated with an annotation annotated by @StingProvider" ),
                        element );
         }
       }
@@ -1387,7 +1387,7 @@ public final class StingProcessor
                        MemberChecks.must( Constants.EAGER_CLASSNAME,
                                           "only be present on a type if the type is annotated with " +
                                           MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                          " or the type has an associated provider" ),
+                                          " or the type is annotated with an annotation annotated by @StingProvider" ),
                        element );
         }
       }
