@@ -1,6 +1,10 @@
 # Change Log
 
-### Unreleased
+### [v0.14](https://github.com/sting-ioc/sting/tree/v0.14) (2020-04-06) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.13...v0.14) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.13&new=0.14)
+
+The release includes 1 non breaking API change.
+
+Changes in this release:
 
 * Fix the grammar in some annotation processor error messages.
 * Introduce the `@ActAsStingComponent` annotation that makes it possible to use `@Named` and `@ContributeTo` annotations in types that are not annotated with either `@Injectable` or `@StingProvider`. The `@ActAsStingComponent` is used by third party frameworks to indicate that the third party framework will manage the `@Named` and `@ContributeTo` annotations.
