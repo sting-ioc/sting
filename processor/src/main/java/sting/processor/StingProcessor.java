@@ -877,7 +877,7 @@ public final class StingProcessor
           "parameter named 'includes' containing the value " + include.getIncludedType() +
           " and that type is annotated by the @StingProvider annotation. The provider annotation expects a " +
           "provider class named " + include.getActualTypeName() + " but no such class exists. The " +
-          "type need to be removed from the includes or the provider class needs to be present.";
+          "type needs to be removed from the includes or the provider class needs to be present.";
         reportError( env, message, originator, annotation, null );
       }
       return ResolveType.UNRESOLVED;

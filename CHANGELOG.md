@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Fix the grammar in some annotation processor error messages.
+
 ### [v0.13](https://github.com/sting-ioc/sting/tree/v0.13) (2020-03-30) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.12...v0.13)
 
 Changes in this release:
