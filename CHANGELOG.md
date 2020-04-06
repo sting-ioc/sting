@@ -3,6 +3,7 @@
 ### Unreleased
 
 * Fix the grammar in some annotation processor error messages.
+* Introduce the `@ActAsStingComponent` annotation that makes it possible to use `@Named` and `@ContributeTo` annotations in types that are not annotated with either `@Injectable` or `@StingProvider`. The `@ActAsStingComponent` is used by third party frameworks to indicate that the third party framework will manage the `@Named` and `@ContributeTo` annotations.
 
 ### [v0.13](https://github.com/sting-ioc/sting/tree/v0.13) (2020-03-30) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.12...v0.13)
 

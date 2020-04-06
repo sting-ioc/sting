@@ -1233,14 +1233,17 @@ public final class StingProcessor
         final ElementKind executableKind = executableElement.getKind();
         final boolean isProvider =
           !injectableType && !isFragmentType && hasStingProvider( executableElement.getEnclosingElement() );
-        if ( !injectableType && ElementKind.CONSTRUCTOR == executableKind && !isProvider )
+        final boolean isActAsStingComponent =
+          !injectableType && !isFragmentType && !isProvider && hasActAsStingComponent( executableElement.getEnclosingElement() );
+        if ( !injectableType && ElementKind.CONSTRUCTOR == executableKind && !isProvider && !isActAsStingComponent )
         {
           reportError( env,
                        MemberChecks.must( Constants.NAMED_CLASSNAME,
                                           "only be present on a constructor parameter if the constructor " +
                                           "is enclosed in a type annotated with " +
                                           MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                          " or the type has an associated provider" ),
+                                          " or the type is annotated with an annotation annotated by " +
+                                          "@ActAsStringComponent or @StingProvider" ),
                        element );
         }
         else if ( !isFragmentType && ElementKind.METHOD == executableKind )
@@ -1255,19 +1258,22 @@ public final class StingProcessor
         {
           assert ( injectableType && ElementKind.CONSTRUCTOR == executableKind ) ||
                  ( isProvider && ElementKind.CONSTRUCTOR == executableKind ) ||
+                 ( isActAsStingComponent && ElementKind.CONSTRUCTOR == executableKind ) ||
                  ( isFragmentType && ElementKind.METHOD == executableKind );
         }
       }
       else if ( ElementKind.CLASS == element.getKind() )
       {
         if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) &&
-             !hasStingProvider( element ) )
+             !hasStingProvider( element ) &&
+             !hasActAsStingComponent( element ) )
         {
           reportError( env,
                        MemberChecks.must( Constants.NAMED_CLASSNAME,
                                           "only be present on a type if the type is annotated with " +
                                           MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                          " or the type has an associated provider" ),
+                                          " or the type is annotated with an annotation annotated by " +
+                                          "@ActAsStringComponent or @StingProvider" ),
                        element );
         }
       }
@@ -1300,6 +1306,15 @@ public final class StingProcessor
                                                   .asElement()
                                                   .getSimpleName()
                                                   .contentEquals( "StingProvider" ) );
+  }
+
+  private boolean hasActAsStingComponent( @Nonnull final Element element )
+  {
+    return hasAnnotationWithAnnotationMatching( element,
+                                                ca -> ca.getAnnotationType()
+                                                  .asElement()
+                                                  .getSimpleName()
+                                                  .contentEquals( "ActAsStingComponent" ) );
   }
 
   private boolean hasAnnotationWithAnnotationMatching( @Nonnull final AnnotatedConstruct element,
@@ -1506,14 +1521,22 @@ public final class StingProcessor
          !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) &&
          !hasStingProvider( element ) )
     {
-      throw new ProcessorException( MemberChecks.must( Constants.CONTRIBUTE_TO_CLASSNAME,
-                                                       "be annotated with " +
-                                                       MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                                       ", " +
-                                                       MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
-                                                       " or be annotated with an annotation annotated by " +
-                                                       "@StingProvider" ),
-                                    element );
+      if ( hasActAsStingComponent( element ) )
+      {
+        debug( () -> "ContributeTo Element skipped due to @ActAsStringComponent: " + element );
+        return;
+      }
+      else
+      {
+        throw new ProcessorException( MemberChecks.must( Constants.CONTRIBUTE_TO_CLASSNAME,
+                                                         "be annotated with " +
+                                                         MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                                         ", " +
+                                                         MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
+                                                         " or be annotated with an annotation annotated by " +
+                                                         "@ActAsStringComponent or @StingProvider" ),
+                                      element );
+      }
     }
     final String key = (String)
       AnnotationsUtil.getAnnotationValue( element, Constants.CONTRIBUTE_TO_CLASSNAME, "value" ).getValue();

@@ -414,7 +414,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.contribute_to.MissingAutoFragmentModel",
                       "Failed to process the @ContributeTo contributors for key 'Foo' as no associated @AutoFragment is on the class path. Impacted contributors included: com.example.contribute_to.MissingAutoFragmentModel" },
         new Object[]{ "com.example.contribute_to.NonCandidateTypeModel",
-                      "@ContributeTo target must be annotated with @Injectable, @Fragment or be annotated with an annotation annotated by @StingProvider" },
+                      "@ContributeTo target must be annotated with @Injectable, @Fragment or be annotated with an annotation annotated by @ActAsStringComponent or @StingProvider" },
 
         new Object[]{ "com.example.fragment.ClassModel", "@Fragment target must be an interface" },
         new Object[]{ "com.example.fragment.EnclosedAnnotationFragmentModel",
@@ -733,14 +733,14 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedAnnotationModel", "@Named target is not valid" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedConstructorParameterModel",
-                      "@Named target must only be present on a constructor parameter if the constructor is enclosed in a type annotated with @Injectable or the type has an associated provider" },
+                      "@Named target must only be present on a constructor parameter if the constructor is enclosed in a type annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStringComponent or @StingProvider" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedEnumModel", "@Named target is not valid" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedMethodModel",
                       "@Named target must not be a method unless the method is enclosed in a type annotated with @Fragment or @Injector" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedMethodParameterModel",
                       "@Named target must only be present on a method parameter if the method is enclosed in a type annotated with @Fragment" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedTypeModel",
-                      "@Named target must only be present on a type if the type is annotated with @Injectable or the type has an associated provider" },
+                      "@Named target must only be present on a type if the type is annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStringComponent or @StingProvider" },
 
         new Object[]{ "com.example.unclaimed.typed.UnclaimedTypedAnnotationModel", "@Typed target is not valid" },
         new Object[]{ "com.example.unclaimed.typed.UnclaimedTypedEnumModel", "@Typed target is not valid" },
@@ -809,6 +809,8 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.autofragment.SuppressedIncludeAutoDiscoverableAutoFragmentModel" },
 
+        new Object[]{ "com.example.contribute_to.ContributeToOnActAsStingComponentModel" },
+
         new Object[]{ "com.example.deprecated.DeprecatedConstructorInjectableModel" },
         new Object[]{ "com.example.deprecated.DeprecatedDependencyInjectableModel" },
         new Object[]{ "com.example.deprecated.DeprecatedDependencyInjectorModel" },
@@ -839,7 +841,10 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.named.SuppressedJsr330NamedInputModel" },
         new Object[]{ "com.example.injectable.named.SuppressedJsr330NamedInjectableModel" },
 
-        new Object[]{ "com.example.injector.AutodetectInjectableModel" }
+        new Object[]{ "com.example.injector.AutodetectInjectableModel" },
+
+        new Object[]{ "com.example.named.NamedOnActAsStingComponentModel" },
+        new Object[]{ "com.example.named.NamedOnCtorParamInActAsStingComponentModel" }
       };
   }
 
