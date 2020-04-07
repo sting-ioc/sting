@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Upgrade the `org.realityforge.proton` artifacts to version `0.45`.
+
 ### [v0.14](https://github.com/sting-ioc/sting/tree/v0.14) (2020-04-06) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.13...v0.14) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.13&new=0.14)
 
 The release includes 1 non breaking API change.
