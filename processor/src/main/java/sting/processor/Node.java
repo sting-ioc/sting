@@ -20,7 +20,7 @@ import org.realityforge.proton.ElementsUtil;
 final class Node
 {
   /**
-   * The object graph that created this node.
+   * The component graph that created this node.
    */
   @Nonnull
   private final ComponentGraph _componentGraph;
