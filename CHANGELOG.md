@@ -2,7 +2,7 @@
 
 ### Unreleased
 
-* Upgrade the `org.realityforge.proton` artifacts to version `0.45`.
+* Upgrade the `org.realityforge.proton` artifacts to version `0.46`.
 * Generate an error if a `@Fragment` annotated type includes itself.
 * Generate an error if an `@Injector` annotated type includes itself.
 
