@@ -1648,6 +1648,12 @@ public final class StingProcessor
     final Set<String> included = new HashSet<>();
     for ( final TypeMirror include : includes )
     {
+      if ( processingEnv.getTypeUtils().isSameType( include, element.asType() ) )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( annotationClassname ) +
+                                      " target must not include self",
+                                      element );
+      }
       if ( include.getKind().isPrimitive() )
       {
         throw new ProcessorException( MemberChecks.toSimpleName( annotationClassname ) +

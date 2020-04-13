@@ -448,6 +448,8 @@ public final class StingProcessorTest
                       "    com.example.fragment.includes.MultipleProvidersIncludesModel.MyFrameworkComponent2" },
         new Object[]{ "com.example.fragment.includes.PrimitiveInIncludesModel",
                       "@Fragment target must not include a primitive in the includes parameter" },
+        new Object[]{ "com.example.fragment.includes.SelfIncludesModel",
+                      "@Fragment target must not include self" },
         new Object[]{ "com.example.fragment.includes.UnannotatedProviderIncludesModel",
                       "@Fragment target has an parameter named 'includes' containing the value com.example.fragment.includes.UnannotatedProviderIncludesModel.MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.fragment.includes.UnannotatedProviderIncludesModel.MyComponent_Provider but that class is not annotated with either @Injector or @Fragment" },
 
@@ -662,6 +664,8 @@ public final class StingProcessorTest
                       "    com.example.injector.includes.MultipleProvidersIncludesModel.MyFrameworkComponent2" },
         new Object[]{ "com.example.injector.includes.PrimitiveInIncludesModel",
                       "@Injector target must not include a primitive in the includes parameter" },
+        new Object[]{ "com.example.injector.includes.SelfIncludesModel",
+                      "@Injector target must not include self" },
         new Object[]{ "com.example.injector.includes.UnannotatedProviderIncludesModel",
                       "@Injector target has an parameter named 'includes' containing the value com.example.injector.includes.UnannotatedProviderIncludesModel.MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.injector.includes.UnannotatedProviderIncludesModel.MyComponent_Provider but that class is not annotated with either @Injector or @Fragment" },
 
