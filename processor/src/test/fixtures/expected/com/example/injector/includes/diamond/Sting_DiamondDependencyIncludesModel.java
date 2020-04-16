@@ -14,7 +14,7 @@ final class Sting_DiamondDependencyIncludesModel implements DiamondDependencyInc
   }
 
   @Override
-  public MyModel getRunnable() {
+  public MyModel getMyModel() {
     return (MyModel) node1;
   }
 }
