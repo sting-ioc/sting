@@ -668,6 +668,12 @@ public final class StingProcessorTest
                       "@Injector target must not include self" },
         new Object[]{ "com.example.injector.includes.UnannotatedProviderIncludesModel",
                       "@Injector target has an parameter named 'includes' containing the value com.example.injector.includes.UnannotatedProviderIncludesModel.MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.injector.includes.UnannotatedProviderIncludesModel.MyComponent_Provider but that class is not annotated with either @Injector or @Fragment" },
+        new Object[]{ "com.example.injector.includes.UnusedFragmentIncludesModel",
+                      "@Injector must not include type com.example.injector.includes.UnusedFragmentIncludesModel.MyFragment when the type is not used within the graph" },
+        new Object[]{ "com.example.injector.includes.UnusedInjectableIncludesModel",
+                      "@Injector must not include type com.example.injector.includes.UnusedInjectableIncludesModel.MyModel1 when the type is not used within the graph" },
+        new Object[]{ "com.example.injector.includes.UnusedStingProviderIncludesModel",
+                      "@Injector must not include type com.example.injector.includes.UnusedStingProviderIncludesModel.MyModel1 when the type is not used within the graph" },
 
         new Object[]{ "com.example.injector.inputs.ArrayTypeInputModel",
                       "@Input must not specify an array type for the type parameter" },

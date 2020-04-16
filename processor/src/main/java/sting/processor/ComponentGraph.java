@@ -32,6 +32,12 @@ final class ComponentGraph
   @Nonnull
   private final Set<String> _includedTypes = new HashSet<>();
   /**
+   * A mapping of the root include element to the bindings.
+   * It is used to verify that a particular include root is used within an injector.
+   */
+  @Nonnull
+  private final Map<IncludeDescriptor, Set<Binding>> _includeRootToBindingMap = new HashMap<>();
+  /**
    * The types that are published in the component graph.
    */
   @Nonnull
@@ -201,6 +207,12 @@ final class ComponentGraph
   }
 
   @Nonnull
+  Map<IncludeDescriptor, Set<Binding>> getIncludeRootToBindingMap()
+  {
+    return _includeRootToBindingMap;
+  }
+
+  @Nonnull
   List<Binding> findAllBindingsByCoordinate( @Nonnull final Coordinate coordinate )
   {
     return _publishedTypes.getOrDefault( coordinate, Collections.emptyList() );
@@ -221,10 +233,13 @@ final class ComponentGraph
   /**
    * Include the injectable in the component graph.
    *
-   * @param injectable the injectable.
+   * @param includeRoot the root include that included the injectable.
+   * @param injectable  the injectable.
    */
-  void registerInjectable( @Nonnull final InjectableDescriptor injectable )
+  void registerInjectable( @Nonnull final IncludeDescriptor includeRoot,
+                           @Nonnull final InjectableDescriptor injectable )
   {
+    _includeRootToBindingMap.computeIfAbsent( includeRoot, r -> new HashSet<>() ).add( injectable.getBinding() );
     final String typeName = injectable.getElement().getQualifiedName().toString();
     if ( _includedTypes.add( typeName ) )
     {
@@ -241,10 +256,12 @@ final class ComponentGraph
    * Include the fragment in the component graph.
    * It is assumed that the types included by the fragment have already been included in the ObjectGraph.
    *
-   * @param fragment the fragment.
+   * @param includeRoot the root include that ultimately included the fragment.
+   * @param fragment    the fragment.
    */
-  void registerFragment( @Nonnull final FragmentDescriptor fragment )
+  void registerFragment( @Nonnull final IncludeDescriptor includeRoot, @Nonnull final FragmentDescriptor fragment )
   {
+    _includeRootToBindingMap.computeIfAbsent( includeRoot, r -> new HashSet<>() ).addAll( fragment.getBindings() );
     final String typeName = fragment.getElement().getQualifiedName().toString();
     if ( _includedTypes.add( typeName ) )
     {

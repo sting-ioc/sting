@@ -530,6 +530,21 @@ public final class StingProcessor
 
     CircularDependencyChecker.verifyNoCircularDependencyLoops( graph );
 
+    final Set<Binding> actualBindings =
+      graph.getNodes().stream().map( Node::getBinding ).collect( Collectors.toSet() );
+
+    for ( final Map.Entry<IncludeDescriptor, Set<Binding>> entry : graph.getIncludeRootToBindingMap().entrySet() )
+    {
+      if ( entry.getValue().stream().noneMatch( actualBindings::contains ) )
+      {
+        final IncludeDescriptor includeRoot = entry.getKey();
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " must not " +
+                                      "include type " + includeRoot.getIncludedType() +
+                                      " when the type is not used within the graph",
+                                      graph.getInjector().getElement() );
+      }
+    }
+
     emitObjectGraphJsonDescriptor( graph );
 
     final String packageName = GeneratorUtil.getQualifiedPackageName( graph.getInjector().getElement() );
@@ -579,10 +594,11 @@ public final class StingProcessor
 
   private void registerIncludesComponents( @Nonnull final ComponentGraph graph )
   {
-    registerIncludes( graph, graph.getInjector().getIncludes() );
+    registerIncludes( graph, null, graph.getInjector().getIncludes() );
   }
 
   private void registerIncludes( @Nonnull final ComponentGraph graph,
+                                 @Nullable final IncludeDescriptor includeRoot,
                                  @Nonnull final Collection<IncludeDescriptor> includes )
   {
     for ( final IncludeDescriptor include : includes )
@@ -598,18 +614,21 @@ public final class StingProcessor
         debug( () -> "Registering include " + classname + " into graph " +
                      graph.getInjector().getElement().getQualifiedName() );
       }
+      final IncludeDescriptor root = null == includeRoot ? include : includeRoot;
       final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
       assert null != element;
+      final String qualifiedName = element.getQualifiedName().toString();
       if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
       {
-        final FragmentDescriptor fragment = _registry.getFragmentByClassName( element.getQualifiedName().toString() );
-        registerIncludes( graph, fragment.getIncludes() );
-        graph.registerFragment( fragment );
+        final FragmentDescriptor fragment = _registry.getFragmentByClassName( qualifiedName );
+        registerIncludes( graph, root, fragment.getIncludes() );
+        graph.registerFragment( root, fragment );
       }
       else
       {
         assert AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME );
-        graph.registerInjectable( _registry.getInjectableByClassName( element.getQualifiedName().toString() ) );
+        final InjectableDescriptor injectable = _registry.getInjectableByClassName( qualifiedName );
+        graph.registerInjectable( root, injectable );
       }
     }
   }
