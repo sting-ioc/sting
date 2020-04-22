@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
  * own component model that is fully integration with sting.</p>
  *
  * <p>It should be noted that Sting will attempt to use any annotation with this name and shape so that
- * frameworks do not need a direct code dependency on Sting. </p>
+ * frameworks do not need a direct code dependency on Sting.</p>
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
