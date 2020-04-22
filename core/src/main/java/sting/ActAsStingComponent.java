@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
  * {@link sting.Named @Named} annotation will generate a warning if the Sting annotation processor
  * detects that the type is not annotated with the {@link sting.Injectable @Injectable} annotation or an annotation
  * annotated by a {@link sting.StingProvider @StingProvider} annotated annotation. This warning is generated because
- * the annotation processor will not process the annotation and thus considers it a potential error.</p>
+ * the annotation processor will not process the annotation and thus considers it an error.</p>
  *
  * <p>The @ActAsStingComponent can be applied to an annotation and any type that is annotated with that annotation
  * will not generated warnings in these scenarios. The expectation is that another annotation processor will process
