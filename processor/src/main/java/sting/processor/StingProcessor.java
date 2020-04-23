@@ -1091,6 +1091,12 @@ public final class StingProcessor
       {
         processInjectorOutputMethod( outputs, method );
       }
+      else if ( method.getModifiers().contains( Modifier.DEFAULT ) )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) +
+                                      " target must not include default methods",
+                                      method );
+      }
     }
     for ( final Element enclosedElement : element.getEnclosedElements() )
     {

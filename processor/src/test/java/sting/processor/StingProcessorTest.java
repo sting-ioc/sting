@@ -570,6 +570,8 @@ public final class StingProcessorTest
                       "@Typed specified a type that is a a parameterized type" },
 
         new Object[]{ "com.example.injector.ClassInjector", "@Injector target must be an interface" },
+        new Object[]{ "com.example.injector.DefaultMethodInInjectorModel",
+                      "@Injector target must not include default methods" },
         new Object[]{ "com.example.injector.EnclosingAnnotationInjectorModel",
                       "@Injector target must not contain a type that is not annotated by either @Injectable or @Fragment" },
         new Object[]{ "com.example.injector.EnclosingClassInjectorModel",
