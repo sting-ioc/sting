@@ -63,6 +63,7 @@ import org.realityforge.proton.TypesUtil;
  */
 @SuppressWarnings( "DuplicatedCode" )
 @SupportedAnnotationTypes( { Constants.INJECTOR_CLASSNAME,
+                             Constants.INJECTOR_FRAGMENT_CLASSNAME,
                              Constants.INJECTABLE_CLASSNAME,
                              Constants.FRAGMENT_CLASSNAME,
                              Constants.EAGER_CLASSNAME,
@@ -110,6 +111,8 @@ public final class StingProcessor
   private final DeferredElementSet _deferredFragmentTypes = new DeferredElementSet();
   @Nonnull
   private final DeferredElementSet _deferredInjectorTypes = new DeferredElementSet();
+  @Nonnull
+  private final DeferredElementSet _deferredInjectorFragmentTypes = new DeferredElementSet();
   /**
    * Flag controlling whether json descriptors are emitted.
    * Json descriptors are primarily used during debugging and probably should not be enabled in production code.
@@ -192,6 +195,12 @@ public final class StingProcessor
       .filter( a -> a.getQualifiedName().toString().equals( Constants.EAGER_CLASSNAME ) )
       .findAny()
       .ifPresent( a -> verifyEagerElements( env, env.getElementsAnnotatedWith( a ) ) );
+
+    processTypeElements( annotations,
+                         env,
+                         Constants.INJECTOR_FRAGMENT_CLASSNAME,
+                         _deferredInjectorFragmentTypes,
+                         this::processInjectorFragment );
 
     processTypeElements( annotations,
                          env,
@@ -1013,6 +1022,35 @@ public final class StingProcessor
     return ResolveType.RESOLVED;
   }
 
+  private void processInjectorFragment( @Nonnull final TypeElement element )
+    throws Exception
+  {
+    debug( () -> "Processing Injector Fragment: " + element );
+    final ElementKind kind = element.getKind();
+    if ( ElementKind.INTERFACE != kind )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.INJECTOR_FRAGMENT_CLASSNAME, "be an interface" ),
+                                    element );
+    }
+    final List<ExecutableElement> methods =
+      ElementsUtil.getMethods( element, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
+    for ( final ExecutableElement method : methods )
+    {
+      if ( method.getModifiers().contains( Modifier.DEFAULT ) )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_FRAGMENT_CLASSNAME ) +
+                                      " target must not include default methods",
+                                      method );
+      }
+      else if ( method.getModifiers().contains( Modifier.STATIC ) )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_FRAGMENT_CLASSNAME ) +
+                                      " target must not include static methods",
+                                      method );
+      }
+    }
+  }
+
   private void processInjector( @Nonnull final TypeElement element )
     throws Exception
   {
@@ -1302,13 +1340,16 @@ public final class StingProcessor
       else if ( ElementKind.METHOD == element.getKind() )
       {
         if ( !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME ) &&
-             !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.INJECTOR_CLASSNAME ) )
+             !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.INJECTOR_CLASSNAME ) &&
+             !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(),
+                                                   Constants.INJECTOR_FRAGMENT_CLASSNAME ) )
         {
           reportError( env,
                        MemberChecks.mustNot( Constants.NAMED_CLASSNAME,
                                              "be a method unless the method is enclosed in a type annotated with " +
-                                             MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " or " +
-                                             MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) ),
+                                             MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + ", " +
+                                             MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " or " +
+                                             MemberChecks.toSimpleName( Constants.INJECTOR_FRAGMENT_CLASSNAME ) ),
                        element );
         }
       }

@@ -741,12 +741,23 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.outputs.WildcardSupplierOutputModel",
                       "@Injector target must not contain a method with a return type that contains a wildcard type parameter" },
 
+        new Object[]{ "com.example.injector_fragment.AnnotationInjectorFragment",
+                      "@InjectorFragment target must be an interface" },
+        new Object[]{ "com.example.injector_fragment.ClassInjectorFragment",
+                      "@InjectorFragment target must be an interface" },
+        new Object[]{ "com.example.injector_fragment.DefaultMethodInInjectorFragment",
+                      "@InjectorFragment target must not include default methods" },
+        new Object[]{ "com.example.injector_fragment.EnumInjectorFragment",
+                      "@InjectorFragment target must be an interface" },
+        new Object[]{ "com.example.injector_fragment.StaticMethodInInjectorFragment",
+                      "@InjectorFragment target must not include static methods" },
+
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedAnnotationModel", "@Named target is not valid" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedConstructorParameterModel",
                       "@Named target must only be present on a constructor parameter if the constructor is enclosed in a type annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStringComponent or @StingProvider" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedEnumModel", "@Named target is not valid" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedMethodModel",
-                      "@Named target must not be a method unless the method is enclosed in a type annotated with @Fragment or @Injector" },
+                      "@Named target must not be a method unless the method is enclosed in a type annotated with @Fragment, @Injector or @InjectorFragment" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedMethodParameterModel",
                       "@Named target must only be present on a method parameter if the method is enclosed in a type annotated with @Fragment" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedTypeModel",
@@ -854,7 +865,8 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.AutodetectInjectableModel" },
 
         new Object[]{ "com.example.named.NamedOnActAsStingComponentModel" },
-        new Object[]{ "com.example.named.NamedOnCtorParamInActAsStingComponentModel" }
+        new Object[]{ "com.example.named.NamedOnCtorParamInActAsStingComponentModel" },
+        new Object[]{ "com.example.named.NamedOnInjectorFragment" }
       };
   }
 

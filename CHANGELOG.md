@@ -6,6 +6,7 @@
 * Generate an error if a `@Fragment` annotated type includes itself.
 * Generate an error if an `@Injector` annotated type includes itself.
 * Generate an error if an `@Injector` annotated type includes a `@Fragment` annotated type, an `@Injectable` annotated type or `@StingProvider` type that is not used within the graph.
+* Introduce the `@sting.InjectorFragment` annotation that marks an interface that is allowed to have `@Named` annotations present as it is expected to be inherited by an injector.
 
 ### [v0.14](https://github.com/sting-ioc/sting/tree/v0.14) (2020-04-06) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.13...v0.14) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.13&new=0.14)
 
