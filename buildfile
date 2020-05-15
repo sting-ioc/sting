@@ -21,10 +21,11 @@ define 'sting' do
 
   desc 'The core module'
   define 'core' do
-    pom.include_transitive_dependencies << artifact(:javax_annotation)
-    pom.dependency_filter = Proc.new { |dep| dep[:scope].to_s != 'test' }
+    deps = artifacts(:javax_annotation)
+    pom.include_transitive_dependencies << deps
+    pom.dependency_filter = Proc.new { |dep| dep[:scope].to_s != 'test' && deps.include?(dep[:artifact]) }
 
-    compile.with :javax_annotation
+    compile.with deps
 
     test.options[:java_args] = ['-ea']
 
