@@ -148,7 +148,7 @@ define 'sting' do
                       Java.tools_jar,
 
                       # Code for the Application to compile against
-                      Buildr::GWT.dependencies('2.8.2-v20191108'),
+                      Buildr::GWT.dependencies(project.gwt_detect_version(Buildr.artifacts(:gwt_user))),
                       :jsinterop_base,
                       :elemental2_core,
                       :elemental2_dom,
