@@ -2,7 +2,7 @@
 
 ### Unreleased
 
-* Upgrade the `org.realityforge.proton` artifacts to version `0.48`.
+* Upgrade the `org.realityforge.proton` artifacts to version `0.49`.
 * Upgrade the `org.realityforge.braincheck` artifact to version `1.28.0`.
 
 ### [v0.15](https://github.com/sting-ioc/sting/tree/v0.15) (2020-04-23) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.14...v0.15) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.14&new=0.15)
