@@ -157,7 +157,7 @@ final class StingGeneratorUtil
     {
       additionalSuppressions.add( "rawtypes" );
     }
-    if ( ElementsUtil.isElementDeprecated( binding.getElement() ) )
+    if ( ElementsUtil.isDeprecated( binding.getElement() ) )
     {
       additionalSuppressions.add( "deprecation" );
     }
