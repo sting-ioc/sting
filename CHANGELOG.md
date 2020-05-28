@@ -2,7 +2,7 @@
 
 ### Unreleased
 
-* Upgrade the `org.realityforge.proton` artifacts to version `0.50`.
+* Upgrade the `org.realityforge.proton` artifacts to version `0.51`.
 * Upgrade the `org.realityforge.braincheck` artifact to version `1.28.0`.
 * Improve code generation when a `@Fragment` annotated type or an `@Injector` annotated type is effectively deprecated by virtua of being enclosed in a deprecated type so that the generated code suppresses deprecation warnings.
 
