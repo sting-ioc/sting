@@ -46,7 +46,7 @@ artifacts:
   javacsv: net.sourceforge.javacsv:javacsv:jar:2.1
 
   gwt_symbolmap: org.realityforge.gwt.symbolmap:gwt-symbolmap:jar:0.09
-  jetbrains_annotations: org.realityforge.org.jetbrains.annotations:org.jetbrains.annotations:jar:1.6.0
+  jetbrains_annotations: org.realityforge.org.jetbrains.annotations:org.jetbrains.annotations:jar:1.7.0
 
   testng: org.testng:testng:jar:6.11
 
