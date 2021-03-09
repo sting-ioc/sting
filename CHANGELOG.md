@@ -2,6 +2,7 @@
 
 ### Unreleased
 
+* Upgrade the `au.com.stocksoftware.idea.codestyle` artifact to version `1.17`.
 * Upgrade the `org.realityforge.org.jetbrains.annotations` artifact to version `1.7.0`.
 * Upgrade the `javax` artifact to version `8.0`.
 * Upgrade the `com.squareup` artifact to version `1.13.0`.
