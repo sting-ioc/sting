@@ -7,8 +7,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Objects;
 import javax.annotation.Nonnull;
-import static org.testng.Assert.*;
 
 final class TestUtil
 {
@@ -47,7 +47,7 @@ final class TestUtil
   static Path getWorkingDirectory()
   {
     final String outputDirectoryName = System.getProperty( "sting.perf.working_directory" );
-    assertNotNull( outputDirectoryName );
+    Objects.requireNonNull( outputDirectoryName );
     return Paths.get( outputDirectoryName ).toAbsolutePath();
   }
 }

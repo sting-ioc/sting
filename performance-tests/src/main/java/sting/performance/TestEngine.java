@@ -21,7 +21,6 @@ import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.ToolProvider;
-import static org.testng.Assert.*;
 
 final class TestEngine
 {
@@ -58,7 +57,7 @@ final class TestEngine
     System.gc();
     if ( !succeeded )
     {
-      fail( describeFailureDiagnostics( diagnostics ) );
+      throw new AssertionError( describeFailureDiagnostics( diagnostics ) );
     }
 
     return duration;

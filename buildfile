@@ -140,48 +140,45 @@ define 'sting' do
 
   desc 'Performance Tests'
   define 'performance-tests' do
-    test.using :testng
-    test.options[:properties] = { 'sting.perf.working_directory' => _('generated/perf/test/java').to_s }
-    test.options[:java_args] = %w(-ea)
-    test.compile.with :gir,
-                      :compile_testing,
-                      Java.tools_jar,
+    compile.with :gir,
+                 :compile_testing,
+                 Buildr::Util.tools_jar,
 
-                      # Code for the Application to compile against
-                      Buildr::GWT.dependencies(project.gwt_detect_version(Buildr.artifacts(:gwt_user))),
-                      :jsinterop_base,
-                      :elemental2_core,
-                      :elemental2_dom,
-                      :elemental2_promise,
+                 # Code for the Application to compile against
+                 Buildr::GWT.dependencies(project.gwt_detect_version(Buildr.artifacts(:gwt_user))),
+                 :jsinterop_base,
+                 :elemental2_core,
+                 :elemental2_dom,
+                 :elemental2_promise,
 
-                      # Sting deps follow
-                      project('core').package(:jar),
-                      project('core').compile.dependencies,
-                      project('processor').package(:jar),
-                      project('processor').compile.dependencies,
-                      :braincheck,
+                 # Sting deps follow
+                 project('core').package(:jar),
+                 project('core').compile.dependencies,
+                 project('processor').package(:jar),
+                 project('processor').compile.dependencies,
+                 :braincheck,
 
-                      # Dagger deps follow
-                      :javax_inject,
-                      :javax_inject_sources,
-                      :dagger_core,
-                      :dagger_core_sources,
-                      :dagger_gwt,
-                      :dagger_producers,
-                      :dagger_spi,
-                      :dagger_compiler,
-                      :autocommon,
-                      :guava,
-                      :guava_failureaccess,
-                      :kotlinx_metadata_jvm,
-                      :kotlin_stdlib,
-                      :kotlin_stdlib_common,
-                      :googlejavaformat,
-                      :errorprone
+                 # Dagger deps follow
+                 :javax_inject,
+                 :javax_inject_sources,
+                 :dagger_core,
+                 :dagger_core_sources,
+                 :dagger_gwt,
+                 :dagger_producers,
+                 :dagger_spi,
+                 :dagger_compiler,
+                 :autocommon,
+                 :guava,
+                 :guava_failureaccess,
+                 :kotlinx_metadata_jvm,
+                 :kotlin_stdlib,
+                 :kotlin_stdlib_common,
+                 :googlejavaformat,
+                 :errorprone
 
     task 'generate_build_time_statistics' do
-      project.test.compile.invoke
-      cp = project.test.compile.dependencies.map(&:to_s) + [project.test.compile.target.to_s]
+      project.compile.invoke
+      cp = project.compile.dependencies.map(&:to_s) + [project.compile.target.to_s]
 
       BUILD_TIME_VARIANTS.each do |variant|
 
@@ -196,8 +193,8 @@ define 'sting' do
     end
 
     task 'generate_size_statistics' do
-      project.test.compile.invoke
-      cp = project.test.compile.dependencies.map(&:to_s) + [project.test.compile.target.to_s]
+      project.compile.invoke
+      cp = project.compile.dependencies.map(&:to_s) + [project.compile.target.to_s]
 
       CODE_SIZE_VARIANTS.each do |variant|
         properties = {
