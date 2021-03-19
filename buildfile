@@ -72,7 +72,7 @@ define 'sting' do
         shaded_jar = (f.to_s + '-shaded')
         a = artifact('org.realityforge.shade:shade-cli:jar:1.0.0')
         a.invoke
-        sh "#{Java::Commands.path_to_bin('java')} -jar #{a} --input #{f} --output #{shaded_jar} -rcom.squareup.javapoet=galdr.processor.vendor.javapoet -rorg.realityforge.proton=galdr.processor.vendor.proton"
+        sh "#{Java::Commands.path_to_bin('java')} -jar #{a} --input #{f} --output #{shaded_jar} -rcom.squareup.javapoet=sting.processor.vendor.javapoet -rorg.realityforge.proton=sting.processor.vendor.proton"
         FileUtils.mv shaded_jar, f.to_s
       end
     end
