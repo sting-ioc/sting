@@ -121,13 +121,12 @@ define 'sting' do
 
   desc 'Integration Tests'
   define 'integration-tests' do
-    project.enable_annotation_processor = true
-    project.processorpath << [project('processor').package(:jar), project('processor').compile.dependencies]
     test.using :testng
     test.options[:java_args] = ['-ea']
     test.compile.with project('core').package(:jar),
                       project('core').compile.dependencies
 
+    test.compile.options[:processor_path] << [project('processor').package(:jar), project('processor').compile.dependencies]
     # The generators are configured to generate to here.
     iml.test_source_directories << _('generated/processors/test/java')
   end
@@ -282,12 +281,9 @@ define 'sting' do
 
   desc 'Sting Examples used in documentation'
   define 'doc-examples' do
-    project.enable_annotation_processor = true
-
-    compile.with project('processor').package(:jar),
-                 project('processor').compile.dependencies,
-                 project('core').package(:jar),
+    compile.with project('core').package(:jar),
                  project('core').compile.dependencies
+    compile.options[:processor_path] << [project('processor').package(:jar), project('processor').compile.dependencies]
 
     project.jacoco.enabled = false
   end
@@ -316,48 +312,7 @@ define 'sting' do
                                :jvm_args => '-ea -Dsting.output_fixture_data=true')
 
   ipr.add_component_from_artifact(:idea_codestyle)
-
-  ipr.add_component('CompilerConfiguration') do |component|
-    component.annotationProcessing do |xml|
-      xml.profile(:default => true, :name => 'Default', :enabled => true) do
-        xml.sourceOutputDir :name => 'generated/processors/main/java'
-        xml.sourceTestOutputDir :name => 'generated/processors/test/java'
-        xml.outputRelativeToContentRoot :value => true
-      end
-    end
-  end
-
-  ipr.add_component('JavacSettings') do |xml|
-    xml.option(:name => 'ADDITIONAL_OPTIONS_STRING', :value => '-Xlint:all,-processing,-serial -Werror')
-  end
-
-  ipr.add_component('JavaProjectCodeInsightSettings') do |xml|
-    xml.tag!('excluded-names') do
-      xml << '<name>com.sun.istack.internal.NotNull</name>'
-      xml << '<name>com.sun.istack.internal.Nullable</name>'
-      xml << '<name>org.jetbrains.annotations.Nullable</name>'
-      xml << '<name>org.jetbrains.annotations.NotNull</name>'
-      xml << '<name>org.testng.AssertJUnit</name>'
-    end
-  end
-  ipr.add_component('NullableNotNullManager') do |component|
-    component.option :name => 'myDefaultNullable', :value => 'javax.annotation.Nullable'
-    component.option :name => 'myDefaultNotNull', :value => 'javax.annotation.Nonnull'
-    component.option :name => 'myNullables' do |option|
-      option.value do |value|
-        value.list :size => '2' do |list|
-          list.item :index => '0', :class => 'java.lang.String', :itemvalue => 'org.jetbrains.annotations.Nullable'
-          list.item :index => '1', :class => 'java.lang.String', :itemvalue => 'javax.annotation.Nullable'
-        end
-      end
-    end
-    component.option :name => 'myNotNulls' do |option|
-      option.value do |value|
-        value.list :size => '2' do |list|
-          list.item :index => '0', :class => 'java.lang.String', :itemvalue => 'org.jetbrains.annotations.NotNull'
-          list.item :index => '1', :class => 'java.lang.String', :itemvalue => 'javax.annotation.Nonnull'
-        end
-      end
-    end
-  end
+  ipr.add_code_insight_settings
+  ipr.add_nullable_manager
+  ipr.add_javac_settings('-Xlint:all,-processing,-serial -Werror')
 end
