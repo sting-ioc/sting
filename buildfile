@@ -6,6 +6,8 @@ require 'buildr/gwt'
 require 'buildr/jacoco'
 require 'buildr/shade'
 
+Buildr::MavenCentral.define_publish_tasks(:profile_name => 'org.realityforge', :username => 'realityforge')
+
 desc 'sting: A fast, easy to use, compile-time dependency injection toolkit'
 define 'sting' do
   project.group = 'org.realityforge.sting'
