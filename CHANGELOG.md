@@ -6,6 +6,7 @@
 * Upgrade the `org.realityforge.org.jetbrains.annotations` artifact to version `1.7.0`.
 * Upgrade the `javax` artifact to version `8.0`.
 * Upgrade the `com.squareup` artifact to version `1.13.0`.
+* Migrate from using Elemental2 to Akasha when interacting with the Browser API.
 
 ### [v0.16](https://github.com/sting-ioc/sting/tree/v0.16) (2020-06-07) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.15...v0.16)
 

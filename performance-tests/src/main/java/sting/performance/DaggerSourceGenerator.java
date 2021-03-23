@@ -8,7 +8,6 @@ import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
 import dagger.Component;
-import elemental2.dom.DomGlobal;
 import gir.io.FileUtil;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -65,7 +64,7 @@ final class DaggerSourceGenerator
             constructor.addParameter( ParameterSpec.builder( inputType, name, Modifier.FINAL ).build() );
             constructor.addStatement( "this.$N = $N", name, name );
             compute.addStatement( "$N.compute()", name );
-            compute.addStatement( "$T.console.log( $N.hashCode() )", DomGlobal.class, name );
+            compute.addStatement( "$T.log( $N.hashCode() )", ClassName.get( "akasha", "Console" ), name );
           }
           currentInputNode = ( currentInputNode + inputsPerNode ) % nodesPerLayer;
         }
@@ -167,7 +166,7 @@ final class DaggerSourceGenerator
     final String moduleXml =
       "<module>\n" +
       "  <inherits name='com.google.gwt.core.Core'/>\n" +
-      "  <inherits name='elemental2.dom.Dom'/>\n" +
+      "  <inherits name='akasha.Akasha'/>\n" +
       "  <inherits name='dagger.Dagger'/>\n" +
       "\n" +
       "  <set-property name='jre.checks.checkLevel' value='MINIMAL'/>\n" +

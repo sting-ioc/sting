@@ -143,9 +143,7 @@ define 'sting' do
                  # Code for the Application to compile against
                  Buildr::GWT.dependencies(project.gwt_detect_version(Buildr.artifacts(:gwt_user))),
                  :jsinterop_base,
-                 :elemental2_core,
-                 :elemental2_dom,
-                 :elemental2_promise,
+                 :akasha,
 
                  # Sting deps follow
                  project('core').package(:jar),

@@ -7,7 +7,6 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
-import elemental2.dom.DomGlobal;
 import gir.io.FileUtil;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -70,7 +69,7 @@ final class StingSourceGenerator
             constructor.addParameter( ParameterSpec.builder( inputType, name, Modifier.FINAL ).build() );
             constructor.addStatement( "this.$N = $N", name, name );
             compute.addStatement( "$N.compute()", name );
-            compute.addStatement( "$T.console.log( $N.hashCode() )", DomGlobal.class, name );
+            compute.addStatement( "$T.log( $N.hashCode() )", ClassName.get( "akasha", "Console" ), name );
           }
           type.addMethod( constructor.build() );
           currentInputNode = ( currentInputNode + inputsPerNode ) % nodesPerLayer;
@@ -141,7 +140,7 @@ final class StingSourceGenerator
     final String moduleXml =
       "<module>\n" +
       "  <inherits name='com.google.gwt.core.Core'/>\n" +
-      "  <inherits name='elemental2.dom.Dom'/>\n" +
+      "  <inherits name='akasha.Akasha'/>\n" +
       "  <inherits name='sting.Sting'/>\n" +
       "  <inherits name='org.realityforge.braincheck.BrainCheck'/>\n" +
       "\n" +
