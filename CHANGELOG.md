@@ -1,6 +1,8 @@
 # Change Log
 
-### Unreleased
+### [v0.17](https://github.com/sting-ioc/sting/tree/v0.17) (2021-03-24) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.16...v0.17)
+
+Changes in this release:
 
 * Upgrade the `au.com.stocksoftware.idea.codestyle` artifact to version `1.17`.
 * Upgrade the `org.realityforge.org.jetbrains.annotations` artifact to version `1.7.0`.
