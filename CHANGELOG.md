@@ -2,6 +2,7 @@
 
 ### Unreleased
 
+* Upgrade the `org.realityforge.braincheck` artifact to version `1.30.0`.
 * Upgrade the `org.realityforge.akasha` artifact to version `0.05`.
 
 ### [v0.17](https://github.com/sting-ioc/sting/tree/v0.17) (2021-03-24) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.16...v0.17)
