@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Upgrade the `org.realityforge.akasha` artifact to version `0.06`.
+
 ### [v0.18](https://github.com/sting-ioc/sting/tree/v0.18) (2021-04-09) · [Full Changelog](https://github.com/spritz/spritz/compare/v0.17...v0.18)
 
 Changes in this release:
