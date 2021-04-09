@@ -91,37 +91,6 @@ define 'sting' do
     iml.test_source_directories << _('src/test/fixtures/bad_input')
   end
 
-  desc 'Track API Changes'
-  define 'api-test' do
-    test.compile.with :javax_annotation,
-                      :javax_json,
-                      :gir
-
-    test.options[:properties] =
-      {
-        'sting.api_test.store_api_diff' => ENV['STORE_API_DIFF'] == 'true',
-        'sting.prev.version' => ENV['PREVIOUS_PRODUCT_VERSION'],
-        'sting.prev.jar' => artifact("org.realityforge.sting:sting-core:jar:#{ENV['PREVIOUS_PRODUCT_VERSION'] || project.version}").to_s,
-        'sting.next.version' => ENV['PRODUCT_VERSION'],
-        'sting.next.jar' => project('core').package(:jar).to_s,
-        'sting.api_test.fixture_dir' => _('src/test/resources/fixtures').to_s,
-        'sting.revapi.jar' => artifact(:revapi_diff).to_s
-      }
-    test.options[:java_args] = ['-ea']
-    test.using :testng
-
-    test.compile.enhance do
-      mkdir_p _('src/test/resources/fixtures')
-      artifact("org.realityforge.sting:sting-core:jar:#{ENV['PREVIOUS_PRODUCT_VERSION']}").invoke
-      project('core').package(:jar).invoke
-      artifact(:revapi_diff).invoke
-    end unless ENV['TEST'] == 'no' || ENV['PRODUCT_VERSION'].nil? || ENV['PREVIOUS_PRODUCT_VERSION'].nil? || ENV['PREVIOUS_PRODUCT_VERSION'] == '0.00'
-
-    test.exclude '*ApiDiffTest' if ENV['PRODUCT_VERSION'].nil? || ENV['PREVIOUS_PRODUCT_VERSION'].nil? || ENV['PREVIOUS_PRODUCT_VERSION'] == '0.00'
-
-    project.jacoco.enabled = false
-  end
-
   desc 'Integration Tests'
   define 'integration-tests' do
     test.using :testng
