@@ -27,7 +27,6 @@ Buildr::ReleaseTool.define_release_task do |t|
   t.patch_changelog('sting-ioc/sting',
                     :api_diff_directory => "#{WORKSPACE_DIR}/api-test",
                     :api_diff_website => 'https://sting-ioc.github.io/api-diff?key=sting&')
-  t.patch_maven_version_in_readme
   t.stage('PatchWebsite', 'Update the version on the website') do
     setup_filename = 'docs/project_setup.md'
     IO.write(setup_filename, IO.read(setup_filename).
