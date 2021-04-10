@@ -48,7 +48,7 @@ artifacts:
 
   # Sting dep. Not directly required but it introduces a super-source of j.u.Objects
   # that strips requireNonNull in production code
-  braincheck: org.realityforge.braincheck:braincheck-core:jar:1.30.0
+  braincheck: org.realityforge.braincheck:braincheck-core:jar:1.31.0
   braincheck_jre: org.realityforge.braincheck:braincheck-jre:jar:1.30.0
 
   # Dagger deps
