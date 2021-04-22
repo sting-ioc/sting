@@ -1,6 +1,8 @@
 # Change Log
 
-### Unreleased
+### [v0.19](https://github.com/sting-ioc/sting/tree/v0.19) (2021-04-22) · [Full Changelog](https://github.com/spritz/spritz/compare/v0.18...v0.19)
+
+Changes in this release:
 
 * Upgrade the `org.realityforge.braincheck` artifacts to version `1.31.0`.
 * Upgrade the `org.realityforge.akasha` artifact to version `0.10`.
