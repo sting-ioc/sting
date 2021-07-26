@@ -1,6 +1,8 @@
 # Change Log
 
-### Unreleased
+### [v0.20](https://github.com/sting-ioc/sting/tree/v0.20) (2021-07-27) · [Full Changelog](https://github.com/spritz/spritz/compare/v0.19...v0.20)
+
+Changes in this release:
 
 * Upgrade the `org.realityforge.akasha` artifacts to version `0.15`.
 
