@@ -64,7 +64,7 @@ public final class CollectBuildStats
       if ( isMaven )
       {
         Maven.patchPomProperty( context.appDirectory,
-                                () -> "Update the 'sting' dependencies to version '" + version + "'",
+                                () -> "Update the `sting` artifacts to version `" + version + "`",
                                 "sting.version",
                                 version );
       }
