@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Update the `org.realityforge.gir` artifact to version `0.12`.
+
 ### [v0.20](https://github.com/sting-ioc/sting/tree/v0.20) (2021-07-27) · [Full Changelog](https://github.com/spritz/spritz/compare/v0.19...v0.20)
 
 Changes in this release:
