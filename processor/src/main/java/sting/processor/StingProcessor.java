@@ -1023,7 +1023,6 @@ public final class StingProcessor
   }
 
   private void processInjectorFragment( @Nonnull final TypeElement element )
-    throws Exception
   {
     debug( () -> "Processing Injector Fragment: " + element );
     final ElementKind kind = element.getKind();
