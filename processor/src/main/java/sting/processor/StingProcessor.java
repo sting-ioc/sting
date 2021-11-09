@@ -2246,8 +2246,7 @@ public final class StingProcessor
     _registry.registerInjectable( injectable );
   }
 
-  private void writeBinaryDescriptor( @Nonnull final TypeElement element,
-                                      @Nonnull final Object descriptor )
+  private void writeBinaryDescriptor( @Nonnull final TypeElement element, @Nonnull final Object descriptor )
     throws IOException
   {
     final String[] nameParts = extractNameParts( element );
