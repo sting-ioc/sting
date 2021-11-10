@@ -161,6 +161,7 @@ public final class StingProcessor
   @Override
   public boolean process( @Nonnull final Set<? extends TypeElement> annotations, @Nonnull final RoundEnvironment env )
   {
+    debugAnnotationProcessingRootElements( env );
     // Reset modified flag for auto-fragment so we can determine
     // whether we should generate fragment this round
     _registry.getAutoFragments().forEach( AutoFragmentDescriptor::resetModified );
@@ -2249,6 +2250,8 @@ public final class StingProcessor
   private void writeBinaryDescriptor( @Nonnull final TypeElement element, @Nonnull final Object descriptor )
     throws IOException
   {
+    debug( () -> "Emitting binary descriptor for " + element.getQualifiedName() );
+
     final String[] nameParts = extractNameParts( element );
 
     // Write out the descriptor
