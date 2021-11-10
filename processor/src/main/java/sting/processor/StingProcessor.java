@@ -162,6 +162,7 @@ public final class StingProcessor
   public boolean process( @Nonnull final Set<? extends TypeElement> annotations, @Nonnull final RoundEnvironment env )
   {
     debugAnnotationProcessingRootElements( env );
+    collectRootTypeNames( env );
     // Reset modified flag for auto-fragment so we can determine
     // whether we should generate fragment this round
     _registry.getAutoFragments().forEach( AutoFragmentDescriptor::resetModified );
@@ -222,6 +223,7 @@ public final class StingProcessor
     {
       _registry.clear();
     }
+    clearRootTypeNamesIfProcessingOver( env );
     return true;
   }
 

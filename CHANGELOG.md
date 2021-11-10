@@ -4,6 +4,7 @@
 
 * Update the `org.realityforge.akasha` artifacts to version `0.29`.
 * Update the `org.realityforge.gir` artifact to version `0.12`.
+* Upgrade the `org.realityforge.proton` artifacts to version `0.52`. This fixes a crash that occurs with concurrent, incremental builds within the IntelliJ IDE. (This is the crash reported with message `javax.annotation.processing.FilerException: Attempt to recreate a file for type ...`).
 
 ### [v0.20](https://github.com/sting-ioc/sting/tree/v0.20) (2021-07-27) · [Full Changelog](https://github.com/spritz/spritz/compare/v0.19...v0.20)
 
