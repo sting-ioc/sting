@@ -95,15 +95,11 @@ define 'sting' do
   define 'integration-tests' do
     test.using :testng
     test.options[:java_args] = ['-ea']
+    test.compile.options[:processor] = true
     test.compile.with project('core').package(:jar),
                       project('core').compile.dependencies,
                       project('processor').package(:jar),
                       project('processor').compile.dependencies
-
-    compile.options[:processor] = true
-
-    # The generators are configured to generate to here.
-    iml.test_source_directories << _('generated/processors/test/java')
   end
 
   desc 'Performance Tests'
