@@ -63,6 +63,6 @@ final class ServiceSpec
   @Override
   public String toString()
   {
-    return _coordinate.toString() + ( _optional ? "?" : "" );
+    return _coordinate + ( _optional ? "?" : "" );
   }
 }
