@@ -1,5 +1,7 @@
 # Change Log
 
+### Unreleased
+
 ### [v0.22](https://github.com/sting-ioc/sting/tree/v0.22) (2021-11-26) · [Full Changelog](https://github.com/spritz/spritz/compare/v0.21...v0.22)
 
 Changes in this release:
