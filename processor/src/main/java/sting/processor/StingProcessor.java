@@ -340,41 +340,38 @@ public final class StingProcessor
   {
     for ( final AutoFragmentDescriptor autoFragment : new ArrayList<>( _registry.getAutoFragments() ) )
     {
-        if ( !autoFragment.isFragmentGenerated() )
-        {
-          if ( !autoFragment.isModified() && !autoFragment.getContributors().isEmpty() )
-          {
-            autoFragment.markFragmentGenerated();
-
-            final boolean autoDiscoverableContributors =
-              autoFragment
-                .getContributors()
-                .stream()
-                .map( ContributorDescriptor::getElement )
-                .map( c -> _registry.findInjectableByClassName( c.getQualifiedName().toString() ) )
-                .filter( Objects::nonNull )
-                .anyMatch( c -> !c.getBinding().isEager() && c.isAutoDiscoverable() );
-            if ( autoDiscoverableContributors )
-            {
-              autoFragment.markAsAutoDiscoverableContributors();
-            }
+      if ( autoFragment.isModified() || autoFragment.getContributors().isEmpty() )
+      {
+        debug( () -> "Defer generation for the auto-fragment " +
+                     autoFragment.getElement().getQualifiedName() +
+                     " as it " +
+                     ( autoFragment.isModified() ?
+                       "has been modified in the current round" :
+                       "has zero contributors" ) );
+      }
+      else if ( !autoFragment.isFragmentGenerated() )
+      {
         performAction( env, "Generate AutoFragment Impl", e -> {
+          autoFragment.markFragmentGenerated();
 
-            debug( () -> "Emitting AutoFragment implementation for " + autoFragment.getElement().getQualifiedName() );
-            final String packageName = GeneratorUtil.getQualifiedPackageName( autoFragment.getElement() );
-            emitTypeSpec( packageName, AutoFragmentGenerator.buildType( processingEnv, autoFragment ) );
-          }
-          else
+          final boolean autoDiscoverableContributors =
+            autoFragment
+              .getContributors()
+              .stream()
+              .map( ContributorDescriptor::getElement )
+              .map( c -> _registry.findInjectableByClassName( c.getQualifiedName().toString() ) )
+              .filter( Objects::nonNull )
+              .anyMatch( c -> !c.getBinding().isEager() && c.isAutoDiscoverable() );
+          if ( autoDiscoverableContributors )
           {
-            debug( () -> "Defer generation for the auto-fragment " +
-                         autoFragment.getElement().getQualifiedName() +
-                         " as it " +
-                         ( autoFragment.isModified() ?
-                           "has been modified in the current round" :
-                           "has zero contributors" ) );
+            autoFragment.markAsAutoDiscoverableContributors();
           }
-        }
-      }, autoFragment.getElement() );
+
+          debug( () -> "Emitting AutoFragment implementation for " + autoFragment.getElement().getQualifiedName() );
+          final String packageName = GeneratorUtil.getQualifiedPackageName( autoFragment.getElement() );
+          emitTypeSpec( packageName, AutoFragmentGenerator.buildType( processingEnv, autoFragment ) );
+        }, autoFragment.getElement() );
+      }
     }
   }
 
@@ -382,15 +379,15 @@ public final class StingProcessor
   {
     for ( final InjectableDescriptor injectable : new ArrayList<>( _registry.getInjectables() ) )
     {
-        if ( !injectable.isJavaStubGenerated() )
-        {
+      if ( !injectable.isJavaStubGenerated() )
+      {
         performAction( env, "Generate Injectable Stub", e -> {
           injectable.markJavaStubAsGenerated();
           writeBinaryDescriptor( injectable.getElement(), injectable );
           emitInjectableJsonDescriptor( injectable );
           emitInjectableStub( injectable );
-        }
-      }, injectable.getElement() );
+        }, injectable.getElement() );
+      }
     }
   }
 
@@ -412,8 +409,8 @@ public final class StingProcessor
     {
       for ( final FragmentDescriptor fragment : current )
       {
-          if ( !fragment.isJavaStubGenerated() && !fragment.containsError() )
-          {
+        if ( !fragment.isJavaStubGenerated() && !fragment.containsError() )
+        {
           performAction( env, "Generate Fragment Stub", e -> {
             final ResolveType resolveType = isFragmentResolved( env, fragment );
             if ( ResolveType.RESOLVED == resolveType )
@@ -435,8 +432,8 @@ public final class StingProcessor
               debug( () -> "Defer generation for the fragment " + fragment.getElement().getQualifiedName() +
                            " as it is not yet resolved" );
             }
-          }
-        }, fragment.getElement() );
+          }, fragment.getElement() );
+        }
       }
       current.clear();
       if ( resolvedType.get() )
@@ -483,8 +480,8 @@ public final class StingProcessor
     {
       for ( final InjectorDescriptor injector : current )
       {
-          if ( !injector.containsError() )
-          {
+        if ( !injector.containsError() )
+        {
           performAction( env, "Generate Injector Impl", e -> {
             final ResolveType resolveType = isInjectorResolved( env, injector );
             if ( ResolveType.RESOLVED == resolveType )
@@ -505,8 +502,8 @@ public final class StingProcessor
               debug( () -> "Defer generation for the injector " + injector.getElement().getQualifiedName() +
                            " as it is not yet resolved" );
             }
-          }
-        }, injector.getElement() );
+          }, injector.getElement() );
+        }
       }
       current.clear();
       if ( resolvedType.get() )
