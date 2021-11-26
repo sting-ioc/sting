@@ -356,6 +356,7 @@ public final class StingProcessor
               autoFragment.markAsAutoDiscoverableContributors();
             }
 
+            debug( () -> "Emitting AutoFragment implementation for " + autoFragment.getElement().getQualifiedName() );
             final String packageName = GeneratorUtil.getQualifiedPackageName( autoFragment.getElement() );
             emitTypeSpec( packageName, AutoFragmentGenerator.buildType( processingEnv, autoFragment ) );
           }
@@ -392,6 +393,7 @@ public final class StingProcessor
   private void emitInjectableStub( @Nonnull final InjectableDescriptor injectable )
     throws IOException
   {
+    debug( () -> "Emitting injectable stub for the injectable " + injectable.getElement().getQualifiedName() );
     final String packageName = GeneratorUtil.getQualifiedPackageName( injectable.getElement() );
     emitTypeSpec( packageName, InjectableGenerator.buildType( processingEnv, injectable ) );
   }
@@ -462,6 +464,7 @@ public final class StingProcessor
   private void emitFragmentStub( @Nonnull final FragmentDescriptor fragment )
     throws IOException
   {
+    debug( () -> "Emitting fragment stub for the fragment " + fragment.getElement().getQualifiedName() );
     final String packageName = GeneratorUtil.getQualifiedPackageName( fragment.getElement() );
     emitTypeSpec( packageName, FragmentGenerator.buildType( processingEnv, fragment ) );
   }
@@ -2459,6 +2462,7 @@ public final class StingProcessor
                                  @Nonnull final String classname,
                                  @Nonnull final byte[] data )
   {
+    debug( () -> "Loading binary descriptor for " + classname );
     try
     {
       return _descriptorIO.read( new DataInputStream( new ByteArrayInputStream( data ) ), classname );

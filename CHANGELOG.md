@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Add some additional debug logging to `StingProcessor` to make it easy to debug behaviour in downstream projects.
+
 ### [v0.21](https://github.com/sting-ioc/sting/tree/v0.21) (2021-11-10) · [Full Changelog](https://github.com/spritz/spritz/compare/v0.20...v0.21)
 
 Changes in this release:
