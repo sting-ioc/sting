@@ -183,12 +183,14 @@ public final class StingProcessor
 
     processContributeTos( annotations, env );
 
-    annotations.stream()
+    annotations
+      .stream()
       .filter( a -> a.getQualifiedName().toString().equals( Constants.NAMED_CLASSNAME ) )
       .findAny()
       .ifPresent( a -> verifyNamedElements( env, env.getElementsAnnotatedWith( a ) ) );
 
-    annotations.stream()
+    annotations
+      .stream()
       .filter( a -> a.getQualifiedName().toString().equals( Constants.TYPED_CLASSNAME ) )
       .findAny()
       .ifPresent( a -> verifyTypedElements( env, env.getElementsAnnotatedWith( a ) ) );
@@ -337,17 +339,18 @@ public final class StingProcessor
       performAction( env, e -> {
         if ( !autoFragment.isFragmentGenerated() )
         {
-          if ( !autoFragment.isModified() &&
-               !autoFragment.getContributors().isEmpty() )
+          if ( !autoFragment.isModified() && !autoFragment.getContributors().isEmpty() )
           {
             autoFragment.markFragmentGenerated();
 
-            final boolean autoDiscoverableContributors = autoFragment.getContributors()
-              .stream()
-              .map( ContributorDescriptor::getElement )
-              .map( c -> _registry.findInjectableByClassName( c.getQualifiedName().toString() ) )
-              .filter( Objects::nonNull )
-              .anyMatch( c -> !c.getBinding().isEager() && c.isAutoDiscoverable() );
+            final boolean autoDiscoverableContributors =
+              autoFragment
+                .getContributors()
+                .stream()
+                .map( ContributorDescriptor::getElement )
+                .map( c -> _registry.findInjectableByClassName( c.getQualifiedName().toString() ) )
+                .filter( Objects::nonNull )
+                .anyMatch( c -> !c.getBinding().isEager() && c.isAutoDiscoverable() );
             if ( autoDiscoverableContributors )
             {
               autoFragment.markAsAutoDiscoverableContributors();
