@@ -173,12 +173,14 @@ public final class StingProcessor
                          env,
                          Constants.INJECTABLE_CLASSNAME,
                          _deferredInjectableTypes,
+                         "Analyze Injectable",
                          this::processInjectable );
 
     processTypeElements( annotations,
                          env,
                          Constants.FRAGMENT_CLASSNAME,
                          _deferredFragmentTypes,
+                         "Analyze Fragment",
                          this::processFragment );
 
     processContributeTos( annotations, env );
@@ -204,12 +206,14 @@ public final class StingProcessor
                          env,
                          Constants.INJECTOR_FRAGMENT_CLASSNAME,
                          _deferredInjectorFragmentTypes,
+                         "Analyze Injector Fragment",
                          this::processInjectorFragment );
 
     processTypeElements( annotations,
                          env,
                          Constants.INJECTOR_CLASSNAME,
                          _deferredInjectorTypes,
+                         "Analyze Injector",
                          this::processInjector );
 
     processUnmodifiedAutoFragment( env );
@@ -236,7 +240,7 @@ public final class StingProcessor
       getNewTypeElementsToProcess( annotations, env, Constants.AUTO_FRAGMENT_CLASSNAME );
     for ( final TypeElement element : autoFragments )
     {
-      performAction( env, this::processAutoFragment, element );
+      performAction( env, "Analyze Auto-Fragment", this::processAutoFragment, element );
     }
   }
 
@@ -247,7 +251,7 @@ public final class StingProcessor
       getNewTypeElementsToProcess( annotations, env, Constants.CONTRIBUTE_TO_CLASSNAME );
     for ( final TypeElement element : contributeTos )
     {
-      performAction( env, this::processContributeTo, element );
+      performAction( env, "Analyze ContributeTo", this::processContributeTo, element );
     }
   }
 
@@ -336,7 +340,6 @@ public final class StingProcessor
   {
     for ( final AutoFragmentDescriptor autoFragment : new ArrayList<>( _registry.getAutoFragments() ) )
     {
-      performAction( env, e -> {
         if ( !autoFragment.isFragmentGenerated() )
         {
           if ( !autoFragment.isModified() && !autoFragment.getContributors().isEmpty() )
@@ -355,6 +358,7 @@ public final class StingProcessor
             {
               autoFragment.markAsAutoDiscoverableContributors();
             }
+        performAction( env, "Generate AutoFragment Impl", e -> {
 
             debug( () -> "Emitting AutoFragment implementation for " + autoFragment.getElement().getQualifiedName() );
             final String packageName = GeneratorUtil.getQualifiedPackageName( autoFragment.getElement() );
@@ -378,9 +382,9 @@ public final class StingProcessor
   {
     for ( final InjectableDescriptor injectable : new ArrayList<>( _registry.getInjectables() ) )
     {
-      performAction( env, e -> {
         if ( !injectable.isJavaStubGenerated() )
         {
+        performAction( env, "Generate Injectable Stub", e -> {
           injectable.markJavaStubAsGenerated();
           writeBinaryDescriptor( injectable.getElement(), injectable );
           emitInjectableJsonDescriptor( injectable );
@@ -408,9 +412,9 @@ public final class StingProcessor
     {
       for ( final FragmentDescriptor fragment : current )
       {
-        performAction( env, e -> {
           if ( !fragment.isJavaStubGenerated() && !fragment.containsError() )
           {
+          performAction( env, "Generate Fragment Stub", e -> {
             final ResolveType resolveType = isFragmentResolved( env, fragment );
             if ( ResolveType.RESOLVED == resolveType )
             {
@@ -479,9 +483,9 @@ public final class StingProcessor
     {
       for ( final InjectorDescriptor injector : current )
       {
-        performAction( env, e -> {
           if ( !injector.containsError() )
           {
+          performAction( env, "Generate Injector Impl", e -> {
             final ResolveType resolveType = isInjectorResolved( env, injector );
             if ( ResolveType.RESOLVED == resolveType )
             {
