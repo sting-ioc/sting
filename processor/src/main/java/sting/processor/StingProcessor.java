@@ -135,6 +135,10 @@ public final class StingProcessor
   private final StopWatch _generateFragmentStubStopWatch = new StopWatch( "Generate Fragment Stub" );
   @Nonnull
   private final StopWatch _generateInjectorImplStopWatch = new StopWatch( "Generate Injector Impl" );
+  @Nonnull
+  private final StopWatch _isInjectorResolvedStopWatch = new StopWatch( "Is Injector Resolved" );
+  @Nonnull
+  private final StopWatch _buildAndEmitObjectGraphStopWatch = new StopWatch( "Build and Emit Object Graph" );
   /**
    * Flag controlling whether json descriptors are emitted.
    * Json descriptors are primarily used during debugging and probably should not be enabled in production code.
@@ -193,6 +197,8 @@ public final class StingProcessor
     stopWatches.add( _generateInjectableStubStopWatch );
     stopWatches.add( _generateFragmentStubStopWatch );
     stopWatches.add( _generateInjectorImplStopWatch );
+    stopWatches.add( _isInjectorResolvedStopWatch );
+    stopWatches.add( _buildAndEmitObjectGraphStopWatch );
   }
 
   @Override
@@ -514,6 +520,8 @@ public final class StingProcessor
 
   private void processResolvedInjectors( @Nonnull final RoundEnvironment env )
   {
+    final boolean profileEnabled = isProfileEnabled();
+
     final List<InjectorDescriptor> deferred = new ArrayList<>();
     final List<InjectorDescriptor> current = new ArrayList<>( _registry.getInjectors() );
     final AtomicBoolean resolvedType = new AtomicBoolean();
@@ -525,11 +533,33 @@ public final class StingProcessor
         if ( !injector.containsError() )
         {
           performAction( env, "Generate Injector Impl", e -> {
+            if ( profileEnabled )
+            {
+              _isInjectorResolvedStopWatch.start();
+            }
             final ResolveType resolveType = isInjectorResolved( env, injector );
+            if ( profileEnabled )
+            {
+              _isInjectorResolvedStopWatch.stop();
+            }
             if ( ResolveType.RESOLVED == resolveType )
             {
               _registry.deregisterInjector( injector );
-              buildAndEmitObjectGraph( injector );
+              if ( profileEnabled )
+              {
+                _buildAndEmitObjectGraphStopWatch.start();
+              }
+              try
+              {
+                buildAndEmitObjectGraph( injector );
+              }
+              finally
+              {
+                if ( profileEnabled )
+                {
+                  _buildAndEmitObjectGraphStopWatch.stop();
+                }
+              }
               resolvedType.set( true );
             }
             else if ( ResolveType.MAYBE_UNRESOLVED == resolveType )

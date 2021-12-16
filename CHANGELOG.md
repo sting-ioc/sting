@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Add some additional profiling around injector generation.
+
 ### [v0.23](https://github.com/sting-ioc/sting/tree/v0.23) (2021-12-16) · [Full Changelog](https://github.com/spritz/spritz/compare/v0.22...v0.23)
 
 Changes in this release:
