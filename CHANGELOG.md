@@ -1,6 +1,8 @@
 # Change Log
 
-### Unreleased
+### [v0.23](https://github.com/sting-ioc/sting/tree/v0.23) (2021-12-16) · [Full Changelog](https://github.com/spritz/spritz/compare/v0.22...v0.23)
+
+Changes in this release:
 
 * Upgrade the `org.realityforge.proton` artifacts to version `0.54`. This change adds basic profiling support that can be enabling by setting the annotation processor option `sting.profile` to `true`.
 
