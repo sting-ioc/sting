@@ -55,6 +55,7 @@ import org.realityforge.proton.JsonUtil;
 import org.realityforge.proton.MemberChecks;
 import org.realityforge.proton.ProcessorException;
 import org.realityforge.proton.ResourceUtil;
+import org.realityforge.proton.StopWatch;
 import org.realityforge.proton.SuperficialValidation;
 import org.realityforge.proton.TypesUtil;
 
@@ -75,6 +76,7 @@ import org.realityforge.proton.TypesUtil;
 @SupportedOptions( { "sting.defer.unresolved",
                      "sting.defer.errors",
                      "sting.debug",
+                     "sting.profile",
                      "sting.emit_json_descriptors",
                      "sting.emit_dot_reports",
                      "sting.verbose_out_of_round.errors",
@@ -113,6 +115,26 @@ public final class StingProcessor
   private final DeferredElementSet _deferredInjectorTypes = new DeferredElementSet();
   @Nonnull
   private final DeferredElementSet _deferredInjectorFragmentTypes = new DeferredElementSet();
+  @Nonnull
+  private final StopWatch _analyzeInjectableStopWatch = new StopWatch( "Analyze Injectable" );
+  @Nonnull
+  private final StopWatch _analyzeFragmentStopWatch = new StopWatch( "Analyze Fragment" );
+  @Nonnull
+  private final StopWatch _analyzeInjectorFragmentStopWatch = new StopWatch( "Analyze Injector Fragment" );
+  @Nonnull
+  private final StopWatch _analyzeInjectorStopWatch = new StopWatch( "Analyze Injector" );
+  @Nonnull
+  private final StopWatch _analyzeAutoFragmentStopWatch = new StopWatch( "Analyze Auto-Fragment" );
+  @Nonnull
+  private final StopWatch _analyzeContributeToStopWatch = new StopWatch( "Analyze ContributeTo" );
+  @Nonnull
+  private final StopWatch _generateAutoFragmentImplStopWatch = new StopWatch( "Generate AutoFragment Impl" );
+  @Nonnull
+  private final StopWatch _generateInjectableStubStopWatch = new StopWatch( "Generate Injectable Stub" );
+  @Nonnull
+  private final StopWatch _generateFragmentStubStopWatch = new StopWatch( "Generate Fragment Stub" );
+  @Nonnull
+  private final StopWatch _generateInjectorImplStopWatch = new StopWatch( "Generate Injector Impl" );
   /**
    * Flag controlling whether json descriptors are emitted.
    * Json descriptors are primarily used during debugging and probably should not be enabled in production code.
@@ -149,13 +171,28 @@ public final class StingProcessor
   }
 
   @Override
-  public synchronized void init( final ProcessingEnvironment processingEnv )
+  public synchronized void init( @Nonnull final ProcessingEnvironment processingEnv )
   {
     super.init( processingEnv );
     _descriptorIO = new DescriptorIO( processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
     _emitJsonDescriptors = readBooleanOption( "emit_json_descriptors", false );
     _emitDotReports = readBooleanOption( "emit_dot_reports", false );
     _verifyDescriptors = readBooleanOption( "verify_descriptors", false );
+  }
+
+  @Override
+  protected void collectStopWatches( @Nonnull final Collection<StopWatch> stopWatches )
+  {
+    stopWatches.add( _analyzeInjectableStopWatch );
+    stopWatches.add( _analyzeFragmentStopWatch );
+    stopWatches.add( _analyzeInjectorFragmentStopWatch );
+    stopWatches.add( _analyzeInjectorStopWatch );
+    stopWatches.add( _analyzeAutoFragmentStopWatch );
+    stopWatches.add( _analyzeContributeToStopWatch );
+    stopWatches.add( _generateAutoFragmentImplStopWatch );
+    stopWatches.add( _generateInjectableStubStopWatch );
+    stopWatches.add( _generateFragmentStubStopWatch );
+    stopWatches.add( _generateInjectorImplStopWatch );
   }
 
   @Override
@@ -174,14 +211,16 @@ public final class StingProcessor
                          Constants.INJECTABLE_CLASSNAME,
                          _deferredInjectableTypes,
                          "Analyze Injectable",
-                         this::processInjectable );
+                         this::processInjectable,
+                         _analyzeInjectableStopWatch );
 
     processTypeElements( annotations,
                          env,
                          Constants.FRAGMENT_CLASSNAME,
                          _deferredFragmentTypes,
                          "Analyze Fragment",
-                         this::processFragment );
+                         this::processFragment,
+                         _analyzeFragmentStopWatch );
 
     processContributeTos( annotations, env );
 
@@ -207,14 +246,16 @@ public final class StingProcessor
                          Constants.INJECTOR_FRAGMENT_CLASSNAME,
                          _deferredInjectorFragmentTypes,
                          "Analyze Injector Fragment",
-                         this::processInjectorFragment );
+                         this::processInjectorFragment,
+                         _analyzeInjectorFragmentStopWatch );
 
     processTypeElements( annotations,
                          env,
                          Constants.INJECTOR_CLASSNAME,
                          _deferredInjectorTypes,
                          "Analyze Injector",
-                         this::processInjector );
+                         this::processInjector,
+                         _analyzeInjectorStopWatch );
 
     processUnmodifiedAutoFragment( env );
     processResolvedInjectables( env );
@@ -230,6 +271,7 @@ public final class StingProcessor
       _registry.clear();
     }
     clearRootTypeNamesIfProcessingOver( env );
+    reportProfilerTimings();
     return true;
   }
 
@@ -240,7 +282,7 @@ public final class StingProcessor
       getNewTypeElementsToProcess( annotations, env, Constants.AUTO_FRAGMENT_CLASSNAME );
     for ( final TypeElement element : autoFragments )
     {
-      performAction( env, "Analyze Auto-Fragment", this::processAutoFragment, element );
+      performAction( env, "Analyze Auto-Fragment", this::processAutoFragment, element, _analyzeAutoFragmentStopWatch );
     }
   }
 
@@ -251,7 +293,7 @@ public final class StingProcessor
       getNewTypeElementsToProcess( annotations, env, Constants.CONTRIBUTE_TO_CLASSNAME );
     for ( final TypeElement element : contributeTos )
     {
-      performAction( env, "Analyze ContributeTo", this::processContributeTo, element );
+      performAction( env, "Analyze ContributeTo", this::processContributeTo, element, _analyzeContributeToStopWatch );
     }
   }
 
@@ -370,7 +412,7 @@ public final class StingProcessor
           debug( () -> "Emitting AutoFragment implementation for " + autoFragment.getElement().getQualifiedName() );
           final String packageName = GeneratorUtil.getQualifiedPackageName( autoFragment.getElement() );
           emitTypeSpec( packageName, AutoFragmentGenerator.buildType( processingEnv, autoFragment ) );
-        }, autoFragment.getElement() );
+        }, autoFragment.getElement(), _generateAutoFragmentImplStopWatch );
       }
     }
   }
@@ -386,7 +428,7 @@ public final class StingProcessor
           writeBinaryDescriptor( injectable.getElement(), injectable );
           emitInjectableJsonDescriptor( injectable );
           emitInjectableStub( injectable );
-        }, injectable.getElement() );
+        }, injectable.getElement(), _generateInjectableStubStopWatch );
       }
     }
   }
@@ -432,7 +474,7 @@ public final class StingProcessor
               debug( () -> "Defer generation for the fragment " + fragment.getElement().getQualifiedName() +
                            " as it is not yet resolved" );
             }
-          }, fragment.getElement() );
+          }, fragment.getElement(), _generateFragmentStubStopWatch );
         }
       }
       current.clear();
@@ -502,7 +544,7 @@ public final class StingProcessor
               debug( () -> "Defer generation for the injector " + injector.getElement().getQualifiedName() +
                            " as it is not yet resolved" );
             }
-          }, injector.getElement() );
+          }, injector.getElement(), _generateInjectorImplStopWatch );
         }
       }
       current.clear();
