@@ -33,7 +33,7 @@ Some of the additional features present in Dagger and missing from Sting include
   uses dagger-specific annotations and types for dagger specific functionality. Sting uses a non-standard set of
   annotations that are partially inspired by the best bits of
   ["JSR 330: Dependency Injection for Java"](https://jcp.org/en/jsr/detail?id=330) and
-  ["JSR 365: Contexts and Dependency Injection for Java"](https://docs.jboss.org/cdi/spec/2.0/cdi-spec.html).
+  ["JSR 365: Contexts and Dependency Injection for Java"](https://jcp.org/en/jsr/detail?id=365).
 
 * Dagger supports arbitrary typed qualifier annotations. (See the javadocs of `@javax.inject.Qualifier` for
   further details). This eliminates the chance of accidental collision between qualifiers defined in different
