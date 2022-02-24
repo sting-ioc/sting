@@ -3,6 +3,7 @@
 ### Unreleased
 
 * Update the `org.realityforge.akasha` artifacts to version `0.30`.
+* Change the format when writing strings to the binary descriptor to to avoid the use of writeUTF which is inefficient.
 
 ### [v0.24](https://github.com/sting-ioc/sting/tree/v0.24) (2021-12-28) · [Full Changelog](https://github.com/spritz/spritz/compare/v0.23...v0.24)
 

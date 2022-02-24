@@ -3,6 +3,7 @@ package sting.processor;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -90,8 +91,8 @@ final class DescriptorIO
     dos.writeShort( includes.size() );
     for ( final IncludeDescriptor include : includes )
     {
-      dos.writeUTF( toFieldDescriptor( include.getIncludedType() ) );
-      dos.writeUTF( include.getActualTypeName() );
+      writeString( dos, toFieldDescriptor( include.getIncludedType() ) );
+      writeString( dos, include.getActualTypeName() );
     }
     final Collection<Binding> bindings = fragment.getBindings();
     dos.writeShort( bindings.size() );
@@ -110,8 +111,8 @@ final class DescriptorIO
     final IncludeDescriptor[] types = new IncludeDescriptor[ includeCount ];
     for ( int i = 0; i < types.length; i++ )
     {
-      final DeclaredType includedType = readDeclaredType( dis.readUTF() );
-      final String actualTypeName = dis.readUTF();
+      final DeclaredType includedType = readDeclaredType( readString( dis ) );
+      final String actualTypeName = readString( dis );
       types[ i ] = new IncludeDescriptor( includedType, actualTypeName, false );
     }
     final short bindingCount = dis.readShort();
@@ -147,18 +148,18 @@ final class DescriptorIO
   {
     final Binding.Kind kind = binding.getKind();
     dos.writeByte( kind.ordinal() );
-    dos.writeUTF( binding.getId() );
+    writeString( dos, binding.getId() );
     final List<ServiceSpec> services = binding.getPublishedServices();
     dos.writeShort( services.size() );
     for ( final ServiceSpec service : services )
     {
       final Coordinate coordinate = service.getCoordinate();
-      dos.writeUTF( coordinate.getQualifier() );
-      dos.writeUTF( toFieldDescriptor( coordinate.getType() ) );
+      writeString( dos, coordinate.getQualifier() );
+      writeString( dos, toFieldDescriptor( coordinate.getType() ) );
       dos.writeBoolean( service.isOptional() );
     }
     dos.writeBoolean( binding.isEager() );
-    dos.writeUTF( Binding.Kind.PROVIDES == kind ? binding.getElement().getSimpleName().toString() : "" );
+    writeString( dos, Binding.Kind.PROVIDES == kind ? binding.getElement().getSimpleName().toString() : "" );
     final ServiceRequest[] dependencies = binding.getDependencies();
     dos.writeShort( dependencies.length );
     for ( final ServiceRequest dependency : dependencies )
@@ -172,7 +173,7 @@ final class DescriptorIO
     throws IOException
   {
     final Binding.Kind kind = Binding.Kind.values()[ dis.readByte() ];
-    final String id = dis.readUTF();
+    final String id = readString( dis );
     final short typeCount = dis.readShort();
     final ServiceSpec[] specs = new ServiceSpec[ typeCount ];
     for ( int i = 0; i < typeCount; i++ )
@@ -180,7 +181,7 @@ final class DescriptorIO
       specs[ i ] = new ServiceSpec( readCoordinate( dis ), dis.readBoolean() );
     }
     final boolean eager = dis.readBoolean();
-    final String elementName = dis.readUTF();
+    final String elementName = readString( dis );
     assert "".equals( elementName ) || Binding.Kind.INJECTABLE != kind;
 
     final ExecutableElement element;
@@ -245,16 +246,16 @@ final class DescriptorIO
   private void writeCoordinate( @Nonnull final DataOutputStream dos, @Nonnull final Coordinate coordinate )
     throws IOException
   {
-    dos.writeUTF( coordinate.getQualifier() );
-    dos.writeUTF( toFieldDescriptor( coordinate.getType() ) );
+    writeString( dos, coordinate.getQualifier() );
+    writeString( dos, toFieldDescriptor( coordinate.getType() ) );
   }
 
   @Nonnull
   private Coordinate readCoordinate( @Nonnull final DataInputStream dis )
     throws IOException
   {
-    final String qualifier = dis.readUTF();
-    final String type = dis.readUTF();
+    final String qualifier = readString( dis );
+    final String type = readString( dis );
     return new Coordinate( qualifier, fromFieldDescriptor( type ) );
   }
 
@@ -337,5 +338,27 @@ final class DescriptorIO
                                                  " but that type is not on the classpath or has not yet been compiled" );
     }
     return (DeclaredType) typeElement.asType();
+  }
+
+  @Nonnull
+  private String readString( @Nonnull final DataInputStream dis )
+    throws IOException
+  {
+    final short length = dis.readShort();
+    if ( length < 0 )
+    {
+      throw new IOException();
+    }
+    final byte[] data = new byte[ length ];
+    dis.readFully( data );
+    return new String( data, StandardCharsets.UTF_8 );
+  }
+
+  private void writeString( @Nonnull final DataOutputStream dos, @Nonnull final String str )
+    throws IOException
+  {
+    final byte[] bytes = str.getBytes( StandardCharsets.UTF_8 );
+    dos.writeShort( bytes.length );
+    dos.write( bytes );
   }
 }
