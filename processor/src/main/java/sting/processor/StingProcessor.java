@@ -1,5 +1,6 @@
 package sting.processor;
 
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -2338,7 +2339,7 @@ public final class StingProcessor
     // Write out the descriptor
     final FileObject resource =
       processingEnv.getFiler().createResource( StandardLocation.CLASS_OUTPUT, nameParts[ 0 ], nameParts[ 1 ], element );
-    try ( final OutputStream out = resource.openOutputStream() )
+    try ( final OutputStream out = new BufferedOutputStream( resource.openOutputStream() ) )
     {
       try ( final DataOutputStream dos = new DataOutputStream( out ) )
       {
