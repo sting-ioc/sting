@@ -284,6 +284,12 @@ define 'sting' do
                                :module => 'integration-tests',
                                :jvm_args => '-ea -Dsting.output_fixture_data=true')
 
+  ipr.add_java_configuration(project('sting:performance-tests'),
+                             'sting.performance.BuildTimePerformanceTest',
+                             :name => 'BuildTimePerformanceTest',
+                             :dir => 'file://$PROJECT_DIR$/performance-tests',
+                             :jvm_args => "-Dsting.perf.working_directory=generated/perf -Dsting.perf.fixture_dir=src/test/fixtures -Dsting.perf.variant=medium -Dsting.next.version=#{ENV['PRODUCT_VERSION']}")
+
   ipr.add_component_from_artifact(:idea_codestyle)
   ipr.add_code_insight_settings
   ipr.add_nullable_manager
