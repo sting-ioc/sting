@@ -124,7 +124,7 @@ public final class StingProcessorBadDescriptorTest
     assertEquals( stage2.status(), Compilation.Status.FAILURE );
 
     assertErrorDiagnostic( stage2,
-                           "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.EOFException" );
+                           "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: " );
     assertErrorDiagnostic( stage2,
                            "StingProcessor failed to process 1 types. See earlier warnings for further details." );
   }
