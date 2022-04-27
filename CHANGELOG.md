@@ -1,6 +1,8 @@
 # Change Log
 
-### Unreleased
+### [v0.25](https://github.com/sting-ioc/sting/tree/v0.25) (2022-04-27) · [Full Changelog](https://github.com/spritz/spritz/compare/v0.24...v0.25)
+
+Changes in this release:
 
 * Update the `org.realityforge.akasha` artifacts to version `0.30`.
 * Change the format when writing strings to the binary descriptor to to avoid the use of writeUTF which is inefficient.
