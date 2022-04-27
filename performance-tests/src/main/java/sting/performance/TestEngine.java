@@ -1,10 +1,10 @@
 package sting.performance;
 
-import com.google.testing.compile.JavaFileObjects;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,6 +20,7 @@ import javax.annotation.processing.Processor;
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 final class TestEngine
@@ -78,14 +79,9 @@ final class TestEngine
   @Nonnull
   private static JavaFileObject fixture( @Nonnull final Path path )
   {
-    try
-    {
-      return JavaFileObjects.forResource( path.toUri().toURL() );
-    }
-    catch ( final MalformedURLException e )
-    {
-      throw new IllegalStateException( e );
-    }
+    final StandardJavaFileManager standardFileManager =
+      ToolProvider.getSystemJavaCompiler().getStandardFileManager( null, null, null );
+    return standardFileManager.getJavaFileObjects( path ).iterator().next();
   }
 
   /**
