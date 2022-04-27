@@ -63,7 +63,7 @@ import javax.annotation.Nonnull;
  * have the {@code $} sign replaced with a {@code _}. i.e. The nested class named {@code mybiz.MyOuterClass.MyInjector}
  * will generate an implementation named {@code mybiz.MyOuterClass_Sting_MyInjector}</p>
  *
- * <a name="service-methods">Service methods</a>
+ * <a id="service-methods">Service methods</a>
  * <h2>Service methods</h2>
  *
  * <p>Instance methods defined on the injector allow access to services contained within the injector and
