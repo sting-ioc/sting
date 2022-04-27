@@ -20,9 +20,11 @@ Buildr::ReleaseTool.define_release_task do |t|
   t.cleanup_staging
   t.build(:additional_tasks => "do_test_api_diff J2CL=#{ENV['J2CL']} STAGE_RELEASE=true")
   t.stage('ArchiveDownstream', 'Archive downstream projects that may need changes pushed') do
-    FileUtils.rm_rf 'archive'
-    FileUtils.mkdir_p 'archive'
-    mv 'target/sting_downstream-test/deploy_test/workdir', 'archive/downstream'
+    unless ENV['BUILD_STATS'] == 'no'
+      FileUtils.rm_rf 'archive'
+      FileUtils.mkdir_p 'archive'
+      mv 'target/sting_downstream-test/deploy_test/workdir', 'archive/downstream'
+    end
   end
   t.patch_changelog('sting-ioc/sting',
                     :api_diff_directory => "#{WORKSPACE_DIR}/api-test",
@@ -68,18 +70,20 @@ Buildr::ReleaseTool.define_release_task do |t|
   t.push_changes
   t.github_release('sting-ioc/sting')
   t.stage('PushDownstreamChanges', 'Push downstream changes') do
-    # Push the changes that have been made locally in downstream projects.
-    # Artifacts have been pushed to staging repository by this time so they should build
-    # even if it has not made it through the Maven release process
-    DOWNSTREAM_EXAMPLES.each_pair do |downstream_example, branches|
-      sh "cd archive/downstream/#{downstream_example} && git push --all"
-      branches.each do |branch|
-        full_branch = "#{branch}-StingUpgrade-#{ENV['PRODUCT_VERSION']}"
-        `cd archive/downstream/#{downstream_example} && git push origin :#{full_branch} 2>&1`
-        puts "Completed remote branch #{downstream_example}/#{full_branch}. Removed." if 0 == $?.exitstatus
+    unless ENV['BUILD_STATS'] == 'no'
+      # Push the changes that have been made locally in downstream projects.
+      # Artifacts have been pushed to staging repository by this time so they should build
+      # even if it has not made it through the Maven release process
+      DOWNSTREAM_EXAMPLES.each_pair do |downstream_example, branches|
+        sh "cd archive/downstream/#{downstream_example} && git push --all"
+        branches.each do |branch|
+          full_branch = "#{branch}-StingUpgrade-#{ENV['PRODUCT_VERSION']}"
+          `cd archive/downstream/#{downstream_example} && git push origin :#{full_branch} 2>&1`
+          puts "Completed remote branch #{downstream_example}/#{full_branch}. Removed." if 0 == $?.exitstatus
+        end
       end
-    end
 
-    FileUtils.rm_rf 'archive'
+      FileUtils.rm_rf 'archive'
+    end
   end
 end
