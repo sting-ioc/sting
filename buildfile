@@ -3,7 +3,6 @@ require 'buildr/gpg'
 require 'buildr/single_intermediate_layout'
 require 'buildr/top_level_generate_dir'
 require 'buildr/gwt'
-require 'buildr/jacoco'
 require 'buildr/shade'
 
 Buildr::MavenCentral.define_publish_tasks(:profile_name => 'org.realityforge', :username => 'realityforge')
@@ -235,8 +234,6 @@ define 'sting' do
                       :jetbrains_annotations,
                       :javax_json,
                       :testng
-
-    project.jacoco.enabled = false
   end
 
   desc 'Sting Examples used in documentation'
@@ -247,8 +244,6 @@ define 'sting' do
                  project('processor').compile.dependencies
 
     compile.options[:processor] = true
-
-    project.jacoco.enabled = false
   end
 
   doc.from(projects(%w(core processor))).
