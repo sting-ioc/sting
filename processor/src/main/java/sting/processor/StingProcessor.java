@@ -42,6 +42,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.JavaFileManager;
@@ -2504,7 +2505,7 @@ public final class StingProcessor
 
   private void injectableConstructorShouldNotBePublic( @Nonnull final ExecutableElement constructor )
   {
-    if ( ElementsUtil.isNotSynthetic( constructor ) &&
+    if ( Elements.Origin.EXPLICIT == processingEnv.getElementUtils().getOrigin( constructor ) &&
          constructor.getModifiers().contains( Modifier.PUBLIC ) &&
          ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_PUBLIC_CONSTRUCTOR ) )
     {
