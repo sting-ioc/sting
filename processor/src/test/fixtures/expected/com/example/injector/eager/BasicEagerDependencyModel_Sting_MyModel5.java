@@ -2,8 +2,8 @@ package com.example.injector.eager;
 
 import java.util.Objects;
 import java.util.function.Supplier;
-import javax.annotation.Generated;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 public final class BasicEagerDependencyModel_Sting_MyModel5 {

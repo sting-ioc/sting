@@ -1,6 +1,6 @@
 package com.example.fragment.types;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 public final class Sting_BasicTypesModel implements BasicTypesModel {

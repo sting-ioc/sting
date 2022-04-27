@@ -1,6 +1,6 @@
 package com.example.injector.outputs;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 public final class PrimitiveOutputModel_Sting_MyFragment implements PrimitiveOutputModel.MyFragment {

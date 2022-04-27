@@ -4,6 +4,6 @@ digraph "MyInjector" {
   injector [label="MyInjector",color=green];
   node2 [label="MyModel"];
   node1 [label="MyOtherInjectorModel"];
-  injector -> node2 [label="MyModel"];
+  injector -> node2 [];
   node2 -> node1 [];
 }

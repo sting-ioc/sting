@@ -3,9 +3,9 @@ package com.example.injectable.dependency;
 import java.io.Serializable;
 import java.util.EventListener;
 import java.util.Objects;
-import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 public final class Sting_ComplexDependencyModel {

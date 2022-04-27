@@ -11,8 +11,8 @@ Buildr::MavenCentral.define_publish_tasks(:profile_name => 'org.realityforge', :
 desc 'sting: A fast, easy to use, compile-time dependency injection toolkit'
 define 'sting' do
   project.group = 'org.realityforge.sting'
-  project.compile.options.source = '1.8'
-  project.compile.options.target = '1.8'
+  compile.options.source = '17'
+  compile.options.target = '17'
   project.compile.options.lint = 'all,-processing,-serial'
   project.compile.options.warnings = true
   project.compile.options.other = %w(-Werror -Xmaxerrs 10000 -Xmaxwarns 10000)
@@ -106,7 +106,6 @@ define 'sting' do
   define 'performance-tests' do
     compile.with :gir,
                  :compile_testing,
-                 Buildr::Util.tools_jar,
 
                  # Code for the Application to compile against
                  Buildr::GWT.dependencies(project.gwt_detect_version(Buildr.artifacts(:gwt_user))),

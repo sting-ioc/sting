@@ -1,8 +1,8 @@
 package com.example.injector.outputs;
 
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Generated;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {

@@ -1,7 +1,7 @@
 package com.example.injector.includes.injector;
 
-import javax.annotation.Generated;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.Generated;
 import sting.Fragment;
 
 @Generated("sting.processor.StingProcessor")

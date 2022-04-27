@@ -1,7 +1,7 @@
 package com.example.injector.includes.provider.naming.enclosing;
 
-import javax.annotation.Generated;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 public final class Outer_Middle_Leaf_Sting_MyFramework_MyModel2 {

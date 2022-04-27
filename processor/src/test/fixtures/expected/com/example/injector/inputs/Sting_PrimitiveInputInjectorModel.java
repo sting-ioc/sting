@@ -1,6 +1,6 @@
 package com.example.injector.inputs;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 final class Sting_PrimitiveInputInjectorModel implements PrimitiveInputInjectorModel {

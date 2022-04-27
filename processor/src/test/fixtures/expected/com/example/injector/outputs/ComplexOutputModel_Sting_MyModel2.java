@@ -1,7 +1,7 @@
 package com.example.injector.outputs;
 
-import javax.annotation.Generated;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 public final class ComplexOutputModel_Sting_MyModel2 {

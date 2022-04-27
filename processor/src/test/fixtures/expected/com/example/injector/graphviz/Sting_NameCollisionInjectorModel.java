@@ -4,9 +4,9 @@ import com.example.injector.graphviz.pkg2.MyModel;
 import com.example.injector.graphviz.pkg2.Sting_MyModel;
 import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 final class Sting_NameCollisionInjectorModel implements NameCollisionInjectorModel {

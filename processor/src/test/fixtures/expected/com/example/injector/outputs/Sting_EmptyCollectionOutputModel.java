@@ -2,7 +2,7 @@ package com.example.injector.outputs;
 
 import java.util.Collection;
 import java.util.Collections;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 final class Sting_EmptyCollectionOutputModel implements EmptyCollectionOutputModel {

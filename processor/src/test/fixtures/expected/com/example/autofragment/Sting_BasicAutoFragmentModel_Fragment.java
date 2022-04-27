@@ -1,6 +1,6 @@
 package com.example.autofragment;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import sting.Fragment;
 
 @Generated("sting.processor.StingProcessor")

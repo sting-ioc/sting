@@ -5,9 +5,9 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Supplier;
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Generated;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 final class Sting_SupplierCollectionOutputModel implements SupplierCollectionOutputModel {

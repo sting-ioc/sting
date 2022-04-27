@@ -1,6 +1,6 @@
 package com.example.fragment.qualifier;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 public final class Sting_BasicQualifierModel implements BasicQualifierModel {

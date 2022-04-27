@@ -1,6 +1,6 @@
 package com.example.injector.includes.multiple;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 public final class Sting_MyFragment implements MyFragment {

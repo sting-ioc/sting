@@ -1,7 +1,7 @@
 package com.example.injector.gwt;
 
-import javax.annotation.Generated;
 import javax.annotation.Nonnull;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 public final class DisableGwtInjectorModel_Sting_MyModel0 {

@@ -2,8 +2,8 @@ package com.example.fragment.dependency;
 
 import java.util.EventListener;
 import java.util.Objects;
-import javax.annotation.Generated;
 import javax.annotation.Nullable;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 public final class Sting_ComplexDependencyModel implements ComplexDependencyModel {

@@ -3,7 +3,7 @@ package com.example.fragment.dependency.access.package_access;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Supplier;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 public final class Sting_PackageAccessDependencyModel implements PackageAccessDependencyModel {

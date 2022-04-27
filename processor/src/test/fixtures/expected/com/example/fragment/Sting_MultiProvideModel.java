@@ -2,7 +2,7 @@ package com.example.fragment;
 
 import java.io.Serializable;
 import java.util.EventListener;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 
 @Generated("sting.processor.StingProcessor")
 public final class Sting_MultiProvideModel implements MultiProvideModel {

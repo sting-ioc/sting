@@ -73,7 +73,7 @@ import org.realityforge.proton.TypesUtil;
                              Constants.NAMED_CLASSNAME,
                              Constants.AUTO_FRAGMENT_CLASSNAME,
                              Constants.CONTRIBUTE_TO_CLASSNAME } )
-@SupportedSourceVersion( SourceVersion.RELEASE_8 )
+@SupportedSourceVersion( SourceVersion.RELEASE_17 )
 @SupportedOptions( { "sting.defer.unresolved",
                      "sting.defer.errors",
                      "sting.debug",
