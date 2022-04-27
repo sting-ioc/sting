@@ -1,8 +1,5 @@
 package sting.processor;
 
-import com.google.common.collect.ImmutableList;
-import com.google.testing.compile.Compilation;
-import com.google.testing.compile.Compiler;
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -13,15 +10,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.Processor;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
+import org.realityforge.proton.qa.Compilation;
+import org.realityforge.proton.qa.CompileTestUtil;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
+@SuppressWarnings( "TextBlockMigration" )
 public final class StingProcessorTest
   extends AbstractStingProcessorTest
 {
@@ -133,16 +132,14 @@ public final class StingProcessorTest
     assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
   }
 
-  private boolean emitInjectorGeneratedFile( @Nonnull final String classname, @Nonnull final JavaFileObject target )
+  private boolean emitInjectorGeneratedFile( @Nonnull final String classname, @Nonnull final String target )
   {
     final int index = classname.lastIndexOf( "." );
     final String simpleClassName = -1 == index ? classname : classname.substring( index + 1 );
-    final long lastModified = target.getLastModified();
-    return 0 != lastModified &&
-           JavaFileObject.Kind.SOURCE == target.getKind() ||
-           target.getName().endsWith( simpleClassName + StingProcessor.JSON_SUFFIX ) ||
-           target.getName().endsWith( simpleClassName + StingProcessor.DOT_SUFFIX ) ||
-           target.getName().endsWith( simpleClassName + StingProcessor.GRAPH_SUFFIX );
+    return target.endsWith( ".java" ) ||
+           target.endsWith( simpleClassName + StingProcessor.JSON_SUFFIX ) ||
+           target.endsWith( simpleClassName + StingProcessor.DOT_SUFFIX ) ||
+           target.endsWith( simpleClassName + StingProcessor.GRAPH_SUFFIX );
   }
 
   @DataProvider( name = "successfulAutoFragmentCompiles" )
@@ -166,15 +163,16 @@ public final class StingProcessorTest
     throws Exception
   {
     final List<String> expectedOutputs =
-      Collections.singletonList( toFilename( "expected", classname, "Sting_", "_Fragment.java" ) );
+      Collections.singletonList( toFilename( classname, "Sting_", "_Fragment.java" ) );
     final List<JavaFileObject> javaFileObjects = inputs( classname );
     javaFileObjects.addAll( inputs( additionalClassnames ) );
     assertSuccessfulCompile( javaFileObjects, expectedOutputs, this::emitAutoFragmentGeneratedFile );
+
   }
 
-  private boolean emitAutoFragmentGeneratedFile( @Nonnull final JavaFileObject target )
+  private boolean emitAutoFragmentGeneratedFile( @Nonnull final String target )
   {
-    return 0 != target.getLastModified() && JavaFileObject.Kind.SOURCE == target.getKind();
+    return target.endsWith( ".java" );
   }
 
   @Test
@@ -893,19 +891,20 @@ public final class StingProcessorTest
     throws IOException
   {
     final Compilation stage1 =
-      compiler()
-        .compile( Collections.singletonList( input( "bad_input", "com.example.injector.autodetect.MyModel1" ) ) );
+      compile( Collections.singletonList( input( "bad_input", "com.example.injector.autodetect.MyModel1" ) ) );
 
     final Path targetDir = Files.createTempDirectory( "sting" );
-    outputFiles( stage1.generatedFiles(), targetDir );
+    CompileTestUtil.outputFiles( stage1.classOutputFilenames(), stage1.classOutput(), targetDir );
 
-    final ImmutableList<File> classPath = buildClasspath( targetDir.toFile() );
+    final List<File> classPath = buildClasspath( targetDir.toFile() );
     final Compilation stage2 =
-      compiler()
-        .withClasspath( classPath )
-        .compile( Collections.singletonList( input( "bad_input", "com.example.injector.autodetect.MyInjector" ) ) );
+      CompileTestUtil.compile( Collections.singletonList( input( "bad_input",
+                                                                 "com.example.injector.autodetect.MyInjector" ) ),
+                               getOptions(),
+                               processors(),
+                               classPath );
 
-    assertEquals( stage2.status(), Compilation.Status.FAILURE );
+    assertFalse( stage2.success() );
 
     assertErrorDiagnostic( stage2,
                            "@Injector target must not contain a non-optional dependency [com.example.injector.autodetect.MyModel1;qualifier='BadQualifier'] that can not be satisfied.\n" +
@@ -944,10 +943,12 @@ public final class StingProcessorTest
 
     final Compilation compilation = compileInjector( targetDir );
     assertCompilationUnsuccessful( compilation );
-    final List<Diagnostic<? extends JavaFileObject>> diagnostics = compilation.diagnostics()
-      .stream()
-      .filter( d -> d.getKind() != Diagnostic.Kind.NOTE )
-      .collect( Collectors.toList() );
+    final List<Diagnostic<? extends JavaFileObject>> diagnostics =
+      compilation
+        .diagnostics()
+        .stream()
+        .filter( d -> d.getKind() != Diagnostic.Kind.NOTE )
+        .toList();
     assertEquals( diagnostics.size(), 2 );
     assertEquals( diagnostics.get( 0 ).getMessage( Locale.getDefault() ),
                   "StingProcessor failed to process 1 injectors " +
@@ -980,11 +981,8 @@ public final class StingProcessorTest
 
     final Compilation compilation = compileInjector( targetDir );
     assertCompilationUnsuccessful( compilation );
-    final List<Diagnostic<? extends JavaFileObject>> diagnostics = compilation.diagnostics()
-      .stream()
-      .filter( d -> d.getKind() != Diagnostic.Kind.NOTE )
-      .collect( Collectors.toList() );
-    assertEquals( diagnostics.size(), 2 );
+    final List<Diagnostic<? extends JavaFileObject>> diagnostics =
+      assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 2 );
     assertEquals( diagnostics.get( 0 ).getMessage( Locale.getDefault() ),
                   "StingProcessor failed to process 1 injectors " +
                   "as not all of their dependencies could be resolved. The java code resolved but the " +
@@ -1034,32 +1032,31 @@ public final class StingProcessorTest
     final Processor synthesizingProcessor =
       newSynthesizingProcessor( "com.example.multiround.fragment.MyGeneratedFragment", 0 );
     final Compilation compilation =
-      Compiler.javac()
-        .withProcessors( Arrays.asList( synthesizingProcessor, processor() ) )
-        .withOptions( getOptions() )
-        .compile( inputs( "com.example.multiround.fragment.MyInjector",
-                          "com.example.multiround.fragment.MyFragment",
-                          // The following inputs exist so that the synthesizing processor has types to "process"
-                          "com.example.multiround.fragment.MyFramework",
-                          "com.example.multiround.fragment.SomeType" ) );
+      CompileTestUtil.compile( inputs( "com.example.multiround.fragment.MyInjector",
+                                       "com.example.multiround.fragment.MyFragment",
+                                       // The following inputs exist so that the synthesizing processor has types to "process"
+                                       "com.example.multiround.fragment.MyFramework",
+                                       "com.example.multiround.fragment.SomeType" ),
+                               getOptions(),
+                               Arrays.asList( synthesizingProcessor, processor() ),
+                               Collections.emptyList() );
 
     assertCompilationSuccessful( compilation );
-    final ImmutableList<JavaFileObject> generatedFiles = compilation.generatedFiles();
 
-    assertClassFile( generatedFiles, "com.example.multiround.fragment.MyInjector" );
-    assertJavaFile( generatedFiles, "com.example.multiround.fragment.Sting_MyInjector" );
-    assertClassFile( generatedFiles, "com.example.multiround.fragment.Sting_MyInjector" );
-    assertClassFile( generatedFiles, "com.example.multiround.fragment.MyFragment" );
-    assertDescriptorFile( generatedFiles, "com.example.multiround.fragment.MyFragment" );
-    assertJavaFile( generatedFiles, "com.example.multiround.fragment.Sting_MyFragment" );
-    assertClassFile( generatedFiles, "com.example.multiround.fragment.Sting_MyFragment" );
-    assertClassFile( generatedFiles, "com.example.multiround.fragment.MyFramework" );
-    assertClassFile( generatedFiles, "com.example.multiround.fragment.SomeType" );
-    assertJavaFile( generatedFiles, "com.example.multiround.fragment.MyGeneratedFragment" );
-    assertClassFile( generatedFiles, "com.example.multiround.fragment.MyGeneratedFragment" );
-    assertDescriptorFile( generatedFiles, "com.example.multiround.fragment.MyGeneratedFragment" );
-    assertJavaFile( generatedFiles, "com.example.multiround.fragment.Sting_MyGeneratedFragment" );
-    assertClassFile( generatedFiles, "com.example.multiround.fragment.Sting_MyGeneratedFragment" );
+    compilation.assertJavaClassPresent( "com.example.multiround.fragment.MyInjector" );
+    compilation.assertJavaSourcePresent( "com.example.multiround.fragment.Sting_MyInjector" );
+    compilation.assertJavaClassPresent( "com.example.multiround.fragment.Sting_MyInjector" );
+    compilation.assertJavaClassPresent( "com.example.multiround.fragment.MyFragment" );
+    assertBinaryDescriptorFile( compilation, "com.example.multiround.fragment.MyFragment" );
+    compilation.assertJavaSourcePresent( "com.example.multiround.fragment.Sting_MyFragment" );
+    compilation.assertJavaClassPresent( "com.example.multiround.fragment.Sting_MyFragment" );
+    compilation.assertJavaClassPresent( "com.example.multiround.fragment.MyFramework" );
+    compilation.assertJavaClassPresent( "com.example.multiround.fragment.SomeType" );
+    compilation.assertJavaSourcePresent( "com.example.multiround.fragment.MyGeneratedFragment" );
+    compilation.assertJavaClassPresent( "com.example.multiround.fragment.MyGeneratedFragment" );
+    assertBinaryDescriptorFile( compilation, "com.example.multiround.fragment.MyGeneratedFragment" );
+    compilation.assertJavaSourcePresent( "com.example.multiround.fragment.Sting_MyGeneratedFragment" );
+    compilation.assertJavaClassPresent( "com.example.multiround.fragment.Sting_MyGeneratedFragment" );
   }
 
   @Test
@@ -1071,30 +1068,29 @@ public final class StingProcessorTest
     final Processor synthesizingProcessor =
       newSynthesizingProcessor( "com.example.multiround.injectable.MyGeneratedInjectable", 0 );
     final Compilation compilation =
-      Compiler.javac()
-        .withProcessors( Arrays.asList( processor(), synthesizingProcessor ) )
-        .withOptions( getOptions() )
-        .compile( inputs( "com.example.multiround.injectable.MyInjector",
-                          "com.example.multiround.injectable.MyFragment",
-                          // The following inputs exist so that the synthesizing processor has types to "process"
-                          "com.example.multiround.fragment.MyFramework",
-                          "com.example.multiround.fragment.SomeType" ) );
+      CompileTestUtil.compile( inputs( "com.example.multiround.injectable.MyInjector",
+                                       "com.example.multiround.injectable.MyFragment",
+                                       // The following inputs exist so that the synthesizing processor has types to "process"
+                                       "com.example.multiround.fragment.MyFramework",
+                                       "com.example.multiround.fragment.SomeType" ),
+                               getOptions(),
+                               Arrays.asList( processor(), synthesizingProcessor ),
+                               Collections.emptyList() );
 
     assertCompilationSuccessful( compilation );
-    final ImmutableList<JavaFileObject> generatedFiles = compilation.generatedFiles();
 
-    assertClassFile( generatedFiles, "com.example.multiround.injectable.MyInjector" );
-    assertJavaFile( generatedFiles, "com.example.multiround.injectable.Sting_MyInjector" );
-    assertClassFile( generatedFiles, "com.example.multiround.injectable.Sting_MyInjector" );
-    assertClassFile( generatedFiles, "com.example.multiround.injectable.MyFragment" );
-    assertDescriptorFile( generatedFiles, "com.example.multiround.injectable.MyFragment" );
-    assertJavaFile( generatedFiles, "com.example.multiround.injectable.Sting_MyFragment" );
-    assertClassFile( generatedFiles, "com.example.multiround.injectable.Sting_MyFragment" );
-    assertJavaFile( generatedFiles, "com.example.multiround.injectable.MyGeneratedInjectable" );
-    assertClassFile( generatedFiles, "com.example.multiround.injectable.MyGeneratedInjectable" );
-    assertDescriptorFile( generatedFiles, "com.example.multiround.injectable.MyGeneratedInjectable" );
-    assertJavaFile( generatedFiles, "com.example.multiround.injectable.Sting_MyGeneratedInjectable" );
-    assertClassFile( generatedFiles, "com.example.multiround.injectable.Sting_MyGeneratedInjectable" );
+    compilation.assertJavaClassPresent( "com.example.multiround.injectable.MyInjector" );
+    compilation.assertJavaSourcePresent( "com.example.multiround.injectable.Sting_MyInjector" );
+    compilation.assertJavaClassPresent( "com.example.multiround.injectable.Sting_MyInjector" );
+    compilation.assertJavaClassPresent( "com.example.multiround.injectable.MyFragment" );
+    assertBinaryDescriptorFile( compilation, "com.example.multiround.injectable.MyFragment" );
+    compilation.assertJavaSourcePresent( "com.example.multiround.injectable.Sting_MyFragment" );
+    compilation.assertJavaClassPresent( "com.example.multiround.injectable.Sting_MyFragment" );
+    compilation.assertJavaSourcePresent( "com.example.multiround.injectable.MyGeneratedInjectable" );
+    compilation.assertJavaClassPresent( "com.example.multiround.injectable.MyGeneratedInjectable" );
+    assertBinaryDescriptorFile( compilation, "com.example.multiround.injectable.MyGeneratedInjectable" );
+    compilation.assertJavaSourcePresent( "com.example.multiround.injectable.Sting_MyGeneratedInjectable" );
+    compilation.assertJavaClassPresent( "com.example.multiround.injectable.Sting_MyGeneratedInjectable" );
   }
 
   @Test
@@ -1104,22 +1100,21 @@ public final class StingProcessorTest
     final Processor synthesizingProcessor =
       newSynthesizingProcessor( "com.example.multiround.autofragment.MyFrameworkModelImpl", 0 );
     final Compilation compilation =
-      Compiler.javac()
-        .withProcessors( Arrays.asList( synthesizingProcessor, processor() ) )
-        .withOptions( getOptions() )
-        .compile( inputs( "com.example.multiround.autofragment.MyAutoFragment",
-                          "com.example.multiround.autofragment.MyInjectableModel",
-                          "com.example.multiround.autofragment.MyFragment",
-                          "com.example.multiround.autofragment.MyFrameworkModel",
-                          // The following input exists so that the synthesizing processor has types to "process"
-                          "com.example.multiround.autofragment.MyFramework" ) );
+      CompileTestUtil.compile( inputs( "com.example.multiround.autofragment.MyAutoFragment",
+                                       "com.example.multiround.autofragment.MyInjectableModel",
+                                       "com.example.multiround.autofragment.MyFragment",
+                                       "com.example.multiround.autofragment.MyFrameworkModel",
+                                       // The following input exists so that the synthesizing processor has types to "process"
+                                       "com.example.multiround.autofragment.MyFramework" ),
+                               getOptions(),
+                               Arrays.asList( synthesizingProcessor, processor() ),
+                               Collections.emptyList() );
 
     assertCompilationSuccessful( compilation );
-    final ImmutableList<JavaFileObject> generatedFiles = compilation.generatedFiles();
 
-    assertJavaFile( generatedFiles, "com.example.multiround.autofragment.Sting_MyAutoFragment_Fragment" );
-    assertDescriptorFile( generatedFiles, "com.example.multiround.autofragment.Sting_MyAutoFragment_Fragment" );
-    assertJavaFile( generatedFiles, "com.example.multiround.autofragment.Sting_Sting_MyAutoFragment_Fragment" );
+    compilation.assertJavaSourcePresent( "com.example.multiround.autofragment.Sting_MyAutoFragment_Fragment" );
+    assertBinaryDescriptorFile( compilation, "com.example.multiround.autofragment.Sting_MyAutoFragment_Fragment" );
+    compilation.assertJavaSourcePresent( "com.example.multiround.autofragment.Sting_Sting_MyAutoFragment_Fragment" );
   }
 
   @Test
@@ -1142,17 +1137,18 @@ public final class StingProcessorTest
     // this can be ignored as just keeping synthesizer going
     final Processor synthesizingProcessor3 =
       newSynthesizingProcessor( "bad_input", pkg + ".MyFrameworkModel2Impl", 1 );
+    final List<JavaFileObject> inputs =
+      Arrays.asList( input( "bad_input", pkg + ".MyAutoFragment" ),
+                     input( "bad_input", pkg + ".MyInjectableModel" ),
+                     // The following input exists so that the synthesizing processor has types to "process"
+                     input( "bad_input", pkg + ".MyFramework" ) );
+    final List<Processor> processors =
+      Arrays.asList( synthesizingProcessor1,
+                     synthesizingProcessor2,
+                     synthesizingProcessor3,
+                     processor() );
     final Compilation compilation =
-      Compiler.javac()
-        .withProcessors( Arrays.asList( synthesizingProcessor1,
-                                        synthesizingProcessor2,
-                                        synthesizingProcessor3,
-                                        processor() ) )
-        .withOptions( getOptions() )
-        .compile( Arrays.asList( input( "bad_input", pkg + ".MyAutoFragment" ),
-                                 input( "bad_input", pkg + ".MyInjectableModel" ),
-                                 // The following input exists so that the synthesizing processor has types to "process"
-                                 input( "bad_input", pkg + ".MyFramework" ) ) );
+      CompileTestUtil.compile( inputs, getOptions(), processors, Collections.emptyList() );
 
     assertCompilationUnsuccessful( compilation );
 
@@ -1164,32 +1160,30 @@ public final class StingProcessorTest
   @Nonnull
   private Compilation compileInjector( @Nonnull final Path targetDir )
   {
-    return compiler()
-      .withClasspath( buildClasspath( targetDir.toFile() ) )
-      .compile( Collections.singletonList( input( "unresolved",
-                                                  "com.example.injector.UnresolvedElementsInjectorModel" ) ) );
+    return compile( Collections.singletonList( input( "unresolved",
+                                                      "com.example.injector.UnresolvedElementsInjectorModel" ) ),
+                    buildClasspath( targetDir.toFile() ) );
   }
 
   @Nonnull
   private Path compileBindings()
     throws IOException
   {
-    final Compilation bindingsCompile =
-      compiler()
-        .compile( Arrays.asList( input( "unresolved", "com.example.injector.MyModel" ),
-                                 input( "unresolved", "com.example.injector.MyFragment" ) ) );
+    final Compilation compilation =
+      compile( Arrays.asList( input( "unresolved", "com.example.injector.MyModel" ),
+                              input( "unresolved", "com.example.injector.MyFragment" ) ) );
 
-    assertCompilationSuccessful( bindingsCompile );
-    final ImmutableList<JavaFileObject> generatedFiles = bindingsCompile.generatedFiles();
+    assertCompilationSuccessful( compilation );
 
-    assertEquals( generatedFiles.size(), 10 );
-    assertClassFileCount( generatedFiles, 4L );
-    // 2 binary and 2 json descriptors
-    assertDescriptorCount( generatedFiles, 4L );
-    assertSourceFileCount( generatedFiles, 2L );
+    compilation.assertClassFileCount( 4L );
+    assertJsonDescriptorCount( compilation, 2L );
+    assertJsonDescriptorCount( compilation, 2L );
+    assertBinaryDescriptorCount( compilation, 2L );
+    assertBinaryDescriptorCount( compilation, 2L );
+    compilation.assertJavaFileCount( 2L );
 
     final Path targetDir = Files.createTempDirectory( "sting" );
-    outputFiles( bindingsCompile.generatedFiles(), targetDir );
+    CompileTestUtil.outputFiles( compilation.classOutputFilenames(), compilation.classOutput(), targetDir );
     return targetDir;
   }
 
@@ -1205,8 +1199,8 @@ public final class StingProcessorTest
   }
 
   @Override
-  protected boolean emitGeneratedFile( @Nonnull final JavaFileObject target )
+  protected boolean emitGeneratedFile( @Nonnull final String target )
   {
-    return super.emitGeneratedFile( target ) && !target.getName().endsWith( StingProcessor.SUFFIX );
+    return !target.endsWith( StingProcessor.SUFFIX );
   }
 }

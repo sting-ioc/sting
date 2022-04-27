@@ -1,11 +1,12 @@
 package sting.processor;
 
-import com.google.testing.compile.Compilation;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import javax.annotation.Nonnull;
+import org.realityforge.proton.qa.Compilation;
+import org.realityforge.proton.qa.CompileTestUtil;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
@@ -17,12 +18,12 @@ public final class StingProcessorBadDescriptorTest
     throws Exception
   {
     final Compilation stage1 =
-      compiler().compile( inputs( "com.example.bad_descriptors.scenario1.Model1" ) );
+      compile( inputs( "com.example.bad_descriptors.scenario1.Model1" ) );
 
     assertCompilationSuccessful( stage1 );
 
     final Path targetDir = Files.createTempDirectory( "sting" );
-    outputFiles( stage1.generatedFiles(), targetDir );
+    CompileTestUtil.outputFiles( stage1, targetDir );
 
     final Path descriptor =
       targetDir.resolve( "com" )
@@ -39,11 +40,10 @@ public final class StingProcessorBadDescriptorTest
     file.close();
 
     final Compilation stage2 =
-      compiler()
-        .withClasspath( buildClasspath( targetDir.toFile() ) )
-        .compile( inputs( "com.example.bad_descriptors.scenario1.MyInjectorModel" ) );
+      compile( inputs( "com.example.bad_descriptors.scenario1.MyInjectorModel" ),
+               buildClasspath( targetDir.toFile() ) );
 
-    assertEquals( stage2.status(), Compilation.Status.FAILURE );
+    assertFalse( stage2.success() );
 
     assertErrorDiagnostic( stage2,
                            "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.IOException: Descriptor for com.example.bad_descriptors.scenario1.Model1 is in an incorrect format. Bad header." );
@@ -56,12 +56,12 @@ public final class StingProcessorBadDescriptorTest
     throws Exception
   {
     final Compilation stage1 =
-      compiler().compile( inputs( "com.example.bad_descriptors.scenario1.Model1" ) );
+      compile( inputs( "com.example.bad_descriptors.scenario1.Model1" ) );
 
     assertCompilationSuccessful( stage1 );
 
     final Path targetDir = Files.createTempDirectory( "sting" );
-    outputFiles( stage1.generatedFiles(), targetDir );
+    CompileTestUtil.outputFiles( stage1, targetDir );
 
     final Path descriptor =
       targetDir.resolve( "com" )
@@ -78,11 +78,10 @@ public final class StingProcessorBadDescriptorTest
     file.close();
 
     final Compilation stage2 =
-      compiler()
-        .withClasspath( buildClasspath( targetDir.toFile() ) )
-        .compile( inputs( "com.example.bad_descriptors.scenario1.MyInjectorModel" ) );
+      compile( inputs( "com.example.bad_descriptors.scenario1.MyInjectorModel" ),
+               buildClasspath( targetDir.toFile() ) );
 
-    assertEquals( stage2.status(), Compilation.Status.FAILURE );
+    assertFalse( stage2.success() );
 
     assertErrorDiagnostic( stage2,
                            "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.IOException: Descriptor for com.example.bad_descriptors.scenario1.Model1 is in an unknown version: 255" );
@@ -95,12 +94,12 @@ public final class StingProcessorBadDescriptorTest
     throws Exception
   {
     final Compilation stage1 =
-      compiler().compile( inputs( "com.example.bad_descriptors.scenario1.Model1" ) );
+      compile( inputs( "com.example.bad_descriptors.scenario1.Model1" ) );
 
     assertCompilationSuccessful( stage1 );
 
     final Path targetDir = Files.createTempDirectory( "sting" );
-    outputFiles( stage1.generatedFiles(), targetDir );
+    CompileTestUtil.outputFiles( stage1, targetDir );
 
     final Path descriptor =
       targetDir.resolve( "com" )
@@ -117,11 +116,10 @@ public final class StingProcessorBadDescriptorTest
     file.close();
 
     final Compilation stage2 =
-      compiler()
-        .withClasspath( buildClasspath( targetDir.toFile() ) )
-        .compile( inputs( "com.example.bad_descriptors.scenario1.MyInjectorModel" ) );
+      compile( inputs( "com.example.bad_descriptors.scenario1.MyInjectorModel" ),
+               buildClasspath( targetDir.toFile() ) );
 
-    assertEquals( stage2.status(), Compilation.Status.FAILURE );
+    assertFalse( stage2.success() );
 
     assertErrorDiagnostic( stage2,
                            "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: " );
@@ -134,12 +132,12 @@ public final class StingProcessorBadDescriptorTest
     throws Exception
   {
     final Compilation stage1 =
-      compiler().compile( inputs( "com.example.bad_descriptors.scenario1.Model1" ) );
+      compile( inputs( "com.example.bad_descriptors.scenario1.Model1" ) );
 
     assertCompilationSuccessful( stage1 );
 
     final Path targetDir = Files.createTempDirectory( "sting" );
-    outputFiles( stage1.generatedFiles(), targetDir );
+    CompileTestUtil.outputFiles( stage1, targetDir );
 
     final Path descriptor =
       targetDir.resolve( "com" )
@@ -151,11 +149,10 @@ public final class StingProcessorBadDescriptorTest
     truncateDescriptor( descriptor );
 
     final Compilation stage2 =
-      compiler()
-        .withClasspath( buildClasspath( targetDir.toFile() ) )
-        .compile( inputs( "com.example.bad_descriptors.scenario1.MyInjectorModel" ) );
+      compile( inputs( "com.example.bad_descriptors.scenario1.MyInjectorModel" ),
+               buildClasspath( targetDir.toFile() ) );
 
-    assertEquals( stage2.status(), Compilation.Status.FAILURE );
+    assertFalse( stage2.success() );
 
     assertErrorDiagnostic( stage2,
                            "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario1.Model1. Error: java.io.EOFException" );
@@ -168,12 +165,12 @@ public final class StingProcessorBadDescriptorTest
     throws Exception
   {
     final Compilation stage1 =
-      compiler().compile( inputs( "com.example.bad_descriptors.scenario1.Model1" ) );
+      compile( inputs( "com.example.bad_descriptors.scenario1.Model1" ) );
 
     assertCompilationSuccessful( stage1 );
 
     final Path targetDir = Files.createTempDirectory( "sting" );
-    outputFiles( stage1.generatedFiles(), targetDir );
+    CompileTestUtil.outputFiles( stage1, targetDir );
 
     final Path descriptor =
       targetDir.resolve( "com" )
@@ -186,11 +183,10 @@ public final class StingProcessorBadDescriptorTest
     assertFalse( Files.exists( descriptor ) );
 
     final Compilation stage2 =
-      compiler()
-        .withClasspath( buildClasspath( targetDir.toFile() ) )
-        .compile( inputs( "com.example.bad_descriptors.scenario1.MyInjectorModel" ) );
+      compile( inputs( "com.example.bad_descriptors.scenario1.MyInjectorModel" ),
+               buildClasspath( targetDir.toFile() ) );
 
-    assertEquals( stage2.status(), Compilation.Status.FAILURE );
+    assertFalse( stage2.success() );
 
     assertErrorDiagnostic( stage2,
                            "@Injector target must not contain a non-optional dependency [com.example.bad_descriptors.scenario1.Model1] that can not be satisfied.\n" +
@@ -205,13 +201,13 @@ public final class StingProcessorBadDescriptorTest
     throws Exception
   {
     final Compilation stage1 =
-      compiler().compile( inputs( "com.example.bad_descriptors.scenario2.Model1",
-                                  "com.example.bad_descriptors.scenario2.Model2" ) );
+      compile( inputs( "com.example.bad_descriptors.scenario2.Model1",
+                       "com.example.bad_descriptors.scenario2.Model2" ) );
 
     assertCompilationSuccessful( stage1 );
 
     final Path targetDir = Files.createTempDirectory( "sting" );
-    outputFiles( stage1.generatedFiles(), targetDir );
+    CompileTestUtil.outputFiles( stage1, targetDir );
 
     final Path descriptor =
       targetDir.resolve( "com" )
@@ -223,11 +219,10 @@ public final class StingProcessorBadDescriptorTest
     truncateDescriptor( descriptor );
 
     final Compilation stage2 =
-      compiler()
-        .withClasspath( buildClasspath( targetDir.toFile() ) )
-        .compile( inputs( "com.example.bad_descriptors.scenario2.MyInjectorModel" ) );
+      compile( inputs( "com.example.bad_descriptors.scenario2.MyInjectorModel" ),
+               buildClasspath( targetDir.toFile() ) );
 
-    assertEquals( stage2.status(), Compilation.Status.FAILURE );
+    assertFalse( stage2.success() );
 
     assertErrorDiagnostic( stage2,
                            "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario2.Model1. Error: java.io.EOFException" );
@@ -240,14 +235,14 @@ public final class StingProcessorBadDescriptorTest
     throws Exception
   {
     final Compilation stage1 =
-      compiler().compile( inputs( "com.example.bad_descriptors.scenario3.Model1",
-                                  "com.example.bad_descriptors.scenario3.Model2",
-                                  "com.example.bad_descriptors.scenario3.MyFragment" ) );
+      compile( inputs( "com.example.bad_descriptors.scenario3.Model1",
+                       "com.example.bad_descriptors.scenario3.Model2",
+                       "com.example.bad_descriptors.scenario3.MyFragment" ) );
 
     assertCompilationSuccessful( stage1 );
 
     final Path targetDir = Files.createTempDirectory( "sting" );
-    outputFiles( stage1.generatedFiles(), targetDir );
+    CompileTestUtil.outputFiles( stage1, targetDir );
 
     final Path descriptor =
       targetDir.resolve( "com" )
@@ -259,11 +254,10 @@ public final class StingProcessorBadDescriptorTest
     truncateDescriptor( descriptor );
 
     final Compilation stage2 =
-      compiler()
-        .withClasspath( buildClasspath( targetDir.toFile() ) )
-        .compile( inputs( "com.example.bad_descriptors.scenario3.MyInjectorModel" ) );
+      compile( inputs( "com.example.bad_descriptors.scenario3.MyInjectorModel" ),
+               buildClasspath( targetDir.toFile() ) );
 
-    assertEquals( stage2.status(), Compilation.Status.FAILURE );
+    assertFalse( stage2.success() );
 
     assertErrorDiagnostic( stage2,
                            "Failed to read the Sting descriptor for the type com.example.bad_descriptors.scenario3.Model1. Error: java.io.EOFException" );

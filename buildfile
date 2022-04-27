@@ -51,16 +51,8 @@ define 'sting' do
                  :javapoet,
                  :javax_annotation
 
-    test.with :compile_testing,
-              :guava,
-              :guava_failureaccess,
-              :proton_qa,
+    test.with :proton_qa,
               :gwt_user,
-              Buildr::Util.tools_jar,
-              :truth,
-              :junit,
-              :hamcrest_core,
-              :mockito,
               :javaee_api,
               project('core').package(:jar),
               project('core').compile.dependencies
@@ -105,7 +97,6 @@ define 'sting' do
   desc 'Performance Tests'
   define 'performance-tests' do
     compile.with :gir,
-                 :compile_testing,
 
                  # Code for the Application to compile against
                  Buildr::GWT.dependencies(project.gwt_detect_version(Buildr.artifacts(:gwt_user))),

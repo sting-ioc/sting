@@ -1,13 +1,11 @@
 package sting.processor;
 
-import com.google.testing.compile.Compilation;
-import com.google.testing.compile.Compiler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.tools.FileObject;
+import org.realityforge.proton.qa.Compilation;
+import org.realityforge.proton.qa.CompileTestUtil;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import static org.testng.AssertJUnit.*;
@@ -33,19 +31,19 @@ public final class StingProcessorNoJsonTest
     options.add( "-Asting.emit_json_descriptors=false" );
 
     final Compilation compilation =
-      Compiler.javac()
-        .withProcessors( Collections.singletonList( new StingProcessor() ) )
-        .withOptions( options )
-        .compile( inputs( classname ) );
+      CompileTestUtil.compile( inputs( classname ),
+                               options,
+                               Collections.singletonList( new StingProcessor() ),
+                               Collections.emptyList() );
 
-    assertEquals( compilation.status(), Compilation.Status.SUCCESS );
+    assertCompilationSuccessful( compilation );
 
     final List<String> jsonFiles =
-      compilation.generatedFiles()
+      compilation
+        .classOutputFilenames()
         .stream()
-        .map( FileObject::getName )
         .filter( name -> name.endsWith( StingProcessor.JSON_SUFFIX ) )
-        .collect( Collectors.toList() );
+        .toList();
 
     // Expect that there are no generated json files
     assertEquals( jsonFiles, Collections.<String>emptyList() );

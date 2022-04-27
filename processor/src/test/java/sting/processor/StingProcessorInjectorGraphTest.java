@@ -12,7 +12,6 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import javax.tools.JavaFileObject;
 import org.testng.annotations.Test;
 import static org.testng.Assert.*;
 
@@ -214,7 +213,7 @@ public final class StingProcessorInjectorGraphTest
   private JsonArray readInjectorGraph( @Nonnull final String filename )
     throws IOException
   {
-    final JsonObject object = readJsonObject( fixtureDir().resolve( filename ) );
+    final JsonObject object = readJsonObject( fixtureDir().resolve( "expected" ).resolve( filename ) );
     assertEquals( object.getString( "schema" ), "graph/1" );
     return object.getJsonArray( "nodes" );
   }
@@ -232,12 +231,11 @@ public final class StingProcessorInjectorGraphTest
     }
   }
 
-  private boolean emitInjectorGeneratedFile( @Nonnull final String classname, @Nonnull final JavaFileObject target )
+  private boolean emitInjectorGeneratedFile( @Nonnull final String classname, @Nonnull final String target )
   {
     final int index = classname.lastIndexOf( "." );
     final String simpleClassName = -1 == index ? classname : classname.substring( index + 1 );
-    return JavaFileObject.Kind.SOURCE == target.getKind() ||
-           target.getName().endsWith( simpleClassName + StingProcessor.GRAPH_SUFFIX );
+    return target.endsWith( ".java" ) || target.endsWith( simpleClassName + StingProcessor.GRAPH_SUFFIX );
   }
 
   @Nonnull
