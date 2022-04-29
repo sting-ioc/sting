@@ -3,7 +3,7 @@ WORKSPACE_DIR = File.expand_path(File.dirname(__FILE__) + '/..')
 # Project -> [Branch1, Branch2, ...]
 DOWNSTREAM_EXAMPLES =
   {
-    'react4j-todomvc' => %w(raw arez spritz sting dagger sting_maven sting_maven_j2cl),
+    'react4j-todomvc' => %w(raw arez spritz sting sting_maven sting_maven_j2cl),
     'react4j-drumloop' => %w(master),
     'react4j-flux-challenge' => %w(master),
   }
