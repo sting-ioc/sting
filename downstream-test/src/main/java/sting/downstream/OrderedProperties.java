@@ -31,6 +31,7 @@ public final class OrderedProperties
     return Collections.enumeration( keySet() );
   }
 
+  @Nonnull
   @Override
   public Set<Object> keySet()
   {
