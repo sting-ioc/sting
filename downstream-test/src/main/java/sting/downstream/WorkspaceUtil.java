@@ -120,7 +120,7 @@ final class WorkspaceUtil
     return file.length();
   }
 
-  static void writeProperties( @Nonnull final Path outputFile, @Nonnull final OrderedProperties properties )
+  static void writeProperties( @Nonnull final Path outputFile, @Nonnull final Properties properties )
   {
     try
     {
