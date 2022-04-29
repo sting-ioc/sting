@@ -42,12 +42,18 @@ public final class OrderedProperties
     return new TreeSet<>( super.keySet() );
   }
 
+  @SuppressWarnings( "UseBulkOperation" )
   @Nonnull
   @Override
   public Set<Map.Entry<Object, Object>> entrySet()
   {
     // Used in Java17+ when writing properties
-    return new TreeMap<>( this ).entrySet();
+    final TreeMap<Object, Object> map = new TreeMap<>();
+    for ( final Map.Entry<Object, Object> entry : super.entrySet() )
+    {
+      map.put( entry.getKey(), entry.getValue() );
+    }
+    return map.entrySet();
   }
 
   void removeWithPrefix( @Nonnull final String prefix )
