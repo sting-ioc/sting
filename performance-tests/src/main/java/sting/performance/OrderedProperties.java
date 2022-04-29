@@ -5,8 +5,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -36,7 +38,16 @@ public final class OrderedProperties
   @Override
   public Set<Object> keySet()
   {
+    // Used in Java8 when writing properties
     return new TreeSet<>( super.keySet() );
+  }
+
+  @Nonnull
+  @Override
+  public Set<Map.Entry<Object, Object>> entrySet()
+  {
+    // Used in Java17+ when writing properties
+    return new TreeMap<>( this ).entrySet();
   }
 
   void removeWithPrefix( @Nonnull final String prefix )
