@@ -10,7 +10,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -61,7 +60,7 @@ public final class OrderedProperties
     keySet()
       .stream()
       .filter( k -> ( (String) k ).startsWith( prefix ) )
-      .collect( Collectors.toList() )
+      .toList()
       .forEach( this::remove );
   }
 
