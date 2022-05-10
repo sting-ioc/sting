@@ -164,7 +164,8 @@ public final class StingProcessorTest
   {
     final List<String> expectedOutputs =
       Collections.singletonList( toFilename( classname, "Sting_", "_Fragment.java" ) );
-    final List<JavaFileObject> javaFileObjects = inputs( classname );
+    final List<JavaFileObject> javaFileObjects = new ArrayList<>();
+    javaFileObjects.addAll( inputs( classname ) );
     javaFileObjects.addAll( inputs( additionalClassnames ) );
     assertSuccessfulCompile( javaFileObjects, expectedOutputs, this::emitAutoFragmentGeneratedFile );
 
