@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
@@ -51,7 +50,7 @@ final class AutoFragmentGenerator
         .stream()
         .map( ContributorDescriptor::getElement )
         .sorted( Comparator.comparing( e -> e.getQualifiedName().toString() ) )
-        .collect( Collectors.toList() );
+        .toList();
     for ( final TypeElement contributor : contributors )
     {
       annotation.addMember( "includes", "$T.class", contributor.asType() );
