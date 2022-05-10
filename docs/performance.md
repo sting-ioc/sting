@@ -45,10 +45,9 @@ long as Dagger and a value of `2.0` indicates Sting takes half as long as dagger
 
 {@include: BuildTimesTable.html}
 
-Stings architecture gives a nice little performance boost for incremental rebuilds in most circumstances with a
-slight performance penalty for the initial compile or full rebuilds. As Sting matures, it is expected that the
-performance penalty for full rebuilds will decrease slightly but will always exist. There are many further
-optimizations possible in incremental recompiles that will likely lead to even faster recompiles in the future.
+Stings architecture gives a nice little performance boost for incremental rebuilds in all circumstances with a
+slight performance penalty for the initial compile for smaller rebuilds. There are many further optimizations
+possible in incremental recompiles that will likely lead to even faster recompiles in the future.
 
 ## Code Size
 
