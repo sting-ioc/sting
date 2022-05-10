@@ -139,7 +139,6 @@ final class InjectorDotReportGenerator
         sb.append( "," );
       }
       sb.append( "dir=both, arrowtail=odot, arrowhead=crow" );
-      hasAttributes = true;
     }
     else if ( kind.isCollection() )
     {
@@ -148,7 +147,6 @@ final class InjectorDotReportGenerator
         sb.append( "," );
       }
       sb.append( "dir=both, arrowtail=normal, arrowhead=crow" );
-      hasAttributes = true;
     }
     else if ( kind.isSupplier() )
     {
@@ -157,8 +155,6 @@ final class InjectorDotReportGenerator
         sb.append( "," );
       }
       sb.append( "arrowhead=odot" );
-      //noinspection UnusedAssignment
-      hasAttributes = true;
     }
     sb.append( "];\n" );
   }
