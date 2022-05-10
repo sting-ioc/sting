@@ -1705,12 +1705,10 @@ public final class StingProcessor
                                     element );
     }
 
-    boolean autoDiscoverable = false;
     final InjectableDescriptor injectable =
       _registry.findInjectableByClassName( element.getQualifiedName().toString() );
     if ( null != injectable && !injectable.getBinding().isEager() && injectable.isAutoDiscoverable() )
     {
-      autoDiscoverable = true;
       if ( ElementsUtil.isWarningNotSuppressed( element, Constants.WARNING_AUTO_DISCOVERABLE_CONTRIBUTED ) )
       {
         final String message =
@@ -1721,7 +1719,7 @@ public final class StingProcessor
       }
     }
 
-    final ContributorDescriptor contributor = new ContributorDescriptor( key, element, autoDiscoverable );
+    final ContributorDescriptor contributor = new ContributorDescriptor( key, element );
     _registry.registerContributor( contributor );
     if ( null != autoFragment )
     {

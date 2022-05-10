@@ -16,21 +16,11 @@ final class ContributorDescriptor
    */
   @Nonnull
   private final TypeElement _element;
-  /**
-   * Is the associated TypeElement auto-discoverable
-   */
-  private final boolean _autoDiscoverable;
 
   ContributorDescriptor( @Nonnull final String key, @Nonnull final TypeElement element )
   {
-    this( key, element, false );
-  }
-
-  ContributorDescriptor( @Nonnull final String key, @Nonnull final TypeElement element, final boolean autoDiscoverable )
-  {
     _key = Objects.requireNonNull( key );
     _element = Objects.requireNonNull( element );
-    _autoDiscoverable = autoDiscoverable;
   }
 
   @Nonnull
