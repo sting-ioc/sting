@@ -310,7 +310,7 @@ public final class StingProcessor
     if ( env.processingOver() && !env.errorRaised() )
     {
       final Collection<AutoFragmentDescriptor> autoFragments =
-        _registry.getAutoFragments().stream().filter( a -> !a.isFragmentGenerated() ).collect( Collectors.toList() );
+        _registry.getAutoFragments().stream().filter( a -> !a.isFragmentGenerated() ).toList();
       if ( !autoFragments.isEmpty() )
       {
         processingEnv
@@ -341,7 +341,7 @@ public final class StingProcessor
         _registry.getContributorKeys()
           .stream()
           .filter( key -> null == _registry.findAutoFragmentByKey( key ) )
-          .collect( Collectors.toList() );
+          .toList();
       if ( !contributorKeys.isEmpty() )
       {
         for ( final String contributorKey : contributorKeys )
@@ -1827,7 +1827,7 @@ public final class StingProcessor
                 return null != provider ? new ProviderEntry( a, provider ) : null;
               } )
               .filter( Objects::nonNull )
-              .collect( Collectors.toList() );
+              .toList();
           if ( providers.size() > 1 )
           {
             final String message =
@@ -2055,7 +2055,7 @@ public final class StingProcessor
       ( (List<AnnotationValue>) value.getValue() )
         .stream()
         .map( v -> (TypeMirror) v.getValue() )
-        .collect( Collectors.toList() );
+        .toList();
 
     final ServiceSpec[] specs = new ServiceSpec[ types.size() ];
     for ( int i = 0; i < specs.length; i++ )
@@ -2271,7 +2271,7 @@ public final class StingProcessor
       ( (List<AnnotationValue>) value.getValue() )
         .stream()
         .map( v -> (TypeMirror) v.getValue() )
-        .collect( Collectors.toList() );
+        .toList();
 
     final ServiceSpec[] specs = new ServiceSpec[ types.size() ];
     for ( int i = 0; i < specs.length; i++ )
