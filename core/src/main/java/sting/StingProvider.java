@@ -10,7 +10,7 @@ import javax.annotation.Nonnull;
 /**
  * Annotation that indicates the class that provides the service.
  * The class that provides the service may be either a {@link Fragment} annotated type or an {@link Injectable}
- * annotated type. This annotation is applied to another frameworks annotation to simplify integration with Sting.
+ * annotated type. This annotation is applied to another frameworks' annotation to simplify integration with Sting.
  * Sting will process this annotation when the framework annotation is applied to a type element and that Sting
  * attempts to include that type. Sting can attempt to include the type either by the type being added to an
  * {@link Injector#includes()} annotation parameter, a {@link Fragment#includes()} annotation parameter, or by
