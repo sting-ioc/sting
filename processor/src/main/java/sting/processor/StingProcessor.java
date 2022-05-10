@@ -338,7 +338,8 @@ public final class StingProcessor
     if ( env.processingOver() && !env.errorRaised() )
     {
       final Collection<String> contributorKeys =
-        _registry.getContributorKeys()
+        _registry
+          .getContributorKeys()
           .stream()
           .filter( key -> null == _registry.findAutoFragmentByKey( key ) )
           .toList();
