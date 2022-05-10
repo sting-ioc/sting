@@ -790,9 +790,8 @@ public final class StingProcessor
               injector.getElement();
 
             final Object descriptor = loadDescriptor( ownerElement, typename, data );
-            if ( descriptor instanceof InjectableDescriptor )
+            if ( descriptor instanceof final InjectableDescriptor candidate )
             {
-              final InjectableDescriptor candidate = (InjectableDescriptor) descriptor;
               if ( candidate.isAutoDiscoverable() )
               {
                 assert coordinate.equals( candidate.getBinding().getPublishedServices().get( 0 ).getCoordinate() );
