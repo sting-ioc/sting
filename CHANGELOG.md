@@ -19,7 +19,7 @@ Changes in this release:
 Changes in this release:
 
 * Update the `org.realityforge.akasha` artifacts to version `0.30`.
-* Change the format when writing strings to the binary descriptor to to avoid the use of writeUTF which is inefficient.
+* Change the format when writing strings to the binary descriptor to avoid the use of writeUTF which is inefficient.
 * Upgrade the `org.realityforge.proton` artifacts to version `0.57`.
 * Eliminate the dependency on `com.google.testing.compile:compile-testing` to avoid migration complexity when moving to a modern java version.
 * Upgrade the minimum java version to `17`.
