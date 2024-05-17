@@ -13,8 +13,8 @@ artifacts:
 
   javapoet: com.squareup:javapoet:jar:1.13.0
 
-  proton_core: org.realityforge.proton:proton-core:jar:0.59
-  proton_qa: org.realityforge.proton:proton-qa:jar:0.59
+  proton_core: org.realityforge.proton:proton-core:jar:0.62
+  proton_qa: org.realityforge.proton:proton-qa:jar:0.62
 
   guava: com.google.guava:guava:jar:27.1-jre
   guava_failureaccess: com.google.guava:failureaccess:jar:1.0.1
