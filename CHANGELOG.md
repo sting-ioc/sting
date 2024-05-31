@@ -2,7 +2,7 @@
 
 ### Unreleased
 
-* Update the `org.realityforge.proton` artifacts to version `0.63`.
+* Update the `org.realityforge.proton` artifacts to version `0.64`.
 
 ### [v0.27](https://github.com/sting-ioc/sting/tree/v0.27) (2022-04-29) · [Full Changelog](https://github.com/spritz/spritz/compare/v0.26...v0.27)
 
