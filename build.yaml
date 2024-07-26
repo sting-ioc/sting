@@ -9,7 +9,7 @@ artifacts:
 
   shade_task: org.realityforge.ant.shade:ant-shade-task:jar:0.1
 
-  javax_annotation: org.realityforge.javax.annotation:javax.annotation:jar:1.0.1
+  javax_annotation: org.realityforge.javax.annotation:javax.annotation:jar:1.1.1
 
   javapoet: com.squareup:javapoet:jar:1.13.0
 
