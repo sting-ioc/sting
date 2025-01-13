@@ -3,7 +3,7 @@
 ### Unreleased
 
 * Update the `org.realityforge.javax.annotation` artifact to version `1.1.1`.
-* Update the `org.realityforge.proton` artifacts to version `0.64`.
+* Update the `org.realityforge.proton` artifacts to version `0.65`.
 
 ### [v0.27](https://github.com/sting-ioc/sting/tree/v0.27) (2022-04-29) · [Full Changelog](https://github.com/spritz/spritz/compare/v0.26...v0.27)
 
