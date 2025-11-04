@@ -1,6 +1,8 @@
 # Change Log
 
-### Unreleased
+### [v0.28](https://github.com/sting-ioc/sting/tree/v0.28) (2025-11-05) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.27...v0.28)
+
+Changes in this release:
 
 * Update the `gwt` artifact to version `2.11.0`.
 * Update the `org.realityforge.javax.annotation` artifact to version `1.1.1`.
