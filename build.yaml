@@ -24,8 +24,8 @@ artifacts:
   gir: org.realityforge.gir:gir-core:jar:0.12
 
   # GWT deps
-  gwt_user: com.google.gwt:gwt-user:jar:2.9.0
-  gwt_dev: com.google.gwt:gwt-dev:jar:2.9.0
+  gwt_user: org.gwtproject:gwt-user:jar:2.11.0
+  gwt_dev: org.gwtproject:gwt-dev:jar:2.11.0
 
   jsinterop_base: com.google.jsinterop:base:jar:1.0.0
 

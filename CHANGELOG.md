@@ -2,6 +2,7 @@
 
 ### Unreleased
 
+* Update the `gwt` artifact to version `2.11.0`.
 * Update the `org.realityforge.javax.annotation` artifact to version `1.1.1`.
 * Update the `org.realityforge.proton` artifacts to version `0.65`.
 * Switch to runtime derivation of component descriptors (no on-disk `.sbf` files). Remove descriptor persistence/verification and the `sting.runtime_derive` option; update tests, docs, and messages accordingly. Add per-round in-memory caches to retain performance.
