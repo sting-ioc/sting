@@ -2451,8 +2451,7 @@ public final class StingProcessor
         processProvidesMethod( element, bindings, (ExecutableElement) enclosedElement );
       }
     }
-    final FragmentDescriptor fragment =
-      new FragmentDescriptor( element, includes, bindings.values() );
+    final FragmentDescriptor fragment = new FragmentDescriptor( element, includes, bindings.values() );
     fragment.markJavaStubAsGenerated();
     _derivedFragmentCache.put( classname, fragment );
     return fragment;
