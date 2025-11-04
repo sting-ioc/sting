@@ -160,7 +160,7 @@ define 'sting' do
     end
   end
 
-  desc 'Test Arez in downstream projects'
+  desc 'Test Sting in downstream projects'
   define 'downstream-test' do
     compile.with :gir,
                  :javax_annotation
