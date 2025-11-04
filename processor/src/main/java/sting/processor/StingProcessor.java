@@ -2437,7 +2437,7 @@ public final class StingProcessor
       return cached;
     }
     // Only derive for proper @Fragment types
-    if ( ElementKind.INTERFACE != element.getKind() ||
+    else if ( ElementKind.INTERFACE != element.getKind() ||
          !AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
     {
       return null;
