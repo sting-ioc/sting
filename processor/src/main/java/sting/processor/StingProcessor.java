@@ -2446,19 +2446,22 @@ public final class StingProcessor
     {
       return null;
     }
-    final List<IncludeDescriptor> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME );
-    final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
-    for ( final Element enclosedElement : element.getEnclosedElements() )
+    else
     {
-      if ( ElementKind.METHOD == enclosedElement.getKind() )
+      final List<IncludeDescriptor> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME );
+      final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
+      for ( final Element enclosedElement : element.getEnclosedElements() )
       {
-        processProvidesMethod( element, bindings, (ExecutableElement) enclosedElement );
+        if ( ElementKind.METHOD == enclosedElement.getKind() )
+        {
+          processProvidesMethod( element, bindings, (ExecutableElement) enclosedElement );
+        }
       }
+      final FragmentDescriptor fragment = new FragmentDescriptor( element, includes, bindings.values() );
+      fragment.markJavaStubAsGenerated();
+      _derivedFragmentCache.put( classname, fragment );
+      return fragment;
     }
-    final FragmentDescriptor fragment = new FragmentDescriptor( element, includes, bindings.values() );
-    fragment.markJavaStubAsGenerated();
-    _derivedFragmentCache.put( classname, fragment );
-    return fragment;
   }
 
   @Nullable
