@@ -2091,7 +2091,7 @@ public final class StingProcessor
                                                           "the injector" ),
                                     element );
     }
-    if ( 0 == specs.length && !"".equals( qualifier ) )
+    if ( 0 == specs.length && !qualifier.isEmpty() )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
                                                           "contain methods that specify zero types with the " +
@@ -2306,7 +2306,7 @@ public final class StingProcessor
                                                           " annotation otherwise the component can not be created by the injector" ),
                                     element );
     }
-    if ( 0 == specs.length && !"".equals( qualifier ) )
+    if ( 0 == specs.length && !qualifier.isEmpty() )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
                                                           "specify zero types with the " +
