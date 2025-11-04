@@ -2442,6 +2442,10 @@ public final class StingProcessor
     {
       return null;
     }
+    else if ( !SuperficialValidation.validateElement( processingEnv, element ) )
+    {
+      return null;
+    }
     final List<IncludeDescriptor> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME );
     final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
     for ( final Element enclosedElement : element.getEnclosedElements() )
