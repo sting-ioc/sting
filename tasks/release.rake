@@ -46,7 +46,9 @@ Buildr::ReleaseTool.define_release_task do |t|
     task('site:link_check').invoke
   end
   t.tag_project
-  t.maven_central_publish
+  t.stage('MavenCentralPublish', 'Publish archive to Maven Central') do
+    sh "bundle exec buildr upload_to_maven_central PRODUCT_VERSION=#{ENV['PRODUCT_VERSION']}#{ENV['TEST'].nil? ? '' : " TEST=#{ENV['TEST']}"}#{Buildr.application.options.trace ? ' --trace' : ''}"
+  end
   t.patch_changelog_post_release
   t.stage('PatchStatisticsPostRelease', 'Copy the statistics forward to prepare for next development iteration') do
     filename = 'downstream-test/src/test/resources/fixtures/statistics.properties'
