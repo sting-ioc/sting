@@ -7,4 +7,3 @@ interface AppInjector
 {
   LibModel getLibModel();
 }
-

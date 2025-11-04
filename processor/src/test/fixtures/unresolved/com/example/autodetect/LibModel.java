@@ -6,4 +6,3 @@ import sting.Injectable;
 public class LibModel
 {
 }
-
