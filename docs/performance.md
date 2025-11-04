@@ -24,20 +24,10 @@ keep the focus on Stings performance goals.
 
 ## Build Time
 
-Sting optimizes incremental injector rebuilds over rebuilding an entire application. When Sting processes
-a type annotated with either the {@link: sting.Injectable @Injectable} annotation or the
-{@link: sting.Fragment @Fragment} annotation, the Sting annotation processor will generate a small, binary
-descriptor describing the type. The descriptor includes all the information required by Sting to bind the
-type to an injector. When the annotation processor attempts to process a type annotated by the
-{@link: sting.Injector @Injector} annotation, the annotation processor will load the binary descriptors rather
-than attempting to load and analyze the type.
-
-This results in a small increase in time compiling types annotated with the {@link: sting.Injectable @Injectable}
-annotation or the {@link: sting.Fragment @Fragment} annotation as the annotation processor needs to write
-the binary descriptor file. As of Java 8, writing a non-java source file from an annotation processor is
-relatively slow as it forces a synchronous write to the filesystem from within the compiler. However, reading
-the binary descriptor rather than the java type when processing types annotated with the
-{@link: sting.Injector @Injector} annotation is significantly faster.
+Sting optimizes incremental injector rebuilds by minimizing work across rounds and analyzing only what is
+required. When processing an {@link: sting.Injector @Injector}, Sting derives the minimal descriptor
+information for referenced {@link: sting.Injectable @Injectable} and {@link: sting.Fragment @Fragment}
+types directly from the classpath (and current sources).
 
 The table below compares the ratio of the speed of dagger in various scenarios with the speed of Sting. A value
 of `1` indicates that they are exactly the same speed while a value of `0.5` would indicate Sting takes twice as

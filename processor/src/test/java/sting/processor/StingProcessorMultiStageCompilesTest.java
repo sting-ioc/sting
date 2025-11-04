@@ -23,7 +23,6 @@ public final class StingProcessorMultiStageCompilesTest
     assertCompilationSuccessful( stage1 );
 
     stage1.assertClassFileCount( 5L );
-    assertBinaryDescriptorCount( stage1, 2L );
     stage1.assertJavaFileCount( 2L );
 
     final Compilation stage2 =
@@ -32,7 +31,6 @@ public final class StingProcessorMultiStageCompilesTest
     assertCompilationSuccessful( stage2 );
 
     stage2.assertClassFileCount( 2L );
-    assertBinaryDescriptorCount( stage2, 1L );
     stage2.assertJavaFileCount( 1L );
 
     final Path targetDir = Files.createTempDirectory( "sting" );
@@ -46,7 +44,6 @@ public final class StingProcessorMultiStageCompilesTest
     assertCompilationSuccessful( stage3 );
 
     stage3.assertClassFileCount( 2L );
-    assertBinaryDescriptorCount( stage3, 0L );
     stage3.assertJavaFileCount( 1L );
   }
 }

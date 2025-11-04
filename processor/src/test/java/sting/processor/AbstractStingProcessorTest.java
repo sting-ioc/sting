@@ -29,7 +29,6 @@ public abstract class AbstractStingProcessorTest
   protected List<String> getOptions()
   {
     final List<String> options = new ArrayList<>( super.getOptions() );
-    options.add( "-Asting.verify_descriptors=true" );
     options.add( "-Asting.verbose_out_of_round.errors=false" );
     return options;
   }
@@ -68,15 +67,5 @@ public abstract class AbstractStingProcessorTest
   final void assertJsonDescriptorFile( @Nonnull final Compilation compilation, @Nonnull final String classname )
   {
     compilation.assertClassOutputFilenamePresent( classname.replace( ".", "/" ) + ".json" );
-  }
-
-  final void assertBinaryDescriptorCount( @Nonnull final Compilation compilation, final long count )
-  {
-    compilation.assertClassOutputFilenameCount( f -> f.endsWith( ".sbf" ), count );
-  }
-
-  final void assertBinaryDescriptorFile( @Nonnull final Compilation compilation, @Nonnull final String classname )
-  {
-    compilation.assertClassOutputFilenamePresent( classname.replace( ".", "/" ) + ".sbf" );
   }
 }

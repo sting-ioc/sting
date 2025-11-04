@@ -2,17 +2,14 @@ package sting.processor;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.Processor;
-import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import org.realityforge.proton.qa.Compilation;
 import org.realityforge.proton.qa.CompileTestUtil;
@@ -926,105 +923,6 @@ public final class StingProcessorTest
   }
 
   @Test
-  public void unresolvedInjectableInjectorModel()
-    throws Exception
-  {
-    final Path targetDir = compileBindings();
-
-    assertCompilationSuccessful( compileInjector( targetDir ) );
-
-    final Path descriptor =
-      targetDir
-        .resolve( "com" )
-        .resolve( "example" )
-        .resolve( "injector" )
-        .resolve( "MyModel.sbf" );
-
-    Files.delete( descriptor );
-
-    final Compilation compilation = compileInjector( targetDir );
-    assertCompilationUnsuccessful( compilation );
-    final List<Diagnostic<? extends JavaFileObject>> diagnostics =
-      compilation
-        .diagnostics()
-        .stream()
-        .filter( d -> d.getKind() != Diagnostic.Kind.NOTE )
-        .toList();
-    assertEquals( diagnostics.size(), 2 );
-    assertEquals( diagnostics.get( 0 ).getMessage( Locale.getDefault() ),
-                  "StingProcessor failed to process 1 injectors " +
-                  "as not all of their dependencies could be resolved. The java code resolved but the " +
-                  "descriptors were missing or in the incorrect format. Ensure that the included " +
-                  "typed have been compiled with a compatible version of Sting and that the .sbf " +
-                  "descriptors have been packaged with the .class files. If the problem is not " +
-                  "obvious, consider passing the annotation option sting.debug=true" );
-
-    assertEquals( diagnostics.get( 1 ).getMessage( Locale.getDefault() ),
-                  "Failed to process the com.example.injector.UnresolvedElementsInjectorModel injector." );
-  }
-
-  @Test
-  public void unresolvedFragmentInjectorModel()
-    throws Exception
-  {
-    final Path targetDir = compileBindings();
-
-    assertCompilationSuccessful( compileInjector( targetDir ) );
-
-    final Path descriptor =
-      targetDir
-        .resolve( "com" )
-        .resolve( "example" )
-        .resolve( "injector" )
-        .resolve( "MyFragment.sbf" );
-
-    Files.delete( descriptor );
-
-    final Compilation compilation = compileInjector( targetDir );
-    assertCompilationUnsuccessful( compilation );
-    final List<Diagnostic<? extends JavaFileObject>> diagnostics =
-      assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 2 );
-    assertEquals( diagnostics.get( 0 ).getMessage( Locale.getDefault() ),
-                  "StingProcessor failed to process 1 injectors " +
-                  "as not all of their dependencies could be resolved. The java code resolved but the " +
-                  "descriptors were missing or in the incorrect format. Ensure that the included " +
-                  "typed have been compiled with a compatible version of Sting and that the .sbf " +
-                  "descriptors have been packaged with the .class files. If the problem is not " +
-                  "obvious, consider passing the annotation option sting.debug=true" );
-
-    assertEquals( diagnostics.get( 1 ).getMessage( Locale.getDefault() ),
-                  "Failed to process the com.example.injector.UnresolvedElementsInjectorModel injector." );
-  }
-
-  @Test
-  public void unresolvedDueToBadDescriptorInjectorModel()
-    throws Exception
-  {
-    final Path targetDir = compileBindings();
-
-    assertCompilationSuccessful( compileInjector( targetDir ) );
-
-    final Path descriptor =
-      targetDir
-        .resolve( "com" )
-        .resolve( "example" )
-        .resolve( "injector" )
-        .resolve( "MyFragment.sbf" );
-
-    final RandomAccessFile file = new RandomAccessFile( descriptor.toFile().getAbsolutePath(), "rw" );
-
-    // This is incorrect header
-    file.seek( 0 );
-    file.writeInt( 0x666 );
-    file.close();
-
-    final Compilation compilation = compileInjector( targetDir );
-    assertCompilationUnsuccessful( compilation );
-    assertErrorDiagnostic( compilation,
-                           "Failed to read the Sting descriptor for the type com.example.injector.MyFragment." );
-  }
-
-  @Test
   public void fragmentCreatedInLaterRound()
     throws Exception
   {
@@ -1048,14 +946,12 @@ public final class StingProcessorTest
     compilation.assertJavaSourcePresent( "com.example.multiround.fragment.Sting_MyInjector" );
     compilation.assertJavaClassPresent( "com.example.multiround.fragment.Sting_MyInjector" );
     compilation.assertJavaClassPresent( "com.example.multiround.fragment.MyFragment" );
-    assertBinaryDescriptorFile( compilation, "com.example.multiround.fragment.MyFragment" );
     compilation.assertJavaSourcePresent( "com.example.multiround.fragment.Sting_MyFragment" );
     compilation.assertJavaClassPresent( "com.example.multiround.fragment.Sting_MyFragment" );
     compilation.assertJavaClassPresent( "com.example.multiround.fragment.MyFramework" );
     compilation.assertJavaClassPresent( "com.example.multiround.fragment.SomeType" );
     compilation.assertJavaSourcePresent( "com.example.multiround.fragment.MyGeneratedFragment" );
     compilation.assertJavaClassPresent( "com.example.multiround.fragment.MyGeneratedFragment" );
-    assertBinaryDescriptorFile( compilation, "com.example.multiround.fragment.MyGeneratedFragment" );
     compilation.assertJavaSourcePresent( "com.example.multiround.fragment.Sting_MyGeneratedFragment" );
     compilation.assertJavaClassPresent( "com.example.multiround.fragment.Sting_MyGeneratedFragment" );
   }
@@ -1084,12 +980,10 @@ public final class StingProcessorTest
     compilation.assertJavaSourcePresent( "com.example.multiround.injectable.Sting_MyInjector" );
     compilation.assertJavaClassPresent( "com.example.multiround.injectable.Sting_MyInjector" );
     compilation.assertJavaClassPresent( "com.example.multiround.injectable.MyFragment" );
-    assertBinaryDescriptorFile( compilation, "com.example.multiround.injectable.MyFragment" );
     compilation.assertJavaSourcePresent( "com.example.multiround.injectable.Sting_MyFragment" );
     compilation.assertJavaClassPresent( "com.example.multiround.injectable.Sting_MyFragment" );
     compilation.assertJavaSourcePresent( "com.example.multiround.injectable.MyGeneratedInjectable" );
     compilation.assertJavaClassPresent( "com.example.multiround.injectable.MyGeneratedInjectable" );
-    assertBinaryDescriptorFile( compilation, "com.example.multiround.injectable.MyGeneratedInjectable" );
     compilation.assertJavaSourcePresent( "com.example.multiround.injectable.Sting_MyGeneratedInjectable" );
     compilation.assertJavaClassPresent( "com.example.multiround.injectable.Sting_MyGeneratedInjectable" );
   }
@@ -1114,7 +1008,6 @@ public final class StingProcessorTest
     assertCompilationSuccessful( compilation );
 
     compilation.assertJavaSourcePresent( "com.example.multiround.autofragment.Sting_MyAutoFragment_Fragment" );
-    assertBinaryDescriptorFile( compilation, "com.example.multiround.autofragment.Sting_MyAutoFragment_Fragment" );
     compilation.assertJavaSourcePresent( "com.example.multiround.autofragment.Sting_Sting_MyAutoFragment_Fragment" );
   }
 
@@ -1161,9 +1054,11 @@ public final class StingProcessorTest
   @Nonnull
   private Compilation compileInjector( @Nonnull final Path targetDir )
   {
-    return compile( Collections.singletonList( input( "unresolved",
-                                                      "com.example.injector.UnresolvedElementsInjectorModel" ) ),
-                    buildClasspath( targetDir.toFile() ) );
+    return CompileTestUtil.compile( Collections.singletonList( input( "unresolved",
+                                                                      "com.example.injector.UnresolvedElementsInjectorModel" ) ),
+                                    getOptions(),
+                                    processors(),
+                                    buildClasspath( targetDir.toFile() ) );
   }
 
   @Nonnull
@@ -1179,8 +1074,6 @@ public final class StingProcessorTest
     compilation.assertClassFileCount( 4L );
     assertJsonDescriptorCount( compilation, 2L );
     assertJsonDescriptorCount( compilation, 2L );
-    assertBinaryDescriptorCount( compilation, 2L );
-    assertBinaryDescriptorCount( compilation, 2L );
     compilation.assertJavaFileCount( 2L );
 
     final Path targetDir = Files.createTempDirectory( "sting" );
@@ -1197,11 +1090,5 @@ public final class StingProcessorTest
     options.add( "-Asting.emit_dot_reports=true" );
     options.add( "-Asting.debug=true" );
     return options;
-  }
-
-  @Override
-  protected boolean emitGeneratedFile( @Nonnull final String target )
-  {
-    return !target.endsWith( StingProcessor.SUFFIX );
   }
 }

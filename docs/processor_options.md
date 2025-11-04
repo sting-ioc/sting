@@ -61,15 +61,8 @@ the options supported by the annotation processor.
   <tr>
     <td>sting.emit_json_descriptors</td>
     <td>
-    A flag that will cause the annotation processor to write json descriptors (as well as binary descriptors)
-    if set to <code>true</code>. This is primarily used when developing Sting.
-    </td>
-  </tr>
-  <tr>
-    <td>sting.verify_descriptors</td>
-    <td>
-    A flag that will cause the annotation processor to verify binary descriptors after writing the descriptor
-    if set to <code>true</code>. This is primarily used when developing Sting.
+    A flag that will cause the annotation processor to write json descriptors if set to <code>true</code>.
+    This is primarily used when developing or debugging Sting integrations.
     </td>
   </tr>
 </tbody>

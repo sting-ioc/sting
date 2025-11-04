@@ -1,16 +1,11 @@
 package sting.processor;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -44,15 +39,11 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
-import javax.tools.FileObject;
-import javax.tools.JavaFileManager;
-import javax.tools.StandardLocation;
 import org.realityforge.proton.AbstractStandardProcessor;
 import org.realityforge.proton.AnnotationsUtil;
 import org.realityforge.proton.DeferredElementSet;
 import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
-import org.realityforge.proton.IOUtil;
 import org.realityforge.proton.JsonUtil;
 import org.realityforge.proton.MemberChecks;
 import org.realityforge.proton.ProcessorException;
@@ -81,8 +72,7 @@ import org.realityforge.proton.TypesUtil;
                      "sting.profile",
                      "sting.emit_json_descriptors",
                      "sting.emit_dot_reports",
-                     "sting.verbose_out_of_round.errors",
-                     "sting.verify_descriptors" } )
+                     "sting.verbose_out_of_round.errors" } )
 public final class StingProcessor
   extends AbstractStandardProcessor
 {
@@ -94,10 +84,7 @@ public final class StingProcessor
    * Extension for graphviz .dot reports.
    */
   static final String DOT_SUFFIX = ".gv";
-  /**
-   * Extension for sting binary descriptors.
-   */
-  static final String SUFFIX = ".sbf";
+  // Binary descriptor persistence removed
   /**
    * Extension for the computed graph descriptor.
    */
@@ -147,20 +134,20 @@ public final class StingProcessor
    */
   private boolean _emitJsonDescriptors;
   /**
-   * Flag controlling whether the binary descriptors are deserialized after serialization to verify
-   * that they produce the expected output. This is only used for debugging and should not be enabled
-   * in production code.
-   */
-  private boolean _verifyDescriptors;
-  /**
-   * A utility class for reading and writing the binary descriptors.
-   */
-  private DescriptorIO _descriptorIO;
-  /**
    * Flag controlling whether .dot formatted report is emitted.
    * The .dot report is typically used by end users who want to explore the graph.
    */
   private boolean _emitDotReports;
+  /**
+   * Cache of derived fragment descriptors during a processing session.
+   */
+  @Nonnull
+  private final Map<String, FragmentDescriptor> _derivedFragmentCache = new HashMap<>();
+  /**
+   * Cache of derived injectable descriptors during a processing session.
+   */
+  @Nonnull
+  private final Map<String, InjectableDescriptor> _derivedInjectableCache = new HashMap<>();
 
   @Nonnull
   @Override
@@ -180,10 +167,8 @@ public final class StingProcessor
   public synchronized void init( @Nonnull final ProcessingEnvironment processingEnv )
   {
     super.init( processingEnv );
-    _descriptorIO = new DescriptorIO( processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
     _emitJsonDescriptors = readBooleanOption( "emit_json_descriptors", false );
     _emitDotReports = readBooleanOption( "emit_dot_reports", false );
-    _verifyDescriptors = readBooleanOption( "verify_descriptors", false );
   }
 
   @Override
@@ -277,6 +262,8 @@ public final class StingProcessor
     if ( env.processingOver() || env.errorRaised() )
     {
       _registry.clear();
+      _derivedFragmentCache.clear();
+      _derivedInjectableCache.clear();
     }
     clearRootTypeNamesIfProcessingOver( env );
     reportProfilerTimings();
@@ -371,10 +358,8 @@ public final class StingProcessor
           .getMessager()
           .printMessage( Diagnostic.Kind.ERROR,
                          getClass().getSimpleName() + " failed to process " + injectors.size() + " injectors " +
-                         "as not all of their dependencies could be resolved. The java code resolved but the " +
-                         "descriptors were missing or in the incorrect format. Ensure that the included " +
-                         "typed have been compiled with a compatible version of Sting and that the .sbf " +
-                         "descriptors have been packaged with the .class files. If the problem is not " +
+                         "as not all of their dependencies could be resolved. Ensure that included types are " +
+                         "present on the classpath and are valid Sting components. If the problem is not " +
                          "obvious, consider passing the annotation option sting.debug=true" );
         for ( final InjectorDescriptor injector : injectors )
         {
@@ -434,7 +419,6 @@ public final class StingProcessor
       {
         performAction( env, "Generate Injectable Stub", e -> {
           injectable.markJavaStubAsGenerated();
-          writeBinaryDescriptor( injectable.getElement(), injectable );
           emitInjectableJsonDescriptor( injectable );
           emitInjectableStub( injectable );
         }, injectable.getElement(), _generateInjectableStubStopWatch );
@@ -467,7 +451,6 @@ public final class StingProcessor
             if ( ResolveType.RESOLVED == resolveType )
             {
               fragment.markJavaStubAsGenerated();
-              writeBinaryDescriptor( fragment.getElement(), fragment );
               emitFragmentJsonDescriptor( fragment );
               emitFragmentStub( fragment );
             }
@@ -758,7 +741,6 @@ public final class StingProcessor
                                 @Nonnull final Set<Node> completed,
                                 @Nonnull final Stack<WorkEntry> workList )
   {
-    final InjectorDescriptor injector = graph.getInjector();
     while ( !workList.isEmpty() )
     {
       final WorkEntry workEntry = workList.pop();
@@ -779,25 +761,14 @@ public final class StingProcessor
         if ( bindings.isEmpty() )
         {
           final TypeElement typeElement = processingEnv.getElementUtils().getTypeElement( typename );
-          final byte[] data = null != typeElement ? tryLoadDescriptorData( typeElement ) : null;
-          if ( null != data )
+          if ( null != typeElement )
           {
-            final Node node = edge.getNode();
-            final Object owner = node.hasNoBinding() ? null : node.getBinding().getOwner();
-            final TypeElement ownerElement =
-              owner instanceof FragmentDescriptor ? ( (FragmentDescriptor) owner ).getElement() :
-              owner instanceof InjectableDescriptor ? ( (InjectableDescriptor) owner ).getElement() :
-              injector.getElement();
-
-            final Object descriptor = loadDescriptor( ownerElement, typename, data );
-            if ( descriptor instanceof final InjectableDescriptor candidate )
+            final InjectableDescriptor candidate = deriveInjectableDescriptor( typeElement );
+            if ( null != candidate && candidate.isAutoDiscoverable() )
             {
-              if ( candidate.isAutoDiscoverable() )
-              {
-                assert coordinate.equals( candidate.getBinding().getPublishedServices().get( 0 ).getCoordinate() );
-                _registry.registerInjectable( candidate );
-                bindings.add( candidate.getBinding() );
-              }
+              assert coordinate.equals( candidate.getBinding().getPublishedServices().get( 0 ).getCoordinate() );
+              _registry.registerInjectable( candidate );
+              bindings.add( candidate.getBinding() );
             }
           }
         }
@@ -1024,32 +995,14 @@ public final class StingProcessor
       FragmentDescriptor fragment = _registry.findFragmentByClassName( classname );
       if ( null == fragment )
       {
-        final byte[] data = tryLoadDescriptorData( element );
-        if ( null == data )
+        fragment = deriveFragmentDescriptor( element );
+        if ( null == fragment )
         {
-          debug( () -> "The fragment " + classname + " is compiled to a .class file but no descriptor is present. " +
-                       "Marking " + originator.getQualifiedName() + " as unresolved" );
+          debug( () -> "Unable to derive descriptor for fragment " + classname +
+                       ". Marking " + originator.getQualifiedName() + " as unresolved" );
           return ResolveType.MAYBE_UNRESOLVED;
         }
-        final Object loadedDescriptor = loadDescriptor( originator, classname, data );
-        if ( loadedDescriptor instanceof FragmentDescriptor )
-        {
-          fragment = (FragmentDescriptor) loadedDescriptor;
-          _registry.registerFragment( fragment );
-        }
-        else if ( null == loadedDescriptor )
-        {
-          debug( () -> "The fragment " + classname + " is compiled to a .class file no descriptor is present. " +
-                       "Marking " + originator.getQualifiedName() + " as unresolved" );
-          return ResolveType.MAYBE_UNRESOLVED;
-        }
-        else
-        {
-          debug( () -> "The fragment " + classname + " is compiled to a .class " +
-                       "file but an invalid descriptor is present. " +
-                       "Marking " + originator.getQualifiedName() + " as unresolved" );
-          return ResolveType.MAYBE_UNRESOLVED;
-        }
+        _registry.registerFragment( fragment );
       }
       if ( ResolveType.RESOLVED != isFragmentReady( env, fragment ) )
       {
@@ -1063,26 +1016,14 @@ public final class StingProcessor
       InjectableDescriptor injectable = _registry.findInjectableByClassName( classname );
       if ( null == injectable )
       {
-        final byte[] data = tryLoadDescriptorData( element );
-        if ( null == data )
+        injectable = deriveInjectableDescriptor( element );
+        if ( null == injectable )
         {
-          debug( () -> "The injectable " + classname + " is compiled to a .class file but no descriptor is present." +
-                       "Marking " + originator.getQualifiedName() + " as unresolved" );
+          debug( () -> "Unable to derive descriptor for injectable " + classname +
+                       ". Marking " + originator.getQualifiedName() + " as unresolved" );
           return ResolveType.MAYBE_UNRESOLVED;
         }
-        final Object loadedDescriptor = loadDescriptor( originator, classname, data );
-        if ( loadedDescriptor instanceof InjectableDescriptor )
-        {
-          injectable = (InjectableDescriptor) loadedDescriptor;
-          _registry.registerInjectable( injectable );
-        }
-        else
-        {
-          debug( () -> "The injectable " + classname + " is compiled to a .class " +
-                       "file but an invalid descriptor is present. " +
-                       "Marking " + originator.getQualifiedName() + " as unresolved" );
-          return ResolveType.MAYBE_UNRESOLVED;
-        }
+        _registry.registerInjectable( injectable );
       }
       if ( !SuperficialValidation.validateElement( processingEnv, injectable.getElement() ) )
       {
@@ -2328,67 +2269,7 @@ public final class StingProcessor
     _registry.registerInjectable( injectable );
   }
 
-  private void writeBinaryDescriptor( @Nonnull final TypeElement element, @Nonnull final Object descriptor )
-    throws IOException
-  {
-    debug( () -> "Emitting binary descriptor for " + element.getQualifiedName() );
-
-    final String[] nameParts = extractNameParts( element );
-
-    // Write out the descriptor
-    final FileObject resource =
-      processingEnv.getFiler().createResource( StandardLocation.CLASS_OUTPUT, nameParts[ 0 ], nameParts[ 1 ], element );
-    try ( final OutputStream out = new BufferedOutputStream( resource.openOutputStream() ) )
-    {
-      try ( final DataOutputStream dos = new DataOutputStream( out ) )
-      {
-        _descriptorIO.write( dos, descriptor );
-      }
-    }
-
-    if ( _verifyDescriptors )
-    {
-      verifyDescriptor( element, descriptor );
-    }
-  }
-
-  @Nonnull
-  private String[] extractNameParts( @Nonnull final TypeElement element )
-  {
-    final String binaryName = processingEnv.getElementUtils().getBinaryName( element ).toString();
-    final int lastIndex = binaryName.lastIndexOf( "." );
-    final String packageName = -1 == lastIndex ? "" : binaryName.substring( 0, lastIndex );
-    final String relativeName = binaryName.substring( -1 == lastIndex ? 0 : lastIndex + 1 ) + SUFFIX;
-
-    return new String[]{ packageName, relativeName };
-  }
-
-  private void verifyDescriptor( @Nonnull final TypeElement element, @Nonnull final Object descriptor )
-    throws IOException
-  {
-    final ByteArrayOutputStream baos1 = new ByteArrayOutputStream();
-    try ( final DataOutputStream dos = new DataOutputStream( baos1 ) )
-    {
-      _descriptorIO.write( dos, descriptor );
-    }
-    final Object newDescriptor;
-    try ( final DataInputStream dos = new DataInputStream( new ByteArrayInputStream( baos1.toByteArray() ) ) )
-    {
-      newDescriptor = _descriptorIO.read( dos, element.getQualifiedName().toString() );
-    }
-    final ByteArrayOutputStream baos2 = new ByteArrayOutputStream();
-    try ( final DataOutputStream dos = new DataOutputStream( baos2 ) )
-    {
-      _descriptorIO.write( dos, newDescriptor );
-    }
-
-    if ( !Arrays.equals( baos1.toByteArray(), baos2.toByteArray() ) )
-    {
-      throw new ProcessorException( "Failed to emit valid binary descriptor for " + element.getQualifiedName() +
-                                    ". Reading the emitted descriptor did not produce an equivalent descriptor.",
-                                    element );
-    }
-  }
+  // Binary descriptor writing and verification removed
 
   private void emitInjectableJsonDescriptor( @Nonnull final InjectableDescriptor injectable )
     throws IOException
@@ -2530,68 +2411,6 @@ public final class StingProcessor
     }
   }
 
-  @Nullable
-  private Object loadDescriptor( @Nonnull final Element originator,
-                                 @Nonnull final String classname,
-                                 @Nonnull final byte[] data )
-  {
-    debug( () -> "Loading binary descriptor for " + classname );
-    try
-    {
-      return _descriptorIO.read( new DataInputStream( new ByteArrayInputStream( data ) ), classname );
-    }
-    catch ( final UnresolvedDeclaredTypeException e )
-    {
-      return null;
-    }
-    catch ( final IOException e )
-    {
-      throw new ProcessorException( "Failed to read the Sting descriptor for the type " + classname + ". Error: " + e,
-                                    originator );
-    }
-  }
-
-  @Nullable
-  private byte[] tryLoadDescriptorData( @Nonnull final TypeElement element )
-  {
-    byte[] data = tryLoadDescriptorData( StandardLocation.CLASS_PATH, element );
-    data = null != data ? data : tryLoadDescriptorData( StandardLocation.CLASS_OUTPUT, element );
-    // Some tools (IDEA?) will actually put dependencies on the boot/platform class path. This
-    // seems like it should be an error but as long as the tools do this, the annotation processor
-    // must also be capable of loading descriptor data from the platform classpath
-    return null != data ? data : tryLoadDescriptorData( StandardLocation.PLATFORM_CLASS_PATH, element );
-  }
-
-  @Nullable
-  private byte[] tryLoadDescriptorData( @Nonnull final JavaFileManager.Location location,
-                                        @Nonnull final TypeElement element )
-  {
-    final String[] nameParts = extractNameParts( element );
-    try
-    {
-      return IOUtil.readFully( processingEnv.getFiler().getResource( location, nameParts[ 0 ], nameParts[ 1 ] ) );
-    }
-    catch ( final IOException ignored )
-    {
-      return null;
-    }
-    catch ( final RuntimeException e )
-    {
-      // The javac compiler in Java8 will return a null from the JavaFileManager when it should
-      // throw an IOException which later causes a NullPointerException when wrapping the code
-      // This ugly hack works around this scenario and just lets the compile continue
-      if ( e.getClass().getCanonicalName().equals( "com.sun.tools.javac.util.ClientCodeException" ) &&
-           e.getCause() instanceof NullPointerException )
-      {
-        return null;
-      }
-      else
-      {
-        throw e;
-      }
-    }
-  }
-
   private boolean isParameterized( @Nonnull final DeclaredType nestedParameterType )
   {
     return !( (TypeElement) nestedParameterType.asElement() ).getTypeParameters().isEmpty();
@@ -2606,5 +2425,155 @@ public final class StingProcessor
       .filter( a -> AnnotationsUtil.hasAnnotationOfType( a.getAnnotationType().asElement(),
                                                          Constants.JSR_330_SCOPE_CLASSNAME ) )
       .collect( Collectors.toList() );
+  }
+
+  @Nullable
+  private FragmentDescriptor deriveFragmentDescriptor( @Nonnull final TypeElement element )
+  {
+    final String classname = element.getQualifiedName().toString();
+    final FragmentDescriptor cached = _derivedFragmentCache.get( classname );
+    if ( null != cached )
+    {
+      return cached;
+    }
+    // Only derive for proper @Fragment types
+    if ( ElementKind.INTERFACE != element.getKind() ||
+         !AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
+    {
+      return null;
+    }
+    final List<IncludeDescriptor> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME );
+    final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
+    for ( final Element enclosedElement : element.getEnclosedElements() )
+    {
+      if ( ElementKind.METHOD == enclosedElement.getKind() )
+      {
+        processProvidesMethod( element, bindings, (ExecutableElement) enclosedElement );
+      }
+    }
+    final FragmentDescriptor fragment =
+      new FragmentDescriptor( element, includes, bindings.values() );
+    fragment.markJavaStubAsGenerated();
+    _derivedFragmentCache.put( classname, fragment );
+    return fragment;
+  }
+
+  @Nullable
+  private InjectableDescriptor deriveInjectableDescriptor( @Nonnull final TypeElement element )
+  {
+    final String classname = element.getQualifiedName().toString();
+    final InjectableDescriptor cached = _derivedInjectableCache.get( classname );
+    if ( null != cached )
+    {
+      return cached;
+    }
+    // Only derive for proper @Injectable types
+    if ( ElementKind.CLASS != element.getKind() ||
+         !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+    {
+      return null;
+    }
+
+    if ( element.getModifiers().contains( Modifier.ABSTRACT ) ||
+         ElementsUtil.isNonStaticNestedClass( element ) ||
+         !element.getTypeParameters().isEmpty() )
+    {
+      // Invalid injectable; let normal processing flag this if encountered as source.
+      return null;
+    }
+
+    final List<ExecutableElement> constructors = ElementsUtil.getConstructors( element );
+    if ( constructors.isEmpty() )
+    {
+      return null;
+    }
+    final ExecutableElement constructor = constructors.get( 0 );
+    if ( constructors.size() > 1 )
+    {
+      return null;
+    }
+
+    final boolean eager = AnnotationsUtil.hasAnnotationOfType( element, Constants.EAGER_CLASSNAME );
+
+    final List<ServiceRequest> dependencies = new ArrayList<>();
+    int index = 0;
+    final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) constructor.asType() ).getParameterTypes();
+    for ( final VariableElement parameter : constructor.getParameters() )
+    {
+      dependencies.add( handleConstructorParameter( parameter, parameterTypes.get( index ), index ) );
+      index++;
+    }
+
+    final AnnotationMirror annotation =
+      AnnotationsUtil.findAnnotationByType( element, Constants.TYPED_CLASSNAME );
+    final AnnotationValue value =
+      null != annotation ? AnnotationsUtil.findAnnotationValue( annotation, "value" ) : null;
+
+    final String qualifier = getQualifier( element );
+
+    @SuppressWarnings( "unchecked" )
+    final List<TypeMirror> types =
+      null == value ?
+      Collections.singletonList( element.asType() ) :
+      ( (List<AnnotationValue>) value.getValue() )
+        .stream()
+        .map( v -> (TypeMirror) v.getValue() )
+        .toList();
+
+    final ServiceSpec[] specs = new ServiceSpec[ types.size() ];
+    for ( int i = 0; i < specs.length; i++ )
+    {
+      final TypeMirror type = types.get( i );
+      if ( !processingEnv.getTypeUtils().isAssignable( element.asType(), type ) )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                      " specified a type that is not assignable to the declaring type",
+                                      element,
+                                      annotation,
+                                      value );
+      }
+      else if ( TypeKind.DECLARED == type.getKind() && isParameterized( (DeclaredType) type ) )
+      {
+        throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                      " specified a type that is a a parameterized type",
+                                      element,
+                                      annotation,
+                                      value );
+      }
+      specs[ i ] = new ServiceSpec( new Coordinate( qualifier, type ), false );
+    }
+
+    if ( 0 == specs.length && !eager )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                          "specify zero types with the " +
+                                                          MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                                          " annotation or must be annotated with the " +
+                                                          MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) +
+                                                          " annotation otherwise the component can not be created by the injector" ),
+                                    element );
+    }
+    if ( 0 == specs.length && !qualifier.isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
+                                                          "specify zero types with the " +
+                                                          MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
+                                                          " annotation and specify a qualifier with the " +
+                                                          MemberChecks.toSimpleName( Constants.NAMED_CLASSNAME ) +
+                                                          " annotation as the qualifier is meaningless" ),
+                                    element );
+    }
+
+    final Binding binding =
+      new Binding( Binding.Kind.INJECTABLE,
+                   element.getQualifiedName().toString(),
+                   Arrays.asList( specs ),
+                   eager,
+                   constructor,
+                   dependencies.toArray( new ServiceRequest[ 0 ] ) );
+    final InjectableDescriptor injectable = new InjectableDescriptor( binding );
+    injectable.markJavaStubAsGenerated();
+    _derivedInjectableCache.put( classname, injectable );
+    return injectable;
   }
 }
