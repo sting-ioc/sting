@@ -1111,36 +1111,6 @@ public final class StingProcessorTest
   }
 
   @Nonnull
-  private Compilation compileInjector( @Nonnull final Path targetDir )
-  {
-    return CompileTestUtil.compile( Collections.singletonList( input( "unresolved",
-                                                                      "com.example.injector.UnresolvedElementsInjectorModel" ) ),
-                                    getOptions(),
-                                    processors(),
-                                    buildClasspath( targetDir.toFile() ) );
-  }
-
-  @Nonnull
-  private Path compileBindings()
-    throws IOException
-  {
-    final Compilation compilation =
-      compile( Arrays.asList( input( "unresolved", "com.example.injector.MyModel" ),
-                              input( "unresolved", "com.example.injector.MyFragment" ) ) );
-
-    assertCompilationSuccessful( compilation );
-
-    compilation.assertClassFileCount( 4L );
-    assertJsonDescriptorCount( compilation, 2L );
-    assertJsonDescriptorCount( compilation, 2L );
-    compilation.assertJavaFileCount( 2L );
-
-    final Path targetDir = Files.createTempDirectory( "sting" );
-    CompileTestUtil.outputFiles( compilation.classOutputFilenames(), compilation.classOutput(), targetDir );
-    return targetDir;
-  }
-
-  @Nonnull
   @Override
   protected List<String> getOptions()
   {
