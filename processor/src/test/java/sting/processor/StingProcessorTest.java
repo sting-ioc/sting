@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.Processor;
+import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import org.realityforge.proton.qa.Compilation;
 import org.realityforge.proton.qa.CompileTestUtil;
@@ -866,6 +867,62 @@ public final class StingProcessorTest
         new Object[]{ "com.example.named.NamedOnCtorParamInActAsStingComponentModel" },
         new Object[]{ "com.example.named.NamedOnInjectorFragment" }
       };
+  }
+
+  @Test
+  public void processRedundantInjectableInFragmentModel()
+  {
+    final Compilation compilation =
+      compile( Arrays.asList( input( "input",
+                                     "com.example.fragment.includes.redundant_injectable.RedundantInjectableInFragmentModel" ),
+                              input( "input", "com.example.fragment.includes.redundant_injectable.MyModel" ),
+                              input( "input", "com.example.fragment.includes.redundant_injectable.MyFragment" ) ) );
+    assertCompilationSuccessful( compilation );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
+    assertWarningDiagnostic( compilation,
+                             "@Fragment target should not include type com.example.fragment.includes.redundant_injectable.MyModel as it is already transitively included via included fragments. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:RedundantExplicitInjectableInclude\" )" );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 1 );
+  }
+
+  @Test
+  public void processSuppressedRedundantInjectableInFragmentModel()
+  {
+    final Compilation compilation =
+      compile( Arrays.asList( input( "input",
+                                     "com.example.fragment.includes.redundant_injectable.SuppressedRedundantInjectableInFragmentModel" ),
+                              input( "input", "com.example.fragment.includes.redundant_injectable.MyModel" ),
+                              input( "input", "com.example.fragment.includes.redundant_injectable.MyFragment" ) ) );
+    assertCompilationSuccessful( compilation );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 0 );
+  }
+
+  @Test
+  public void processRedundantInjectableInInjectorModel()
+  {
+    final Compilation compilation =
+      compile( Arrays.asList( input( "input",
+                                     "com.example.injector.includes.redundant_injectable.RedundantInjectableInInjectorModel" ),
+                              input( "input", "com.example.injector.includes.redundant_injectable.MyModel" ),
+                              input( "input", "com.example.injector.includes.redundant_injectable.MyFragment" ) ) );
+    assertCompilationSuccessful( compilation );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
+    assertWarningDiagnostic( compilation,
+                             "@Injector target should not include type com.example.injector.includes.redundant_injectable.MyModel as it is already transitively included via included fragments. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:RedundantExplicitInjectableInclude\" )" );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 1 );
+  }
+
+  @Test
+  public void processSuppressedRedundantInjectableInInjectorModel()
+  {
+    final Compilation compilation =
+      compile( Arrays.asList( input( "input",
+                                     "com.example.injector.includes.redundant_injectable.SuppressedRedundantInjectableInInjectorModel" ),
+                              input( "input", "com.example.injector.includes.redundant_injectable.MyModel" ),
+                              input( "input", "com.example.injector.includes.redundant_injectable.MyFragment" ) ) );
+    assertCompilationSuccessful( compilation );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 0 );
   }
 
   @Test( dataProvider = "compileWithoutWarnings" )

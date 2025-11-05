@@ -890,6 +890,10 @@ public final class StingProcessor
       if ( resolveType == ResolveType.RESOLVED )
       {
         fragment.markAsResolved();
+        // Check for redundant explicit @Injectable includes that are also transitively included via fragments
+        maybeWarnOnRedundantDirectInjectableInclude( fragment.getElement(),
+                                                     Constants.FRAGMENT_CLASSNAME,
+                                                     fragment.getIncludes() );
       }
       return resolveType;
     }
@@ -899,7 +903,15 @@ public final class StingProcessor
   private ResolveType isInjectorResolved( @Nonnull final RoundEnvironment env,
                                           @Nonnull final InjectorDescriptor injector )
   {
-    return isResolved( env, injector, injector.getElement(), injector.getIncludes() );
+    final ResolveType resolveType = isResolved( env, injector, injector.getElement(), injector.getIncludes() );
+    if ( ResolveType.RESOLVED == resolveType )
+    {
+      // Check for redundant explicit @Injectable includes that are also transitively included via included fragments
+      maybeWarnOnRedundantDirectInjectableInclude( injector.getElement(),
+                                                   Constants.INJECTOR_CLASSNAME,
+                                                   injector.getIncludes() );
+    }
+    return resolveType;
   }
 
   @Nonnull
@@ -2581,5 +2593,87 @@ public final class StingProcessor
     injectable.markJavaStubAsGenerated();
     _derivedInjectableCache.put( classname, injectable );
     return injectable;
+  }
+
+  private void maybeWarnOnRedundantDirectInjectableInclude( @Nonnull final TypeElement originator,
+                                                            @Nonnull final String annotationClassname,
+                                                            @Nonnull final Collection<IncludeDescriptor> includes )
+  {
+    if ( !ElementsUtil.isWarningNotSuppressed( originator,
+                                               Constants.WARNING_REDUNDANT_DIRECT_INJECTABLE_INCLUDE ) )
+    {
+      return;
+    }
+
+    final Set<String> directInjectables = new HashSet<>();
+    final Set<String> transitiveInjectables = new HashSet<>();
+
+    for ( final IncludeDescriptor include : includes )
+    {
+      final String classname = include.getActualTypeName();
+      final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
+      if ( null == element )
+      {
+        continue;
+      }
+      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+      {
+        // Only consider explicit direct includes as candidates (for Injector, auto-includes are not considered direct)
+        if ( !include.isAuto() )
+        {
+          directInjectables.add( classname );
+        }
+      }
+      else if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
+      {
+        collectTransitiveInjectablesFromFragment( classname, transitiveInjectables, new HashSet<>() );
+      }
+    }
+
+    directInjectables.retainAll( transitiveInjectables );
+    if ( !directInjectables.isEmpty() )
+    {
+      for ( final String classname : directInjectables )
+      {
+        final String message =
+          MemberChecks.shouldNot( annotationClassname,
+                                  "include type " + classname +
+                                  " as it is already transitively included via included fragments. " +
+                                  MemberChecks.suppressedBy( Constants.WARNING_REDUNDANT_DIRECT_INJECTABLE_INCLUDE ) );
+        processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, originator );
+      }
+    }
+  }
+
+  private void collectTransitiveInjectablesFromFragment( @Nonnull final String fragmentClassname,
+                                                         @Nonnull final Set<String> collector,
+                                                         @Nonnull final Set<String> visitedFragments )
+  {
+    if ( !visitedFragments.add( fragmentClassname ) )
+    {
+      return;
+    }
+    final FragmentDescriptor fragment = _registry.findFragmentByClassName( fragmentClassname );
+    if ( null == fragment )
+    {
+      return;
+    }
+    for ( final IncludeDescriptor include : fragment.getIncludes() )
+    {
+      final String classname = include.getActualTypeName();
+      final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
+      if ( null == element )
+      {
+        continue;
+      }
+      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+      {
+        collector.add( classname );
+      }
+      else if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
+      {
+        collectTransitiveInjectablesFromFragment( classname, collector, visitedFragments );
+      }
+    }
   }
 }
