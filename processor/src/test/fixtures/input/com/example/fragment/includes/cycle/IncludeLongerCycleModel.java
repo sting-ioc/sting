@@ -13,4 +13,3 @@ public interface IncludeLongerCycleModel
   @Fragment( includes = A.class )
   interface C {}
 }
-

@@ -4,4 +4,3 @@ import sting.Fragment;
 
 @Fragment( includes = B.class )
 public interface AImpl {}
-

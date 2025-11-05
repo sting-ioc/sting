@@ -5,4 +5,3 @@ import sting.Fragment;
 @SuppressWarnings( "Sting:FragmentIncludeCycle" )
 @Fragment( includes = CImplSuppressed.class )
 public interface BImplSuppressed {}
-

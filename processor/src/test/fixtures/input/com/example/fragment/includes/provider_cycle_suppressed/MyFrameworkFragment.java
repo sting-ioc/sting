@@ -6,4 +6,3 @@ import sting.StingProvider;
 public @interface MyFrameworkFragment
 {
 }
-

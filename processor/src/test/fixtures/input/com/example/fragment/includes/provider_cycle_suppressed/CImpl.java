@@ -5,4 +5,3 @@ import sting.Fragment;
 @SuppressWarnings( "Sting:FragmentIncludeCycle" )
 @Fragment( includes = A.class )
 public interface CImpl {}
-

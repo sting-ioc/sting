@@ -4,4 +4,3 @@ import sting.Fragment;
 
 @Fragment( includes = CImpl.class )
 public interface BImpl {}
-

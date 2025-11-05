@@ -29,4 +29,3 @@ public interface SuppressedProviderIncludeCycleModel
   @Fragment( includes = A.class )
   interface CImpl {}
 }
-
