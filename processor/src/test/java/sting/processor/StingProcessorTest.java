@@ -785,6 +785,7 @@ public final class StingProcessorTest
   }
 
   @DataProvider( name = "compileWithWarnings" )
+  @Nonnull
   public Object[][] compileWithWarnings()
   {
     return new Object[][]
@@ -821,6 +822,7 @@ public final class StingProcessorTest
   }
 
   @DataProvider( name = "compileWithoutWarnings" )
+  @Nonnull
   public Object[][] compileWithoutWarnings()
   {
     return new Object[][]
