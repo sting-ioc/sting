@@ -29,3 +29,22 @@ At other times, fragments will just include provider methods such as:
 It is also perfectly acceptable, for a fragment to include both includes and provider methods:
 
 {@file_content: file=sting/doc/examples/fragments/CompilerFragment.java start_line=@Fragment}
+
+## Include Cycles
+
+Sting de-duplicates contributions from `includes`, so adding the same fragment (directly or transitively) multiple times has no runtime effect. However, cyclical includes can make graphs harder to reason about and can hide redundant declarations.
+
+If the annotation processor detects that a fragment includes another fragment that (transitively) includes the origin, a warning is emitted:
+
+- Key: `Sting:FragmentIncludeCycle`
+- Example scenario: Fragment `A` includes fragment `B`, and `B` (directly or via other fragments) includes `A`.
+
+To suppress this warning for a fragment, annotate the fragment with:
+
+```java
+@SuppressWarnings("Sting:FragmentIncludeCycle")
+@Fragment( /* ... */ )
+public interface MyFragment { }
+```
+
+This warning is informational only; it does not change the generated code or runtime behaviour.

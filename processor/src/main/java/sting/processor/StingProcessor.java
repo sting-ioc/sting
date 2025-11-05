@@ -148,6 +148,11 @@ public final class StingProcessor
    */
   @Nonnull
   private final Map<String, InjectableDescriptor> _derivedInjectableCache = new HashMap<>();
+  /**
+   * Track fragments that are currently being resolved to break include cycles.
+   */
+  @Nonnull
+  private final Set<String> _resolvingFragmentTypes = new HashSet<>();
 
   @Nonnull
   @Override
@@ -886,16 +891,31 @@ public final class StingProcessor
     }
     else
     {
-      final ResolveType resolveType = isResolved( env, fragment, fragment.getElement(), fragment.getIncludes() );
-      if ( resolveType == ResolveType.RESOLVED )
+      final String fragmentName = fragment.getElement().getQualifiedName().toString();
+      if ( _resolvingFragmentTypes.contains( fragmentName ) )
       {
-        fragment.markAsResolved();
-        // Check for redundant explicit @Injectable includes that are also transitively included via fragments
-        maybeWarnOnRedundantDirectInjectableInclude( fragment.getElement(),
-                                                     Constants.FRAGMENT_CLASSNAME,
-                                                     fragment.getIncludes() );
+        return ResolveType.RESOLVED;
       }
-      return resolveType;
+      _resolvingFragmentTypes.add( fragmentName );
+      try
+      {
+        final ResolveType resolveType = isResolved( env, fragment, fragment.getElement(), fragment.getIncludes() );
+        if ( resolveType == ResolveType.RESOLVED )
+        {
+          fragment.markAsResolved();
+          // Check for redundant explicit @Injectable includes that are also transitively included via fragments
+          maybeWarnOnRedundantDirectInjectableInclude( fragment.getElement(),
+                                                       Constants.FRAGMENT_CLASSNAME,
+                                                       fragment.getIncludes() );
+          // Check for include cycles between fragments
+          maybeWarnOnFragmentIncludeCycle( fragment.getElement(), fragment.getIncludes() );
+        }
+        return resolveType;
+      }
+      finally
+      {
+        _resolvingFragmentTypes.remove( fragmentName );
+      }
     }
   }
 
@@ -2675,5 +2695,69 @@ public final class StingProcessor
         collectTransitiveInjectablesFromFragment( classname, collector, visitedFragments );
       }
     }
+  }
+
+  private void maybeWarnOnFragmentIncludeCycle( @Nonnull final TypeElement originator,
+                                                @Nonnull final Collection<IncludeDescriptor> includes )
+  {
+    if ( !ElementsUtil.isWarningNotSuppressed( originator, Constants.WARNING_FRAGMENT_INCLUDE_CYCLE ) )
+    {
+      return;
+    }
+    final String originClassname = originator.getQualifiedName().toString();
+    for ( final IncludeDescriptor include : includes )
+    {
+      final String classname = include.getActualTypeName();
+      final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
+      if ( null == element )
+      {
+        continue;
+      }
+      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
+      {
+        if ( fragmentTransitivelyIncludes( classname, originClassname, new HashSet<>() ) )
+        {
+          final String message =
+            MemberChecks.shouldNot( Constants.FRAGMENT_CLASSNAME,
+                                    "include a fragment " + classname +
+                                    " that transitively includes " + originClassname + ". " +
+                                    MemberChecks.suppressedBy( Constants.WARNING_FRAGMENT_INCLUDE_CYCLE ) );
+          processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, originator );
+          return;
+        }
+      }
+    }
+  }
+
+  private boolean fragmentTransitivelyIncludes( @Nonnull final String fragmentClassname,
+                                                @Nonnull final String targetFragmentClassname,
+                                                @Nonnull final Set<String> visited )
+  {
+    if ( !visited.add( fragmentClassname ) )
+    {
+      return false;
+    }
+    if ( fragmentClassname.equals( targetFragmentClassname ) )
+    {
+      return true;
+    }
+    final FragmentDescriptor fragment = _registry.findFragmentByClassName( fragmentClassname );
+    if ( null == fragment )
+    {
+      return false;
+    }
+    for ( final IncludeDescriptor include : fragment.getIncludes() )
+    {
+      final String classname = include.getActualTypeName();
+      final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
+      if ( null != element && AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
+      {
+        if ( fragmentTransitivelyIncludes( classname, targetFragmentClassname, visited ) )
+        {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 }

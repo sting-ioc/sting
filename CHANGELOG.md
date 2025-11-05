@@ -2,7 +2,7 @@
 
 ### Unreleased
 
-* Generate a suppressable warning when there are include loops. It was possible for fragment A to include fragment B which includes fragment A. This caused no problems as de-duplication occurs and the second include is ignored. This change generates a warning to help identify the problem.
+* Generate a suppressable warning when there are include loops between fragments. It is possible for fragment A to include fragment B which (transitively) includes fragment A. This causes no problems at runtime because contributions are de-duplicated, but a warning is now emitted to encourage simplifying includes. The warning can be suppressed by annotating the fragment with `@SuppressWarnings("Sting:FragmentIncludeCycle")`.
 
 ### [v0.28](https://github.com/sting-ioc/sting/tree/v0.28) (2025-11-05) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.27...v0.28)
 

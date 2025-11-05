@@ -927,6 +927,79 @@ public final class StingProcessorTest
     assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 0 );
   }
 
+  @Test
+  public void processFragmentIncludeCycleModel()
+  {
+    final Compilation compilation =
+      compile( Collections.singletonList( input( "input",
+                                                 "com.example.fragment.includes.cycle.IncludeCycleModel" ) ) );
+    assertCompilationSuccessful( compilation );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
+    assertWarningDiagnostic( compilation,
+                             "@Fragment target should not include a fragment com.example.fragment.includes.cycle.IncludeCycleModel.B that transitively includes com.example.fragment.includes.cycle.IncludeCycleModel.A. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:FragmentIncludeCycle\" )" );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 1 );
+  }
+
+  @Test
+  public void processSuppressedFragmentIncludeCycleModel()
+  {
+    final Compilation compilation =
+      compile( Collections.singletonList( input( "input",
+                                                 "com.example.fragment.includes.cycle.SuppressedIncludeCycleModel" ) ) );
+    assertCompilationSuccessful( compilation );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 0 );
+  }
+
+  @Test
+  public void processFragmentIncludeLongerCycleModel()
+  {
+    final Compilation compilation =
+      compile( Collections.singletonList( input( "input",
+                                                 "com.example.fragment.includes.cycle.IncludeLongerCycleModel" ) ) );
+    assertCompilationSuccessful( compilation );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
+    // Expect 3 warnings (one for each of A, B, C origins)
+    assertWarningDiagnostic( compilation,
+                             "@Fragment target should not include a fragment com.example.fragment.includes.cycle.IncludeLongerCycleModel.B that transitively includes com.example.fragment.includes.cycle.IncludeLongerCycleModel.A. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:FragmentIncludeCycle\" )" );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 3 );
+  }
+
+  @Test
+  public void processProviderFragmentIncludeCycleModel()
+  {
+    final Compilation compilation =
+      compile( Arrays.asList( input( "input", "com.example.fragment.includes.provider_cycle.MyFrameworkFragment" ),
+                               input( "input", "com.example.fragment.includes.provider_cycle.A" ),
+                               input( "input", "com.example.fragment.includes.provider_cycle.B" ),
+                               input( "input", "com.example.fragment.includes.provider_cycle.C" ),
+                               input( "input", "com.example.fragment.includes.provider_cycle.AImpl" ),
+                               input( "input", "com.example.fragment.includes.provider_cycle.BImpl" ),
+                               input( "input", "com.example.fragment.includes.provider_cycle.CImpl" ) ) );
+    assertCompilationSuccessful( compilation );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
+    // Expect 3 warnings (one for each of AImpl, BImpl, CImpl origins)
+    assertWarningDiagnostic( compilation,
+                             "@Fragment target should not include a fragment com.example.fragment.includes.provider_cycle.BImpl that transitively includes com.example.fragment.includes.provider_cycle.AImpl. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:FragmentIncludeCycle\" )" );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 3 );
+  }
+
+  @Test
+  public void processSuppressedProviderFragmentIncludeCycleModel()
+  {
+    final Compilation compilation =
+      compile( Arrays.asList( input( "input", "com.example.fragment.includes.provider_cycle_suppressed.MyFrameworkFragment" ),
+                               input( "input", "com.example.fragment.includes.provider_cycle_suppressed.A" ),
+                               input( "input", "com.example.fragment.includes.provider_cycle_suppressed.B" ),
+                               input( "input", "com.example.fragment.includes.provider_cycle_suppressed.C" ),
+                               input( "input", "com.example.fragment.includes.provider_cycle_suppressed.AImpl" ),
+                               input( "input", "com.example.fragment.includes.provider_cycle_suppressed.BImpl" ),
+                               input( "input", "com.example.fragment.includes.provider_cycle_suppressed.CImpl" ) ) );
+    assertCompilationSuccessful( compilation );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 0 );
+  }
+
   @Test( dataProvider = "compileWithoutWarnings" )
   public void processCompileWithoutWarnings( @Nonnull final String classname )
   {

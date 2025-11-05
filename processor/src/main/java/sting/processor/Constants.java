@@ -50,6 +50,8 @@ final class Constants
   static final String WARNING_AUTO_DISCOVERABLE_CONTRIBUTED = "Sting:AutoDiscoverableContributed";
   @Nonnull
   static final String WARNING_REDUNDANT_DIRECT_INJECTABLE_INCLUDE = "Sting:RedundantExplicitInjectableInclude";
+  @Nonnull
+  static final String WARNING_FRAGMENT_INCLUDE_CYCLE = "Sting:FragmentIncludeCycle";
 
   private Constants()
   {
