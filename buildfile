@@ -270,3 +270,11 @@ define 'sting' do
   ipr.add_nullable_manager
   ipr.add_javac_settings('-Xlint:all,-processing,-serial -Werror')
 end
+
+desc 'Update all statistics and reports in preparation for release'
+task 'update_all' do
+  sh 'bundle exec buildr update_api_diff'
+  sh 'bundle exec buildr update_build_time_statistics'
+  sh 'bundle exec buildr update_code_size_statistics'
+  sh 'bundle exec buildr update_downstream_build_stats'
+end
