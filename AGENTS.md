@@ -11,7 +11,8 @@ reasonable alternatives.
 ## Project Structure & Module Organization
 
 - Java modules: `core/` (runtime/annotations), `processor/` (annotation processor).
-- Tests and tools: `integration-tests/`, `performance-tests/`, `downstream-test/`, `doc-examples/`.
+- Integration Tests: `integration-tests/`, `performance-tests/`, `downstream-test/`.
+- Source code used in documentation: `doc-examples/`.
 - Docs and site: `docs/`, `website/` (Docusaurus v1), `assets/`.
 - Build configuration: `buildfile` (Buildr), `tasks/*.rake` (CI/site tasks).
 - Source layout: `*/src/main/java/...`; tests: `*/src/test/java/...`.
