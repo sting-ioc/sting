@@ -60,6 +60,7 @@ public final class CollectDrumLoopBuildStats
   {
     WorkspaceUtil.customizeBuildr( appDirectory );
 
+    FileUtil.deleteDirIfExists( archiveDir );
     if ( !archiveDir.toFile().mkdirs() )
     {
       final String message = "Error creating archive directory: " + archiveDir;

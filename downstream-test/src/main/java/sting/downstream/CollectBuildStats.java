@@ -98,6 +98,7 @@ public final class CollectBuildStats
       WorkspaceUtil.customizeMaven( appDirectory );
     }
 
+    FileUtil.deleteDirIfExists( archiveDir );
     if ( !archiveDir.toFile().mkdirs() )
     {
       final String message = "Error creating archive directory: " + archiveDir;
