@@ -50,6 +50,13 @@ the options supported by the annotation processor.
     </td>
   </tr>
   <tr>
+    <td>sting.warnings_as_errors</td>
+    <td>
+    A flag that will cause Sting to emit warnings as errors if set to <code>true</code>. This is useful when
+    builds need to fail on Sting warnings without requiring separate compiler warning policy configuration.
+    </td>
+  </tr>
+  <tr>
     <td>sting.verbose_out_of_round.errors</td>
     <td>
     If code is not being compiled in the current round causes an error to be generated then the supporting

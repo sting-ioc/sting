@@ -801,6 +801,29 @@ public final class StingProcessorTest
     assertCompilesWithSingleWarning( classname, messageFragment );
   }
 
+  @Test
+  public void processCompileWithWarningsAsErrors()
+  {
+    final String classname = "com.example.injectable.PublicConstructorModel";
+    final String message =
+      "@Injectable target should not have a public constructor. The type is instantiated by the injector and should " +
+      "have a package-access constructor. This warning can be suppressed by annotating the element with " +
+      "@SuppressWarnings( \"Sting:PublicConstructor\" )";
+    final List<String> options = new ArrayList<>( getOptions() );
+    options.add( "-Asting.warnings_as_errors=true" );
+
+    final Compilation compilation =
+      CompileTestUtil.compile( Collections.singletonList( input( "input", classname ) ),
+                               options,
+                               processors(),
+                               Collections.emptyList() );
+
+    assertFalse( compilation.success() );
+    assertErrorDiagnostic( compilation, message );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 1 );
+    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 0 );
+  }
+
   @DataProvider( name = "compileWithoutWarnings" )
   @Nonnull
   public Object[][] compileWithoutWarnings()

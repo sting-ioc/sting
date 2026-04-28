@@ -67,6 +67,7 @@ import org.realityforge.proton.TypesUtil;
 @SupportedSourceVersion( SourceVersion.RELEASE_17 )
 @SupportedOptions( { "sting.defer.unresolved",
                      "sting.defer.errors",
+                     "sting.warnings_as_errors",
                      "sting.debug",
                      "sting.profile",
                      "sting.emit_json_descriptors",
@@ -172,6 +173,17 @@ public final class StingProcessor
     super.init( processingEnv );
     _emitJsonDescriptors = readBooleanOption( "emit_json_descriptors", false );
     _emitDotReports = readBooleanOption( "emit_dot_reports", false );
+  }
+
+  @Nonnull
+  private Diagnostic.Kind warningKind()
+  {
+    return warningsAsErrors() ? Diagnostic.Kind.ERROR : Diagnostic.Kind.WARNING;
+  }
+
+  private boolean warningsAsErrors()
+  {
+    return "true".equalsIgnoreCase( processingEnv.getOptions().get( "sting.warnings_as_errors" ) );
   }
 
   @Override
@@ -976,7 +988,7 @@ public final class StingProcessor
           MemberChecks.shouldNot( annotationClassname,
                                   "include an auto-discoverable type " + classname + ". " +
                                   MemberChecks.suppressedBy( Constants.WARNING_AUTO_DISCOVERABLE_INCLUDED ) );
-        processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, originator );
+        processingEnv.getMessager().printMessage( warningKind(), message, originator );
       }
     }
     return ResolveType.RESOLVED;
@@ -2048,7 +2060,7 @@ public final class StingProcessor
                               "be annotated with the " + Constants.JSR_330_NAMED_CLASSNAME + " annotation. " +
                               "Use the " + Constants.NAMED_CLASSNAME + " annotation instead. " +
                               MemberChecks.suppressedBy( Constants.WARNING_JSR_330_NAMED ) );
-      processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, element );
+      processingEnv.getMessager().printMessage( warningKind(), message, element );
     }
     if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.CDI_TYPED_CLASSNAME ) &&
          ElementsUtil.isWarningNotSuppressed( element, Constants.WARNING_CDI_TYPED ) )
@@ -2058,7 +2070,7 @@ public final class StingProcessor
                               "be annotated with the " + Constants.CDI_TYPED_CLASSNAME + " annotation. " +
                               "Use the " + Constants.TYPED_CLASSNAME + " annotation instead. " +
                               MemberChecks.suppressedBy( Constants.WARNING_CDI_TYPED ) );
-      processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, element );
+      processingEnv.getMessager().printMessage( warningKind(), message, element );
     }
     if ( AnnotationsUtil.hasAnnotationOfType( constructor, Constants.JSR_330_INJECT_CLASSNAME ) &&
          ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_JSR_330_INJECT ) )
@@ -2067,7 +2079,7 @@ public final class StingProcessor
         MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
                               "be annotated with the " + Constants.JSR_330_INJECT_CLASSNAME + " annotation. " +
                               MemberChecks.suppressedBy( Constants.WARNING_JSR_330_INJECT ) );
-      processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, constructor );
+      processingEnv.getMessager().printMessage( warningKind(), message, constructor );
     }
     @SuppressWarnings( "unchecked" )
     final List<TypeMirror> types =
@@ -2414,7 +2426,7 @@ public final class StingProcessor
                                   Constants.JSR_330_NAMED_CLASSNAME + " annotation. Use the " +
                                   Constants.NAMED_CLASSNAME + " annotation instead. " +
                                   MemberChecks.suppressedBy( Constants.WARNING_JSR_330_NAMED ) );
-          processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, parameter );
+          processingEnv.getMessager().printMessage( warningKind(), message, parameter );
         }
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
         final ServiceSpec service = new ServiceSpec( coordinate, optional );
@@ -2441,7 +2453,7 @@ public final class StingProcessor
                                 "be annotated with an annotation that is annotated with the " +
                                 Constants.JSR_330_SCOPE_CLASSNAME + " annotation such as " + scopedAnnotations + ". " +
                                 MemberChecks.suppressedBy( Constants.WARNING_JSR_330_SCOPED ) );
-      processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, element );
+      processingEnv.getMessager().printMessage( warningKind(), message, element );
     }
   }
 
@@ -2456,7 +2468,7 @@ public final class StingProcessor
                                 "have a public constructor. The type is instantiated by the injector " +
                                 "and should have a package-access constructor. " +
                                 MemberChecks.suppressedBy( Constants.WARNING_PUBLIC_CONSTRUCTOR ) );
-      processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, constructor );
+      processingEnv.getMessager().printMessage( warningKind(), message, constructor );
     }
   }
 
@@ -2470,7 +2482,7 @@ public final class StingProcessor
                                 "have a protected constructor. The type is instantiated by the " +
                                 "injector and should have a package-access constructor. " +
                                 MemberChecks.suppressedBy( Constants.WARNING_PROTECTED_CONSTRUCTOR ) );
-      processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, constructor );
+      processingEnv.getMessager().printMessage( warningKind(), message, constructor );
     }
   }
 
@@ -2691,7 +2703,7 @@ public final class StingProcessor
                                   "include type " + classname +
                                   " as it is already transitively included via included fragments. " +
                                   MemberChecks.suppressedBy( Constants.WARNING_REDUNDANT_DIRECT_INJECTABLE_INCLUDE ) );
-        processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, originator );
+        processingEnv.getMessager().printMessage( warningKind(), message, originator );
       }
     }
   }
@@ -2753,7 +2765,7 @@ public final class StingProcessor
                                     "include a fragment " + classname +
                                     " that transitively includes " + originClassname + ". " +
                                     MemberChecks.suppressedBy( Constants.WARNING_FRAGMENT_INCLUDE_CYCLE ) );
-          processingEnv.getMessager().printMessage( Diagnostic.Kind.WARNING, message, originator );
+          processingEnv.getMessager().printMessage( warningKind(), message, originator );
           return;
         }
       }
