@@ -136,7 +136,7 @@ public @interface Injector
 {
   /**
    * A list of types that contribute to the object graph.
-   * These types can be {@code @Fragment}-annotated interfaces or {@link Injectable @Injectable}-annotated classes.
+   * These types can be {@link Fragment @Fragment}-annotated interfaces or {@link Injectable @Injectable}-annotated classes.
    * The de-duplicated contributions of the {@code @Fragment}-annotated interfaces in the
    * {@code includes}, and of their inclusions recursively, are all contributed
    * to the object graph.
