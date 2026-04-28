@@ -27,4 +27,11 @@ public @interface Fragment
    */
   @Nonnull
   Class<?>[] includes() default {};
+
+  /**
+   * True if all explicitly included types must be declared in the same package as the fragment.
+   *
+   * @return true to reject cross-package includes, false to permit them.
+   */
+  boolean localOnly() default true;
 }

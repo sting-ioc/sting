@@ -273,6 +273,35 @@ public final class StingProcessorTest
   }
 
   @Test
+  public void crossPackageIncludeFailsWhenFragmentIsLocalOnly()
+  {
+    final Compilation compilation =
+      compile( Arrays.asList( input( "bad_input",
+                                     "com.example.fragment.includes.local_only.CrossPackageIncludesModel" ),
+                              input( "bad_input",
+                                     "com.example.fragment.includes.local_only.other.MyModel" ) ) );
+
+    assertFalse( compilation.success() );
+    assertErrorDiagnostic( compilation,
+                           "@Fragment target has an includes parameter containing the value " +
+                           "com.example.fragment.includes.local_only.other.MyModel that is in the package " +
+                           "com.example.fragment.includes.local_only.other when the fragment is in the package " +
+                           "com.example.fragment.includes.local_only and localOnly is true" );
+  }
+
+  @Test
+  public void crossPackageIncludeAllowedWhenFragmentIsNotLocalOnly()
+  {
+    final Compilation compilation =
+      compile( Arrays.asList( input( "input",
+                                     "com.example.fragment.includes.local_only_disabled.CrossPackageIncludesModel" ),
+                              input( "input",
+                                     "com.example.fragment.includes.local_only_disabled.other.MyModel" ) ) );
+
+    assertCompilationSuccessful( compilation );
+  }
+
+  @Test
   public void singleIncludesInjector()
     throws Exception
   {

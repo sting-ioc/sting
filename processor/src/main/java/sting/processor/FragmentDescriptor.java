@@ -26,6 +26,10 @@ final class FragmentDescriptor
   @Nonnull
   private final Collection<Binding> _bindings;
   /**
+   * True if all explicit includes must be declared in the same package as the fragment.
+   */
+  private final boolean _localOnly;
+  /**
    * True if the java stub has been generated.
    */
   private boolean _javaStubGenerated;
@@ -40,11 +44,13 @@ final class FragmentDescriptor
 
   FragmentDescriptor( @Nonnull final TypeElement element,
                       @Nonnull final Collection<IncludeDescriptor> includes,
+                      final boolean localOnly,
                       @Nonnull final Collection<Binding> bindings )
   {
     assert ElementKind.INTERFACE == element.getKind();
     _element = Objects.requireNonNull( element );
     _includes = Objects.requireNonNull( includes );
+    _localOnly = localOnly;
     _bindings = Objects.requireNonNull( bindings );
     _bindings.forEach( b -> b.setOwner( this ) );
   }
@@ -71,6 +77,11 @@ final class FragmentDescriptor
   Collection<Binding> getBindings()
   {
     return _bindings;
+  }
+
+  boolean isLocalOnly()
+  {
+    return _localOnly;
   }
 
   boolean isJavaStubGenerated()

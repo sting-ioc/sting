@@ -15,6 +15,22 @@
     }
   },
   {
+    "code": "java.method.attributeWithDefaultAddedToAnnotationType",
+    "description": "The annotation has a new attribute with a default value.",
+    "newElement": "method boolean sting.Fragment::localOnly()",
+    "classification": {
+      "SOURCE": "NON_BREAKING",
+      "BINARY": "NON_BREAKING"
+    },
+    "attachments": {
+      "classQualifiedName": "sting.Fragment",
+      "classSimpleName": "Fragment",
+      "elementKind": "method",
+      "methodName": "localOnly",
+      "package": "sting"
+    }
+  },
+  {
     "code": "java.annotation.noLongerPresent",
     "description": "Old API referenced the annotation type but the new API version no longer does.",
     "oldElement": "@interface sting.AutoFragment",

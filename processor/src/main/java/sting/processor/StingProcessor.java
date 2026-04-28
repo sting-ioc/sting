@@ -937,6 +937,20 @@ public final class StingProcessor
         MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME );
       throw new ProcessorException( message, originator, annotation );
     }
+    if ( descriptor instanceof FragmentDescriptor )
+    {
+      final FragmentDescriptor fragmentDescriptor = (FragmentDescriptor) descriptor;
+      if ( fragmentDescriptor.isLocalOnly() && !isInSamePackage( originator, element ) )
+      {
+        fragmentDescriptor.markAsContainsError();
+        final String message =
+          MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " target has an includes parameter " +
+          "containing the value " + include.getIncludedType() + " that is in the package " +
+          GeneratorUtil.getQualifiedPackageName( element ) + " when the fragment is in the package " +
+          GeneratorUtil.getQualifiedPackageName( originator ) + " and localOnly is true";
+        throw new ProcessorException( message, originator, annotation );
+      }
+    }
     if ( isFragment )
     {
       FragmentDescriptor fragment = _registry.findFragmentByClassName( classname );
@@ -1466,6 +1480,7 @@ public final class StingProcessor
       throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME, "extend any interfaces" ),
                                     element );
     }
+    final boolean localOnly = extractFragmentLocalOnly( element );
     final List<IncludeDescriptor> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME );
     final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
     for ( final Element enclosedElement : element.getEnclosedElements() )
@@ -1497,7 +1512,7 @@ public final class StingProcessor
                                                           " annotation such as " + scopedAnnotations ),
                                     element );
     }
-    _registry.registerFragment( new FragmentDescriptor( element, includes, bindings.values() ) );
+    _registry.registerFragment( new FragmentDescriptor( element, includes, localOnly, bindings.values() ) );
   }
 
   private void processFactory( @Nonnull final TypeElement element )
@@ -2523,6 +2538,7 @@ public final class StingProcessor
     }
     else
     {
+      final boolean localOnly = extractFragmentLocalOnly( element );
       final List<IncludeDescriptor> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME );
       final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
       for ( final Element enclosedElement : element.getEnclosedElements() )
@@ -2532,11 +2548,22 @@ public final class StingProcessor
           processProvidesMethod( element, bindings, (ExecutableElement) enclosedElement );
         }
       }
-      final FragmentDescriptor fragment = new FragmentDescriptor( element, includes, bindings.values() );
+      final FragmentDescriptor fragment = new FragmentDescriptor( element, includes, localOnly, bindings.values() );
       fragment.markJavaStubAsGenerated();
       _derivedFragmentCache.put( classname, fragment );
       return fragment;
     }
+  }
+
+  private boolean extractFragmentLocalOnly( @Nonnull final TypeElement element )
+  {
+    return (boolean) AnnotationsUtil.getAnnotationValue( element, Constants.FRAGMENT_CLASSNAME, "localOnly" )
+      .getValue();
+  }
+
+  private boolean isInSamePackage( @Nonnull final TypeElement type1, @Nonnull final TypeElement type2 )
+  {
+    return GeneratorUtil.getQualifiedPackageName( type1 ).equals( GeneratorUtil.getQualifiedPackageName( type2 ) );
   }
 
   @Nullable
