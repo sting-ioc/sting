@@ -1,0 +1,21 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.PrimitiveProviderOptionalBoxedDependencyModel.MyFragment#provideValue",
+      "kind": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.PrimitiveProviderOptionalBoxedDependencyModel.MyModel",
+      "kind": "INJECTABLE",
+      "dependencies": [
+        {
+          "type": "java.lang.Integer",
+          "supportedBy": [
+            "com.example.injector.PrimitiveProviderOptionalBoxedDependencyModel.MyFragment#provideValue"
+          ]
+        }
+      ]
+    }
+  ]
+}

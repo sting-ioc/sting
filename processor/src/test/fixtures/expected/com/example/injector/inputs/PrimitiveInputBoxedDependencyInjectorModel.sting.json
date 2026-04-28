@@ -1,0 +1,16 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.inputs.PrimitiveInputBoxedDependencyInjectorModel.MyModel"
+  ],
+  "inputs": [
+    {
+      "type": "int"
+    }
+  ],
+  "outputs": [
+    {
+      "type": "com.example.injector.inputs.PrimitiveInputBoxedDependencyInjectorModel.MyModel"
+    }
+  ]
+}

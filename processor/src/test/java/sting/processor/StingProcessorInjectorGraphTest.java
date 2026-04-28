@@ -121,6 +121,36 @@ public final class StingProcessorInjectorGraphTest
   }
 
   @Test
+  public void primitiveAndBoxedCollectionOutputRetainsBothBindings()
+    throws Exception
+  {
+    final String classname = "com.example.injector.outputs.PrimitiveAndBoxedCollectionOutputModel";
+    final String objectGraphFilename = jsonGraphOutput( classname );
+    assertSuccessfulCompile( inputs( classname ),
+                             Collections.singletonList( objectGraphFilename ),
+                             t -> emitInjectorGeneratedFile( classname, t ) );
+    final JsonArray nodes = readInjectorGraph( objectGraphFilename );
+    assertEquals( nodes.size(), 2 );
+    assertNodeWithIdPresent( nodes, classname + ".MyFragment1#provideValue" );
+    assertNodeWithIdPresent( nodes, classname + ".MyFragment2#provideValue" );
+  }
+
+  @Test
+  public void primitiveInputCanSatisfyBoxedDependency()
+    throws Exception
+  {
+    final String classname = "com.example.injector.inputs.PrimitiveInputBoxedDependencyInjectorModel";
+    final String objectGraphFilename = jsonGraphOutput( classname );
+    assertSuccessfulCompile( inputs( classname ),
+                             Collections.singletonList( objectGraphFilename ),
+                             t -> emitInjectorGeneratedFile( classname, t ) );
+    final JsonArray nodes = readInjectorGraph( objectGraphFilename );
+    assertEquals( nodes.size(), 2 );
+    assertNodeWithIdPresent( nodes, classname + "#0" );
+    assertNodeWithIdPresent( nodes, classname + ".MyModel" );
+  }
+
+  @Test
   public void compoundNamesInIncludedProviders()
     throws Exception
   {

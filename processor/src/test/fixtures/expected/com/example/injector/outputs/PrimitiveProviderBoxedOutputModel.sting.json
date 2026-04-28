@@ -1,0 +1,11 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.PrimitiveProviderBoxedOutputModel.MyFragment"
+  ],
+  "outputs": [
+    {
+      "type": "java.lang.Integer"
+    }
+  ]
+}

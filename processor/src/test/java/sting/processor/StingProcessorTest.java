@@ -130,6 +130,7 @@ public final class StingProcessorTest
     return new Object[][]
       {
         new Object[]{ "com.example.injector.BasicInjectorModel" },
+        new Object[]{ "com.example.injector.PrimitiveProviderOptionalBoxedDependencyModel" },
 
         new Object[]{ "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel" },
         new Object[]{ "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel" },
@@ -139,6 +140,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.gwt.EnableGwtInjectorModel" },
 
         new Object[]{ "com.example.injector.outputs.BasicOutputModel" },
+        new Object[]{ "com.example.injector.outputs.BoxedProviderPrimitiveOutputModel" },
         new Object[]{ "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel" },
         new Object[]{ "com.example.injector.outputs.CollectionOutputModel" },
         new Object[]{ "com.example.injector.outputs.ComplexOutputModel" },
@@ -147,6 +149,9 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.outputs.OptionalOutputModel" },
         new Object[]{ "com.example.injector.outputs.OptionalMissingOutputModel" },
         new Object[]{ "com.example.injector.outputs.OptionalProvidesOutputModel" },
+        new Object[]{ "com.example.injector.outputs.PrimitiveAndBoxedCollectionOutputModel" },
+        new Object[]{ "com.example.injector.outputs.PrimitiveProviderBoxedOutputModel" },
+        new Object[]{ "com.example.injector.outputs.PrimitiveProviderBoxedSupplierKindsOutputModel" },
         new Object[]{ "com.example.injector.outputs.PrimitiveOutputModel" },
         new Object[]{ "com.example.injector.outputs.QualifiedOutputModel" },
         new Object[]{ "com.example.injector.outputs.SupplierCollectionOutputModel" },
@@ -154,6 +159,7 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.injector.inputs.MultipleInputInjectorModel" },
         new Object[]{ "com.example.injector.inputs.OptionalInputInjectorModel" },
+        new Object[]{ "com.example.injector.inputs.PrimitiveInputBoxedDependencyInjectorModel" },
         new Object[]{ "com.example.injector.inputs.PrimitiveInputInjectorModel" },
         new Object[]{ "com.example.injector.inputs.SingleInputInjectorModel" }
       };
@@ -166,6 +172,28 @@ public final class StingProcessorTest
   {
     final List<String> expectedOutputs = Arrays.asList( jsonOutput( classname ), jsonGraphOutput( classname ) );
     assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
+  }
+
+  @DataProvider( name = "successfulPrimitiveInteropCompiles" )
+  @Nonnull
+  public Object[][] successfulPrimitiveInteropCompiles()
+  {
+    return new Object[][]
+      {
+        new Object[]{ "com.example.injector.AllPrimitiveProviderBoxedDependencyModel" },
+        new Object[]{ "com.example.injector.AllPrimitiveProviderOptionalBoxedDependencyModel" },
+        new Object[]{ "com.example.injector.inputs.AllPrimitiveInputBoxedDependencyInjectorModel" },
+        new Object[]{ "com.example.injector.outputs.AllBoxedProviderPrimitiveOutputModel" },
+        new Object[]{ "com.example.injector.outputs.AllPrimitiveProviderBoxedCollectionKindsOutputModel" },
+        new Object[]{ "com.example.injector.outputs.AllPrimitiveProviderBoxedOutputModel" }
+      };
+  }
+
+  @Test( dataProvider = "successfulPrimitiveInteropCompiles" )
+  public void processSuccessfulPrimitiveInteropCompile( @Nonnull final String classname )
+  {
+    final Compilation compilation = compile( Collections.singletonList( input( "input", classname ) ) );
+    assertCompilationSuccessful( compilation );
   }
 
   private boolean emitInjectorGeneratedFile( @Nonnull final String classname, @Nonnull final String target )
@@ -602,6 +630,13 @@ public final class StingProcessorTest
                       "    [Provides]       com.example.injector.MultipleCandidatesForSingularDependencyModel.MyFragment2.provideRunnable2" },
         new Object[]{ "com.example.injector.NoDirectDependenciesAndNoEagerInIncludesModel",
                       "@Injector target produced an empty object graph. This means that there are no eager nodes in the includes and there are no dependencies or only unsatisfied optional dependencies defined by the injector" },
+        new Object[]{ "com.example.injector.NullableBoxedProviderPrimitiveOutputModel",
+                      "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [int]\n" +
+                      "  Dependency Path:\n" +
+                      "    [Injector]       com.example.injector.NullableBoxedProviderPrimitiveOutputModel\n" +
+                      "  \n" +
+                      "  Binding:\n" +
+                      "    [Provides]       com.example.injector.NullableBoxedProviderPrimitiveOutputModel.MyFragment.provideValue" },
         new Object[]{ "com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel",
                       "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [java.lang.Integer]\n" +
                       "  Dependency Path:\n" +
@@ -747,10 +782,25 @@ public final class StingProcessorTest
                       "    [Injectable]     com.example.injector.outputs.MissingOutputModel.MyModel1\n" +
                       "    [Provides]       com.example.injector.outputs.MissingOutputModel.MyFragment1.provideRunnable\n" +
                       "    [Provides]    *  com.example.injector.outputs.MissingOutputModel.MyFragment2.provideConfig" },
+        new Object[]{ "com.example.injector.outputs.NullableBoxedProviderBoxedOutputModel",
+                      "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [java.lang.Integer]\n" +
+                      "  Dependency Path:\n" +
+                      "    [Injector]       com.example.injector.outputs.NullableBoxedProviderBoxedOutputModel\n" +
+                      "  \n" +
+                      "  Binding:\n" +
+                      "    [Provides]       com.example.injector.outputs.NullableBoxedProviderBoxedOutputModel.MyFragment.provideValue" },
         new Object[]{ "com.example.injector.outputs.ParameterizedCollectionOutputModel",
                       "@Injector target must not contain a method with a return type that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
         new Object[]{ "com.example.injector.outputs.ParameterizedOutputModel",
                       "@Injector target must not contain a method with a return type that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
+        new Object[]{ "com.example.injector.outputs.PrimitiveAndBoxedAmbiguousOutputModel",
+                      "@Injector target must not contain a non-collection dependency [java.lang.Integer] that can be satisfied by multiple nodes.\n" +
+                      "  Dependency Path:\n" +
+                      "    [Injector]       com.example.injector.outputs.PrimitiveAndBoxedAmbiguousOutputModel\n" +
+                      "  \n" +
+                      "  Candidate Nodes:\n" +
+                      "    [Provides]       com.example.injector.outputs.PrimitiveAndBoxedAmbiguousOutputModel.MyFragment1.provideValue\n" +
+                      "    [Provides]       com.example.injector.outputs.PrimitiveAndBoxedAmbiguousOutputModel.MyFragment2.provideValue" },
         new Object[]{ "com.example.injector.outputs.ParameterizedSupplierCollectionOutputModel",
                       "@Injector target must not contain a method with a return type that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
         new Object[]{ "com.example.injector.outputs.RawCollectionOutputModel",

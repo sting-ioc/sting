@@ -12,6 +12,13 @@ return qualified services if they are annotated with the {@link: sting.Named @Na
 as described in the [naming](naming.md) document. These output methods can also be the different
 types of dependency described in the [dependency kinds](dependency_kinds.md) document.
 
+When resolving an output, Sting treats primitive and boxed equivalents as the same service. A
+request for `Integer` can be satisfied by an `int` provider and a request for `int` can be
+satisfied by a non-null `Integer` provider. However, a nullable boxed provider still does not
+satisfy a required primitive or required boxed request, and if both primitive and boxed providers
+exist for the same qualifier then singular outputs remain ambiguous while collection outputs
+contain both bindings.
+
 A simple example to illustrate how services can be accessed from an injector follows.
 
 The injector:

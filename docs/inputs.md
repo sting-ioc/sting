@@ -16,6 +16,11 @@ Sting will generate an injector with a constructor that accepts the input servic
 the order specified and using the types specified. Optional service inputs will also be annotated
 with the `@Nullable` annotation.
 
+Injector matching treats primitive and boxed equivalents as the same service. For example, an input
+declared as `int` can satisfy requests for `int`, `Integer`, `@Nullable Integer`,
+`Collection<Integer>` and `Supplier<Integer>` as long as the qualifier also matches. The declared
+input type is still preserved in the generated constructor and descriptors.
+
 For example, the injector defined by:
 
 {@file_content: file=sting/doc/examples/inputs/MyInjector.java start_line=@Injector}

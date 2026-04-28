@@ -1,0 +1,12 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.PrimitiveProviderOptionalBoxedDependencyModel.MyModel",
+    "com.example.injector.PrimitiveProviderOptionalBoxedDependencyModel.MyFragment"
+  ],
+  "outputs": [
+    {
+      "type": "com.example.injector.PrimitiveProviderOptionalBoxedDependencyModel.MyModel"
+    }
+  ]
+}

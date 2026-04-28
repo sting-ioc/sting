@@ -1,0 +1,22 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.inputs.PrimitiveInputBoxedDependencyInjectorModel#0",
+      "kind": "INPUT",
+      "eager": true
+    },
+    {
+      "id": "com.example.injector.inputs.PrimitiveInputBoxedDependencyInjectorModel.MyModel",
+      "kind": "INJECTABLE",
+      "dependencies": [
+        {
+          "type": "java.lang.Integer",
+          "supportedBy": [
+            "com.example.injector.inputs.PrimitiveInputBoxedDependencyInjectorModel#0"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -41,7 +41,7 @@ final class ComponentGraph
    * The types that are published in the component graph.
    */
   @Nonnull
-  private final Map<Coordinate, List<Binding>> _publishedTypes = new LinkedHashMap<>();
+  private final Map<ServiceKey, List<Binding>> _publishedTypes = new LinkedHashMap<>();
   /**
    * The index of ids to Node.
    */
@@ -202,7 +202,7 @@ final class ComponentGraph
   {
     for ( final ServiceSpec service : binding.getPublishedServices() )
     {
-      _publishedTypes.computeIfAbsent( service.getCoordinate(), c -> new ArrayList<>() ).add( binding );
+      _publishedTypes.computeIfAbsent( new ServiceKey( service.getCoordinate() ), c -> new ArrayList<>() ).add( binding );
     }
   }
 
@@ -215,7 +215,7 @@ final class ComponentGraph
   @Nonnull
   List<Binding> findAllBindingsByCoordinate( @Nonnull final Coordinate coordinate )
   {
-    return _publishedTypes.getOrDefault( coordinate, Collections.emptyList() );
+    return _publishedTypes.getOrDefault( new ServiceKey( coordinate ), Collections.emptyList() );
   }
 
   /**

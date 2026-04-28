@@ -45,6 +45,6 @@ final class FactoryDependencyDescriptor
     final ServiceSpec candidate = serviceRequest.getService();
     return _serviceRequest.getKind() == serviceRequest.getKind() &&
            existing.isOptional() == candidate.isOptional() &&
-           existing.getCoordinate().equals( candidate.getCoordinate() );
+           ServiceKey.matches( existing.getCoordinate(), candidate.getCoordinate() );
   }
 }

@@ -1,0 +1,13 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.outputs.PrimitiveAndBoxedCollectionOutputModel.MyFragment2#provideValue",
+      "kind": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.outputs.PrimitiveAndBoxedCollectionOutputModel.MyFragment1#provideValue",
+      "kind": "PROVIDES"
+    }
+  ]
+}
