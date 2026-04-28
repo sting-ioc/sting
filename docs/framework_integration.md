@@ -18,7 +18,7 @@ Using StingProvider
 
 - Apply a `@StingProvider` meta‑annotation to a framework’s component annotation. The `value()` defines a
   naming pattern for the provider class that Sting should include. The provider class must exist, be in the same
-  package as the referenced type, and be annotated with `@Fragment`, `@Injector` or `@Injectable`.
+  package as the referenced type, and be annotated with `@Fragment` or `@Injectable`.
 - Supported tokens in the pattern: `[SimpleName]`, `[CompoundName]`, `[EnclosingName]`, `[FlatEnclosingName]`.
 
 Example
@@ -44,6 +44,10 @@ interface Fw_Foo_Provider {
 Then `@Fragment(includes = Foo.class)` or `@Injector(includes = Foo.class)` will resolve and include `Fw_Foo_Provider`.
 If the resolved provider type is an `@Injectable` rather than a `@Fragment`, then
 `@Injector(fragmentOnly = false, includes = Foo.class)` is required.
+
+The same provider contract is also used during auto-discovery. If an injector requests `Foo` without an explicit
+include, Sting can auto-discover the provider-backed component so long as the resolved provider publishes `Foo`
+with the default qualifier.
 
 ActAsStingComponent
 

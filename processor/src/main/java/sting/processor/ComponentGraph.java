@@ -240,6 +240,16 @@ final class ComponentGraph
                            @Nonnull final InjectableDescriptor injectable )
   {
     _includeRootToBindingMap.computeIfAbsent( includeRoot, r -> new HashSet<>() ).add( injectable.getBinding() );
+    doRegisterInjectable( injectable );
+  }
+
+  void registerInjectable( @Nonnull final InjectableDescriptor injectable )
+  {
+    doRegisterInjectable( injectable );
+  }
+
+  private void doRegisterInjectable( @Nonnull final InjectableDescriptor injectable )
+  {
     final String typeName = injectable.getElement().getQualifiedName().toString();
     if ( _includedTypes.add( typeName ) )
     {
@@ -262,6 +272,16 @@ final class ComponentGraph
   void registerFragment( @Nonnull final IncludeDescriptor includeRoot, @Nonnull final FragmentDescriptor fragment )
   {
     _includeRootToBindingMap.computeIfAbsent( includeRoot, r -> new HashSet<>() ).addAll( fragment.getBindings() );
+    doRegisterFragment( fragment );
+  }
+
+  void registerFragment( @Nonnull final FragmentDescriptor fragment )
+  {
+    doRegisterFragment( fragment );
+  }
+
+  private void doRegisterFragment( @Nonnull final FragmentDescriptor fragment )
+  {
     final String typeName = fragment.getElement().getQualifiedName().toString();
     if ( _includedTypes.add( typeName ) )
     {

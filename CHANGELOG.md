@@ -9,6 +9,10 @@
 * Add the `sting.warnings_as_errors` annotation processor option to upgrade Sting warnings to errors.
 * Introduce the `@sting.Factory` annotation to generate injectable factory implementations that can be included in
   injectors via `@StingProvider`.
+* Extend auto-discovery so unresolved, unqualified dependencies on types annotated with annotations annotated by
+  `@StingProvider` can resolve through provider `@Injectable` and `@Fragment` types. Add dedicated diagnostics for
+  missing or incompatible providers, update the framework integration and auto-discovery documentation, and add
+  processor and integration test coverage for the new behavior.
 * Update framework integration documentation and diagnostics to clarify that
   provider types may be annotated with `@Injectable` as well as `@Fragment` or `@Injector`.
 * Remove the practically unused `@AutoFragment` and `@ContributeTo` annotations together with their

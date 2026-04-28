@@ -58,4 +58,28 @@ public final class StingProcessorRuntimeDeriveTest
 
     assertCompilationSuccessful( stage2 );
   }
+
+  @Test
+  public void runtimeDerive_providerAutodiscovery()
+    throws Exception
+  {
+    final Compilation stage1 =
+      compile( Arrays.asList( input( "unresolved", "com.example.autodetect.provider.MyFrameworkComponent" ),
+                              input( "unresolved", "com.example.autodetect.provider.LibModel" ),
+                              input( "unresolved", "com.example.autodetect.provider.LibModelImpl" ) ) );
+    assertCompilationSuccessful( stage1 );
+
+    final Path targetDir = Files.createTempDirectory( "sting-runtime-derive-provider-autod" );
+    CompileTestUtil.outputFiles( stage1.classOutputFilenames(), stage1.classOutput(), targetDir );
+
+    final List<File> classPath = buildClasspath( targetDir.toFile() );
+    final Compilation stage2 =
+      CompileTestUtil.compile( Collections.singletonList( input( "unresolved",
+                                                                 "com.example.autodetect.provider.AppInjector" ) ),
+                               getOptions(),
+                               processors(),
+                               classPath );
+
+    assertCompilationSuccessful( stage2 );
+  }
 }

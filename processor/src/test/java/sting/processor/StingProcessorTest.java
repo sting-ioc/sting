@@ -637,6 +637,22 @@ public final class StingProcessorTest
                       "@Injector target must not contain a non-optional dependency [com.example.injector.TypedInjectablesAreNotAutoDiscoverableInjectorModel.MyModel] that can not be satisfied.\n" +
                       "  Dependency Path:\n" +
                       "    [Injector]       com.example.injector.TypedInjectablesAreNotAutoDiscoverableInjectorModel.MyInjector" },
+        new Object[]{ "com.example.injector.autodetect.provider.MissingProviderModel",
+                      "@Injector target must not contain a non-optional dependency [com.example.injector.autodetect.provider.MissingProviderModel.MyModel1] that can not be auto-discovered via @StingProvider because the framework type com.example.injector.autodetect.provider.MissingProviderModel.MyModel1 expects a provider class named com.example.injector.autodetect.provider.MissingProviderModel.MyModel1Impl but no such class exists.\n" +
+                      "  Dependency Path:\n" +
+                      "    [Injector]       com.example.injector.autodetect.provider.MissingProviderModel.MyInjector" },
+        new Object[]{ "com.example.injector.autodetect.provider.MultipleProvidersModel",
+                      "@Injector target is attempting to auto-discover the type com.example.injector.autodetect.provider.MultipleProvidersModel.MyModel1 that is annotated by multiple @StingProvider annotations. Matching annotations:\n" +
+                      "    com.example.injector.autodetect.provider.MultipleProvidersModel.MyFrameworkComponent1\n" +
+                      "    com.example.injector.autodetect.provider.MultipleProvidersModel.MyFrameworkComponent2" },
+        new Object[]{ "com.example.injector.autodetect.provider.QualifiedPublishedTypeModel",
+                      "@Injector target must not contain a non-optional dependency [com.example.injector.autodetect.provider.QualifiedPublishedTypeModel.MyModel1] that can not be auto-discovered via @StingProvider because the provider class com.example.injector.autodetect.provider.QualifiedPublishedTypeModel.MyModel1Impl does not publish the service [com.example.injector.autodetect.provider.QualifiedPublishedTypeModel.MyModel1] for the framework type com.example.injector.autodetect.provider.QualifiedPublishedTypeModel.MyModel1. The provider must publish the framework type with the default qualifier.\n" +
+                      "  Dependency Path:\n" +
+                      "    [Injector]       com.example.injector.autodetect.provider.QualifiedPublishedTypeModel.MyInjector" },
+        new Object[]{ "com.example.injector.autodetect.provider.WrongPublishedTypeModel",
+                      "@Injector target must not contain a non-optional dependency [com.example.injector.autodetect.provider.WrongPublishedTypeModel.MyModel1] that can not be auto-discovered via @StingProvider because the provider class com.example.injector.autodetect.provider.WrongPublishedTypeModel.MyModel1Impl does not publish the service [com.example.injector.autodetect.provider.WrongPublishedTypeModel.MyModel1] for the framework type com.example.injector.autodetect.provider.WrongPublishedTypeModel.MyModel1. The provider must publish the framework type with the default qualifier.\n" +
+                      "  Dependency Path:\n" +
+                      "    [Injector]       com.example.injector.autodetect.provider.WrongPublishedTypeModel.MyInjector" },
 
         new Object[]{ "com.example.injector.circular.ChainedCircularDependencyModel",
                       "Injector contains a circular dependency.\n" +
@@ -896,6 +912,9 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.named.SuppressedJsr330NamedInjectableModel" },
 
         new Object[]{ "com.example.injector.AutodetectInjectableModel" },
+        new Object[]{ "com.example.injector.AutodetectProviderFragmentModel" },
+        new Object[]{ "com.example.injector.AutodetectProviderInjectableModel" },
+        new Object[]{ "com.example.injector.AutodetectProviderNestedModel" },
 
         new Object[]{ "com.example.named.NamedOnActAsStingComponentModel" },
         new Object[]{ "com.example.named.NamedOnCtorParamInActAsStingComponentModel" },

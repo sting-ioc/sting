@@ -12,9 +12,11 @@ import javax.annotation.Nonnull;
  * The class that provides the service may be either a {@link Fragment} annotated type or an {@link Injectable}
  * annotated type. This annotation is applied to another framework's annotation to simplify integration with Sting.
  * Sting will process this annotation when the framework annotation is applied to a type element and that Sting
- * attempts to include that type. Sting can attempt to include the type either by the type being added to an
- * {@link Injector#includes()} annotation parameter, a {@link Fragment#includes()} annotation parameter, or by
- * being an unresolved service referenced in component graph that sting attempts to autodetect.
+ * attempts to include or discover that type. Sting can attempt to include the type either by the type being added
+ * to an {@link Injector#includes()} annotation parameter, a {@link Fragment#includes()} annotation parameter, or by
+ * being an unresolved service referenced in component graph that Sting attempts to auto-discover. In the
+ * auto-discovery case, the resolved provider must be annotated with {@link Fragment} or {@link Injectable} and
+ * publish the framework type using the default qualifier.
  *
  * <p>It should be noted that Sting will attempt to use any annotation with this name and shape so that
  * frameworks do not need a direct code dependency on Sting. </p>

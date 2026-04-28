@@ -639,19 +639,24 @@ public final class StingProcessor
     // We start at the rootNode and expand all of the dependencies. And then we take any of the eager dependencies
     // that have yet to be added to be processed and add them to to worklist and expand all dependencies until there
     // are no eager nodes left to process
-    final List<Node> eagerNodes = new ArrayList<>( graph.getRawNodeCollection() );
     final Node rootNode = graph.getRootNode();
     rootNode.setDepth( 0 );
     addDependsOnToWorkList( workList, rootNode, null );
     processWorkList( graph, completed, workList );
-    for ( final Node node : eagerNodes )
+    List<Node> eagerNodes = graph.getRawNodeCollection().stream().filter( n -> n.getBinding().isEager() ).toList();
+    while ( !eagerNodes.isEmpty() )
     {
-      if ( node.isDepthNotSet() )
+      for ( final Node node : eagerNodes )
       {
-        node.setDepth( 0 );
-        addDependsOnToWorkList( workList, node, null );
-        processWorkList( graph, completed, workList );
+        if ( node.isDepthNotSet() )
+        {
+          node.setDepth( 0 );
+          addDependsOnToWorkList( workList, node, null );
+          processWorkList( graph, completed, workList );
+        }
       }
+      eagerNodes =
+        graph.getRawNodeCollection().stream().filter( n -> n.getBinding().isEager() && n.isDepthNotSet() ).toList();
     }
     graph.complete();
   }
@@ -688,6 +693,10 @@ public final class StingProcessor
               assert coordinate.equals( candidate.getBinding().getPublishedServices().get( 0 ).getCoordinate() );
               _registry.registerInjectable( candidate );
               bindings.add( candidate.getBinding() );
+            }
+            if ( bindings.isEmpty() )
+            {
+              bindings.addAll( autoDiscoverProviderBindings( graph, workEntry, typeElement ) );
             }
           }
         }
@@ -1680,45 +1689,16 @@ public final class StingProcessor
         final ElementKind kind = includeElement.getKind();
         if ( ElementKind.CLASS == kind || ElementKind.INTERFACE == kind )
         {
-          final List<ProviderEntry> providers =
-            includeElement.getAnnotationMirrors()
-              .stream()
-              .map( a -> {
-                final AnnotationMirror provider =
-                  getStingProvider( element, annotationClassname, (TypeElement) includeElement, a );
-                return null != provider ? new ProviderEntry( a, provider ) : null;
-              } )
-              .filter( Objects::nonNull )
-              .toList();
-          if ( providers.size() > 1 )
+          final ProviderEntry provider =
+            resolveSingleStingProvider( element,
+                                        MemberChecks.toSimpleName( annotationClassname ) +
+                                        " target has an 'includes' parameter containing the value " +
+                                        includeElement.asType(),
+                                        (TypeElement) includeElement );
+          if ( null != provider )
           {
-            final String message =
-              MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
-              "'includes' parameter containing the value " + includeElement.asType() +
-              " that is annotated by multiple @StingProvider annotations. Matching annotations:\n" +
-              providers
-                .stream()
-                .map( a -> ( (TypeElement) a.getAnnotation().getAnnotationType().asElement() ).getQualifiedName() )
-                .map( a -> "  " + a )
-                .collect( Collectors.joining( "\n" ) );
-            throw new ProcessorException( message, element );
-          }
-          else if ( !providers.isEmpty() )
-          {
-            final ProviderEntry entry = providers.get( 0 );
-            final AnnotationMirror providerAnnotation = entry.getProvider();
-            final String namePattern = AnnotationsUtil.getAnnotationValueValue( providerAnnotation, "value" );
-
-            final String targetCompoundType =
-              namePattern
-                .replace( "[SimpleName]", includeElement.getSimpleName().toString() )
-                .replace( "[CompoundName]", getComponentName( (TypeElement) includeElement ) )
-                .replace( "[EnclosingName]", getEnclosingName( (TypeElement) includeElement ) )
-                .replace( "[FlatEnclosingName]", getEnclosingName( (TypeElement) includeElement ).replace( '.', '_' ) );
-
             final String targetQualifiedName =
-              ElementsUtil.getPackageElement( includeElement ).getQualifiedName().toString() + "." + targetCompoundType;
-
+              deriveProviderQualifiedName( (TypeElement) includeElement, provider.getProvider() );
             results.add( new IncludeDescriptor( (DeclaredType) include, targetQualifiedName, false ) );
           }
           else
@@ -1751,18 +1731,60 @@ public final class StingProcessor
   }
 
   @Nullable
+  private ProviderEntry resolveSingleStingProvider( @Nonnull final TypeElement element,
+                                                    @Nonnull final String targetDescription,
+                                                    @Nonnull final TypeElement annotatedType )
+  {
+    final List<ProviderEntry> providers =
+      annotatedType.getAnnotationMirrors()
+        .stream()
+        .map( a -> {
+          final AnnotationMirror provider = getStingProvider( element, targetDescription, annotatedType, a );
+          return null != provider ? new ProviderEntry( a, provider ) : null;
+        } )
+        .filter( Objects::nonNull )
+        .toList();
+    if ( providers.size() > 1 )
+    {
+      final String message =
+        targetDescription + " that is annotated by multiple @StingProvider annotations. Matching annotations:\n" +
+        providers
+          .stream()
+          .map( a -> ( (TypeElement) a.getAnnotation().getAnnotationType().asElement() ).getQualifiedName() )
+          .map( a -> "  " + a )
+          .collect( Collectors.joining( "\n" ) );
+      throw new ProcessorException( message, element );
+    }
+    return providers.isEmpty() ? null : providers.get( 0 );
+  }
+
+  @Nullable
   private AnnotationMirror getStingProvider( @Nonnull final TypeElement element,
-                                             @Nonnull final String annotationClassname,
-                                             @Nonnull final TypeElement includeElement,
+                                             @Nonnull final String targetDescription,
+                                             @Nonnull final TypeElement annotatedType,
                                              @Nonnull final AnnotationMirror annotation )
   {
     return annotation.getAnnotationType()
       .asElement()
       .getAnnotationMirrors()
       .stream()
-      .filter( ca -> isStingProvider( element, annotationClassname, includeElement, ca ) )
+      .filter( ca -> isStingProvider( element, targetDescription, annotatedType, ca ) )
       .findAny()
       .orElse( null );
+  }
+
+  @Nonnull
+  private String deriveProviderQualifiedName( @Nonnull final TypeElement annotatedType,
+                                              @Nonnull final AnnotationMirror providerAnnotation )
+  {
+    final String namePattern = AnnotationsUtil.getAnnotationValueValue( providerAnnotation, "value" );
+    final String targetCompoundType =
+      namePattern
+        .replace( "[SimpleName]", annotatedType.getSimpleName().toString() )
+        .replace( "[CompoundName]", getComponentName( annotatedType ) )
+        .replace( "[EnclosingName]", getEnclosingName( annotatedType ) )
+        .replace( "[FlatEnclosingName]", getEnclosingName( annotatedType ).replace( '.', '_' ) );
+    return ElementsUtil.getPackageElement( annotatedType ).getQualifiedName().toString() + "." + targetCompoundType;
   }
 
   @Nonnull
@@ -1793,8 +1815,8 @@ public final class StingProcessor
   }
 
   private boolean isStingProvider( @Nonnull final TypeElement element,
-                                   @Nonnull final String annotationClassname,
-                                   @Nonnull final Element includeElement,
+                                   @Nonnull final String targetDescription,
+                                   @Nonnull final Element annotatedType,
                                    @Nonnull final AnnotationMirror annotation )
   {
     if ( !annotation.getAnnotationType().asElement().getSimpleName().contentEquals( "StingProvider" ) )
@@ -1814,14 +1836,183 @@ public final class StingProcessor
       }
       else
       {
-        final String message =
-          MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
-          "'includes' parameter containing the value " + includeElement.asType() +
-          " that is annotated by " + annotation + " that is annotated by an invalid @StingProvider " +
+        final String message = targetDescription +
+                               " that is annotated by " + annotation +
+                               " that is annotated by an invalid @StingProvider " +
           "annotation missing a 'value' parameter of type string.";
         throw new ProcessorException( message, element );
       }
     }
+  }
+
+  @Nonnull
+  private List<Binding> autoDiscoverProviderBindings( @Nonnull final ComponentGraph graph,
+                                                      @Nonnull final WorkEntry workEntry,
+                                                      @Nonnull final TypeElement frameworkType )
+  {
+    final ProviderEntry provider =
+      resolveSingleStingProvider( graph.getInjector().getElement(),
+                                  MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) +
+                                  " target is attempting to auto-discover the type " + frameworkType.asType(),
+                                  frameworkType );
+    if ( null == provider )
+    {
+      return Collections.emptyList();
+    }
+
+    final String providerTypeName = deriveProviderQualifiedName( frameworkType, provider.getProvider() );
+    final TypeElement providerType = processingEnv.getElementUtils().getTypeElement( providerTypeName );
+    final Coordinate coordinate = new Coordinate( "", frameworkType.asType() );
+    if ( null == providerType )
+    {
+      throw new ProcessorException( buildAutoDiscoverProviderError( coordinate,
+                                                                    workEntry,
+                                                                    "the framework type " +
+                                                                    frameworkType.getQualifiedName() +
+                                                                    " expects a provider class named " +
+                                                                    providerTypeName + " but no such class exists" ),
+                                    workEntry.getEntry().getEdge().getServiceRequest().getElement() );
+    }
+
+    if ( AnnotationsUtil.hasAnnotationOfType( providerType, Constants.FRAGMENT_CLASSNAME ) )
+    {
+      FragmentDescriptor fragment = _registry.findFragmentByClassName( providerTypeName );
+      if ( null == fragment )
+      {
+        fragment = deriveFragmentDescriptor( providerType );
+        if ( null != fragment )
+        {
+          _registry.registerFragment( fragment );
+        }
+      }
+      if ( null == fragment )
+      {
+        return Collections.emptyList();
+      }
+      verifyAutoDiscoverProviderPublishesType( coordinate, providerType, fragment.getBindings(), workEntry );
+      registerAutoDiscoveredFragment( graph, fragment );
+      return graph.findAllBindingsByCoordinate( coordinate );
+    }
+    else if ( AnnotationsUtil.hasAnnotationOfType( providerType, Constants.INJECTABLE_CLASSNAME ) )
+    {
+      InjectableDescriptor injectable = _registry.findInjectableByClassName( providerTypeName );
+      if ( null == injectable )
+      {
+        injectable = deriveInjectableDescriptor( providerType );
+        if ( null != injectable )
+        {
+          _registry.registerInjectable( injectable );
+        }
+      }
+      if ( null == injectable )
+      {
+        return Collections.emptyList();
+      }
+      verifyAutoDiscoverProviderPublishesType( coordinate,
+                                               providerType,
+                                               Collections.singletonList( injectable.getBinding() ),
+                                               workEntry );
+      graph.registerInjectable( injectable );
+      return Collections.singletonList( injectable.getBinding() );
+    }
+    else
+    {
+      throw new ProcessorException( buildAutoDiscoverProviderError( coordinate,
+                                                                    workEntry,
+                                                                    "the framework type " +
+                                                                    frameworkType.getQualifiedName() +
+                                                                    " expects a provider class named " +
+                                                                    providerTypeName +
+                                                                    " but that class is not annotated with either " +
+                                                                    MemberChecks.toSimpleName(
+                                                                      Constants.FRAGMENT_CLASSNAME ) +
+                                                                    " or " +
+                                                                    MemberChecks.toSimpleName(
+                                                                      Constants.INJECTABLE_CLASSNAME ) ),
+                                    workEntry.getEntry().getEdge().getServiceRequest().getElement() );
+    }
+  }
+
+  private void registerAutoDiscoveredFragment( @Nonnull final ComponentGraph graph,
+                                               @Nonnull final FragmentDescriptor fragment )
+  {
+    registerAutoDiscoveredIncludes( graph, fragment.getIncludes() );
+    graph.registerFragment( fragment );
+  }
+
+  private void registerAutoDiscoveredIncludes( @Nonnull final ComponentGraph graph,
+                                               @Nonnull final Collection<IncludeDescriptor> includes )
+  {
+    for ( final IncludeDescriptor include : includes )
+    {
+      final String classname = include.getActualTypeName();
+      final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
+      assert null != element;
+      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
+      {
+        FragmentDescriptor fragment = _registry.findFragmentByClassName( classname );
+        if ( null == fragment )
+        {
+          fragment = deriveFragmentDescriptor( element );
+          if ( null != fragment )
+          {
+            _registry.registerFragment( fragment );
+          }
+        }
+        assert null != fragment;
+        registerAutoDiscoveredFragment( graph, fragment );
+      }
+      else
+      {
+        assert AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME );
+        InjectableDescriptor injectable = _registry.findInjectableByClassName( classname );
+        if ( null == injectable )
+        {
+          injectable = deriveInjectableDescriptor( element );
+          if ( null != injectable )
+          {
+            _registry.registerInjectable( injectable );
+          }
+        }
+        assert null != injectable;
+        graph.registerInjectable( injectable );
+      }
+    }
+  }
+
+  private void verifyAutoDiscoverProviderPublishesType( @Nonnull final Coordinate coordinate,
+                                                        @Nonnull final TypeElement providerType,
+                                                        @Nonnull final Collection<Binding> bindings,
+                                                        @Nonnull final WorkEntry workEntry )
+  {
+    final boolean matches =
+      bindings.stream().flatMap( b -> b.getPublishedServices().stream() ).anyMatch( s -> coordinate.equals(
+        s.getCoordinate() ) );
+    if ( !matches )
+    {
+      throw new ProcessorException( buildAutoDiscoverProviderError( coordinate,
+                                                                    workEntry,
+                                                                    "the provider class " +
+                                                                    providerType.getQualifiedName() +
+                                                                    " does not publish the service " +
+                                                                    coordinate +
+                                                                    " for the framework type " +
+                                                                    coordinate.getType() +
+                                                                    ". The provider must publish the framework type with the default qualifier" ),
+                                    workEntry.getEntry().getEdge().getServiceRequest().getElement() );
+    }
+  }
+
+  @Nonnull
+  private String buildAutoDiscoverProviderError( @Nonnull final Coordinate coordinate,
+                                                 @Nonnull final WorkEntry workEntry,
+                                                 @Nonnull final String detail )
+  {
+    return MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
+                                 "contain a non-optional dependency " + coordinate +
+                                 " that can not be auto-discovered via @StingProvider because " +
+                                 detail + ".\n" +
+                                 "Dependency Path:\n" + workEntry.describePathFromRoot() );
   }
 
   private void emitFragmentJsonDescriptor( @Nonnull final FragmentDescriptor fragment )
