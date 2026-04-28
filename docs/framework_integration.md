@@ -18,7 +18,7 @@ Using StingProvider
 
 - Apply a `@StingProvider` meta‑annotation to a framework’s component annotation. The `value()` defines a
   naming pattern for the provider class that Sting should include. The provider class must exist, be in the same
-  package as the referenced type, and be annotated with `@Fragment` or `@Injector`.
+  package as the referenced type, and be annotated with `@Fragment`, `@Injector` or `@Injectable`.
 - Supported tokens in the pattern: `[SimpleName]`, `[CompoundName]`, `[EnclosingName]`, `[FlatEnclosingName]`.
 
 Example
