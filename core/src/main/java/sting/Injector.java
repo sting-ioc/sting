@@ -143,11 +143,11 @@ public @interface Injector
    *
    * <p>If the annotation processor detects a dependency that is required but not explicitly included in the
    * includes list then it will attempt to automatically add the type to the graph if it is annotated with
-   * {@link Injectable @Injectable}. The current implementation include types
+   * {@link Injectable @Injectable}. The current implementation includes types
    * if they were compiled in the same invocation of the java compiler. In the future the annotation processor
    * will load the descriptors from the filesystem.</p>
    *
-   * @return a list of types that contribute to the injectors object graph.
+   * @return a list of types that contribute to the injector's object graph.
    */
   @Nonnull
   Class<?>[] includes() default {};
@@ -165,7 +165,7 @@ public @interface Injector
 
   /**
    * A flag controlling whether the injector implementation can be added to other injectors.
-   * If set to true then the injector can be included in another injector. The {@link #inputs()}
+   * If set to true, then the injector can be included in another injector. The {@link #inputs()}
    * are services that need to be provided while the service methods will define services that this
    * injector provides.
    *
