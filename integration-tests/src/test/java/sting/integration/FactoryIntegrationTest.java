@@ -49,7 +49,7 @@ public final class FactoryIntegrationTest
     MyComponent create( int someParameter );
   }
 
-  @Injector( includes = MyComponentFactory.class )
+  @Injector( fragmentOnly = false, includes = MyComponentFactory.class )
   public interface MyInjector
   {
     @Nonnull

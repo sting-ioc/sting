@@ -3,8 +3,8 @@ package com.example.injector.includes;
 import sting.Injectable;
 import sting.Injector;
 
-@Injector( fragmentOnly = false, includes = ExplicitIncludesOfEnclosedInjectableModel.MyModel.class )
-interface ExplicitIncludesOfEnclosedInjectableModel
+@Injector( includes = FragmentOnlyIncludesModel.MyModel.class )
+interface FragmentOnlyIncludesModel
 {
   MyModel getMyModel();
 

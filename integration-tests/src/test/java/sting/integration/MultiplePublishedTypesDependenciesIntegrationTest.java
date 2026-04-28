@@ -78,7 +78,7 @@ public final class MultiplePublishedTypesDependenciesIntegrationTest
     }
   }
 
-  @Injector( includes = { MyFragment.class, Model1.class, Model2.class, Model4.class } )
+  @Injector( fragmentOnly = false, includes = { MyFragment.class, Model1.class, Model2.class, Model4.class } )
   public interface MyInjector
   {
     @Nonnull

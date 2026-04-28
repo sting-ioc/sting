@@ -1,5 +1,6 @@
 {
   "schema": "injector/1",
+  "fragmentOnly": "false",
   "includes": [
     "com.example.integration.todomvc.model.TodoRepository",
     "com.example.integration.todomvc.model.BrowserLocationFragment",

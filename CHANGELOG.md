@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Add `@Injector.fragmentOnly`, default it to `true`, and reject explicit injector includes that do not
+  resolve to `@Fragment` types unless the flag is explicitly disabled.
 * Add `@Fragment.localOnly`, default it to `true`, and reject fragment includes declared in a different package unless the flag is explicitly disabled.
 * Update the `org.realityforge.braincheck` artifacts to version `1.32.0`.
 * Add the `sting.warnings_as_errors` annotation processor option to upgrade Sting warnings to errors.

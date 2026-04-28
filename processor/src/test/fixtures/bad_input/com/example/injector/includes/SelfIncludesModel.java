@@ -5,7 +5,7 @@ import sting.Injector;
 
 public interface SelfIncludesModel
 {
-  @Injector( includes = { MyComponent.class, MyInjector.class } )
+  @Injector( fragmentOnly = false, includes = { MyComponent.class, MyInjector.class } )
   interface MyInjector
   {
     MyComponent getMyComponent();

@@ -5,9 +5,10 @@ title: Component Graph Construction
 As part of the compilation phase, injectors build a list of potential components. The potential components
 (sometimes referred to as bindings) are collected using the follow algorithm.
 
-1. Any {@link: sting.Injectable @Injectable}, {@link: sting.Fragment @Fragment} or {@link: sting.StingProvider @StingProvider}
-   annotated types that declared in the {@link: sting.Injector#includes() @Injector.includes} parameter are added to
-   the "work list".
+1. Any types declared in the {@link: sting.Injector#includes() @Injector.includes} parameter are added to the
+   "work list". By default these should be {@link: sting.Fragment @Fragment} annotated types, but
+   {@link: sting.Injectable @Injectable} and provider-backed injectable types are also supported when
+   {@link: sting.Injector#fragmentOnly() @Injector.fragmentOnly} is set to `false`.
 2. Any {@link: sting.Injectable @Injectable} or {@link: sting.Fragment @Fragment} annotated types that are enclosed
    by the injector type are added to the "work list". i.e. The types annotated by the {@link: sting.Injectable @Injectable}
    or {@link: sting.Fragment @Fragment} annotations that are directly nested within the injector class are added.

@@ -27,6 +27,9 @@ injector is a java interface that is annotated by the {@link: sting.Injector @In
 
 To tell the framework which components are available managed by the injector the user may specify
 the types of the components in the {@link: sting.Injector#includes() @Injector.includes} parameter.
+By default, explicit injector includes must be fragments. If you want to explicitly include
+{@link: sting.Injectable @Injectable} components instead, set
+{@link: sting.Injector#fragmentOnly() @Injector.fragmentOnly} to `false`.
 It should be noted that this only specifies that component may potentially be part of the component
 graph managed by the injector and not whether the component is actually part of the component graph.
 

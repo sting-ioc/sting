@@ -951,6 +951,17 @@ public final class StingProcessor
         throw new ProcessorException( message, originator, annotation );
       }
     }
+    else if ( !include.isAuto() && ( (InjectorDescriptor) descriptor ).isFragmentOnly() && !isFragment )
+    {
+      final InjectorDescriptor injectorDescriptor = (InjectorDescriptor) descriptor;
+      injectorDescriptor.markAsContainsError();
+      final String message =
+        MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " target has an includes parameter containing " +
+        "the value " + include.getIncludedType() + " that resolves to " + element.getQualifiedName() +
+        " which is not annotated by " + MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
+        " when fragmentOnly is true";
+      throw new ProcessorException( message, originator, annotation );
+    }
     if ( isFragment )
     {
       FragmentDescriptor fragment = _registry.findFragmentByClassName( classname );
@@ -1064,7 +1075,8 @@ public final class StingProcessor
     final boolean gwt = isGwtEnabled( element );
     final boolean injectable =
       (boolean) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTOR_CLASSNAME, "injectable" ).getValue();
-    final List<IncludeDescriptor> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME );
+    final boolean fragmentOnly = extractInjectorFragmentOnly( element );
+    final List<IncludeDescriptor> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME, fragmentOnly );
     final List<InputDescriptor> inputs = extractInputs( element );
 
     final List<ServiceRequest> outputs = new ArrayList<>();
@@ -1129,9 +1141,16 @@ public final class StingProcessor
                                       element );
       }
     }
-    final InjectorDescriptor injector = new InjectorDescriptor( element, gwt, injectable, includes, inputs, outputs );
+    final InjectorDescriptor injector =
+      new InjectorDescriptor( element, gwt, injectable, fragmentOnly, includes, inputs, outputs );
     _registry.registerInjector( injector );
     emitInjectorJsonDescriptor( injector );
+  }
+
+  private boolean extractInjectorFragmentOnly( @Nonnull final TypeElement element )
+  {
+    return (boolean) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTOR_CLASSNAME, "fragmentOnly" )
+      .getValue();
   }
 
   private boolean isGwtEnabled( @Nonnull final TypeElement element )
@@ -1481,7 +1500,7 @@ public final class StingProcessor
                                     element );
     }
     final boolean localOnly = extractFragmentLocalOnly( element );
-    final List<IncludeDescriptor> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME );
+    final List<IncludeDescriptor> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME, false );
     final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
     for ( final Element enclosedElement : element.getEnclosedElements() )
     {
@@ -1619,7 +1638,8 @@ public final class StingProcessor
 
   @Nonnull
   private List<IncludeDescriptor> extractIncludes( @Nonnull final TypeElement element,
-                                                   @Nonnull final String annotationClassname )
+                                                   @Nonnull final String annotationClassname,
+                                                   final boolean fragmentOnly )
   {
     final List<IncludeDescriptor> results = new ArrayList<>();
     final List<TypeMirror> includes =
@@ -1643,6 +1663,16 @@ public final class StingProcessor
       if ( AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FRAGMENT_CLASSNAME ) ||
            AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) )
       {
+        if ( fragmentOnly &&
+             AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) )
+        {
+          throw new ProcessorException( MemberChecks.toSimpleName( annotationClassname ) +
+                                        " target has an includes parameter containing the value " + include +
+                                        " that is not annotated by " +
+                                        MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
+                                        " when fragmentOnly is true",
+                                        element );
+        }
         results.add( new IncludeDescriptor( (DeclaredType) include, include.toString(), false ) );
       }
       else
@@ -2539,7 +2569,7 @@ public final class StingProcessor
     else
     {
       final boolean localOnly = extractFragmentLocalOnly( element );
-      final List<IncludeDescriptor> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME );
+      final List<IncludeDescriptor> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME, false );
       final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
       for ( final Element enclosedElement : element.getEnclosedElements() )
       {

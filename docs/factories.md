@@ -32,7 +32,7 @@ Sting will generate an implementation using the normal generated naming conventi
 be included in injectors like any other provider-backed component.
 
 ```java
-@Injector( includes = MyComponentFactory.class )
+@Injector( fragmentOnly = false, includes = MyComponentFactory.class )
 interface MyInjector
 {
   @Nonnull

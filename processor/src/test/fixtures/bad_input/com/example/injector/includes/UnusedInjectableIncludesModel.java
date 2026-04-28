@@ -5,7 +5,7 @@ import sting.Injector;
 
 public interface UnusedInjectableIncludesModel
 {
-  @Injector( includes = MyModel1.class )
+  @Injector( fragmentOnly = false, includes = MyModel1.class )
   interface MyInjector
   {
     MyModel2 getMyModel2();

@@ -24,6 +24,10 @@ final class InjectorDescriptor
    */
   private final boolean _injectable;
   /**
+   * Should explicitly included types be limited to fragments.
+   */
+  private final boolean _fragmentOnly;
+  /**
    * The list of types included by Injector.
    */
   @Nonnull
@@ -46,6 +50,7 @@ final class InjectorDescriptor
   InjectorDescriptor( @Nonnull final TypeElement element,
                       final boolean gwt,
                       final boolean injectable,
+                      final boolean fragmentOnly,
                       @Nonnull final Collection<IncludeDescriptor> includes,
                       @Nonnull final List<InputDescriptor> inputs,
                       @Nonnull final List<ServiceRequest> outputs )
@@ -53,6 +58,7 @@ final class InjectorDescriptor
     _element = Objects.requireNonNull( element );
     _gwt = gwt;
     _injectable = injectable;
+    _fragmentOnly = fragmentOnly;
     _includes = Objects.requireNonNull( includes );
     _inputs = Objects.requireNonNull( inputs );
     _outputs = Objects.requireNonNull( outputs );
@@ -72,6 +78,11 @@ final class InjectorDescriptor
   boolean isInjectable()
   {
     return _injectable;
+  }
+
+  boolean isFragmentOnly()
+  {
+    return _fragmentOnly;
   }
 
   @Nonnull
@@ -109,6 +120,10 @@ final class InjectorDescriptor
     if ( _injectable )
     {
       g.write( "injectable", "true" );
+    }
+    if ( !_fragmentOnly )
+    {
+      g.write( "fragmentOnly", "false" );
     }
     if ( !_includes.isEmpty() )
     {

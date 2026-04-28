@@ -663,6 +663,10 @@ public final class StingProcessorTest
                       "@Injector target must not include a @Fragment annotated type that is auto-included as it is enclosed within the injector type" },
         new Object[]{ "com.example.injector.includes.ExplicitIncludesOfEnclosedInjectableModel",
                       "@Injector target must not include an @Injectable annotated type that is auto-included as it is enclosed within the injector type" },
+        new Object[]{ "com.example.injector.includes.FragmentOnlyIncludesModel",
+                      "@Injector target has an includes parameter containing the value " +
+                      "com.example.injector.includes.FragmentOnlyIncludesModel.MyModel that is not annotated by " +
+                      "@Fragment when fragmentOnly is true" },
         new Object[]{ "com.example.injector.includes.InvalidProvider1IncludesModel",
                       "@Injector target has an 'includes' parameter containing the value com.example.injector.includes.InvalidProvider1IncludesModel.MyComponent that is annotated by @com.example.injector.includes.InvalidProvider1IncludesModel.StingProvider(name=\"[FlatEnclosingName]MF1_[SimpleName]_Provider\") that is annotated by an invalid @StingProvider annotation missing a 'value' parameter of type string." },
         new Object[]{ "com.example.injector.includes.InvalidProvider2IncludesModel",

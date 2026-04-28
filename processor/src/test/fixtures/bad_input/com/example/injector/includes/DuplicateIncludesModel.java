@@ -5,7 +5,7 @@ import sting.Injector;
 
 public interface DuplicateIncludesModel
 {
-  @Injector( includes = { MyComponent.class, MyComponent.class } )
+  @Injector( fragmentOnly = false, includes = { MyComponent.class, MyComponent.class } )
   interface MyInjector
   {
     MyComponent getMyComponent();

@@ -136,10 +136,11 @@ public @interface Injector
 {
   /**
    * A list of types that contribute to the object graph.
-   * These types can be {@link Fragment @Fragment}-annotated interfaces or {@link Injectable @Injectable}-annotated classes.
-   * The de-duplicated contributions of the {@code @Fragment}-annotated interfaces in the
-   * {@code includes}, and of their inclusions recursively, are all contributed
-   * to the object graph.
+   * When {@link #fragmentOnly()} is true, these types must be {@link Fragment @Fragment}-annotated interfaces.
+   * When {@link #fragmentOnly()} is false, these types can also be {@link Injectable @Injectable}-annotated
+   * classes.
+   * The de-duplicated contributions of the {@code @Fragment}-annotated interfaces in the {@code includes},
+   * and of their inclusions recursively, are all contributed to the object graph.
    *
    * <p>If the annotation processor detects a dependency that is required but not explicitly included in the
    * includes list then it will attempt to automatically add the type to the graph if it is annotated with
@@ -151,6 +152,14 @@ public @interface Injector
    */
   @Nonnull
   Class<?>[] includes() default {};
+
+  /**
+   * A flag controlling whether explicitly included types must be {@link Fragment @Fragment}-annotated.
+   * If set to false, the injector may explicitly include {@link Injectable @Injectable}-annotated types.
+   *
+   * @return true to require explicit includes to be {@link Fragment @Fragment}-annotated, false otherwise.
+   */
+  boolean fragmentOnly() default true;
 
   /**
    * A list of services that must be passed into the injector.

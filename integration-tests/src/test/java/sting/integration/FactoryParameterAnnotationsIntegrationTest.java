@@ -87,7 +87,7 @@ public final class FactoryParameterAnnotationsIntegrationTest
     MyComponent create( @Nullable String name, @Nonnull Runnable action, int count );
   }
 
-  @Injector( includes = MyComponentFactory.class )
+  @Injector( fragmentOnly = false, includes = MyComponentFactory.class )
   public interface MyInjector
   {
     @Nonnull

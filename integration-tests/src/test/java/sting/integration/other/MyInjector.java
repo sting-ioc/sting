@@ -11,7 +11,7 @@ import sting.integration.other.pkg2.Model4;
 import sting.integration.other.pkg2.MyFragment;
 import sting.integration.other.pkg2.MyService3;
 
-@Injector( includes = { Model1.class, Model2.class, MyFragment.class } )
+@Injector( fragmentOnly = false, includes = { Model1.class, Model2.class, MyFragment.class } )
 public interface MyInjector
 {
   @Nonnull

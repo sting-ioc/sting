@@ -6,7 +6,7 @@ import com.example.multistage.stage1.MyFragment;
 import com.example.multistage.stage2.Model3;
 import sting.Injector;
 
-@Injector( includes = { Model1.class, MyFragment.class } )
+@Injector( fragmentOnly = false, includes = { Model1.class, MyFragment.class } )
 interface MultiStageInjectorModel
 {
   // From MyFragment

@@ -42,6 +42,8 @@ interface Fw_Foo_Provider {
 }
 
 Then `@Fragment(includes = Foo.class)` or `@Injector(includes = Foo.class)` will resolve and include `Fw_Foo_Provider`.
+If the resolved provider type is an `@Injectable` rather than a `@Fragment`, then
+`@Injector(fragmentOnly = false, includes = Foo.class)` is required.
 
 ActAsStingComponent
 

@@ -3,7 +3,7 @@ package com.example.injector.includes.recursive;
 import sting.Injector;
 import sting.Named;
 
-@Injector( includes = { MyFragment1.class, MyModel1.class } )
+@Injector( fragmentOnly = false, includes = { MyFragment1.class, MyModel1.class } )
 interface RecursiveIncludesModel
 {
   Runnable getRunnable1();

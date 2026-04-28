@@ -53,7 +53,7 @@ public final class EagerDependenciesIntegrationTest
     }
   }
 
-  @Injector( includes = { MyFragment.class, Model4.class } )
+  @Injector( fragmentOnly = false, includes = { MyFragment.class, Model4.class } )
   public interface MyInjector
   {
     @Nonnull
