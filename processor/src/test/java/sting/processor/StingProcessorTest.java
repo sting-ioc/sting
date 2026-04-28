@@ -178,40 +178,6 @@ public final class StingProcessorTest
            target.endsWith( simpleClassName + StingProcessor.GRAPH_SUFFIX );
   }
 
-  @DataProvider( name = "successfulAutoFragmentCompiles" )
-  public Object[][] successfulAutoFragmentCompiles()
-  {
-    return new Object[][]
-      {
-        new Object[]{ "com.example.autofragment.BasicAutoFragmentModel",
-                      new String[]{ "com.example.autofragment.BasicAutoFragmentFragmentModel",
-                                    "com.example.autofragment.BasicAutoFragmentInjectableModel",
-                                    "com.example.autofragment.BasicAutoFragmentFrameworkModel",
-                                    "com.example.autofragment.BasicAutoFragmentFrameworkModelImpl",
-                                    "com.example.autofragment.MyFrameworkComponent" } }
-      };
-  }
-
-  // These tests save less fixtures to the filesystem
-  @Test( dataProvider = "successfulAutoFragmentCompiles" )
-  public void processSuccessfulAutoFragmentCompile( @Nonnull final String classname,
-                                                    @Nonnull final String... additionalClassnames )
-    throws Exception
-  {
-    final List<String> expectedOutputs =
-      Collections.singletonList( toFilename( classname, "Sting_", "_Fragment.java" ) );
-    final List<JavaFileObject> javaFileObjects = new ArrayList<>();
-    javaFileObjects.addAll( inputs( classname ) );
-    javaFileObjects.addAll( inputs( additionalClassnames ) );
-    assertSuccessfulCompile( javaFileObjects, expectedOutputs, this::emitAutoFragmentGeneratedFile );
-
-  }
-
-  private boolean emitAutoFragmentGeneratedFile( @Nonnull final String target )
-  {
-    return target.endsWith( ".java" );
-  }
-
   @Test
   public void nestedInjectable()
     throws Exception
@@ -424,33 +390,6 @@ public final class StingProcessorTest
   {
     return new Object[][]
       {
-        new Object[]{ "com.example.autofragment.ContainsAnnotationModel",
-                      "@AutoFragment target must not contain any types" },
-        new Object[]{ "com.example.autofragment.ClassModel", "@AutoFragment target must be an interface" },
-        new Object[]{ "com.example.autofragment.ContainsClassModel",
-                      "@AutoFragment target must not contain any types" },
-        new Object[]{ "com.example.autofragment.ContainsEnumModel", "@AutoFragment target must not contain any types" },
-        new Object[]{ "com.example.autofragment.ContainsFieldModel",
-                      "@AutoFragment target must not contain any fields" },
-        new Object[]{ "com.example.autofragment.ContainsInterfaceModel",
-                      "@AutoFragment target must not contain any types" },
-        new Object[]{ "com.example.autofragment.ContainsMethodModel",
-                      "@AutoFragment target must not contain any methods" },
-        new Object[]{ "com.example.autofragment.EnumModel", "@AutoFragment target must be an interface" },
-        new Object[]{ "com.example.autofragment.ExtendsSuperInterfaceModel",
-                      "@AutoFragment target must not extend any interfaces" },
-        new Object[]{ "com.example.autofragment.ParameterizedModel",
-                      "@AutoFragment target must not have type parameters" },
-        new Object[]{ "com.example.autofragment.ZeroContributorsModel",
-                      "StingProcessor failed to process 1 @AutoFragment annotated types as the fragments either contained no contributors or only had contributors added in the last annotation processor round which is not supported by the @AutoFragment annotation. If the problem is not obvious, consider passing the annotation option sting.debug=true" },
-        new Object[]{ "com.example.autofragment.ZeroContributorsModel",
-                      "Failed to process the com.example.autofragment.ZeroContributorsModel @AutoFragment as 0 @ContributeTo annotations reference the @AutoFragment" },
-
-        new Object[]{ "com.example.contribute_to.MissingAutoFragmentModel",
-                      "Failed to process the @ContributeTo contributors for key 'Foo' as no associated @AutoFragment is on the class path. Impacted contributors included: com.example.contribute_to.MissingAutoFragmentModel" },
-        new Object[]{ "com.example.contribute_to.NonCandidateTypeModel",
-                      "@ContributeTo target must be annotated with @Injectable, @Fragment or be annotated with an annotation annotated by @ActAsStringComponent or @StingProvider" },
-
         new Object[]{ "com.example.fragment.ClassModel", "@Fragment target must be an interface" },
         new Object[]{ "com.example.fragment.EnclosedAnnotationFragmentModel",
                       "@Fragment target must not contain any types" },
@@ -834,9 +773,6 @@ public final class StingProcessorTest
   {
     return new Object[][]
       {
-        new Object[]{ "com.example.autofragment.IncludeAutoDiscoverableAutoFragmentModel",
-                      "@ContributeTo target should not be an auto-discoverable type. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:AutoDiscoverableContributed\" )" },
-
         new Object[]{ "com.example.fragment.includes.IncludeAutoDiscoverableModel",
                       "@Fragment target should not include an auto-discoverable type com.example.fragment.includes.IncludeAutoDiscoverableModel.MyAutoDiscoverableModel. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:AutoDiscoverableIncluded\" )" },
 
@@ -872,10 +808,6 @@ public final class StingProcessorTest
     return new Object[][]
       {
         new Object[]{ "NoPackageModel" },
-
-        new Object[]{ "com.example.autofragment.SuppressedIncludeAutoDiscoverableAutoFragmentModel" },
-
-        new Object[]{ "com.example.contribute_to.ContributeToOnActAsStingComponentModel" },
 
         new Object[]{ "com.example.deprecated.DeprecatedConstructorInjectableModel" },
         new Object[]{ "com.example.deprecated.DeprecatedDependencyInjectableModel" },
@@ -1052,16 +984,6 @@ public final class StingProcessorTest
   }
 
   @Test
-  public void duplicateAutoFragmentKey()
-  {
-    final JavaFileObject source1 = input( "bad_input", "com.example.autofragment.duplicate_key.MyAutoFragment1Model" );
-    final JavaFileObject source2 = input( "bad_input", "com.example.autofragment.duplicate_key.MyAutoFragment2Model" );
-
-    assertFailedCompileResource( Arrays.asList( source1, source2 ),
-                                 "@AutoFragment target must not have the same key as an existing AutoFragment of type com.example.autofragment.duplicate_key.MyAutoFragment1Model" );
-  }
-
-  @Test
   public void autodetectInjectableHasNonMatchingQualifier()
     throws IOException
   {
@@ -1163,69 +1085,6 @@ public final class StingProcessorTest
     compilation.assertJavaClassPresent( "com.example.multiround.injectable.MyGeneratedInjectable" );
     compilation.assertJavaSourcePresent( "com.example.multiround.injectable.Sting_MyGeneratedInjectable" );
     compilation.assertJavaClassPresent( "com.example.multiround.injectable.Sting_MyGeneratedInjectable" );
-  }
-
-  @Test
-  public void contributorCreatedInLaterRound()
-    throws Exception
-  {
-    final Processor synthesizingProcessor =
-      newSynthesizingProcessor( "com.example.multiround.autofragment.MyFrameworkModelImpl", 0 );
-    final Compilation compilation =
-      CompileTestUtil.compile( inputs( "com.example.multiround.autofragment.MyAutoFragment",
-                                       "com.example.multiround.autofragment.MyInjectableModel",
-                                       "com.example.multiround.autofragment.MyFragment",
-                                       "com.example.multiround.autofragment.MyFrameworkModel",
-                                 // The following input exists so that the synthesizing processor has types to "process"
-                                       "com.example.multiround.autofragment.MyFramework" ),
-                               getOptions(),
-                               Arrays.asList( synthesizingProcessor, processor() ),
-                               Collections.emptyList() );
-
-    assertCompilationSuccessful( compilation );
-
-    compilation.assertJavaSourcePresent( "com.example.multiround.autofragment.Sting_MyAutoFragment_Fragment" );
-    compilation.assertJavaSourcePresent( "com.example.multiround.autofragment.Sting_Sting_MyAutoFragment_Fragment" );
-  }
-
-  @Test
-  public void contributorCreatedAfterFragmentGenerated()
-    throws Exception
-  {
-    // Round 0 collects all contributors
-    // Fragment generates in round 1
-    // Synthesized contributor generated in round 1
-    // Round 2 generates an error as contributor attempts to att to generated autofragment
-
-    final String pkg = "com.example.multiround.autofragment.already_generated";
-
-    // This one is just used to keep synthesizer running
-    final Processor synthesizingProcessor1 =
-      newSynthesizingProcessor( "bad_input", pkg + ".MyFrameworkModel2", 0 );
-    // this synthesizer produces java file that we are using in test
-    final Processor synthesizingProcessor2 =
-      newSynthesizingProcessor( "bad_input", pkg + ".MyFrameworkModelImpl", 1 );
-    // this can be ignored as just keeping synthesizer going
-    final Processor synthesizingProcessor3 =
-      newSynthesizingProcessor( "bad_input", pkg + ".MyFrameworkModel2Impl", 1 );
-    final List<JavaFileObject> inputs =
-      Arrays.asList( input( "bad_input", pkg + ".MyAutoFragment" ),
-                     input( "bad_input", pkg + ".MyInjectableModel" ),
-        // The following input exists so that the synthesizing processor has types to "process"
-                     input( "bad_input", pkg + ".MyFramework" ) );
-    final List<Processor> processors =
-      Arrays.asList( synthesizingProcessor1,
-                     synthesizingProcessor2,
-                     synthesizingProcessor3,
-                     processor() );
-    final Compilation compilation =
-      CompileTestUtil.compile( inputs, getOptions(), processors, Collections.emptyList() );
-
-    assertCompilationUnsuccessful( compilation );
-
-    final String errorMessage =
-      "@ContributeTo target attempted to be added to the @AutoFragment annotated type com.example.multiround.autofragment.already_generated.MyAutoFragment but the @AutoFragment annotated type has already generated fragment";
-    assertErrorDiagnostic( compilation, errorMessage );
   }
 
   @Nonnull

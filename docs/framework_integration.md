@@ -46,7 +46,7 @@ Then `@Fragment(includes = Foo.class)` or `@Injector(includes = Foo.class)` will
 ActAsStingComponent
 
 - Apply `@ActAsStingComponent` (or an equivalent annotation with the same shape) to a framework annotation to
-  suppress Sting warnings for types/constructors that legitimately use `@Named` or `@ContributeTo` but are processed
-  by another framework.
+  suppress Sting warnings for types/constructors that legitimately use `@Named` but are processed by another
+  framework.
 
 See also: sting/ActAsStingComponent and sting/StingProvider Javadoc for API details.

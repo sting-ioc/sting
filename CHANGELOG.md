@@ -7,6 +7,8 @@
   injectors via `@StingProvider`.
 * Update framework integration documentation and diagnostics to clarify that
   provider types may be annotated with `@Injectable` as well as `@Fragment` or `@Injector`.
+* Remove the practically unused `@AutoFragment` and `@ContributeTo` annotations together with their
+  annotation processor support, tests, docs, and generated site artifacts.
 
 ### [v0.29](https://github.com/sting-ioc/sting/tree/v0.29) (2025-11-05) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.28...v0.29)
 

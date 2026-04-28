@@ -19,10 +19,6 @@ final class Constants
   @Nonnull
   static final String NAMED_CLASSNAME = "sting.Named";
   @Nonnull
-  static final String AUTO_FRAGMENT_CLASSNAME = "sting.AutoFragment";
-  @Nonnull
-  static final String CONTRIBUTE_TO_CLASSNAME = "sting.ContributeTo";
-  @Nonnull
   static final String JSR_330_NAMED_CLASSNAME = "javax.inject.Named";
   @Nonnull
   static final String JSR_330_INJECT_CLASSNAME = "javax.inject.Inject";
@@ -48,8 +44,6 @@ final class Constants
   static final String WARNING_CDI_TYPED = "Sting:CdiTypedPresent";
   @Nonnull
   static final String WARNING_AUTO_DISCOVERABLE_INCLUDED = "Sting:AutoDiscoverableIncluded";
-  @Nonnull
-  static final String WARNING_AUTO_DISCOVERABLE_CONTRIBUTED = "Sting:AutoDiscoverableContributed";
   @Nonnull
   static final String WARNING_REDUNDANT_DIRECT_INJECTABLE_INCLUDE = "Sting:RedundantExplicitInjectableInclude";
   @Nonnull
