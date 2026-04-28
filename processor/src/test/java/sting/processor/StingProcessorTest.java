@@ -86,7 +86,45 @@ public final class StingProcessorTest
     assertSuccessfulCompile( classname, jsonOutput( classname ) );
   }
 
+  @Nonnull
+  @DataProvider( name = "successfulFactoryCompiles" )
+  public Object[][] successfulFactoryCompiles()
+  {
+    return new Object[][]
+      {
+        new Object[]{ "com.example.factory.BasicFactoryModel",
+                      "com.example.factory.BasicFactoryModel_Sting_MyComponentFactory" },
+        new Object[]{ "com.example.factory.ParameterAnnotationsFactoryModel",
+                      "com.example.factory.ParameterAnnotationsFactoryModel_Sting_MyComponentFactory" },
+        new Object[]{ "com.example.factory.MultiMethodFactoryModel",
+                      "com.example.factory.MultiMethodFactoryModel_Sting_ModelFactory" }
+      };
+  }
+
+  @Test( dataProvider = "successfulFactoryCompiles" )
+  public void processSuccessfulFactoryCompile( @Nonnull final String classname,
+                                               @Nonnull final String generatedClassname )
+    throws Exception
+  {
+    final List<String> expectedOutputs = new ArrayList<>();
+    expectedOutputs.add( javaOutput( generatedClassname ) );
+    expectedOutputs.add( javaOutput( generatedClassname ) );
+    expectedOutputs.add( jsonOutput( generatedClassname ) );
+    assertSuccessfulCompile( inputs( classname ),
+                             expectedOutputs,
+                             t -> emitFactoryGeneratedFile( generatedClassname, t ) );
+  }
+
+  private boolean emitFactoryGeneratedFile( @Nonnull final String generatedClassname,
+                                            @Nonnull final String target )
+  {
+    return target.endsWith( toFilename( generatedClassname, "", ".sting.json" ) ) ||
+           target.endsWith( toFilename( generatedClassname, "", ".java" ) ) ||
+           target.endsWith( toFilename( generatedClassname, "Sting_", ".java" ) );
+  }
+
   @DataProvider( name = "successfulInjectorCompiles" )
+  @Nonnull
   public Object[][] successfulInjectorCompiles()
   {
     return new Object[][]
@@ -448,7 +486,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.includes.SelfIncludesModel",
                       "@Fragment target must not include self" },
         new Object[]{ "com.example.fragment.includes.UnannotatedProviderIncludesModel",
-                      "@Fragment target has an parameter named 'includes' containing the value com.example.fragment.includes.UnannotatedProviderIncludesModel.MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.fragment.includes.UnannotatedProviderIncludesModel.MyComponent_Provider but that class is not annotated with either @Injector or @Fragment" },
+                      "@Fragment target has an parameter named 'includes' containing the value com.example.fragment.includes.UnannotatedProviderIncludesModel.MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.fragment.includes.UnannotatedProviderIncludesModel.MyComponent_Provider but that class is not annotated with either @Injector, @Fragment or @Injectable" },
 
         new Object[]{ "com.example.fragment.inputs.ArrayTypeInputModel",
                       "@Fragment target must not contain a method with a parameter that contains an array type" },
@@ -615,6 +653,12 @@ public final class StingProcessorTest
                       "  \n" +
                       "  Binding:\n" +
                       "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment2.provideConfig" },
+        new Object[]{ "com.example.factory.NoFactoryMethodsModel",
+                      "@Factory target must contain at least one abstract method that returns a value" },
+        new Object[]{ "com.example.factory.ParameterMismatchFactoryModel",
+                      "@Factory target must contain abstract method parameters whose name and type match the created type constructor parameter" },
+        new Object[]{ "com.example.factory.MultipleConstructorsFactoryModel",
+                      "@Factory target must create types with a single accessible constructor" },
         new Object[]{ "com.example.injector.TypeParametersInjectorModel",
                       "@Injector target must not have type parameters" },
         new Object[]{ "com.example.injector.NamedInjectablesAreNotAutoDiscoverableInjectorModel",
@@ -666,7 +710,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.includes.SelfIncludesModel",
                       "@Injector target must not include self" },
         new Object[]{ "com.example.injector.includes.UnannotatedProviderIncludesModel",
-                      "@Injector target has an parameter named 'includes' containing the value com.example.injector.includes.UnannotatedProviderIncludesModel.MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.injector.includes.UnannotatedProviderIncludesModel.MyComponent_Provider but that class is not annotated with either @Injector or @Fragment" },
+                      "@Injector target has an parameter named 'includes' containing the value com.example.injector.includes.UnannotatedProviderIncludesModel.MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.injector.includes.UnannotatedProviderIncludesModel.MyComponent_Provider but that class is not annotated with either @Injector, @Fragment or @Injectable" },
         new Object[]{ "com.example.injector.includes.UnusedFragmentIncludesModel",
                       "@Injector must not include type com.example.injector.includes.UnusedFragmentIncludesModel.MyFragment when the type is not used within the graph" },
         new Object[]{ "com.example.injector.includes.UnusedInjectableIncludesModel",
@@ -970,12 +1014,12 @@ public final class StingProcessorTest
   {
     final Compilation compilation =
       compile( Arrays.asList( input( "input", "com.example.fragment.includes.provider_cycle.MyFrameworkFragment" ),
-                               input( "input", "com.example.fragment.includes.provider_cycle.A" ),
-                               input( "input", "com.example.fragment.includes.provider_cycle.B" ),
-                               input( "input", "com.example.fragment.includes.provider_cycle.C" ),
-                               input( "input", "com.example.fragment.includes.provider_cycle.AImpl" ),
-                               input( "input", "com.example.fragment.includes.provider_cycle.BImpl" ),
-                               input( "input", "com.example.fragment.includes.provider_cycle.CImpl" ) ) );
+                              input( "input", "com.example.fragment.includes.provider_cycle.A" ),
+                              input( "input", "com.example.fragment.includes.provider_cycle.B" ),
+                              input( "input", "com.example.fragment.includes.provider_cycle.C" ),
+                              input( "input", "com.example.fragment.includes.provider_cycle.AImpl" ),
+                              input( "input", "com.example.fragment.includes.provider_cycle.BImpl" ),
+                              input( "input", "com.example.fragment.includes.provider_cycle.CImpl" ) ) );
     assertCompilationSuccessful( compilation );
     assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
     // Expect 3 warnings (one for each of AImpl, BImpl, CImpl origins)
@@ -988,13 +1032,14 @@ public final class StingProcessorTest
   public void processSuppressedProviderFragmentIncludeCycleModel()
   {
     final Compilation compilation =
-      compile( Arrays.asList( input( "input", "com.example.fragment.includes.provider_cycle_suppressed.MyFrameworkFragment" ),
-                               input( "input", "com.example.fragment.includes.provider_cycle_suppressed.A" ),
-                               input( "input", "com.example.fragment.includes.provider_cycle_suppressed.B" ),
-                               input( "input", "com.example.fragment.includes.provider_cycle_suppressed.C" ),
-                               input( "input", "com.example.fragment.includes.provider_cycle_suppressed.AImpl" ),
-                               input( "input", "com.example.fragment.includes.provider_cycle_suppressed.BImpl" ),
-                               input( "input", "com.example.fragment.includes.provider_cycle_suppressed.CImpl" ) ) );
+      compile( Arrays.asList( input( "input",
+                                     "com.example.fragment.includes.provider_cycle_suppressed.MyFrameworkFragment" ),
+                              input( "input", "com.example.fragment.includes.provider_cycle_suppressed.A" ),
+                              input( "input", "com.example.fragment.includes.provider_cycle_suppressed.B" ),
+                              input( "input", "com.example.fragment.includes.provider_cycle_suppressed.C" ),
+                              input( "input", "com.example.fragment.includes.provider_cycle_suppressed.AImpl" ),
+                              input( "input", "com.example.fragment.includes.provider_cycle_suppressed.BImpl" ),
+                              input( "input", "com.example.fragment.includes.provider_cycle_suppressed.CImpl" ) ) );
     assertCompilationSuccessful( compilation );
     assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
     assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 0 );
@@ -1065,7 +1110,7 @@ public final class StingProcessorTest
     final Compilation compilation =
       CompileTestUtil.compile( inputs( "com.example.multiround.fragment.MyInjector",
                                        "com.example.multiround.fragment.MyFragment",
-                                       // The following inputs exist so that the synthesizing processor has types to "process"
+                                 // The following inputs exist so that the synthesizing processor has types to "process"
                                        "com.example.multiround.fragment.MyFramework",
                                        "com.example.multiround.fragment.SomeType" ),
                                getOptions(),
@@ -1099,7 +1144,7 @@ public final class StingProcessorTest
     final Compilation compilation =
       CompileTestUtil.compile( inputs( "com.example.multiround.injectable.MyInjector",
                                        "com.example.multiround.injectable.MyFragment",
-                                       // The following inputs exist so that the synthesizing processor has types to "process"
+                                 // The following inputs exist so that the synthesizing processor has types to "process"
                                        "com.example.multiround.fragment.MyFramework",
                                        "com.example.multiround.fragment.SomeType" ),
                                getOptions(),
@@ -1131,7 +1176,7 @@ public final class StingProcessorTest
                                        "com.example.multiround.autofragment.MyInjectableModel",
                                        "com.example.multiround.autofragment.MyFragment",
                                        "com.example.multiround.autofragment.MyFrameworkModel",
-                                       // The following input exists so that the synthesizing processor has types to "process"
+                                 // The following input exists so that the synthesizing processor has types to "process"
                                        "com.example.multiround.autofragment.MyFramework" ),
                                getOptions(),
                                Arrays.asList( synthesizingProcessor, processor() ),
@@ -1166,7 +1211,7 @@ public final class StingProcessorTest
     final List<JavaFileObject> inputs =
       Arrays.asList( input( "bad_input", pkg + ".MyAutoFragment" ),
                      input( "bad_input", pkg + ".MyInjectableModel" ),
-                     // The following input exists so that the synthesizing processor has types to "process"
+        // The following input exists so that the synthesizing processor has types to "process"
                      input( "bad_input", pkg + ".MyFramework" ) );
     final List<Processor> processors =
       Arrays.asList( synthesizingProcessor1,

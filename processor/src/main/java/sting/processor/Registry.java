@@ -15,6 +15,11 @@ import javax.annotation.Nullable;
 final class Registry
 {
   /**
+   * The set of factories registered.
+   */
+  @Nonnull
+  private final Map<String, FactoryDescriptor> _factories = new HashMap<>();
+  /**
    * The set of injectables registered.
    */
   @Nonnull
@@ -39,6 +44,17 @@ final class Registry
    */
   @Nonnull
   private final Map<String, Set<ContributorDescriptor>> _contributors = new HashMap<>();
+
+  void registerFactory( @Nonnull final FactoryDescriptor factory )
+  {
+    _factories.put( factory.getElement().getQualifiedName().toString(), factory );
+  }
+
+  @Nonnull
+  Collection<FactoryDescriptor> getFactories()
+  {
+    return _factories.values();
+  }
 
   /**
    * Register the Injectable in the local cache.
@@ -166,6 +182,7 @@ final class Registry
 
   void clear()
   {
+    _factories.clear();
     _injectables.clear();
     _fragments.clear();
     _injectors.clear();

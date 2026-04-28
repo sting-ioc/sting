@@ -58,6 +58,7 @@ import org.realityforge.proton.TypesUtil;
 @SuppressWarnings( "DuplicatedCode" )
 @SupportedAnnotationTypes( { Constants.INJECTOR_CLASSNAME,
                              Constants.INJECTOR_FRAGMENT_CLASSNAME,
+                             Constants.FACTORY_CLASSNAME,
                              Constants.INJECTABLE_CLASSNAME,
                              Constants.FRAGMENT_CLASSNAME,
                              Constants.EAGER_CLASSNAME,
@@ -101,6 +102,8 @@ public final class StingProcessor
   @Nonnull
   private final DeferredElementSet _deferredFragmentTypes = new DeferredElementSet();
   @Nonnull
+  private final DeferredElementSet _deferredFactoryTypes = new DeferredElementSet();
+  @Nonnull
   private final DeferredElementSet _deferredInjectorTypes = new DeferredElementSet();
   @Nonnull
   private final DeferredElementSet _deferredInjectorFragmentTypes = new DeferredElementSet();
@@ -108,6 +111,8 @@ public final class StingProcessor
   private final StopWatch _analyzeInjectableStopWatch = new StopWatch( "Analyze Injectable" );
   @Nonnull
   private final StopWatch _analyzeFragmentStopWatch = new StopWatch( "Analyze Fragment" );
+  @Nonnull
+  private final StopWatch _analyzeFactoryStopWatch = new StopWatch( "Analyze Factory" );
   @Nonnull
   private final StopWatch _analyzeInjectorFragmentStopWatch = new StopWatch( "Analyze Injector Fragment" );
   @Nonnull
@@ -122,6 +127,8 @@ public final class StingProcessor
   private final StopWatch _generateInjectableStubStopWatch = new StopWatch( "Generate Injectable Stub" );
   @Nonnull
   private final StopWatch _generateFragmentStubStopWatch = new StopWatch( "Generate Fragment Stub" );
+  @Nonnull
+  private final StopWatch _generateFactoryImplStopWatch = new StopWatch( "Generate Factory Impl" );
   @Nonnull
   private final StopWatch _generateInjectorImplStopWatch = new StopWatch( "Generate Injector Impl" );
   @Nonnull
@@ -181,6 +188,7 @@ public final class StingProcessor
   {
     stopWatches.add( _analyzeInjectableStopWatch );
     stopWatches.add( _analyzeFragmentStopWatch );
+    stopWatches.add( _analyzeFactoryStopWatch );
     stopWatches.add( _analyzeInjectorFragmentStopWatch );
     stopWatches.add( _analyzeInjectorStopWatch );
     stopWatches.add( _analyzeAutoFragmentStopWatch );
@@ -188,6 +196,7 @@ public final class StingProcessor
     stopWatches.add( _generateAutoFragmentImplStopWatch );
     stopWatches.add( _generateInjectableStubStopWatch );
     stopWatches.add( _generateFragmentStubStopWatch );
+    stopWatches.add( _generateFactoryImplStopWatch );
     stopWatches.add( _generateInjectorImplStopWatch );
     stopWatches.add( _isInjectorResolvedStopWatch );
     stopWatches.add( _buildAndEmitObjectGraphStopWatch );
@@ -203,6 +212,14 @@ public final class StingProcessor
     _registry.getAutoFragments().forEach( AutoFragmentDescriptor::resetModified );
 
     processAutoFragments( annotations, env );
+
+    processTypeElements( annotations,
+                         env,
+                         Constants.FACTORY_CLASSNAME,
+                         _deferredFactoryTypes,
+                         "Analyze Factory",
+                         this::processFactory,
+                         _analyzeFactoryStopWatch );
 
     processTypeElements( annotations,
                          env,
@@ -256,6 +273,7 @@ public final class StingProcessor
                          _analyzeInjectorStopWatch );
 
     processUnmodifiedAutoFragment( env );
+    processResolvedFactories( env );
     processResolvedInjectables( env );
     processResolvedFragments( env );
     processResolvedInjectors( env );
@@ -429,6 +447,28 @@ public final class StingProcessor
         }, injectable.getElement(), _generateInjectableStubStopWatch );
       }
     }
+  }
+
+  private void processResolvedFactories( @Nonnull final RoundEnvironment env )
+  {
+    for ( final FactoryDescriptor factory : new ArrayList<>( _registry.getFactories() ) )
+    {
+      if ( !factory.isGenerated() )
+      {
+        performAction( env, "Generate Factory Impl", e -> {
+          factory.markGenerated();
+          emitFactoryImpl( factory );
+        }, factory.getElement(), _generateFactoryImplStopWatch );
+      }
+    }
+  }
+
+  private void emitFactoryImpl( @Nonnull final FactoryDescriptor factory )
+    throws IOException
+  {
+    debug( () -> "Emitting factory implementation for the factory " + factory.getElement().getQualifiedName() );
+    final String packageName = GeneratorUtil.getQualifiedPackageName( factory.getElement() );
+    emitTypeSpec( packageName, FactoryGenerator.buildType( processingEnv, factory ) );
   }
 
   private void emitInjectableStub( @Nonnull final InjectableDescriptor injectable )
@@ -1018,8 +1058,9 @@ public final class StingProcessor
         "parameter named 'includes' containing the value " + include.getIncludedType() +
         " and that type is annotated by the @StingProvider annotation. The provider annotation expects a " +
         "provider class named " + include.getActualTypeName() + " but that class is not annotated with either " +
-        MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " or " +
-        MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME );
+        MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + ", " +
+        MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " or " +
+        MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME );
       throw new ProcessorException( message, originator, annotation );
     }
     if ( isFragment )
@@ -1583,6 +1624,51 @@ public final class StingProcessor
                                     element );
     }
     _registry.registerFragment( new FragmentDescriptor( element, includes, bindings.values() ) );
+  }
+
+  private void processFactory( @Nonnull final TypeElement element )
+  {
+    debug( () -> "Processing Factory: " + element );
+    if ( ElementKind.INTERFACE != element.getKind() )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME, "be an interface" ),
+                                    element );
+    }
+    else if ( !element.getTypeParameters().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME, "have type parameters" ),
+                                    element );
+    }
+    else if ( !element.getInterfaces().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME, "extend any interfaces" ),
+                                    element );
+    }
+
+    final List<FactoryMethodDescriptor> methods = new ArrayList<>();
+    final List<FactoryDependencyDescriptor> dependencies = new ArrayList<>();
+    final Set<String> usedFieldNames = new HashSet<>();
+    for ( final Element enclosedElement : element.getEnclosedElements() )
+    {
+      if ( ElementKind.METHOD == enclosedElement.getKind() )
+      {
+        final ExecutableElement method = (ExecutableElement) enclosedElement;
+        if ( !method.getModifiers().contains( Modifier.DEFAULT ) &&
+             !method.getModifiers().contains( Modifier.STATIC ) &&
+             !method.getModifiers().contains( Modifier.PRIVATE ) )
+        {
+          methods.add( processFactoryMethod( element, method, dependencies, usedFieldNames ) );
+        }
+      }
+    }
+    if ( methods.isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
+                                                       "contain at least one abstract method that returns a value" ),
+                                    element );
+    }
+
+    _registry.registerFactory( new FactoryDescriptor( element, methods, dependencies ) );
   }
 
   private void processAutoFragment( @Nonnull final TypeElement element )
@@ -2299,6 +2385,205 @@ public final class StingProcessor
                    dependencies.toArray( new ServiceRequest[ 0 ] ) );
     final InjectableDescriptor injectable = new InjectableDescriptor( binding );
     _registry.registerInjectable( injectable );
+  }
+
+  @Nonnull
+  private FactoryMethodDescriptor processFactoryMethod( @Nonnull final TypeElement factory,
+                                                        @Nonnull final ExecutableElement method,
+                                                        @Nonnull final List<FactoryDependencyDescriptor> dependencies,
+                                                        @Nonnull final Set<String> usedFieldNames )
+  {
+    if ( TypeKind.VOID == method.getReturnType().getKind() )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
+                                                       "only contain abstract methods that return a value" ),
+                                    method );
+    }
+    else if ( !method.getTypeParameters().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME,
+                                                          "contain abstract methods with a type parameter" ),
+                                    method );
+    }
+    else if ( !method.getThrownTypes().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME,
+                                                          "contain abstract methods that throw exceptions" ),
+                                    method );
+    }
+    else if ( TypeKind.DECLARED != method.getReturnType().getKind() )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
+                                                       "contain abstract methods that return a class type" ),
+                                    method );
+    }
+
+    final DeclaredType returnType = (DeclaredType) method.getReturnType();
+    if ( !returnType.getTypeArguments().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME,
+                                                          "contain abstract methods that return a parameterized type" ),
+                                    method );
+    }
+
+    final TypeElement producedType = (TypeElement) returnType.asElement();
+    if ( ElementKind.CLASS != producedType.getKind() )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
+                                                       "contain abstract methods that return a class type" ),
+                                    method );
+    }
+    else if ( producedType.getModifiers().contains( Modifier.ABSTRACT ) )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME,
+                                                          "contain abstract methods that return an abstract class" ),
+                                    method );
+    }
+    else if ( ElementsUtil.isNonStaticNestedClass( producedType ) )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME,
+                                                          "contain abstract methods that return a non-static nested class" ),
+                                    method );
+    }
+    else if ( !producedType.getTypeParameters().isEmpty() )
+    {
+      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME,
+                                                          "contain abstract methods that return a class with type parameters" ),
+                                    method );
+    }
+
+    final List<ExecutableElement> constructors = ElementsUtil.getConstructors( producedType );
+    if ( 1 != constructors.size() )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
+                                                       "create types with a single accessible constructor" ),
+                                    method );
+    }
+    final ExecutableElement constructor = constructors.get( 0 );
+    if ( !isFactoryAccessible( factory, constructor ) )
+    {
+      throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
+                                                       "create types with a constructor accessible from the factory interface" ),
+                                    method );
+    }
+
+    final List<? extends VariableElement> constructorParameters = constructor.getParameters();
+    final List<? extends VariableElement> methodParameters = method.getParameters();
+    final Map<Integer, VariableElement> methodParametersByConstructorIndex = new LinkedHashMap<>();
+    final Map<Integer, FactoryDependencyDescriptor> dependenciesByConstructorIndex = new LinkedHashMap<>();
+    final List<? extends TypeMirror> constructorParameterTypes =
+      ( (ExecutableType) constructor.asType() ).getParameterTypes();
+
+    for ( final VariableElement parameter : methodParameters )
+    {
+      boolean matched = false;
+      for ( int i = 0; i < constructorParameters.size(); i++ )
+      {
+        final VariableElement constructorParameter = constructorParameters.get( i );
+        if ( constructorParameter.getSimpleName().contentEquals( parameter.getSimpleName() ) )
+        {
+          matched = true;
+          if ( methodParametersByConstructorIndex.containsKey( i ) )
+          {
+            throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME,
+                                                                "contain duplicate abstract method parameters that " +
+                                                                "match the same constructor parameter" ),
+                                          parameter );
+          }
+          if ( !processingEnv.getTypeUtils().isSameType( parameter.asType(), constructorParameterTypes.get( i ) ) )
+          {
+            throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
+                                                             "contain abstract method parameters whose name and type " +
+                                                             "match the created type constructor parameter" ),
+                                          parameter );
+          }
+          methodParametersByConstructorIndex.put( i, parameter );
+          break;
+        }
+      }
+      if ( !matched )
+      {
+        throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
+                                                         "contain abstract method parameters whose name and type " +
+                                                         "match the created type constructor parameter" ),
+                                      parameter );
+      }
+    }
+
+    for ( int i = 0; i < constructorParameters.size(); i++ )
+    {
+      if ( !methodParametersByConstructorIndex.containsKey( i ) )
+      {
+        final VariableElement constructorParameter = constructorParameters.get( i );
+        final ServiceRequest request = handleConstructorParameter( constructorParameter, constructorParameterTypes.get( i ), i );
+        final FactoryDependencyDescriptor dependency =
+          findOrCreateFactoryDependency( request, dependencies, usedFieldNames );
+        dependenciesByConstructorIndex.put( i, dependency );
+      }
+    }
+
+    return new FactoryMethodDescriptor( method,
+                                        producedType.asType(),
+                                        constructor,
+                                        constructorParameters,
+                                        methodParametersByConstructorIndex,
+                                        dependenciesByConstructorIndex );
+  }
+
+  @Nonnull
+  private FactoryDependencyDescriptor findOrCreateFactoryDependency( @Nonnull final ServiceRequest request,
+                                                                     @Nonnull final List<FactoryDependencyDescriptor> dependencies,
+                                                                     @Nonnull final Set<String> usedFieldNames )
+  {
+    for ( final FactoryDependencyDescriptor existing : dependencies )
+    {
+      if ( existing.matches( request ) )
+      {
+        return existing;
+      }
+    }
+
+    final VariableElement parameter = (VariableElement) request.getElement();
+    final String parameterName = parameter.getSimpleName().toString();
+    final String fieldName = uniqueFactoryFieldName( parameterName, usedFieldNames );
+    final FactoryDependencyDescriptor dependency =
+      new FactoryDependencyDescriptor( request, parameterName, fieldName );
+    dependencies.add( dependency );
+    return dependency;
+  }
+
+  @Nonnull
+  private String uniqueFactoryFieldName( @Nonnull final String parameterName, @Nonnull final Set<String> usedFieldNames )
+  {
+    final String baseName = StingGeneratorUtil.FRAMEWORK_PREFIX + parameterName;
+    String candidate = baseName;
+    int index = 2;
+    while ( !usedFieldNames.add( candidate ) )
+    {
+      candidate = baseName + index;
+      index++;
+    }
+    return candidate;
+  }
+
+  private boolean isFactoryAccessible( @Nonnull final TypeElement factory, @Nonnull final ExecutableElement constructor )
+  {
+    final Set<Modifier> modifiers = constructor.getModifiers();
+    if ( modifiers.contains( Modifier.PRIVATE ) )
+    {
+      return false;
+    }
+    else if ( modifiers.contains( Modifier.PUBLIC ) )
+    {
+      return true;
+    }
+    else
+    {
+      final String factoryPackage = GeneratorUtil.getQualifiedPackageName( factory );
+      final String targetPackage =
+        GeneratorUtil.getQualifiedPackageName( (TypeElement) constructor.getEnclosingElement() );
+      return factoryPackage.equals( targetPackage );
+    }
   }
 
   // Binary descriptor writing and verification removed

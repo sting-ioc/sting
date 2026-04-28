@@ -8,7 +8,8 @@
 ![GWT3/J2CL compatible](https://img.shields.io/badge/GWT3/J2CL-compatible-brightgreen.svg)
 
 Sting is a fast, easy to use, compile-time dependency injection toolkit. The toolkit accepts a set of annotated
-java classes and generates source code to instantiate and wire together the components.
+java classes and generates source code to instantiate and wire together the components. Sting can generate
+injectors, fragments, auto-fragments, and dependency-injected factories.
 
 Sting is under heavy development, and sometimes the documentation does not keep up to date. However the goal of
 the toolkit is to be easy to use, and this includes clear and concise documentation. If something is unclear

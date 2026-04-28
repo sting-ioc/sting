@@ -3,6 +3,8 @@
 ### Unreleased
 
 * Update the `org.realityforge.braincheck` artifacts to version `1.32.0`.
+* Introduce the `@sting.Factory` annotation to generate injectable factory implementations that can be included in
+  injectors via `@StingProvider`.
 * Update framework integration documentation and diagnostics to clarify that
   provider types may be annotated with `@Injectable` as well as `@Fragment` or `@Injector`.
 

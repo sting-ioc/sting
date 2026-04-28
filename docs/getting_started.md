@@ -63,6 +63,9 @@ Here are some links to other documents that you may want to look at next.
   annotated or when other toolkits are responsible for instantiating the object etc. Fragments can also be
   define a partial component graph that can be reused across injectors.
 
+* [Factories](factories.md): Factories are generated injectable adapters that combine Sting-managed dependencies
+  with runtime parameters supplied by application code.
+
 * [Component Autodiscovery](autodiscovery.md): It is not always required to add components to the
   {@link: sting.Injector#includes() @Injector.includes} parameter as the framework has builtin mechanism
   that make autodiscovery of components possible.
