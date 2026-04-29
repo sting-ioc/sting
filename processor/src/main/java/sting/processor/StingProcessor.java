@@ -63,7 +63,9 @@ import org.realityforge.proton.TypesUtil;
                              Constants.FRAGMENT_CLASSNAME,
                              Constants.EAGER_CLASSNAME,
                              Constants.TYPED_CLASSNAME,
-                             Constants.NAMED_CLASSNAME } )
+                             Constants.NAMED_CLASSNAME,
+                             Constants.STING_PROVIDER_CLASSNAME,
+                             Constants.ACT_AS_STING_COMPONENT_CLASSNAME } )
 @SupportedSourceVersion( SourceVersion.RELEASE_17 )
 @SupportedOptions( { "sting.defer.unresolved",
                      "sting.defer.errors",
@@ -76,6 +78,13 @@ import org.realityforge.proton.TypesUtil;
 public final class StingProcessor
   extends AbstractStandardProcessor
 {
+  private enum AnnotationUsageKind
+  {
+    PROCESSED,
+    SILENT_INTEGRATION_EXCEPTION,
+    INVALID
+  }
+
   /**
    * Extension for json descriptors.
    */
@@ -1301,71 +1310,42 @@ public final class StingProcessor
   {
     for ( final Element element : elements )
     {
-      if ( ElementKind.PARAMETER == element.getKind() )
+      final AnnotationUsageKind usageKind = classifyNamedElement( element );
+      if ( AnnotationUsageKind.INVALID == usageKind )
       {
-        final Element executableElement = element.getEnclosingElement();
-        final boolean injectableType =
-          AnnotationsUtil.hasAnnotationOfType( executableElement.getEnclosingElement(),
-                                               Constants.INJECTABLE_CLASSNAME );
-        final boolean isFragmentType =
-          !injectableType &&
-          AnnotationsUtil.hasAnnotationOfType( executableElement.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME );
-        final ElementKind executableKind = executableElement.getKind();
-        final boolean isProvider =
-          !injectableType && !isFragmentType && hasStingProvider( executableElement.getEnclosingElement() );
-        final boolean isActAsStingComponent =
-          !injectableType &&
-          !isFragmentType &&
-          !isProvider &&
-          hasActAsStingComponent( executableElement.getEnclosingElement() );
-        if ( !injectableType && ElementKind.CONSTRUCTOR == executableKind && !isProvider && !isActAsStingComponent )
+        if ( ElementKind.PARAMETER == element.getKind() )
         {
-          reportError( env,
-                       MemberChecks.must( Constants.NAMED_CLASSNAME,
-                                          "only be present on a constructor parameter if the constructor " +
-                                          "is enclosed in a type annotated with " +
-                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                          " or the type is annotated with an annotation annotated by " +
-                                          "@ActAsStringComponent or @StingProvider" ),
-                       element );
+          if ( ElementKind.CONSTRUCTOR == element.getEnclosingElement().getKind() )
+          {
+            reportError( env,
+                         MemberChecks.must( Constants.NAMED_CLASSNAME,
+                                            "only be present on a constructor parameter if the constructor " +
+                                            "is enclosed in a type annotated with " +
+                                            MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                            " or the type is annotated with an annotation annotated by " +
+                                            "@ActAsStringComponent" ),
+                         element );
+          }
+          else
+          {
+            reportError( env,
+                         MemberChecks.must( Constants.NAMED_CLASSNAME,
+                                            "only be present on a method parameter if the method is enclosed in a type annotated with " +
+                                            MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
+                         element );
+          }
         }
-        else if ( !isFragmentType && ElementKind.METHOD == executableKind )
-        {
-          reportError( env,
-                       MemberChecks.must( Constants.NAMED_CLASSNAME,
-                                          "only be present on a method parameter if the method is enclosed in a type annotated with " +
-                                          MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
-                       element );
-        }
-        else
-        {
-          assert ( injectableType && ElementKind.CONSTRUCTOR == executableKind ) ||
-                 ( isProvider && ElementKind.CONSTRUCTOR == executableKind ) ||
-                 ( isActAsStingComponent && ElementKind.CONSTRUCTOR == executableKind ) ||
-                 ( isFragmentType && ElementKind.METHOD == executableKind );
-        }
-      }
-      else if ( ElementKind.CLASS == element.getKind() )
-      {
-        if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) &&
-             !hasStingProvider( element ) &&
-             !hasActAsStingComponent( element ) )
+        else if ( ElementKind.CLASS == element.getKind() )
         {
           reportError( env,
                        MemberChecks.must( Constants.NAMED_CLASSNAME,
                                           "only be present on a type if the type is annotated with " +
                                           MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
                                           " or the type is annotated with an annotation annotated by " +
-                                          "@ActAsStringComponent or @StingProvider" ),
+                                          "@ActAsStringComponent" ),
                        element );
         }
-      }
-      else if ( ElementKind.METHOD == element.getKind() )
-      {
-        if ( !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME ) &&
-             !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.INJECTOR_CLASSNAME ) &&
-             !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(),
-                                                   Constants.INJECTOR_FRAGMENT_CLASSNAME ) )
+        else if ( ElementKind.METHOD == element.getKind() )
         {
           reportError( env,
                        MemberChecks.mustNot( Constants.NAMED_CLASSNAME,
@@ -1375,13 +1355,90 @@ public final class StingProcessor
                                              MemberChecks.toSimpleName( Constants.INJECTOR_FRAGMENT_CLASSNAME ) ),
                        element );
         }
+        else
+        {
+          reportError( env,
+                       MemberChecks.toSimpleName( Constants.NAMED_CLASSNAME ) + " target is not valid",
+                       element );
+        }
       }
-      else
+      else if ( AnnotationUsageKind.PROCESSED != usageKind &&
+                AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION != usageKind )
       {
         reportError( env,
                      MemberChecks.toSimpleName( Constants.NAMED_CLASSNAME ) + " target is not valid",
                      element );
       }
+    }
+  }
+
+  @Nonnull
+  private AnnotationUsageKind classifyNamedElement( @Nonnull final Element element )
+  {
+    if ( ElementKind.PARAMETER == element.getKind() )
+    {
+      final Element executableElement = element.getEnclosingElement();
+      final Element enclosingType = executableElement.getEnclosingElement();
+      if ( ElementKind.CONSTRUCTOR == executableElement.getKind() )
+      {
+        if ( AnnotationsUtil.hasAnnotationOfType( enclosingType, Constants.INJECTABLE_CLASSNAME ) )
+        {
+          return AnnotationUsageKind.PROCESSED;
+        }
+        else if ( hasActAsStingComponent( enclosingType ) )
+        {
+          return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
+        }
+        else
+        {
+          return AnnotationUsageKind.INVALID;
+        }
+      }
+      else if ( ElementKind.METHOD == executableElement.getKind() &&
+                AnnotationsUtil.hasAnnotationOfType( enclosingType, Constants.FRAGMENT_CLASSNAME ) )
+      {
+        return AnnotationUsageKind.PROCESSED;
+      }
+      else
+      {
+        return AnnotationUsageKind.INVALID;
+      }
+    }
+    else if ( ElementKind.CLASS == element.getKind() )
+    {
+      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+      {
+        return AnnotationUsageKind.PROCESSED;
+      }
+      else if ( hasActAsStingComponent( element ) )
+      {
+        return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
+      }
+      else
+      {
+        return AnnotationUsageKind.INVALID;
+      }
+    }
+    else if ( ElementKind.METHOD == element.getKind() )
+    {
+      final Element enclosingType = element.getEnclosingElement();
+      if ( AnnotationsUtil.hasAnnotationOfType( enclosingType, Constants.FRAGMENT_CLASSNAME ) ||
+           AnnotationsUtil.hasAnnotationOfType( enclosingType, Constants.INJECTOR_CLASSNAME ) )
+      {
+        return AnnotationUsageKind.PROCESSED;
+      }
+      else if ( AnnotationsUtil.hasAnnotationOfType( enclosingType, Constants.INJECTOR_FRAGMENT_CLASSNAME ) )
+      {
+        return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
+      }
+      else
+      {
+        return AnnotationUsageKind.INVALID;
+      }
+    }
+    else
+    {
+      return AnnotationUsageKind.INVALID;
     }
   }
 
@@ -1421,31 +1478,27 @@ public final class StingProcessor
   {
     for ( final Element element : elements )
     {
-      if ( ElementKind.CLASS == element.getKind() )
+      final AnnotationUsageKind usageKind = classifyTypedElement( element );
+      if ( AnnotationUsageKind.PROCESSED == usageKind ||
+           AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION == usageKind )
       {
-        if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) &&
-             !hasStingProvider( element ) )
-        {
-          reportError( env,
-                       MemberChecks.must( Constants.TYPED_CLASSNAME,
-                                          "only be present on a type if the type is annotated with " +
-                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                          " or the type is annotated with an annotation annotated by @StingProvider" ),
-                       element );
-        }
+        continue;
+      }
+      else if ( ElementKind.CLASS == element.getKind() )
+      {
+        reportError( env,
+                     MemberChecks.must( Constants.TYPED_CLASSNAME,
+                                        "only be present on a type if the type is annotated with " +
+                                        MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) ),
+                     element );
       }
       else if ( ElementKind.METHOD == element.getKind() )
       {
-        if ( !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME ) &&
-             !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.INJECTOR_CLASSNAME ) )
-        {
-          reportError( env,
-                       MemberChecks.mustNot( Constants.TYPED_CLASSNAME,
-                                             "be a method unless the method is enclosed in a type annotated with " +
-                                             MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " or " +
-                                             MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) ),
-                       element );
-        }
+        reportError( env,
+                     MemberChecks.mustNot( Constants.TYPED_CLASSNAME,
+                                           "be a method unless the method is enclosed in a type annotated with " +
+                                           MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
+                     element );
       }
       else
       {
@@ -1456,34 +1509,64 @@ public final class StingProcessor
     }
   }
 
+  @Nonnull
+  private AnnotationUsageKind classifyTypedElement( @Nonnull final Element element )
+  {
+    if ( ElementKind.CLASS == element.getKind() )
+    {
+      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+      {
+        return AnnotationUsageKind.PROCESSED;
+      }
+      else
+      {
+        return AnnotationUsageKind.INVALID;
+      }
+    }
+    else if ( ElementKind.METHOD == element.getKind() )
+    {
+      final Element enclosingType = element.getEnclosingElement();
+      if ( AnnotationsUtil.hasAnnotationOfType( enclosingType, Constants.FRAGMENT_CLASSNAME ) )
+      {
+        return AnnotationUsageKind.PROCESSED;
+      }
+      else
+      {
+        return AnnotationUsageKind.INVALID;
+      }
+    }
+    else
+    {
+      return AnnotationUsageKind.INVALID;
+    }
+  }
+
   private void verifyEagerElements( @Nonnull final RoundEnvironment env,
                                     @Nonnull final Set<? extends Element> elements )
   {
     for ( final Element element : elements )
     {
-      if ( ElementKind.CLASS == element.getKind() )
+      final AnnotationUsageKind usageKind = classifyEagerElement( element );
+      if ( AnnotationUsageKind.PROCESSED == usageKind ||
+           AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION == usageKind )
       {
-        if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) &&
-             !hasStingProvider( element ) )
-        {
-          reportError( env,
-                       MemberChecks.must( Constants.EAGER_CLASSNAME,
-                                          "only be present on a type if the type is annotated with " +
-                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                          " or the type is annotated with an annotation annotated by @StingProvider" ),
-                       element );
-        }
+        continue;
+      }
+      else if ( ElementKind.CLASS == element.getKind() )
+      {
+        reportError( env,
+                     MemberChecks.must( Constants.EAGER_CLASSNAME,
+                                        "only be present on a type if the type is annotated with " +
+                                        MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) ),
+                     element );
       }
       else if ( ElementKind.METHOD == element.getKind() )
       {
-        if ( !AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME ) )
-        {
-          reportError( env,
-                       MemberChecks.must( Constants.EAGER_CLASSNAME,
-                                          "only be present on a method if the method is enclosed in a type annotated with " +
-                                          MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
-                       element );
-        }
+        reportError( env,
+                     MemberChecks.must( Constants.EAGER_CLASSNAME,
+                                        "only be present on a method if the method is enclosed in a type annotated with " +
+                                        MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
+                     element );
       }
       else
       {
@@ -1491,6 +1574,31 @@ public final class StingProcessor
                      MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) + " target is not valid",
                      element );
       }
+    }
+  }
+
+  @Nonnull
+  private AnnotationUsageKind classifyEagerElement( @Nonnull final Element element )
+  {
+    if ( ElementKind.CLASS == element.getKind() )
+    {
+      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+      {
+        return AnnotationUsageKind.PROCESSED;
+      }
+      else
+      {
+        return AnnotationUsageKind.INVALID;
+      }
+    }
+    else if ( ElementKind.METHOD == element.getKind() &&
+              AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME ) )
+    {
+      return AnnotationUsageKind.PROCESSED;
+    }
+    else
+    {
+      return AnnotationUsageKind.INVALID;
     }
   }
 

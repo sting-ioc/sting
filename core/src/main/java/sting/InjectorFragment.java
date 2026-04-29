@@ -7,12 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotate an interface to declare that it will be used in injector to suppress warnings due to usages of the {@link sting.Named @Named} annotation.
+ * Annotate an interface to declare that it will be used in an injector-oriented integration surface.
+ * This annotation is a top-level Sting processor entrypoint used for validation only.
  *
- * <p>Normally a type that has a method annotated with the {@link sting.Named @Named} annotation will
- * generate a warning if the Sting annotation processor detects that the type is not annotated with the
- * {@link sting.Injector @Injector} annotation. This warning is generated because the annotation processor
- * will not process the annotation and thus considers it an error.</p>
+ * <p>Sting tolerates {@link Named} on methods declared by a type annotated with
+ * {@link InjectorFragment}, but does not treat the type as a binding contributor and does not
+ * process the methods as injector outputs.</p>
  *
  * @see ActAsStingComponent
  */

@@ -7,6 +7,10 @@ Sting supports both lazily created components and eagerly created components. An
 of the component. Eager components are created when the injector is constructed. Lazy components on the other hand
 are only created when the injector attempts to access the component.
 
+Sting actively processes {@link: sting.Eager @Eager} on {@link: sting.Injectable @Injectable} types and
+{@link: sting.Fragment @Fragment} provider methods. For the full placement matrix, including framework
+integration exceptions, see [Annotation Processing](annotation_processing.md).
+
 A lazy component is useful when it is only accessed via a [supplier](dependency_kinds.md) dependency or
 if the component is accessed as a result of invoking an [output](outputs.md) method on an injector. Lazy
 components require additional book-keeping to ensure that they are not accessed before they are constructed.

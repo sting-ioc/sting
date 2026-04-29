@@ -9,6 +9,14 @@ import javax.annotation.Nonnull;
 
 /**
  * Qualify a service with a name.
+ *
+ * <p>Sting actively processes this annotation on {@link Injectable} types, {@link Injectable}
+ * constructor parameters, {@link Fragment} provider methods, {@link Fragment} provider method
+ * parameters, and {@link Injector} output methods.</p>
+ *
+ * <p>Sting also tolerates this annotation for framework integration on {@link InjectorFragment}
+ * methods and on types or constructor parameters whose enclosing type is annotated with an
+ * annotation meta-annotated by {@link ActAsStingComponent}.</p>
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )

@@ -19,6 +19,9 @@ Using StingProvider
 - Apply a `@StingProvider` meta‑annotation to a framework’s component annotation. The `value()` defines a
   naming pattern for the provider class that Sting should include. The provider class must exist, be in the same
   package as the referenced type, and be annotated with `@Fragment` or `@Injectable`.
+- The meta-annotation does not itself create a Sting binding. Sting still processes the resolved provider type.
+- Do not apply Sting-owned binding annotations such as `@Named`, `@Typed`, or `@Eager` to the framework
+  component type. If those semantics are required, place them on the resolved Sting provider type instead.
 - Supported tokens in the pattern: `[SimpleName]`, `[CompoundName]`, `[EnclosingName]`, `[FlatEnclosingName]`.
 
 Example
@@ -54,5 +57,8 @@ ActAsStingComponent
 - Apply `@ActAsStingComponent` (or an equivalent annotation with the same shape) to a framework annotation to
   suppress Sting warnings for types/constructors that legitimately use `@Named` but are processed by another
   framework.
+- This is validation-only integration. It does not make the annotated type a Sting-managed component.
+
+For a full placement matrix, see [Annotation Processing](annotation_processing.md).
 
 See also: sting/ActAsStingComponent and sting/StingProvider Javadoc for API details.

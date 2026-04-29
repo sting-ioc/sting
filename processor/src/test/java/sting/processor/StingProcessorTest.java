@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.Processor;
 import javax.tools.Diagnostic;
@@ -876,28 +877,38 @@ public final class StingProcessorTest
 
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedAnnotationModel", "@Named target is not valid" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedConstructorParameterModel",
-                      "@Named target must only be present on a constructor parameter if the constructor is enclosed in a type annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStringComponent or @StingProvider" },
+                      "@Named target must only be present on a constructor parameter if the constructor is enclosed in a type annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStringComponent" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedEnumModel", "@Named target is not valid" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedMethodModel",
                       "@Named target must not be a method unless the method is enclosed in a type annotated with @Fragment, @Injector or @InjectorFragment" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedMethodParameterModel",
                       "@Named target must only be present on a method parameter if the method is enclosed in a type annotated with @Fragment" },
         new Object[]{ "com.example.unclaimed.named.UnclaimedNamedTypeModel",
-                      "@Named target must only be present on a type if the type is annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStringComponent or @StingProvider" },
+                      "@Named target must only be present on a type if the type is annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStringComponent" },
+        new Object[]{ "com.example.provider_backed.named.NamedOnProviderBackedCtorParamModel",
+                      "@Named target must only be present on a constructor parameter if the constructor is enclosed in a type annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStringComponent" },
+        new Object[]{ "com.example.provider_backed.named.NamedOnProviderBackedTypeModel",
+                      "@Named target must only be present on a type if the type is annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStringComponent" },
 
         new Object[]{ "com.example.unclaimed.typed.UnclaimedTypedAnnotationModel", "@Typed target is not valid" },
         new Object[]{ "com.example.unclaimed.typed.UnclaimedTypedEnumModel", "@Typed target is not valid" },
         new Object[]{ "com.example.unclaimed.typed.UnclaimedTypedMethodModel",
-                      "@Typed target must not be a method unless the method is enclosed in a type annotated with @Fragment or @Injector" },
+                      "@Typed target must not be a method unless the method is enclosed in a type annotated with @Fragment" },
+        new Object[]{ "com.example.injector.outputs.TypedOutputModel",
+                      "@Typed target must not be a method unless the method is enclosed in a type annotated with @Fragment" },
         new Object[]{ "com.example.unclaimed.typed.UnclaimedTypedTypeModel",
-                      "@Typed target must only be present on a type if the type is annotated with @Injectable or the type is annotated with an annotation annotated by @StingProvider" },
+                      "@Typed target must only be present on a type if the type is annotated with @Injectable" },
+        new Object[]{ "com.example.provider_backed.typed.TypedOnProviderBackedTypeModel",
+                      "@Typed target must only be present on a type if the type is annotated with @Injectable" },
 
         new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerAnnotationModel", "@Eager target is not valid" },
         new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerEnumModel", "@Eager target is not valid" },
         new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerMethodModel",
                       "@Eager target must only be present on a method if the method is enclosed in a type annotated with @Fragment" },
         new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerTypeModel",
-                      "@Eager target must only be present on a type if the type is annotated with @Injectable or the type is annotated with an annotation annotated by @StingProvider" }
+                      "@Eager target must only be present on a type if the type is annotated with @Injectable" },
+        new Object[]{ "com.example.provider_backed.eager.EagerOnProviderBackedTypeModel",
+                      "@Eager target must only be present on a type if the type is annotated with @Injectable" }
       };
   }
 
@@ -998,7 +1009,6 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.SuppressedProtectedConstructorModel" },
         new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" },
 
-        new Object[]{ "com.example.injectable.named.NamedProviderModel" },
         new Object[]{ "com.example.injectable.named.SuppressedJsr330NamedInputModel" },
         new Object[]{ "com.example.injectable.named.SuppressedJsr330NamedInjectableModel" },
 
@@ -1007,10 +1017,21 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.AutodetectProviderInjectableModel" },
         new Object[]{ "com.example.injector.AutodetectProviderNestedModel" },
 
+        new Object[]{ "com.example.meta.ActAsStingComponentOnlyModel" },
+        new Object[]{ "com.example.meta.StingProviderOnlyModel" },
+
         new Object[]{ "com.example.named.NamedOnActAsStingComponentModel" },
         new Object[]{ "com.example.named.NamedOnCtorParamInActAsStingComponentModel" },
         new Object[]{ "com.example.named.NamedOnInjectorFragment" }
       };
+  }
+
+  @Test
+  public void supportedAnnotationTypesIncludeMetaAnnotations()
+  {
+    final Set<String> supportedAnnotationTypes = new StingProcessor().getSupportedAnnotationTypes();
+    assertTrue( supportedAnnotationTypes.contains( "sting.StingProvider" ) );
+    assertTrue( supportedAnnotationTypes.contains( "sting.ActAsStingComponent" ) );
   }
 
   @Test

@@ -7,22 +7,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation applied to type-targeting annotations that suppress warnings due to usages of the {@link sting.Named @Named} annotation.
+ * Annotation applied to type-targeting annotations that suppress warnings due to usages of
+ * {@link sting.Named @Named}. This is an integration meta-annotation rather than a
+ * component-defining Sting annotation.
  *
- * <p>Normally a type that is annotated with the {@link sting.Named @Named} annotation or a type that has a
- * constructor parameter annotated with the {@link sting.Named @Named} annotation will generate a warning if the
- * Sting annotation processor detects that the type is not annotated with the {@link sting.Injectable @Injectable}
- * annotation or an annotation annotated by a {@link sting.StingProvider @StingProvider} annotated annotation. This
- * warning is generated because the annotation processor will not process the annotation and thus considers it an
- * error.</p>
+ * <p>When a type is annotated with an annotation meta-annotated by {@link ActAsStingComponent},
+ * Sting tolerates {@link sting.Named @Named} on the type and its constructor parameters without
+ * treating that type as a Sting-managed component. The expectation is that another annotation
+ * processor will process the type and make use of the qualifier information if present.</p>
  *
- * <p>The @ActAsStingComponent can be applied to an annotation and any type that is annotated with that annotation
- * will not generated warnings in these scenarios. The expectation is that another annotation processor will process
- * the type and will make use of the {@link sting.Named @Named} annotations if present. This allows other frameworks
- * to define their own component model that is fully integration with sting.</p>
- *
- * <p>It should be noted that Sting will attempt to use any annotation with this name and shape so that
- * frameworks do not need a direct code dependency on Sting.</p>
+ * <p>It should be noted that Sting will attempt to use any annotation with this name and shape so
+ * that frameworks do not need a direct code dependency on Sting.</p>
  *
  * @see InjectorFragment
  */

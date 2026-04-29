@@ -10,12 +10,15 @@ import javax.annotation.Nonnull;
 /**
  * Declare the types published by a component.
  * This annotation is used to explicitly specify which types that a component can provide.
- * The annotation may be applied to a class annotated with {@link Injectable} or to methods contained within a
- * type annotated by {@link Fragment}.
  *
- * <p>If this annotation is applied to a class then the class must be able to be assigned to the types specified
- * by this annotation. If the annotation is applied to a method then the return type of the method must be able
- * to be assigned to the types specified by this annotation.</p>
+ * <p>Sting actively processes this annotation on {@link Injectable} types and on provider methods
+ * contained within a type annotated by {@link Fragment}.</p>
+ *
+ * <p>{@link Typed} must not be applied to {@link Injector} output methods.</p>
+ *
+ * <p>If this annotation is applied to a class then the class must be able to be assigned to the
+ * types specified by this annotation. If the annotation is applied to a method then the return type
+ * of the method must be able to be assigned to the types specified by this annotation.</p>
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )

@@ -16,6 +16,9 @@ as method parameters passed to provider methods. These parameters can also be an
 {@link: sting.Named @Named} annotation. When sting compiles the injector, it ensures that the consumer service
 dependency can only be satisfied by services published by a producer component if they have the same qualifier.
 
+Injector output methods may also be annotated with {@link: sting.Named @Named} to request a qualified
+service from the graph. For a full placement matrix, see [Annotation Processing](annotation_processing.md).
+
 ## Qualified Components
 
 Consider an application that consists of many components that all publish the same service interface of type

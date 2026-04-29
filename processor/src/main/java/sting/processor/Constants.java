@@ -15,6 +15,10 @@ final class Constants
   @Nonnull
   static final String INJECTOR_FRAGMENT_CLASSNAME = "sting.InjectorFragment";
   @Nonnull
+  static final String STING_PROVIDER_CLASSNAME = "sting.StingProvider";
+  @Nonnull
+  static final String ACT_AS_STING_COMPONENT_CLASSNAME = "sting.ActAsStingComponent";
+  @Nonnull
   static final String INPUT_CLASSNAME = "sting.Injector.Input";
   @Nonnull
   static final String NAMED_CLASSNAME = "sting.Named";

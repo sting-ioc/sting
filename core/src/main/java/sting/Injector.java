@@ -10,8 +10,9 @@ import javax.annotation.Nonnull;
 
 /**
  * Annotates an interface for which a dependency-injected implementation is to be generated.
- * The implementation builds a component graph from the {@link #includes() included} types and
- * exposes the services declared on the injector interface.
+ * This annotation is a top-level Sting processor entrypoint. The implementation builds a
+ * component graph from the {@link #includes() included} types and exposes the services declared
+ * on the injector interface.
  *
  * <h2>Component Graph</h2>
  *
@@ -72,9 +73,10 @@ import javax.annotation.Nonnull;
  *
  * <p>Instance methods defined on the injector allow access to services contained within the injector and
  * also define the root services that are used to build the component graph. The instance methods must be
- * abstract, have zero parameters, throw no exceptions and return services. The methods can be annotated with
- * {@link Named} to qualify the service and {@link javax.annotation.Nullable} to mark an instance request as
- * optional. Service methods may also request optional services via {@link java.util.Optional Optional},
+ * abstract, have zero parameters, throw no exceptions and return services. Sting actively processes
+ * {@link Named} on these methods to qualify the requested service and {@link javax.annotation.Nullable}
+ * to mark an instance request as optional. {@link Typed} is ignored on injector output methods.
+ * Service methods may also request optional services via {@link java.util.Optional Optional},
  * {@code Supplier<Optional<T>>} and {@code Collection<Supplier<Optional<T>>>}.</p>
  *
  * <h2>Instantiation</h2>

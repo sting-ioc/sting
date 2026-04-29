@@ -9,8 +9,12 @@ import javax.annotation.Nonnull;
 
 /**
  * Identify an interface that can contribute to a component graph.
- * The interface is expected to declare 1 or more default methods and/or
- * include 1 or more types in the {@link #includes() includes} parameter.
+ * This annotation is a top-level Sting processor entrypoint.
+ *
+ * <p>The interface is expected to declare 1 or more default methods and/or include 1 or more types
+ * in the {@link #includes() includes} parameter. Sting actively processes {@link Named},
+ * {@link Typed}, and {@link Eager} on provider methods declared by the fragment, and {@link Named}
+ * on provider method parameters.</p>
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )

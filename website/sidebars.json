@@ -12,6 +12,7 @@
       "typing",
       "naming",
       "eager",
+      "annotation_processing",
       "autodiscovery",
       "dependency_kinds",
       "inputs",

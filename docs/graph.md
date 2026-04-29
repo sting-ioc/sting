@@ -18,9 +18,10 @@ As part of the compilation phase, injectors build a list of potential components
    * A type annotated with the {@link: sting.Fragment @Fragment} annotation add all the components defined
      by the provider methods to the set of bindings and add all the types declared as part of the
      {@link: sting.Fragment#includes() @Fragment.includes} to the "work list".
-   * Types annotated by the {@link: sting.StingProvider @StingProvider} annotation are processed according to
-     the algorithm described in the [framework integration](framework_integration.md) document which may result
-     in more types being added to the "work list".
+   * Types annotated with annotations meta-annotated by the {@link: sting.StingProvider @StingProvider}
+     annotation are processed according to the algorithm described in the
+     [framework integration](framework_integration.md) document which may result in more types being added
+     to the "work list".
 4. From the potential components, identify the root components and add them to the set of actual components included
    in the injector. The "root" components include components that publish the [output](outputs.md) services as well
    as any potential component that is annotated with the {@link: sting.Eager @Eager} annotation. For every component

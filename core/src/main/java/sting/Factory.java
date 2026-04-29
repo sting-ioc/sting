@@ -8,8 +8,8 @@ import java.lang.annotation.Target;
 
 /**
  * Annotates an interface for which a dependency-injected factory implementation is to be generated.
- * The generated implementation is itself a Sting-managed component and publishes the factory interface
- * via the {@link Typed} annotation.
+ * This annotation is a top-level Sting processor entrypoint. The generated implementation is itself a
+ * Sting-managed component and publishes the factory interface via the {@link Typed} annotation.
  *
  * <h2>Generated Classname</h2>
  *
@@ -44,7 +44,8 @@ import java.lang.annotation.Target;
  * <h2>Injector Integration</h2>
  *
  * <p>The {@link Factory} annotation is itself annotated with {@link StingProvider}, allowing the factory
- * interface to be included in an {@link Injector#includes()} or {@link Fragment#includes()} list.
+ * interface to be included in an {@link Injector#includes()} or {@link Fragment#includes()} list as a
+ * provider-backed type.
  * The generated factory implementation is annotated as an {@link Injectable} and {@link Typed} component
  * so other Sting-managed components can depend upon the factory interface.</p>
  *

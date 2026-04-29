@@ -2,6 +2,17 @@
 
 ### Unreleased
 
+Changes in this release:
+
+* Trigger `StingProcessor` for all public Sting annotations, including `@StingProvider` and
+  `@ActAsStingComponent`, and align processor docs/Javadocs around the exact placements where each annotation is
+  actively processed, tolerated for integration, or rejected.
+* Tighten annotation validation so `@Named`, `@Typed`, and `@Eager` are rejected on framework component types
+  annotated with annotations meta-annotated by `@StingProvider`. These annotations must be applied to the resolved
+  Sting provider type instead.
+* Tighten annotation validation so `@Typed` is rejected on `@Injector` output methods rather than being accepted
+  and ignored.
+
 ### [v0.30](https://github.com/sting-ioc/sting/tree/v0.30) (2026-04-29) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.29...v0.30) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.29&new=0.30)
 
 The release includes 3 non breaking API changes and 2 breaking API changes.
