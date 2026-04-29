@@ -1,10 +1,10 @@
 package sting.processor;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
+import com.palantir.javapoet.ClassName;
+import com.palantir.javapoet.MethodSpec;
+import com.palantir.javapoet.ParameterSpec;
+import com.palantir.javapoet.ParameterizedTypeName;
+import com.palantir.javapoet.TypeName;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -26,6 +26,8 @@ final class StingGeneratorUtil
 {
   @Nonnull
   static final String FRAMEWORK_PREFIX = "$sting$_";
+  @Nonnull
+  private static final ClassName OBJECT = ClassName.get( "java.lang", "Object" );
   @Nonnull
   private static final ClassName COLLECTION = ClassName.get( Collection.class );
   @Nonnull
@@ -115,7 +117,7 @@ final class StingGeneratorUtil
       }
       else if ( ServiceRequest.Kind.INSTANCE == kind )
       {
-        paramType = TypeName.OBJECT;
+        paramType = OBJECT;
       }
       else if ( ServiceRequest.Kind.OPTIONAL == kind )
       {

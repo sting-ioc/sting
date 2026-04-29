@@ -66,7 +66,7 @@ define 'sting' do
       jar.enhance do |f|
         Buildr::Shade.shade(f,
                             f,
-                            'com.squareup.javapoet' => 'sting.processor.vendor.javapoet',
+                            'com.palantir.javapoet' => 'sting.processor.vendor.javapoet',
                             'org.realityforge.proton' => 'sting.processor.vendor.proton')
       end
     end

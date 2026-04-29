@@ -1,12 +1,12 @@
 package sting.processor;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.CodeBlock;
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.palantir.javapoet.ClassName;
+import com.palantir.javapoet.CodeBlock;
+import com.palantir.javapoet.FieldSpec;
+import com.palantir.javapoet.MethodSpec;
+import com.palantir.javapoet.ParameterSpec;
+import com.palantir.javapoet.TypeName;
+import com.palantir.javapoet.TypeSpec;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,6 +31,8 @@ final class InjectorGenerator
 {
   @Nonnull
   private static final ClassName DO_NOT_INLINE = ClassName.get( "javaemul.internal.annotations", "DoNotInline" );
+  @Nonnull
+  private static final ClassName OBJECT = ClassName.get( "java.lang", "Object" );
 
   private InjectorGenerator()
   {
@@ -218,7 +220,7 @@ final class InjectorGenerator
 
   private static TypeName getPublicTypeName( @Nonnull final Node node )
   {
-    return node.isPublic() ? TypeName.get( node.getType() ) : TypeName.OBJECT;
+    return node.isPublic() ? TypeName.get( node.getType() ) : OBJECT;
   }
 
   private static void emitNodeAccessorMethod( @Nonnull final ProcessingEnvironment processingEnv,

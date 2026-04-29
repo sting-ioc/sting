@@ -1,8 +1,9 @@
 package sting.processor;
 
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.palantir.javapoet.ClassName;
+import com.palantir.javapoet.MethodSpec;
+import com.palantir.javapoet.TypeName;
+import com.palantir.javapoet.TypeSpec;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -17,6 +18,9 @@ import org.realityforge.proton.GeneratorUtil;
 
 final class InjectableGenerator
 {
+  @Nonnull
+  private static final ClassName OBJECT = ClassName.get( "java.lang", "Object" );
+
   private InjectableGenerator()
   {
   }
@@ -46,7 +50,7 @@ final class InjectableGenerator
         .methodBuilder( "create" )
         .addModifiers( Modifier.PUBLIC, Modifier.STATIC )
         .addAnnotation( GeneratorUtil.NONNULL_CLASSNAME )
-        .returns( isPublic ? TypeName.get( returnType ) : TypeName.OBJECT );
+        .returns( isPublic ? TypeName.get( returnType ) : OBJECT );
     final StringBuilder code = new StringBuilder();
     final List<Object> args = new ArrayList<>();
     code.append( "return new $T" );

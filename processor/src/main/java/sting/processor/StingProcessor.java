@@ -69,12 +69,12 @@ import org.realityforge.proton.TypesUtil;
 @SupportedSourceVersion( SourceVersion.RELEASE_17 )
 @SupportedOptions( { "sting.defer.unresolved",
                      "sting.defer.errors",
-                     "sting.warnings_as_errors",
                      "sting.debug",
                      "sting.profile",
                      "sting.emit_json_descriptors",
                      "sting.emit_dot_reports",
-                     "sting.verbose_out_of_round.errors" } )
+                     "sting.verbose_out_of_round.errors",
+                     "sting.warnings_as_errors" } )
 public final class StingProcessor
   extends AbstractStandardProcessor
 {
@@ -182,22 +182,6 @@ public final class StingProcessor
     super.init( processingEnv );
     _emitJsonDescriptors = readBooleanOption( "emit_json_descriptors", false );
     _emitDotReports = readBooleanOption( "emit_dot_reports", false );
-  }
-
-  private void warning( @Nonnull final CharSequence message, @Nonnull final Element element )
-  {
-    processingEnv.getMessager().printMessage( warningKind(), message, element );
-  }
-
-  @Nonnull
-  private Diagnostic.Kind warningKind()
-  {
-    return warningsAsErrors() ? Diagnostic.Kind.ERROR : Diagnostic.Kind.WARNING;
-  }
-
-  private boolean warningsAsErrors()
-  {
-    return "true".equalsIgnoreCase( processingEnv.getOptions().get( "sting.warnings_as_errors" ) );
   }
 
   @Override

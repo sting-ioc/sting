@@ -12,6 +12,8 @@ Changes in this release:
   Sting provider type instead.
 * Tighten annotation validation so `@Typed` is rejected on `@Injector` output methods rather than being accepted
   and ignored.
+* Upgrade the `org.realityforge.proton` artifact to version `0.69`.
+* Migrate `javapoet` to `com.palantir.javapoet:javapoet:jar:0.14.0` which is still maintained.
 
 ### [v0.30](https://github.com/sting-ioc/sting/tree/v0.30) (2026-04-29) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.29...v0.30) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.29&new=0.30)
 

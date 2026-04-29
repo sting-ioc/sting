@@ -7,10 +7,10 @@ artifacts:
 
   javax_annotation: org.realityforge.javax.annotation:javax.annotation:jar:1.1.1
 
-  javapoet: com.squareup:javapoet:jar:1.13.0
+  javapoet: com.palantir.javapoet:javapoet:jar:0.14.0
 
-  proton_core: org.realityforge.proton:proton-core:jar:0.65
-  proton_qa: org.realityforge.proton:proton-qa:jar:0.65
+  proton_core: org.realityforge.proton:proton-core:jar:0.69
+  proton_qa: org.realityforge.proton:proton-qa:jar:0.69
 
   guava: com.google.guava:guava:jar:27.1-jre
   guava_failureaccess: com.google.guava:failureaccess:jar:1.0.1

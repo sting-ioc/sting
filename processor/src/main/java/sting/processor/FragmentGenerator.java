@@ -1,8 +1,9 @@
 package sting.processor;
 
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import com.palantir.javapoet.ClassName;
+import com.palantir.javapoet.MethodSpec;
+import com.palantir.javapoet.TypeName;
+import com.palantir.javapoet.TypeSpec;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,6 +21,9 @@ import org.realityforge.proton.SuppressWarningsUtil;
 
 final class FragmentGenerator
 {
+  @Nonnull
+  private static final ClassName OBJECT = ClassName.get( "java.lang", "Object" );
+
   private FragmentGenerator()
   {
   }
@@ -66,7 +70,7 @@ final class FragmentGenerator
       MethodSpec
         .methodBuilder( StingGeneratorUtil.getFragmentProvidesStubName( element ) )
         .addModifiers( Modifier.PUBLIC )
-        .returns( isPublic ? TypeName.get( returnType ) : TypeName.OBJECT );
+        .returns( isPublic ? TypeName.get( returnType ) : OBJECT );
     GeneratorUtil.copyWhitelistedAnnotations( element, method );
 
     final StringBuilder code = new StringBuilder();
