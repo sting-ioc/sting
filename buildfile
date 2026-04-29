@@ -113,6 +113,7 @@ define 'sting' do
                  :javax_inject,
                  :javax_inject_sources,
                  :dagger_core,
+                 :squareup_javapoet,
                  :dagger_core_sources,
                  :dagger_gwt,
                  :dagger_producers,
