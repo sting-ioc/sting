@@ -913,7 +913,9 @@ public final class StingProcessor
         final String message =
           MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
           "parameter named 'includes' containing the value " + include.getIncludedType() +
-          " and that type is annotated by the @StingProvider annotation. The provider annotation expects a " +
+          " and that type is annotated by the " +
+          MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
+          " annotation. The provider annotation expects a " +
           "provider class named " + include.getActualTypeName() + " but no such class exists. The " +
           "type needs to be removed from the includes or the provider class needs to be present.";
         reportError( env, message, originator, annotation, null );
@@ -937,7 +939,9 @@ public final class StingProcessor
       final String message =
         MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
         "parameter named 'includes' containing the value " + include.getIncludedType() +
-        " and that type is annotated by the @StingProvider annotation. The provider annotation expects a " +
+        " and that type is annotated by the " +
+        MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
+        " annotation. The provider annotation expects a " +
         "provider class named " + include.getActualTypeName() + " but that class is not annotated with either " +
         MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + ", " +
         MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " or " +
@@ -1307,6 +1311,8 @@ public final class StingProcessor
                                             "is enclosed in a type annotated with " +
                                             MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
                                             " or the type is annotated with an annotation annotated by " +
+                                            MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
+                                            " or the type is annotated with an annotation annotated by " +
                                             "@ActAsStringComponent" ),
                          element );
           }
@@ -1325,6 +1331,8 @@ public final class StingProcessor
                        MemberChecks.must( Constants.NAMED_CLASSNAME,
                                           "only be present on a type if the type is annotated with " +
                                           MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                          " or the type is annotated with an annotation annotated by " +
+                                          MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
                                           " or the type is annotated with an annotation annotated by " +
                                           "@ActAsStringComponent" ),
                        element );
@@ -1369,6 +1377,10 @@ public final class StingProcessor
         {
           return AnnotationUsageKind.PROCESSED;
         }
+        else if ( hasStingProvider( enclosingType ) )
+        {
+          return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
+        }
         else if ( hasActAsStingComponent( enclosingType ) )
         {
           return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
@@ -1393,6 +1405,10 @@ public final class StingProcessor
       if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
       {
         return AnnotationUsageKind.PROCESSED;
+      }
+      else if ( hasStingProvider( element ) )
+      {
+        return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
       }
       else if ( hasActAsStingComponent( element ) )
       {
@@ -1473,7 +1489,9 @@ public final class StingProcessor
         reportError( env,
                      MemberChecks.must( Constants.TYPED_CLASSNAME,
                                         "only be present on a type if the type is annotated with " +
-                                        MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) ),
+                                        MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                        " or the type is annotated with an annotation annotated by " +
+                                        MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) ),
                      element );
       }
       else if ( ElementKind.METHOD == element.getKind() )
@@ -1501,6 +1519,10 @@ public final class StingProcessor
       if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
       {
         return AnnotationUsageKind.PROCESSED;
+      }
+      else if ( hasStingProvider( element ) )
+      {
+        return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
       }
       else
       {
@@ -1541,7 +1563,9 @@ public final class StingProcessor
         reportError( env,
                      MemberChecks.must( Constants.EAGER_CLASSNAME,
                                         "only be present on a type if the type is annotated with " +
-                                        MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) ),
+                                        MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                        " or the type is annotated with an annotation annotated by " +
+                                        MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) ),
                      element );
       }
       else if ( ElementKind.METHOD == element.getKind() )
@@ -1569,6 +1593,10 @@ public final class StingProcessor
       if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
       {
         return AnnotationUsageKind.PROCESSED;
+      }
+      else if ( hasStingProvider( element ) )
+      {
+        return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
       }
       else
       {
@@ -1843,7 +1871,9 @@ public final class StingProcessor
     if ( providers.size() > 1 )
     {
       final String message =
-        targetDescription + " that is annotated by multiple @StingProvider annotations. Matching annotations:\n" +
+        targetDescription + " that is annotated by multiple " +
+        MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
+        " annotations. Matching annotations:\n" +
         providers
           .stream()
           .map( a -> ( (TypeElement) a.getAnnotation().getAnnotationType().asElement() ).getQualifiedName() )
@@ -1934,8 +1964,9 @@ public final class StingProcessor
       {
         final String message = targetDescription +
                                " that is annotated by " + annotation +
-                               " that is annotated by an invalid @StingProvider " +
-          "annotation missing a 'value' parameter of type string.";
+                               " that is annotated by an invalid " +
+                               MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
+                               " annotation missing a 'value' parameter of type string.";
         throw new ProcessorException( message, element );
       }
     }
@@ -2106,9 +2137,9 @@ public final class StingProcessor
   {
     return MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
                                  "contain a non-optional dependency " + coordinate +
-                                 " that can not be auto-discovered via @StingProvider because " +
-                                 detail + ".\n" +
-                                 "Dependency Path:\n" + workEntry.describePathFromRoot() );
+                                 " that can not be auto-discovered via " +
+                                 MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
+                                 " because " + detail + ".\nDependency Path:\n" + workEntry.describePathFromRoot() );
   }
 
   private void emitFragmentJsonDescriptor( @Nonnull final FragmentDescriptor fragment )

@@ -14,6 +14,9 @@ import javax.annotation.Nonnull;
  * <p>Sting actively processes this annotation on {@link Injectable} types and on provider methods
  * contained within a type annotated by {@link Fragment}.</p>
  *
+ * <p>Sting also tolerates this annotation for framework integration on types annotated with an
+ * annotation meta-annotated by {@link StingProvider}.</p>
+ *
  * <p>{@link Typed} must not be applied to {@link Injector} output methods.</p>
  *
  * <p>If this annotation is applied to a class then the class must be able to be assigned to the
