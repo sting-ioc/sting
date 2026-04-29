@@ -78,8 +78,6 @@ define 'sting' do
     iml.test_source_directories << _('generated/processors/test/java')
 
     iml.test_source_directories << _('src/test/fixtures/input')
-    iml.test_source_directories << _('src/test/fixtures/expected')
-    iml.test_source_directories << _('src/test/fixtures/bad_input')
   end
 
   desc 'Integration Tests'
