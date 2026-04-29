@@ -1,5 +1,7 @@
 # Change Log
 
+### Unreleased
+
 ### [v0.30](https://github.com/sting-ioc/sting/tree/v0.30) (2026-04-29) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.29...v0.30) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.29&new=0.30)
 
 The release includes 3 non breaking API changes and 2 breaking API changes.
