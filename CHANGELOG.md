@@ -1,6 +1,10 @@
 # Change Log
 
-### Unreleased
+### [v0.30](https://github.com/sting-ioc/sting/tree/v0.30) (2026-04-29) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.29...v0.30) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.29&new=0.30)
+
+The release includes 3 non breaking API changes and 2 breaking API changes.
+
+Changes in this release:
 
 * Add `@Injector.fragmentOnly`, default it to `true`, and reject explicit injector includes that do not
   resolve to `@Fragment` types unless the flag is explicitly disabled.
