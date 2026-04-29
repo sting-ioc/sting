@@ -951,9 +951,8 @@ public final class StingProcessor
         MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME );
       throw new ProcessorException( message, originator, annotation );
     }
-    if ( descriptor instanceof FragmentDescriptor )
+    if ( descriptor instanceof final FragmentDescriptor fragmentDescriptor )
     {
-      final FragmentDescriptor fragmentDescriptor = (FragmentDescriptor) descriptor;
       if ( fragmentDescriptor.isLocalOnly() && !isInSamePackage( originator, element ) )
       {
         fragmentDescriptor.markAsContainsError();
