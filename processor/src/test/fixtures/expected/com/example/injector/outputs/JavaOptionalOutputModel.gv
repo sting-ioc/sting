@@ -1,0 +1,7 @@
+digraph "JavaOptionalOutputModel" {
+  overlap = false
+  splines = true
+  injector [label="JavaOptionalOutputModel",color=green];
+  node1 [label="MyModel"];
+  injector -> node1 [style=dotted];
+}

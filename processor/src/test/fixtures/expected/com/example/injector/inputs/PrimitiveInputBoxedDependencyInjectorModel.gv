@@ -1,0 +1,9 @@
+digraph "PrimitiveInputBoxedDependencyInjectorModel" {
+  overlap = false
+  splines = true
+  injector [label="PrimitiveInputBoxedDependencyInjectorModel",color=green];
+  node2 [label="MyModel"];
+  node1 [label="int",color=blue];
+  injector -> node2 [];
+  node2 -> node1 [label="Integer"];
+}

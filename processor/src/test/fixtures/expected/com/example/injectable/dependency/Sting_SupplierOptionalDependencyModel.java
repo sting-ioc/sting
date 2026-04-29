@@ -12,7 +12,8 @@ public final class Sting_SupplierOptionalDependencyModel {
   }
 
   @Nonnull
-  public static SupplierOptionalDependencyModel create(final Supplier<Optional<Runnable>> runnable) {
+  public static SupplierOptionalDependencyModel create(
+      final Supplier<Optional<Runnable>> runnable) {
     return new SupplierOptionalDependencyModel( Objects.requireNonNull( runnable ) );
   }
 }
