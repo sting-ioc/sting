@@ -1,0 +1,9 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.outputs.JavaOptionalOutputModel.MyModel",
+      "kind": "INJECTABLE"
+    }
+  ]
+}

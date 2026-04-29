@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Supplier;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -28,6 +29,8 @@ final class StingGeneratorUtil
   @Nonnull
   private static final ClassName COLLECTION = ClassName.get( Collection.class );
   @Nonnull
+  private static final ClassName OPTIONAL = ClassName.get( Optional.class );
+  @Nonnull
   private static final ClassName SUPPLIER = ClassName.get( Supplier.class );
 
   private StingGeneratorUtil()
@@ -42,19 +45,33 @@ final class StingGeneratorUtil
     {
       return baseType;
     }
+    else if ( ServiceRequest.Kind.OPTIONAL == kind )
+    {
+      return ParameterizedTypeName.get( OPTIONAL, baseType );
+    }
     else if ( ServiceRequest.Kind.SUPPLIER == kind )
     {
       return ParameterizedTypeName.get( SUPPLIER, baseType );
+    }
+    else if ( ServiceRequest.Kind.SUPPLIER_OPTIONAL == kind )
+    {
+      return ParameterizedTypeName.get( SUPPLIER, ParameterizedTypeName.get( OPTIONAL, baseType ) );
     }
     else if ( ServiceRequest.Kind.COLLECTION == kind )
     {
       return ParameterizedTypeName.get( COLLECTION, baseType );
     }
-    else
+    else if ( ServiceRequest.Kind.SUPPLIER_COLLECTION == kind )
     {
-      assert ServiceRequest.Kind.SUPPLIER_COLLECTION == kind;
       return ParameterizedTypeName.get( COLLECTION,
                                         ParameterizedTypeName.get( SUPPLIER, baseType ) );
+    }
+    else
+    {
+      assert ServiceRequest.Kind.SUPPLIER_OPTIONAL_COLLECTION == kind;
+      return ParameterizedTypeName.get( COLLECTION,
+                                        ParameterizedTypeName.get( SUPPLIER,
+                                                                   ParameterizedTypeName.get( OPTIONAL, baseType ) ) );
     }
   }
 
@@ -100,7 +117,17 @@ final class StingGeneratorUtil
       {
         paramType = TypeName.OBJECT;
       }
+      else if ( ServiceRequest.Kind.OPTIONAL == kind )
+      {
+        anyNonPublicNonInstance = true;
+        paramType = OPTIONAL;
+      }
       else if ( ServiceRequest.Kind.SUPPLIER == kind )
+      {
+        anyNonPublicNonInstance = true;
+        paramType = SUPPLIER;
+      }
+      else if ( ServiceRequest.Kind.SUPPLIER_OPTIONAL == kind )
       {
         anyNonPublicNonInstance = true;
         paramType = SUPPLIER;
@@ -112,7 +139,8 @@ final class StingGeneratorUtil
       }
       else
       {
-        assert ServiceRequest.Kind.SUPPLIER_COLLECTION == kind;
+        assert ServiceRequest.Kind.SUPPLIER_COLLECTION == kind ||
+               ServiceRequest.Kind.SUPPLIER_OPTIONAL_COLLECTION == kind;
         anyNonPublicNonInstance = true;
         paramType = COLLECTION;
       }

@@ -33,8 +33,7 @@ final class Edge
   void setSatisfiedBy( @Nonnull final Collection<Node> satisfiedBy )
   {
     assert !satisfiedBy.isEmpty() ||
-           _serviceRequest.getService().isOptional() ||
-           _serviceRequest.getKind().isCollection();
+           _serviceRequest.canBeAbsent();
     _satisfiedBy = satisfiedBy;
     for ( final Node node : satisfiedBy )
     {
@@ -60,8 +59,7 @@ final class Edge
   {
     assert null != _satisfiedBy;
     assert !_satisfiedBy.isEmpty() ||
-           _serviceRequest.getService().isOptional() ||
-           _serviceRequest.getKind().isCollection();
+           _serviceRequest.canBeAbsent();
     return _satisfiedBy;
   }
 }

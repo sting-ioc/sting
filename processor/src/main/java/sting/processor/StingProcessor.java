@@ -705,7 +705,7 @@ public final class StingProcessor
       final List<Binding> nullableProviders = bindings.stream()
         .filter( b -> b.getPublishedServices().stream().anyMatch( ServiceSpec::isOptional ) )
         .collect( Collectors.toList() );
-      if ( !serviceRequest.getService().isOptional() && !nullableProviders.isEmpty() )
+      if ( !serviceRequest.canConsumeOptionalBindings() && !nullableProviders.isEmpty() )
       {
         final String message =
           MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
@@ -718,7 +718,7 @@ public final class StingProcessor
       }
       if ( bindings.isEmpty() )
       {
-        if ( serviceRequest.getService().isOptional() || serviceRequest.getKind().isCollection() )
+        if ( serviceRequest.canBeAbsent() )
         {
           edge.setSatisfiedBy( Collections.emptyList() );
         }

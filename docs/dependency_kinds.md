@@ -41,6 +41,16 @@ The following table lists the different kinds supported by Sting.
     </td>
   </tr>
   <tr>
+    <td>Optional Instance</td>
+    <td nowrap><code>Optional&lt;T&gt;</code></td>
+    <td>
+      Sting provides an <code>Optional</code> containing the single matching service if present.
+      Missing bindings and nullable providers that return <code>null</code> both result in
+      <code>Optional.empty()</code>. As with nullable instance dependencies, multiple matching
+      bindings are still rejected.
+    </td>
+  </tr>
+  <tr>
     <td>Supplier</td>
     <td nowrap><code>Supplier&lt;T&gt;</code></td>
     <td>
@@ -55,11 +65,22 @@ The following table lists the different kinds supported by Sting.
     </td>
   </tr>
   <tr>
+    <td>Optional Supplier</td>
+    <td nowrap><code>Supplier&lt;Optional&lt;T&gt;&gt;</code></td>
+    <td>
+      Sting provides a lazy supplier that returns the single matching service wrapped in an
+      <code>Optional</code>. Missing bindings and nullable providers that return <code>null</code>
+      both yield <code>Optional.empty()</code>.
+    </td>
+  </tr>
+  <tr>
     <td>Collection</td>
     <td nowrap><code>Collection&lt;T&gt;</code></td>
     <td>
       Sting provides a read-only collection containing every component that publishes
-      the type <code>T</code>. This is primarily aimed at systems that support multiple
+      the type <code>T</code>. Optional bindings are permitted for this request shape and
+      any optional binding that produces <code>null</code> is simply omitted from the
+      resulting collection. This is primarily aimed at systems that support multiple
       plugins of the same type.
     </td>
   </tr>
@@ -71,6 +92,16 @@ The following table lists the different kinds supported by Sting.
       the type <code>T</code>. This is primarily aimed at systems that support multiple
       plugins of the same type and either the plugins can be lazily created when required
       or a plugin may have a direct dependency on the component declaring the dependency.
+    </td>
+  </tr>
+  <tr>
+    <td>Optional Supplier Collection</td>
+    <td nowrap><code>Collection&lt;Supplier&lt;Optional&lt;T&gt;&gt;&gt;</code></td>
+    <td>
+      Sting provides a read-only collection containing a supplier for every component that
+      publishes the type <code>T</code>, with each supplier returning its value wrapped in
+      an <code>Optional</code>. This preserves laziness while allowing nullable bindings and
+      missing values to surface as <code>Optional.empty()</code>.
     </td>
   </tr>
   </tbody>

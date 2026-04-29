@@ -37,9 +37,12 @@ public final class StingProcessorTest
         new Object[]{ "com.example.fragment.dependency.MultipleDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.NullableDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.NonnullDependencyModel" },
+        new Object[]{ "com.example.fragment.dependency.OptionalDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.PrimitiveDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.QualifiedDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.SupplierDependencyModel" },
+        new Object[]{ "com.example.fragment.dependency.SupplierOptionalCollectionDependencyModel" },
+        new Object[]{ "com.example.fragment.dependency.SupplierOptionalDependencyModel" },
         new Object[]{ "com.example.fragment.dependency.SupplierCollectionDependencyModel" },
 
         new Object[]{ "com.example.fragment.eager.EagerModel" },
@@ -59,11 +62,14 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injectable.dependency.MultipleDependencyModel" },
         new Object[]{ "com.example.injectable.dependency.NullableDependencyModel" },
         new Object[]{ "com.example.injectable.dependency.NonnullDependencyModel" },
+        new Object[]{ "com.example.injectable.dependency.OptionalDependencyModel" },
         new Object[]{ "com.example.injectable.dependency.PackageAccessDependencyModel" },
         new Object[]{ "com.example.injectable.dependency.PrimitiveDependencyModel" },
         new Object[]{ "com.example.injectable.dependency.PublicAccessDependencyModel" },
         new Object[]{ "com.example.injectable.dependency.QualifiedDependencyModel" },
         new Object[]{ "com.example.injectable.dependency.SupplierCollectionDependencyModel" },
+        new Object[]{ "com.example.injectable.dependency.SupplierOptionalCollectionDependencyModel" },
+        new Object[]{ "com.example.injectable.dependency.SupplierOptionalDependencyModel" },
         new Object[]{ "com.example.injectable.dependency.SupplierDependencyModel" },
 
         new Object[]{ "com.example.injectable.eager.EagerModel" },
@@ -145,6 +151,7 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.outputs.CollectionOutputModel" },
         new Object[]{ "com.example.injector.outputs.ComplexOutputModel" },
         new Object[]{ "com.example.injector.outputs.EmptyCollectionOutputModel" },
+        new Object[]{ "com.example.injector.outputs.JavaOptionalOutputModel" },
         new Object[]{ "com.example.injector.outputs.MultipleOutputModel" },
         new Object[]{ "com.example.injector.outputs.OptionalOutputModel" },
         new Object[]{ "com.example.injector.outputs.OptionalMissingOutputModel" },
@@ -155,6 +162,8 @@ public final class StingProcessorTest
         new Object[]{ "com.example.injector.outputs.PrimitiveOutputModel" },
         new Object[]{ "com.example.injector.outputs.QualifiedOutputModel" },
         new Object[]{ "com.example.injector.outputs.SupplierCollectionOutputModel" },
+        new Object[]{ "com.example.injector.outputs.SupplierOptionalCollectionOutputModel" },
+        new Object[]{ "com.example.injector.outputs.SupplierOptionalOutputModel" },
         new Object[]{ "com.example.injector.outputs.SupplierOutputModel" },
 
         new Object[]{ "com.example.injector.inputs.MultipleInputInjectorModel" },
@@ -191,6 +200,24 @@ public final class StingProcessorTest
 
   @Test( dataProvider = "successfulPrimitiveInteropCompiles" )
   public void processSuccessfulPrimitiveInteropCompile( @Nonnull final String classname )
+  {
+    final Compilation compilation = compile( Collections.singletonList( input( "input", classname ) ) );
+    assertCompilationSuccessful( compilation );
+  }
+
+  @DataProvider( name = "successfulOptionalRequestInjectorCompiles" )
+  @Nonnull
+  public Object[][] successfulOptionalRequestInjectorCompiles()
+  {
+    return new Object[][]
+      {
+        new Object[]{ "com.example.injector.OptionalCollectionDependencyInjectorModel" },
+        new Object[]{ "com.example.injector.outputs.OptionalFilteredCollectionOutputModel" }
+      };
+  }
+
+  @Test( dataProvider = "successfulOptionalRequestInjectorCompiles" )
+  public void processSuccessfulOptionalRequestInjectorCompile( @Nonnull final String classname )
   {
     final Compilation compilation = compile( Collections.singletonList( input( "input", classname ) ) );
     assertCompilationSuccessful( compilation );
@@ -488,6 +515,8 @@ public final class StingProcessorTest
                       "@Fragment target must not contain a method with a parameter that contains an array type" },
         new Object[]{ "com.example.fragment.inputs.NullableCollectionInputModel",
                       "@Fragment target must not contain a method with a parameter annotated with the @Nullable annotation that is not an instance dependency kind" },
+        new Object[]{ "com.example.fragment.inputs.NullableOptionalInputModel",
+                      "@Fragment target must not contain a method with a parameter annotated with the @Nullable annotation that is not an instance dependency kind" },
         new Object[]{ "com.example.fragment.inputs.NullableSupplierCollectionInputModel",
                       "@Fragment target must not contain a method with a parameter annotated with the @Nullable annotation that is not an instance dependency kind" },
         new Object[]{ "com.example.fragment.inputs.ParameterizedCollectionInputModel",
@@ -562,6 +591,8 @@ public final class StingProcessorTest
                       "@Injectable target must not contain a constructor with a parameter that contains an array type" },
         new Object[]{ "com.example.injectable.inputs.NullableCollectionInputModel",
                       "@Injectable target must not contain a constructor with a parameter annotated with @Nullable that is not an instance dependency kind" },
+        new Object[]{ "com.example.injectable.inputs.NullableOptionalInputModel",
+                      "@Injectable target must not contain a constructor with a parameter annotated with @Nullable that is not an instance dependency kind" },
         new Object[]{ "com.example.injectable.inputs.NullableSupplierCollectionInputModel",
                       "@Injectable target must not contain a constructor with a parameter annotated with @Nullable that is not an instance dependency kind" },
         new Object[]{ "com.example.injectable.inputs.ParameterizedCollectionInputModel",
@@ -628,6 +659,14 @@ public final class StingProcessorTest
                       "  Candidate Nodes:\n" +
                       "    [Provides]       com.example.injector.MultipleCandidatesForSingularDependencyModel.MyFragment1.provideRunnable1\n" +
                       "    [Provides]       com.example.injector.MultipleCandidatesForSingularDependencyModel.MyFragment2.provideRunnable2" },
+        new Object[]{ "com.example.injector.OptionalOutputMultipleMatchesModel",
+                      "@Injector target must not contain a non-collection dependency [java.lang.Runnable] that can be satisfied by multiple nodes.\n" +
+                      "  Dependency Path:\n" +
+                      "    [Injector]       com.example.injector.OptionalOutputMultipleMatchesModel\n" +
+                      "  \n" +
+                      "  Candidate Nodes:\n" +
+                      "    [Provides]       com.example.injector.OptionalOutputMultipleMatchesModel.MyFragment1.provideRunnable1\n" +
+                      "    [Provides]       com.example.injector.OptionalOutputMultipleMatchesModel.MyFragment2.provideRunnable2" },
         new Object[]{ "com.example.injector.NoDirectDependenciesAndNoEagerInIncludesModel",
                       "@Injector target produced an empty object graph. This means that there are no eager nodes in the includes and there are no dependencies or only unsatisfied optional dependencies defined by the injector" },
         new Object[]{ "com.example.injector.NullableBoxedProviderPrimitiveOutputModel",
@@ -637,16 +676,6 @@ public final class StingProcessorTest
                       "  \n" +
                       "  Binding:\n" +
                       "    [Provides]       com.example.injector.NullableBoxedProviderPrimitiveOutputModel.MyFragment.provideValue" },
-        new Object[]{ "com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel",
-                      "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [java.lang.Integer]\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel\n" +
-                      "    [Injectable]     com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyModel1\n" +
-                      "    [Provides]    *  com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment1.provideConfig\n" +
-                      "  \n" +
-                      "  Bindings:\n" +
-                      "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment2.provideInteger\n" +
-                      "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalCollectionDependencyModel.MyFragment4.provideInteger" },
         new Object[]{ "com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel",
                       "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [java.lang.String]\n" +
                       "  Dependency Path:\n" +
@@ -656,6 +685,14 @@ public final class StingProcessorTest
                       "  \n" +
                       "  Binding:\n" +
                       "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment2.provideConfig" },
+        new Object[]{ "com.example.injector.SupplierOptionalOutputMultipleMatchesModel",
+                      "@Injector target must not contain a non-collection dependency [java.lang.Runnable] that can be satisfied by multiple nodes.\n" +
+                      "  Dependency Path:\n" +
+                      "    [Injector]       com.example.injector.SupplierOptionalOutputMultipleMatchesModel\n" +
+                      "  \n" +
+                      "  Candidate Nodes:\n" +
+                      "    [Provides]       com.example.injector.SupplierOptionalOutputMultipleMatchesModel.MyFragment1.provideRunnable1\n" +
+                      "    [Provides]       com.example.injector.SupplierOptionalOutputMultipleMatchesModel.MyFragment2.provideRunnable2" },
         new Object[]{ "com.example.factory.NoFactoryMethodsModel",
                       "@Factory target must contain at least one abstract method that returns a value" },
         new Object[]{ "com.example.factory.ParameterMismatchFactoryModel",
@@ -765,6 +802,8 @@ public final class StingProcessorTest
                       "@Injector target must not contain a method that is annotated with an annotation that is annotated with the javax.inject.Scope annotation such as [@javax.inject.Singleton]" },
         new Object[]{ "com.example.injector.outputs.NullableCollectionOutputModel",
                       "@Injector target must not contain a method annotated with @Nullable that is not an instance dependency kind" },
+        new Object[]{ "com.example.injector.outputs.NullableOptionalOutputModel",
+                      "@Injector target must not contain a method annotated with @Nullable that is not an instance dependency kind" },
         new Object[]{ "com.example.injector.outputs.NullableSupplierCollectionOutputModel",
                       "@Injector target must not contain a method annotated with @Nullable that is not an instance dependency kind" },
         new Object[]{ "com.example.injector.outputs.MethodReturningVoidOutputModel",
@@ -789,6 +828,8 @@ public final class StingProcessorTest
                       "  \n" +
                       "  Binding:\n" +
                       "    [Provides]       com.example.injector.outputs.NullableBoxedProviderBoxedOutputModel.MyFragment.provideValue" },
+        new Object[]{ "com.example.injector.outputs.OptionalCollectionOutputModel",
+                      "@Injector target must not contain a method with a return type that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
         new Object[]{ "com.example.injector.outputs.ParameterizedCollectionOutputModel",
                       "@Injector target must not contain a method with a return type that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
         new Object[]{ "com.example.injector.outputs.ParameterizedOutputModel",

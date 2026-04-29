@@ -46,9 +46,13 @@ import javax.annotation.Nonnull;
  * a match.</p>
  *
  * <p>If the binding is marked as optional (i.e. the component is created by a method annotated with
- * {@link javax.annotation.Nullable} in a type annotated with the {@link Fragment} annotation) and the service
- * is not optional then the compiler generates an error as it is not able to determine statically that the
- * service will be available.</p>
+ * {@link javax.annotation.Nullable} in a type annotated with the {@link Fragment} annotation, or it is an
+ * optional injector input) and the service request does not explicitly allow optional bindings then the
+ * compiler generates an error as it is not able to determine statically that the service will be available.
+ * Optional bindings may be consumed by {@link javax.annotation.Nullable nullable instance} requests,
+ * {@link java.util.Optional Optional}-based requests and {@code Collection<T>} requests. For
+ * {@code Collection<T>} requests, any optional binding that yields {@code null} is omitted from the
+ * resulting collection.</p>
  *
  * <p>If no matching binding is found then the compiler will attempt to look for a class annotated with
  * {@link Injectable} that has the same name as the type of the service. If found and the type matches the service
@@ -69,7 +73,9 @@ import javax.annotation.Nonnull;
  * <p>Instance methods defined on the injector allow access to services contained within the injector and
  * also define the root services that are used to build the component graph. The instance methods must be
  * abstract, have zero parameters, throw no exceptions and return services. The methods can be annotated with
- * {@link Named} to qualify the service and {@link javax.annotation.Nullable} to mark the service as optional.</p>
+ * {@link Named} to qualify the service and {@link javax.annotation.Nullable} to mark an instance request as
+ * optional. Service methods may also request optional services via {@link java.util.Optional Optional},
+ * {@code Supplier<Optional<T>>} and {@code Collection<Supplier<Optional<T>>>}.</p>
  *
  * <h2>Instantiation</h2>
  *

@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
@@ -353,7 +354,7 @@ final class InjectorGenerator
     {
       if ( satisfiedBy.isEmpty() )
       {
-        code.append( "null" );
+        emitAbsentServiceValue( service, code, args );
       }
       else
       {
@@ -367,6 +368,23 @@ final class InjectorGenerator
       {
         code.append( "$T.emptyList()" );
         args.add( Collections.class );
+      }
+      else if ( ServiceRequest.Kind.COLLECTION == kind &&
+                satisfiedBy.stream().anyMatch( node -> node.getBinding().isOptional() ) )
+      {
+        code.append( "$T.asList( " );
+        args.add( Arrays.class );
+        final Iterator<Node> iterator = satisfiedBy.iterator();
+        for ( int i = 0; i < count; i++ )
+        {
+          if ( 0 != i )
+          {
+            code.append( ", " );
+          }
+          emitNodeAccessor( service, iterator.next(), isOutput, code, args );
+        }
+        code.append( " ).stream().filter( $T::nonNull ).toList()" );
+        args.add( Objects.class );
       }
       else if ( 1 == count )
       {
@@ -407,10 +425,58 @@ final class InjectorGenerator
                                         @Nonnull final List<Object> args )
   {
     final ServiceRequest.Kind kind = service.getKind();
-    if ( kind.isSupplier() )
+    if ( ServiceRequest.Kind.OPTIONAL == kind )
     {
-      code.append( "() -> " );
+      code.append( "$T.ofNullable( " );
+      args.add( Optional.class );
+      emitDirectNodeAccess( service, node, isOutput, code, args );
+      code.append( " )" );
     }
+    else if ( ServiceRequest.Kind.SUPPLIER_OPTIONAL == kind ||
+              ServiceRequest.Kind.SUPPLIER_OPTIONAL_COLLECTION == kind )
+    {
+      code.append( "() -> $T.ofNullable( " );
+      args.add( Optional.class );
+      emitDirectNodeAccess( service, node, isOutput, code, args );
+      code.append( " )" );
+    }
+    else
+    {
+      if ( kind.isSupplier() )
+      {
+        code.append( "() -> " );
+      }
+      emitDirectNodeAccess( service, node, isOutput, code, args );
+    }
+  }
+
+  private static void emitAbsentServiceValue( @Nonnull final ServiceRequest service,
+                                              @Nonnull final StringBuilder code,
+                                              @Nonnull final List<Object> args )
+  {
+    final ServiceRequest.Kind kind = service.getKind();
+    if ( ServiceRequest.Kind.OPTIONAL == kind )
+    {
+      code.append( "$T.empty()" );
+      args.add( Optional.class );
+    }
+    else if ( ServiceRequest.Kind.SUPPLIER_OPTIONAL == kind )
+    {
+      code.append( "() -> $T.empty()" );
+      args.add( Optional.class );
+    }
+    else
+    {
+      code.append( "null" );
+    }
+  }
+
+  private static void emitDirectNodeAccess( @Nonnull final ServiceRequest service,
+                                            @Nonnull final Node node,
+                                            final boolean isOutput,
+                                            @Nonnull final StringBuilder code,
+                                            @Nonnull final List<Object> args )
+  {
     if ( ( isOutput && !service.getService().isPublic() ) ||
          ( !node.isPublic() && service.getService().isPublic() ) )
     {

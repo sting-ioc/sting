@@ -122,7 +122,7 @@ final class InjectorDotReportGenerator
       sb.append( "\"" );
       hasAttributes = true;
     }
-    if ( service.isOptional() )
+    if ( serviceRequest.isOptionalLike() )
     {
       if ( hasAttributes )
       {

@@ -5,6 +5,9 @@
 * Add `@Injector.fragmentOnly`, default it to `true`, and reject explicit injector includes that do not
   resolve to `@Fragment` types unless the flag is explicitly disabled.
 * Add `@Fragment.localOnly`, default it to `true`, and reject fragment includes declared in a different package unless the flag is explicitly disabled.
+* Add `Optional<T>`, `Supplier<Optional<T>>`, and `Collection<Supplier<Optional<T>>>` service requests for
+  injectable constructors, fragment provider parameters, and injector outputs. `Collection<T>` requests may now
+  consume optional bindings by omitting `null` values from the resulting collection.
 * Treat primitive and boxed equivalents as the same service for injector matching and factory dependency de-duplication. This applies to all primitive-wrapper pairs while preserving the declared types in generated APIs and descriptors. Nullable boxed providers still do not satisfy required primitive or required boxed requests.
 * Update the `org.realityforge.braincheck` artifacts to version `1.32.0`.
 * Add the `sting.warnings_as_errors` annotation processor option to upgrade Sting warnings to errors.

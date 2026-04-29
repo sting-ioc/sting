@@ -18,8 +18,11 @@ with the `@Nullable` annotation.
 
 Injector matching treats primitive and boxed equivalents as the same service. For example, an input
 declared as `int` can satisfy requests for `int`, `Integer`, `@Nullable Integer`,
-`Collection<Integer>` and `Supplier<Integer>` as long as the qualifier also matches. The declared
-input type is still preserved in the generated constructor and descriptors.
+`Optional<Integer>`, `Collection<Integer>`, `Supplier<Integer>`,
+`Supplier<Optional<Integer>>` and `Collection<Supplier<Optional<Integer>>>` as long as the qualifier
+also matches. If the input itself is optional then `Collection<Integer>` requests simply omit the
+value when it is absent. The declared input type is still preserved in the generated constructor and
+descriptors.
 
 For example, the injector defined by:
 

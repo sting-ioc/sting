@@ -1,0 +1,12 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.SupplierOptionalOutputModel.MyModel"
+  ],
+  "outputs": [
+    {
+      "kind": "SUPPLIER_OPTIONAL",
+      "type": "com.example.injector.outputs.SupplierOptionalOutputModel.MyModel"
+    }
+  ]
+}

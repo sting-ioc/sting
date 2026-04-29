@@ -1,0 +1,87 @@
+meta:
+  project: optional-service-request-expansion
+  last_updated: 2026-04-29
+  required_full_gates:
+    - bundle exec buildr test
+  statuses:
+    - pending
+    - in_progress
+    - completed
+    - cancelled
+
+current_focus: complete
+
+tasks:
+  - id: T01
+    title: Extend processor request modeling and graph resolution for optional request forms
+    status: completed
+    priority: high
+    depends_on: []
+    acceptance_criteria:
+      - New Optional-based request shapes are parsed and modeled
+      - Graph resolution distinguishes missing-binding tolerance from optional-binding consumption
+      - Collection instance requests accept optional bindings by omission
+    files_touched:
+      - processor/src/main/java/sting/processor/*
+    evidence:
+      - command: bundle exec buildr test processor:check
+        result: pass
+    commit:
+      hash: not_required
+      message: not_required
+  - id: T02
+    title: Update generators, fixtures, and tests for new request forms
+    status: completed
+    priority: high
+    depends_on:
+      - T01
+    acceptance_criteria:
+      - Generated code covers Optional-based parameters and outputs
+      - Processor fixtures cover positive and negative cases
+      - Integration tests verify runtime optional behavior
+    files_touched:
+      - processor/src/test/java/sting/processor/*
+      - processor/src/test/fixtures/*
+      - integration-tests/src/test/java/sting/integration/*
+    evidence:
+      - command: bundle exec buildr test processor:check
+        result: pass
+      - command: bundle exec buildr test
+        result: pass
+    commit:
+      hash: not_required
+      message: not_required
+  - id: T03
+    title: Update docs, Javadocs, and validation evidence
+    status: completed
+    priority: medium
+    depends_on:
+      - T02
+    acceptance_criteria:
+      - Public docs and Javadocs describe the new request forms
+      - Targeted validation commands are recorded
+      - Any full-gate limitation is documented
+    files_touched:
+      - docs/*
+      - core/src/main/java/sting/Injector.java
+      - plans/optional-service-request-expansion/*
+    evidence:
+      - command: bundle exec buildr test
+        result: pass
+    commit:
+      hash: not_required
+      message: not_required
+
+history:
+  - timestamp: 2026-04-29
+    task: T01
+    commit: not_required
+    note: Added Optional-based request kinds, request-level optional binding semantics, and collection omission support in the processor graph.
+  - timestamp: 2026-04-29
+    task: T02
+    commit: not_required
+    note: Updated generators and added processor fixtures plus integration coverage for Optional requests and filtered collections.
+  - timestamp: 2026-04-29
+    task: T03
+    commit: not_required
+    note: Updated docs, Javadocs, and changelog, then verified with the processor suite and full buildr test task.

@@ -1,0 +1,19 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.fragment.dependency.SupplierOptionalCollectionDependencyModel#provideRunnable",
+      "publishedServices": [
+        {
+          "type": "java.lang.Runnable"
+        }
+      ],
+      "dependencies": [
+        {
+          "kind": "SUPPLIER_OPTIONAL_COLLECTION",
+          "type": "java.lang.String"
+        }
+      ]
+    }
+  ]
+}
