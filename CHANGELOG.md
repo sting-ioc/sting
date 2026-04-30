@@ -1,6 +1,8 @@
 # Change Log
 
-### Unreleased
+### [v0.33](https://github.com/sting-ioc/sting/tree/v0.33) (2026-04-30) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.32...v0.33)
+
+Changes in this release:
 
 * Explicitly document the expectations for `@StingProvider` types that contain `@Eager`, `@Named` and `@Typed` annotations.
 * Explicitly document and add integration tests to ensure that `@Typed` annotations can appear on provider methods of fragments.
