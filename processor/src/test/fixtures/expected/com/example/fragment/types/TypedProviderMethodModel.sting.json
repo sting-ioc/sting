@@ -1,0 +1,13 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.fragment.types.TypedProviderMethodModel#provideMyModel",
+      "publishedServices": [
+        {
+          "type": "java.lang.Runnable"
+        }
+      ]
+    }
+  ]
+}

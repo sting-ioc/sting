@@ -12,7 +12,8 @@ import javax.annotation.Nonnull;
  * This annotation is used to explicitly specify which types that a component can provide.
  *
  * <p>Sting actively processes this annotation on {@link Injectable} types and on provider methods
- * contained within a type annotated by {@link Fragment}.</p>
+ * contained within a type annotated by {@link Fragment}. When applied to a fragment provider method,
+ * the listed types become the complete set of published services for that binding.</p>
  *
  * <p>Sting also tolerates this annotation for framework integration on types annotated with an
  * annotation meta-annotated by {@link StingProvider}.</p>
@@ -21,7 +22,8 @@ import javax.annotation.Nonnull;
  *
  * <p>If this annotation is applied to a class then the class must be able to be assigned to the
  * types specified by this annotation. If the annotation is applied to a method then the return type
- * of the method must be able to be assigned to the types specified by this annotation.</p>
+ * of the method must be able to be assigned to the types specified by this annotation. The method
+ * return type is not implicitly published unless it is listed in {@link #value()}.</p>
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )

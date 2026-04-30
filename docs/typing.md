@@ -8,8 +8,9 @@ to the type that is annotated by the {@link: sting.Injectable @Injectable} annot
 of the provider method. Sting makes it possible to customize the service types published by using the
 {@link: sting.Typed @Typed} annotation.
 
-The {@link: sting.Typed @Typed} annotation can be applied to either the injectable type or the provider method.
-Zero or more types can be specified and thus a single component can publish multiple services or no services.
+The {@link: sting.Typed @Typed} annotation can be applied to either the injectable type or a provider method
+declared inside a {@link: sting.Fragment @Fragment}. Zero or more types can be specified and thus a single
+component can publish multiple services or no services.
 
 It should be noted that if a component does not publish any services then it must be annotated with
 {@link: sting.Eager @Eager}. If a component publishes zero services that it will never be a dependency of any
@@ -53,10 +54,14 @@ ever needing to send messages. For example:
 
 ## @Typed on provider methods
 
-The {@link: sting.Typed @Typed} annotation can be applied to provider methods with the same impacts as when
-it is applied to an injectable type. We could re-implement the above example but instead of using types
-annotated by the {@link: sting.Injectable @Injectable} annotation we could use use provider methods. Such an
-example would look like:
+The {@link: sting.Typed @Typed} annotation can be applied to provider methods declared by a
+{@link: sting.Fragment @Fragment} with the same published-service semantics as when it is applied to an
+injectable type. Once {@link: sting.Typed @Typed} is present on the provider method, the types listed in the
+annotation become the full published service set for that binding. The concrete return type is not implicitly
+published unless it is explicitly listed in the annotation.
+
+We could re-implement the above example but instead of using types annotated by the
+{@link: sting.Injectable @Injectable} annotation we could use provider methods. Such an example would look like:
 
 {@file_content: file=sting/doc/examples/typing/ApplicationFragment.java start_line=@Fragment}
 

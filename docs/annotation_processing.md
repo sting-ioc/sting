@@ -24,6 +24,8 @@ tolerates an annotation for framework integration, and where a placement is igno
 ## Notes
 
 - `Feature` is not listed here because it is an enum, not an annotation.
+- When `@Typed` is present on a `@Fragment` provider method, Sting publishes exactly the declared types rather
+  than implicitly publishing the method return type.
 - For provider-backed framework integration, Sting processes the resolved provider type, not the framework
   annotation target itself. `@Named`, `@Typed`, and `@Eager` must be placed on the resolved Sting provider
   type if they are needed.

@@ -267,11 +267,21 @@ public final class StingProcessorTest
   }
 
   @Test
-  public void multipleTypedProviderMethod()
+  public void typedProviderMethodSupportsMultiplePublishedServiceTypes()
     throws Exception
   {
     final String pkg = "com.example.fragment.types";
     final String classname = pkg + ".BasicTypesModel";
+    assertSuccessfulCompile( inputs( classname, pkg + ".MyModel" ),
+                             Arrays.asList( javaOutput( classname ), jsonOutput( classname ) ) );
+  }
+
+  @Test
+  public void typedProviderMethodPublishesOnlyDeclaredServiceTypes()
+    throws Exception
+  {
+    final String pkg = "com.example.fragment.types";
+    final String classname = pkg + ".TypedProviderMethodModel";
     assertSuccessfulCompile( inputs( classname, pkg + ".MyModel" ),
                              Arrays.asList( javaOutput( classname ), jsonOutput( classname ) ) );
   }

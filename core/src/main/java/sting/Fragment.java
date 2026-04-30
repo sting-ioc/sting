@@ -14,7 +14,8 @@ import javax.annotation.Nonnull;
  * <p>The interface is expected to declare 1 or more default methods and/or include 1 or more types
  * in the {@link #includes() includes} parameter. Sting actively processes {@link Named},
  * {@link Typed}, and {@link Eager} on provider methods declared by the fragment, and {@link Named}
- * on provider method parameters.</p>
+ * on provider method parameters. When {@link Typed} is present on a provider method, it defines the
+ * full set of service types published by that binding.</p>
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
