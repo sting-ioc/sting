@@ -17,7 +17,17 @@ final class Constants
   @Nonnull
   static final String STING_PROVIDER_CLASSNAME = "sting.StingProvider";
   @Nonnull
+  static final String ACT_AS_STING_CONSUMER_CLASSNAME = "sting.ActAsStingConsumer";
+  @Nonnull
+  static final String ACT_AS_STING_PROVIDER_CLASSNAME = "sting.ActAsStingProvider";
+  @Nonnull
   static final String ACT_AS_STING_COMPONENT_CLASSNAME = "sting.ActAsStingComponent";
+  @Nonnull
+  static final String ACT_AS_STING_CONSUMER_SIMPLE_NAME = "ActAsStingConsumer";
+  @Nonnull
+  static final String ACT_AS_STING_PROVIDER_SIMPLE_NAME = "ActAsStingProvider";
+  @Nonnull
+  static final String ACT_AS_STING_COMPONENT_SIMPLE_NAME = "ActAsStingComponent";
   @Nonnull
   static final String INPUT_CLASSNAME = "sting.Injector.Input";
   @Nonnull

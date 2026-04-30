@@ -11,13 +11,11 @@ import java.lang.annotation.Target;
  * {@link sting.Named @Named}, {@link sting.Typed @Typed}, and {@link sting.Eager @Eager}. This is
  * an integration meta-annotation rather than a component-defining Sting annotation.
  *
- * <p>When a type is annotated with an annotation meta-annotated by {@link ActAsStingComponent},
- * Sting applies the combined validation behavior of {@link ActAsStingConsumer} and
- * {@link ActAsStingProvider}. In practice this means Sting tolerates {@link sting.Named @Named}
- * on constructor parameters, and tolerates {@link sting.Named @Named},
- * {@link sting.Typed @Typed}, and {@link sting.Eager @Eager} on the type, without treating that
- * type as a Sting-managed component. The expectation is that another annotation processor will
- * process the type and make use of the metadata if present.</p>
+ * <p>When a type is annotated with an annotation meta-annotated by {@link ActAsStingProvider},
+ * Sting tolerates {@link sting.Named @Named}, {@link sting.Typed @Typed}, and
+ * {@link sting.Eager @Eager} on the type without treating that type as a Sting-managed
+ * component. The expectation is that another annotation processor will process the type and make
+ * use of the metadata if present.</p>
  *
  * <p>This annotation only affects validation. It does not participate in explicit include
  * resolution, provider-backed auto-discovery, or any other graph construction step.</p>
@@ -25,11 +23,11 @@ import java.lang.annotation.Target;
  * <p>It should be noted that Sting will attempt to use any annotation with this name and shape so
  * that frameworks do not need a direct code dependency on Sting.</p>
  *
- * @see InjectorFragment
+ * @see ActAsStingComponent
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )
 @Target( ElementType.ANNOTATION_TYPE )
-public @interface ActAsStingComponent
+public @interface ActAsStingProvider
 {
 }

@@ -2,6 +2,13 @@
 
 ### Unreleased
 
+* Add validation-only `@ActAsStingConsumer` and `@ActAsStingProvider` integration hooks, redefine
+  `@ActAsStingComponent` as their union, and stop treating `@StingProvider` as a validation escape
+  hatch for `@Named`, `@Typed`, and `@Eager` on framework-managed types.
+* Clarify the documentation for provider-backed framework integration so it distinguishes explicit
+  include aliasing from auto-discovery, and explains when `@Eager`, `@Named`, and `@Typed` on
+  framework-managed types need to be copied onto the resolved Sting provider.
+
 ### [v0.33](https://github.com/sting-ioc/sting/tree/v0.33) (2026-04-30) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.32...v0.33)
 
 Changes in this release:

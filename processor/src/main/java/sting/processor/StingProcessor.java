@@ -65,6 +65,8 @@ import org.realityforge.proton.TypesUtil;
                              Constants.TYPED_CLASSNAME,
                              Constants.NAMED_CLASSNAME,
                              Constants.STING_PROVIDER_CLASSNAME,
+                             Constants.ACT_AS_STING_CONSUMER_CLASSNAME,
+                             Constants.ACT_AS_STING_PROVIDER_CLASSNAME,
                              Constants.ACT_AS_STING_COMPONENT_CLASSNAME } )
 @SupportedSourceVersion( SourceVersion.RELEASE_17 )
 @SupportedOptions( { "sting.defer.unresolved",
@@ -1311,9 +1313,9 @@ public final class StingProcessor
                                             "is enclosed in a type annotated with " +
                                             MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
                                             " or the type is annotated with an annotation annotated by " +
-                                            MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
-                                            " or the type is annotated with an annotation annotated by " +
-                                            "@ActAsStringComponent" ),
+                                            MemberChecks.toSimpleName( Constants.ACT_AS_STING_CONSUMER_CLASSNAME ) +
+                                            " or " +
+                                            MemberChecks.toSimpleName( Constants.ACT_AS_STING_COMPONENT_CLASSNAME ) ),
                          element );
           }
           else
@@ -1332,9 +1334,9 @@ public final class StingProcessor
                                           "only be present on a type if the type is annotated with " +
                                           MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
                                           " or the type is annotated with an annotation annotated by " +
-                                          MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
-                                          " or the type is annotated with an annotation annotated by " +
-                                          "@ActAsStringComponent" ),
+                                          MemberChecks.toSimpleName( Constants.ACT_AS_STING_PROVIDER_CLASSNAME ) +
+                                          " or " +
+                                          MemberChecks.toSimpleName( Constants.ACT_AS_STING_COMPONENT_CLASSNAME ) ),
                        element );
         }
         else if ( ElementKind.METHOD == element.getKind() )
@@ -1377,11 +1379,7 @@ public final class StingProcessor
         {
           return AnnotationUsageKind.PROCESSED;
         }
-        else if ( hasStingProvider( enclosingType ) )
-        {
-          return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
-        }
-        else if ( hasActAsStingComponent( enclosingType ) )
+        else if ( hasActAsStingConsumer( enclosingType ) )
         {
           return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
         }
@@ -1406,11 +1404,7 @@ public final class StingProcessor
       {
         return AnnotationUsageKind.PROCESSED;
       }
-      else if ( hasStingProvider( element ) )
-      {
-        return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
-      }
-      else if ( hasActAsStingComponent( element ) )
+      else if ( hasActAsStingProvider( element ) )
       {
         return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
       }
@@ -1453,11 +1447,39 @@ public final class StingProcessor
 
   private boolean hasActAsStingComponent( @Nonnull final Element element )
   {
-    return hasAnnotationWithAnnotationMatching( element,
-                                                ca -> ca.getAnnotationType()
-                                                  .asElement()
-                                                  .getSimpleName()
-                                                  .contentEquals( "ActAsStingComponent" ) );
+    return hasValidationRole( element, Constants.ACT_AS_STING_COMPONENT_SIMPLE_NAME );
+  }
+
+  private boolean hasActAsStingConsumer( @Nonnull final Element element )
+  {
+    return hasValidationRole( element,
+                              Constants.ACT_AS_STING_CONSUMER_SIMPLE_NAME,
+                              Constants.ACT_AS_STING_COMPONENT_SIMPLE_NAME );
+  }
+
+  private boolean hasActAsStingProvider( @Nonnull final Element element )
+  {
+    return hasValidationRole( element,
+                              Constants.ACT_AS_STING_PROVIDER_SIMPLE_NAME,
+                              Constants.ACT_AS_STING_COMPONENT_SIMPLE_NAME );
+  }
+
+  private boolean hasValidationRole( @Nonnull final Element element, @Nonnull final String... annotationNames )
+  {
+    return hasAnnotationWithAnnotationMatching( element, ca -> matchesValidationRole( ca, annotationNames ) );
+  }
+
+  private boolean matchesValidationRole( @Nonnull final AnnotationMirror annotation,
+                                         @Nonnull final String... annotationNames )
+  {
+    final Element element = annotation.getAnnotationType().asElement();
+    if ( ElementKind.ANNOTATION_TYPE != element.getKind() ||
+         element.getEnclosedElements().stream().anyMatch( e -> ElementKind.METHOD == e.getKind() ) )
+    {
+      return false;
+    }
+    final String simpleName = element.getSimpleName().toString();
+    return Arrays.stream( annotationNames ).anyMatch( simpleName::equals );
   }
 
   private boolean hasAnnotationWithAnnotationMatching( @Nonnull final AnnotatedConstruct element,
@@ -1491,7 +1513,9 @@ public final class StingProcessor
                                         "only be present on a type if the type is annotated with " +
                                         MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
                                         " or the type is annotated with an annotation annotated by " +
-                                        MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) ),
+                                        MemberChecks.toSimpleName( Constants.ACT_AS_STING_PROVIDER_CLASSNAME ) +
+                                        " or " +
+                                        MemberChecks.toSimpleName( Constants.ACT_AS_STING_COMPONENT_CLASSNAME ) ),
                      element );
       }
       else if ( ElementKind.METHOD == element.getKind() )
@@ -1520,7 +1544,7 @@ public final class StingProcessor
       {
         return AnnotationUsageKind.PROCESSED;
       }
-      else if ( hasStingProvider( element ) )
+      else if ( hasActAsStingProvider( element ) )
       {
         return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
       }
@@ -1565,7 +1589,9 @@ public final class StingProcessor
                                         "only be present on a type if the type is annotated with " +
                                         MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
                                         " or the type is annotated with an annotation annotated by " +
-                                        MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) ),
+                                        MemberChecks.toSimpleName( Constants.ACT_AS_STING_PROVIDER_CLASSNAME ) +
+                                        " or " +
+                                        MemberChecks.toSimpleName( Constants.ACT_AS_STING_COMPONENT_CLASSNAME ) ),
                      element );
       }
       else if ( ElementKind.METHOD == element.getKind() )
@@ -1594,7 +1620,7 @@ public final class StingProcessor
       {
         return AnnotationUsageKind.PROCESSED;
       }
-      else if ( hasStingProvider( element ) )
+      else if ( hasActAsStingProvider( element ) )
       {
         return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
       }

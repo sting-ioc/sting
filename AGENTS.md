@@ -74,5 +74,6 @@ Prerequisites: JDK 17+, Ruby 2.7.x with Bundler, Node.js (for docs site) and Yar
 
 ## Processor Integration Notes
 
-- Meta-annotation detection by simple name is intentional. The processor checks for annotations whose meta-annotations have the simple names `StingProvider` and `ActAsStingComponent` (without requiring FQNs). This enables third-party frameworks to define their own integration annotations (often package-private) without adding a direct dependency on Sting.
+- Meta-annotation detection by simple name is intentional. The processor checks for annotations whose meta-annotations have the simple names `StingProvider`, `ActAsStingConsumer`, `ActAsStingProvider`, and `ActAsStingComponent` (without requiring FQNs). This enables third-party frameworks to define their own integration annotations (often package-private) without adding a direct dependency on Sting.
+- `StingProvider` is for include resolution and auto-discovery. `ActAsStingConsumer`, `ActAsStingProvider`, and `ActAsStingComponent` are validation-only hooks.
 - Do not “fix” this to FQN/type checks; it is a deliberate extension point. If adding new integration hooks, document their simple names here and keep the behavior consistent.

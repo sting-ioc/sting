@@ -2,6 +2,7 @@ package sting.integration;
 
 import javax.annotation.Nonnull;
 import org.testng.annotations.Test;
+import sting.ActAsStingProvider;
 import sting.Eager;
 import sting.Injectable;
 import sting.Injector;
@@ -23,6 +24,7 @@ public final class ProviderInjectableAnnotatedIncludedIntegrationTest
   {
   }
 
+  @ActAsStingProvider
   @StingProvider( "[CompoundName]Impl" )
   @interface MyFrameworkComponent
   {

@@ -7,9 +7,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation indicating that the component should be eagerly instantiated when the {@link Injector} is created.
- * The annotation may be applied to types annotated by {@link Injectable}, to types annotated with an annotation
- * meta-annotated by {@link StingProvider}, or to methods contained in types annotated by {@link Fragment}.
+ * Annotation indicating that the component should be eagerly instantiated when the {@link Injector}
+ * is created. The annotation may be applied to types annotated by {@link Injectable}, to types
+ * annotated with an annotation meta-annotated by {@link ActAsStingProvider} or
+ * {@link ActAsStingComponent}, or to methods contained in types annotated by {@link Fragment}.
  */
 @Documented
 @Retention( RetentionPolicy.RUNTIME )

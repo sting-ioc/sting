@@ -3,15 +3,20 @@ title: Framework Integration
 ---
 
 Sting integrates cleanly with other annotation‑based frameworks without requiring those frameworks to
-depend on Sting directly. Integration relies on two meta‑annotations that Sting detects by simple name:
+depend on Sting directly. Integration relies on validation and provider-resolution meta-annotations
+that Sting detects by simple name and shape:
 
 - StingProvider: identifies a framework annotation that points to a provider type Sting should include.
-- ActAsStingComponent: marks a framework annotation whose annotated types should be treated as Sting components
-  for the purposes of validation (e.g., allowing @Named on constructors) even if Sting does not process them.
+- ActAsStingConsumer: marks a framework annotation whose annotated types may consume qualified Sting
+  services via constructor parameters.
+- ActAsStingProvider: marks a framework annotation whose annotated types may carry Sting provider
+  metadata for validation purposes.
+- ActAsStingComponent: the union of `ActAsStingConsumer` and `ActAsStingProvider`.
 
 Sting matches these meta‑annotations by simple name and shape (not FQN) so a framework may either:
 
-- Depend on Sting and use `sting.StingProvider` / `sting.ActAsStingComponent`, or
+- Depend on Sting and use `sting.StingProvider`, `sting.ActAsStingConsumer`,
+  `sting.ActAsStingProvider`, and `sting.ActAsStingComponent`, or
 - Define annotations with the same simple names and method signatures in its own package.
 
 Using StingProvider
@@ -20,7 +25,8 @@ Using StingProvider
   naming pattern for the provider class that Sting should include. The provider class must exist, be in the same
   package as the referenced type, and be annotated with `@Fragment` or `@Injectable`.
 - The meta-annotation does not itself create a Sting binding. Sting still processes the resolved provider type.
-- Sting only observes `@Named`, `@Typed`, and `@Eager` on the resolved provider. Providers used only as
+- `@StingProvider` does not suppress validation errors for `@Named`, `@Typed`, or `@Eager` on the
+  framework-managed type. Sting only observes those annotations on the resolved provider. Providers used only as
   explicit include aliases usually do not need to propagate those annotations for the framework type.
   Providers intended to support auto-discovery usually do need to propagate them when the framework type
   should be published with those semantics. If the provider is generated as an `@Injectable`, copy the
@@ -63,14 +69,30 @@ resolved provider publishes `Foo` with the default qualifier. This is the case w
 `@Named`, `@Typed`, and `@Eager` from the framework-managed type onto the resolved provider usually
 matters.
 
-ActAsStingComponent
+ActAsStingConsumer
 
-- Apply `@ActAsStingComponent` (or an equivalent annotation with the same shape) to a framework annotation to
-  suppress Sting warnings for types/constructors that legitimately use `@Named` but are processed by another
+- Apply `@ActAsStingConsumer` (or an equivalent annotation with the same shape) to a framework annotation to
+  suppress Sting warnings for constructor parameters that legitimately use `@Named` but are processed by another
   framework.
 - This is validation-only integration. It does not make the annotated type a Sting-managed component and it
   does not participate in include resolution or auto-discovery.
 
+ActAsStingProvider
+
+- Apply `@ActAsStingProvider` (or an equivalent annotation with the same shape) to a framework annotation to
+  suppress Sting warnings for framework-managed types that legitimately use type-level `@Named`,
+  `@Typed`, or `@Eager`.
+- This is validation-only integration. It does not make the annotated type a Sting-managed component and it
+  does not participate in include resolution or auto-discovery.
+
+ActAsStingComponent
+
+- Apply `@ActAsStingComponent` (or an equivalent annotation with the same shape) to opt into both
+  validation roles.
+- This is a convenience shorthand for frameworks that need both consumer-side constructor qualifier
+  support and provider-side type metadata support.
+
 For a full placement matrix, see [Annotation Processing](annotation_processing.md).
 
-See also: sting/ActAsStingComponent and sting/StingProvider Javadoc for API details.
+See also: sting/ActAsStingConsumer, sting/ActAsStingProvider, sting/ActAsStingComponent, and
+sting/StingProvider Javadoc for API details.

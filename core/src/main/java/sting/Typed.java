@@ -16,7 +16,8 @@ import javax.annotation.Nonnull;
  * the listed types become the complete set of published services for that binding.</p>
  *
  * <p>Sting also tolerates this annotation for framework integration on types annotated with an
- * annotation meta-annotated by {@link StingProvider}.</p>
+ * annotation meta-annotated by {@link ActAsStingProvider}. Types annotated with annotations
+ * meta-annotated by {@link ActAsStingComponent} receive the same validation allowance.</p>
  *
  * <p>{@link Typed} must not be applied to {@link Injector} output methods.</p>
  *

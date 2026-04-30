@@ -1,0 +1,32 @@
+[
+  {
+    "code": "java.class.added",
+    "description": "Class was added.",
+    "newElement": "@interface sting.ActAsStingConsumer",
+    "classification": {
+      "SOURCE": "NON_BREAKING",
+      "BINARY": "NON_BREAKING"
+    },
+    "attachments": {
+      "classQualifiedName": "sting.ActAsStingConsumer",
+      "classSimpleName": "ActAsStingConsumer",
+      "elementKind": "@interface",
+      "package": "sting"
+    }
+  },
+  {
+    "code": "java.class.added",
+    "description": "Class was added.",
+    "newElement": "@interface sting.ActAsStingProvider",
+    "classification": {
+      "SOURCE": "NON_BREAKING",
+      "BINARY": "NON_BREAKING"
+    },
+    "attachments": {
+      "classQualifiedName": "sting.ActAsStingProvider",
+      "classSimpleName": "ActAsStingProvider",
+      "elementKind": "@interface",
+      "package": "sting"
+    }
+  }
+]
