@@ -16,6 +16,9 @@ import java.lang.annotation.Target;
  * treating that type as a Sting-managed component. The expectation is that another annotation
  * processor will process the type and make use of the qualifier information if present.</p>
  *
+ * <p>This annotation only affects validation. It does not participate in explicit include
+ * resolution, provider-backed auto-discovery, or any other graph construction step.</p>
+ *
  * <p>It should be noted that Sting will attempt to use any annotation with this name and shape so
  * that frameworks do not need a direct code dependency on Sting.</p>
  *

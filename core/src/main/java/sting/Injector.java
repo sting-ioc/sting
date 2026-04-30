@@ -19,8 +19,11 @@ import javax.annotation.Nonnull;
  * <p>The component graph is created in multiple phases.</p>
  *
  * <p>The first phase involves collecting all the types that are declared via the {@link #includes()}
- * property and adding a binding (a.k.a. a potential component) for every {@link Injectable} annotated
- * type and a binding for every method in {@link Fragment} annotated types. </p>
+ * property and resolving each entry to a Sting-managed contribution. This adds a binding (a.k.a. a
+ * potential component) for every {@link Injectable} annotated type and a binding for every method
+ * in {@link Fragment} annotated types. If an included type is annotated with an annotation that is
+ * meta-annotated by {@link StingProvider}, Sting first resolves that framework-managed type to the
+ * provider type and then adds the provider's contributions.</p>
  *
  * <p>The second phase involves building a set of actual components created by the injector. Any potential
  * binding that is annotated with the {@link Eager} annotation is added to the set of components. The
@@ -55,10 +58,14 @@ import javax.annotation.Nonnull;
  * {@code Collection<T>} requests, any optional binding that yields {@code null} is omitted from the
  * resulting collection.</p>
  *
- * <p>If no matching binding is found then the compiler will attempt to look for a class annotated with
- * {@link Injectable} that has the same name as the type of the service. If found and the type matches the service
- * then the class will be added to the set of components created. If not found and the service is not optional then
- * the compiler will generate an error.</p>
+ * <p>If no matching binding is found then the compiler will attempt direct auto-discovery by looking
+ * for a class annotated with {@link Injectable} that has the same name as the type of the service.
+ * If found and the type matches the service then the class will be added to the set of components
+ * created. If that does not succeed, Sting will attempt provider-backed auto-discovery for
+ * framework-managed types annotated with an annotation meta-annotated by {@link StingProvider}. In
+ * the provider-backed case, the resolved provider type must publish the requested framework-managed
+ * type using the default qualifier. If no matching binding is found and the service is not optional
+ * then the compiler will generate an error.</p>
  *
  * <h2>Generated Classname</h2>
  *
@@ -146,15 +153,20 @@ public @interface Injector
    * A list of types that contribute to the object graph.
    * When {@link #fragmentOnly()} is true, these types must be {@link Fragment @Fragment}-annotated interfaces.
    * When {@link #fragmentOnly()} is false, these types can also be {@link Injectable @Injectable}-annotated
-   * classes.
+   * classes. Types annotated with annotations meta-annotated by {@link StingProvider} may also be
+   * explicitly included, in which case Sting resolves the framework-managed type to the provider
+   * type before contributing bindings to the object graph.
    * The de-duplicated contributions of the {@code @Fragment}-annotated interfaces in the {@code includes},
    * and of their inclusions recursively, are all contributed to the object graph.
    *
    * <p>If the annotation processor detects a dependency that is required but not explicitly included in the
-   * includes list then it will attempt to automatically add the type to the graph if it is annotated with
-   * {@link Injectable @Injectable}. The current implementation includes types
-   * if they were compiled in the same invocation of the java compiler. In the future the annotation processor
-   * will load the descriptors from the filesystem.</p>
+   * includes list then it will attempt to automatically add the type to the graph. This first
+   * attempts direct auto-discovery for {@link Injectable @Injectable} types and then
+   * provider-backed auto-discovery for framework-managed types annotated with an annotation
+   * meta-annotated by {@link StingProvider}. In the provider-backed case, the resolved provider
+   * must publish the framework-managed type using the default qualifier. The current implementation
+   * includes types if they were compiled in the same invocation of the java compiler. In the future
+   * the annotation processor will load the descriptors from the filesystem.</p>
    *
    * @return a list of types that contribute to the injector's object graph.
    */
@@ -164,6 +176,8 @@ public @interface Injector
   /**
    * A flag controlling whether explicitly included types must be {@link Fragment @Fragment}-annotated.
    * If set to false, the injector may explicitly include {@link Injectable @Injectable}-annotated types.
+   * This also applies when an explicit include resolves via {@link StingProvider} to an
+   * {@link Injectable}-annotated provider type.
    *
    * @return true to require explicit includes to be {@link Fragment @Fragment}-annotated, false otherwise.
    */

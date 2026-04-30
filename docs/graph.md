@@ -8,7 +8,10 @@ As part of the compilation phase, injectors build a list of potential components
 1. Any types declared in the {@link: sting.Injector#includes() @Injector.includes} parameter are added to the
    "work list". By default these should be {@link: sting.Fragment @Fragment} annotated types, but
    {@link: sting.Injectable @Injectable} and provider-backed injectable types are also supported when
-   {@link: sting.Injector#fragmentOnly() @Injector.fragmentOnly} is set to `false`.
+   {@link: sting.Injector#fragmentOnly() @Injector.fragmentOnly} is set to `false`. When an included
+   type is annotated with an annotation meta-annotated by {@link: sting.StingProvider @StingProvider},
+   Sting first resolves the framework-managed type to the provider type and adds that provider's
+   contributions to the work list.
 2. Any {@link: sting.Injectable @Injectable} or {@link: sting.Fragment @Fragment} annotated types that are enclosed
    by the injector type are added to the "work list". i.e. The types annotated by the {@link: sting.Injectable @Injectable}
    or {@link: sting.Fragment @Fragment} annotations that are directly nested within the injector class are added.
@@ -20,8 +23,10 @@ As part of the compilation phase, injectors build a list of potential components
      {@link: sting.Fragment#includes() @Fragment.includes} to the "work list".
    * Types annotated with annotations meta-annotated by the {@link: sting.StingProvider @StingProvider}
      annotation are processed according to the algorithm described in the
-     [framework integration](framework_integration.md) document which may result in more types being added
-     to the "work list".
+     [framework integration](framework_integration.md) document which may result in the resolved provider
+     type being added to the "work list". Explicit include aliasing only requires the resolved provider's
+     bindings to be contributed to the graph. The framework-managed type itself only needs to be published
+     when a later service-resolution step requests that type.
 4. From the potential components, identify the root components and add them to the set of actual components included
    in the injector. The "root" components include components that publish the [output](outputs.md) services as well
    as any potential component that is annotated with the {@link: sting.Eager @Eager} annotation. For every component

@@ -20,10 +20,12 @@ Using StingProvider
   naming pattern for the provider class that Sting should include. The provider class must exist, be in the same
   package as the referenced type, and be annotated with `@Fragment` or `@Injectable`.
 - The meta-annotation does not itself create a Sting binding. Sting still processes the resolved provider type.
-- Frameworks should typically copy Sting-owned binding annotations such as `@Named`, `@Typed`, and `@Eager`
-  from the framework component type onto the resolved Sting provider. If the provider is generated as an
-  `@Injectable`, copy the annotations to that type. If the provider is generated as a `@Fragment`, copy them
-  to the relevant provider method rather than leaving them only on the framework component type.
+- Sting only observes `@Named`, `@Typed`, and `@Eager` on the resolved provider. Providers used only as
+  explicit include aliases usually do not need to propagate those annotations for the framework type.
+  Providers intended to support auto-discovery usually do need to propagate them when the framework type
+  should be published with those semantics. If the provider is generated as an `@Injectable`, copy the
+  annotations to that type. If the provider is generated as a `@Fragment`, copy them to the relevant
+  provider method rather than leaving them only on the framework component type.
 - Supported tokens in the pattern: `[SimpleName]`, `[CompoundName]`, `[EnclosingName]`, `[FlatEnclosingName]`.
 
 Example
@@ -50,16 +52,24 @@ Then `@Fragment(includes = Foo.class)` or `@Injector(includes = Foo.class)` will
 If the resolved provider type is an `@Injectable` rather than a `@Fragment`, then
 `@Injector(fragmentOnly = false, includes = Foo.class)` is required.
 
-The same provider contract is also used during auto-discovery. If an injector requests `Foo` without an explicit
-include, Sting can auto-discover the provider-backed component so long as the resolved provider publishes `Foo`
-with the default qualifier.
+Explicit include aliasing does not require the resolved provider to publish `Foo`. For example,
+`@Injector(fragmentOnly = false, includes = Foo.class)` may resolve to a generated `@Injectable`
+provider that publishes only its own provider type so other components can depend on that generated
+provider directly.
+
+Provider-backed auto-discovery is a separate integration pattern. If an injector requests `Foo`
+without an explicit include, Sting can auto-discover the provider-backed component only when the
+resolved provider publishes `Foo` with the default qualifier. This is the case where propagating
+`@Named`, `@Typed`, and `@Eager` from the framework-managed type onto the resolved provider usually
+matters.
 
 ActAsStingComponent
 
 - Apply `@ActAsStingComponent` (or an equivalent annotation with the same shape) to a framework annotation to
   suppress Sting warnings for types/constructors that legitimately use `@Named` but are processed by another
   framework.
-- This is validation-only integration. It does not make the annotated type a Sting-managed component.
+- This is validation-only integration. It does not make the annotated type a Sting-managed component and it
+  does not participate in include resolution or auto-discovery.
 
 For a full placement matrix, see [Annotation Processing](annotation_processing.md).
 

@@ -28,4 +28,6 @@ tolerates an annotation for framework integration, and where a placement is igno
   than implicitly publishing the method return type.
 - For provider-backed framework integration, Sting processes the resolved provider type, not the framework
   annotation target itself. `@Named`, `@Typed`, and `@Eager` must be placed on the resolved Sting provider
-  type if they are needed.
+  type if they are needed. Providers used only as explicit include aliases usually do not need those
+  annotations copied for the framework-managed type, while providers intended to support auto-discovery
+  usually do when the framework-managed type should be published with those semantics.
