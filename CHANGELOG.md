@@ -1,5 +1,7 @@
 # Change Log
 
+### Unreleased
+
 ### [v0.34](https://github.com/sting-ioc/sting/tree/v0.34) (2026-04-30) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.33...v0.34) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.33&new=0.34)
 
 The release includes 2 non breaking API changes.
