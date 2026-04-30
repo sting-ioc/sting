@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Explicitly document the expectations for `@StingProvider` types that contain `@Eager`, `@Named` and `@Typed` annotations.
+
 ### [v0.32](https://github.com/sting-ioc/sting/tree/v0.32) (2026-04-29) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.31...v0.32)
 
 Changes in this release:
