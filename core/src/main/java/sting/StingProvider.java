@@ -21,6 +21,11 @@ import javax.annotation.Nonnull;
  * provider must be annotated with {@link Fragment} or {@link Injectable} and publish the framework
  * type using the default qualifier.</p>
  *
+ * <p>Frameworks that synthesize Sting providers should typically copy {@link Eager}, {@link Named},
+ * and {@link Typed} from the framework-managed type onto the resolved Sting provider. In practice
+ * this means copying the annotations onto the generated {@link Injectable} subtype, or onto the
+ * provider method declared by the generated {@link Fragment}, depending on the provider style.</p>
+ *
  * <p>The presence of this annotation does not itself create a Sting binding; the resolved provider
  * type is what Sting processes.</p>
  *

@@ -20,8 +20,10 @@ Using StingProvider
   naming pattern for the provider class that Sting should include. The provider class must exist, be in the same
   package as the referenced type, and be annotated with `@Fragment` or `@Injectable`.
 - The meta-annotation does not itself create a Sting binding. Sting still processes the resolved provider type.
-- Do not apply Sting-owned binding annotations such as `@Named`, `@Typed`, or `@Eager` to the framework
-  component type. If those semantics are required, place them on the resolved Sting provider type instead.
+- Frameworks should typically copy Sting-owned binding annotations such as `@Named`, `@Typed`, and `@Eager`
+  from the framework component type onto the resolved Sting provider. If the provider is generated as an
+  `@Injectable`, copy the annotations to that type. If the provider is generated as a `@Fragment`, copy them
+  to the relevant provider method rather than leaving them only on the framework component type.
 - Supported tokens in the pattern: `[SimpleName]`, `[CompoundName]`, `[EnclosingName]`, `[FlatEnclosingName]`.
 
 Example
