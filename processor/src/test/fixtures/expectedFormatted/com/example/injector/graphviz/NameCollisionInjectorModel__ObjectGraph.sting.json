@@ -1,0 +1,13 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.graphviz.pkg2.MyModel",
+      "kind": "INJECTABLE"
+    },
+    {
+      "id": "com.example.injector.graphviz.pkg1.MyModel",
+      "kind": "INJECTABLE"
+    }
+  ]
+}

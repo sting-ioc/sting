@@ -1,0 +1,15 @@
+{
+  "schema": "injectable/1",
+  "id": "com.example.injectable.dependency.NullableDependencyModel",
+  "publishedServices": [
+    {
+      "type": "com.example.injectable.dependency.NullableDependencyModel"
+    }
+  ],
+  "dependencies": [
+    {
+      "type": "java.lang.Runnable",
+      "optional": true
+    }
+  ]
+}

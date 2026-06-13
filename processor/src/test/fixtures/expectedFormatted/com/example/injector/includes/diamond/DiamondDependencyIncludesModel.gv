@@ -1,0 +1,7 @@
+digraph "DiamondDependencyIncludesModel" {
+  overlap = false
+  splines = true
+  injector [label="DiamondDependencyIncludesModel",color=green];
+  node1 [label="MyModel",color=blue];
+  injector -> node1 [];
+}

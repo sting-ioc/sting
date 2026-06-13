@@ -1,0 +1,20 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.PrimitiveProviderBoxedSupplierKindsOutputModel.MyFragment"
+  ],
+  "outputs": [
+    {
+      "kind": "COLLECTION",
+      "type": "java.lang.Integer"
+    },
+    {
+      "kind": "SUPPLIER",
+      "type": "java.lang.Integer"
+    },
+    {
+      "kind": "SUPPLIER_COLLECTION",
+      "type": "java.lang.Integer"
+    }
+  ]
+}

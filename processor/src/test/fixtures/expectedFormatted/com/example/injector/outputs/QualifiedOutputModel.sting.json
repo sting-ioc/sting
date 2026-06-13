@@ -1,0 +1,12 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.QualifiedOutputModel.MyModel"
+  ],
+  "outputs": [
+    {
+      "qualifier": "Foo",
+      "type": "com.example.injector.outputs.QualifiedOutputModel.MyModel"
+    }
+  ]
+}

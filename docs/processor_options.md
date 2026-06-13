@@ -32,6 +32,14 @@ the options supported by the annotation processor.
     </td>
   </tr>
   <tr>
+    <td>sting.format_generated_source</td>
+    <td>
+    A flag that will format Sting generated Java source before writing it if set to <code>true</code>. Formatting
+    is disabled by default and requires additional JDK exports on JDK 16 and later. See
+    <a href="project_setup.html">Project Setup</a> for further details.
+    </td>
+  </tr>
+  <tr>
     <td>sting.defer.errors</td>
     <td>
     Setting this option to <code>false</code> will cause Sting to halt at the first error it encounters.

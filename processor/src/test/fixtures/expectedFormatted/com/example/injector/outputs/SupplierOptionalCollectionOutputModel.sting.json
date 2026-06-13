@@ -1,0 +1,12 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.SupplierOptionalCollectionOutputModel.MyModel"
+  ],
+  "outputs": [
+    {
+      "kind": "SUPPLIER_OPTIONAL_COLLECTION",
+      "type": "com.example.injector.outputs.SupplierOptionalCollectionOutputModel.MyModel"
+    }
+  ]
+}

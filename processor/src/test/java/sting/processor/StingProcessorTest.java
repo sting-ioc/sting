@@ -2,11 +2,13 @@ package sting.processor;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import javax.annotation.Nonnull;
@@ -1278,6 +1280,73 @@ public final class StingProcessorTest
     compilation.assertJavaClassPresent( "com.example.multiround.injectable.MyGeneratedInjectable" );
     compilation.assertJavaSourcePresent( "com.example.multiround.injectable.Sting_MyGeneratedInjectable" );
     compilation.assertJavaClassPresent( "com.example.multiround.injectable.Sting_MyGeneratedInjectable" );
+  }
+
+  @Test
+  public void formatGeneratedSourceFailsClearlyWithoutJdkExports()
+    throws Exception
+  {
+    final Path source =
+      fixtureDir().resolve( "input" ).resolve( toFilename( "com.example.injectable.BasicModel" ) );
+    assertTrue( Files.exists( source ), "Expected smoke source to exist at " + source );
+
+    final Path classOutput = Files.createTempDirectory( "sting-format-no-exports-classes" );
+    final Path sourceOutput = Files.createTempDirectory( "sting-format-no-exports-sources" );
+    try
+    {
+      final Path javac = Path.of( System.getProperty( "java.home" ), "bin", "javac" );
+      assertTrue( Files.exists( javac ), "Expected javac to exist at " + javac );
+
+      final List<String> command = new ArrayList<>();
+      command.add( javac.toString() );
+      command.add( "-cp" );
+      command.add( System.getProperty( "java.class.path" ) );
+      command.add( "-processorpath" );
+      command.add( System.getProperty( "java.class.path" ) );
+      command.add( "-processor" );
+      command.add( StingProcessor.class.getName() );
+      command.add( "-d" );
+      command.add( classOutput.toString() );
+      command.add( "-s" );
+      command.add( sourceOutput.toString() );
+      command.addAll( getOptions() );
+      command.add( "-Asting.format_generated_source=true" );
+      command.add( source.toString() );
+
+      final Process process =
+        new ProcessBuilder( command ).
+          redirectErrorStream( true ).
+          start();
+      final String output = new String( process.getInputStream().readAllBytes(), StandardCharsets.UTF_8 );
+      final int exitCode = process.waitFor();
+
+      assertNotEquals( exitCode, 0, "Expected javac to fail without formatter JDK exports. Output:\n" + output );
+      assertTrue( output.contains( "sting.format_generated_source" ),
+                  "Expected diagnostic to mention sting.format_generated_source. Output:\n" + output );
+      for ( final String export : formatterJdkExports() )
+      {
+        assertTrue( output.contains( export ),
+                    "Expected diagnostic to mention required export " + export + ". Output:\n" + output );
+      }
+    }
+    finally
+    {
+      deleteDir( sourceOutput );
+      deleteDir( classOutput );
+    }
+  }
+
+  @SuppressWarnings( "ResultOfMethodCallIgnored" )
+  private void deleteDir( @Nonnull final Path directory )
+  {
+    try ( var paths = Files.walk( directory ) )
+    {
+      paths.sorted( Comparator.reverseOrder() ).map( Path::toFile ).forEach( File::delete );
+    }
+    catch ( final IOException e )
+    {
+      throw new IllegalStateException( "Failure to delete directory: " + directory, e );
+    }
   }
 
   @Nonnull

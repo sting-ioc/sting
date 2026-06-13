@@ -1,0 +1,13 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.fragment.eager.LazyModel#provideRunnable",
+      "publishedServices": [
+        {
+          "type": "java.lang.Runnable"
+        }
+      ]
+    }
+  ]
+}

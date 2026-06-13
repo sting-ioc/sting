@@ -1,0 +1,7 @@
+digraph "BoxedProviderPrimitiveOutputModel" {
+  overlap = false
+  splines = true
+  injector [label="BoxedProviderPrimitiveOutputModel",color=green];
+  node1 [label="Integer"];
+  injector -> node1 [label="int"];
+}

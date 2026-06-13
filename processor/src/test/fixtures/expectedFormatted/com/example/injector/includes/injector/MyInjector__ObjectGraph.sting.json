@@ -1,0 +1,21 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.includes.injector.Sting_MyOtherInjectorModel_Provider#provide",
+      "kind": "PROVIDES"
+    },
+    {
+      "id": "com.example.injector.includes.injector.Sting_MyOtherInjectorModel_Provider#getMyModel",
+      "kind": "PROVIDES",
+      "dependencies": [
+        {
+          "type": "com.example.injector.includes.injector.MyOtherInjectorModel",
+          "supportedBy": [
+            "com.example.injector.includes.injector.Sting_MyOtherInjectorModel_Provider#provide"
+          ]
+        }
+      ]
+    }
+  ]
+}

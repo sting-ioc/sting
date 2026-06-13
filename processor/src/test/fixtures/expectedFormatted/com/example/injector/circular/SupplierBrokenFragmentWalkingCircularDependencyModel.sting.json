@@ -1,0 +1,19 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1",
+    "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2",
+    "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyFragment"
+  ],
+  "outputs": [
+    {
+      "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel1"
+    },
+    {
+      "type": "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2"
+    },
+    {
+      "type": "java.lang.Runnable"
+    }
+  ]
+}

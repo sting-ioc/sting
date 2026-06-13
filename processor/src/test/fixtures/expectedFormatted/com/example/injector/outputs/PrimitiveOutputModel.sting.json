@@ -1,0 +1,32 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.PrimitiveOutputModel.MyFragment"
+  ],
+  "outputs": [
+    {
+      "type": "boolean"
+    },
+    {
+      "type": "char"
+    },
+    {
+      "type": "byte"
+    },
+    {
+      "type": "short"
+    },
+    {
+      "type": "int"
+    },
+    {
+      "type": "long"
+    },
+    {
+      "type": "float"
+    },
+    {
+      "type": "double"
+    }
+  ]
+}

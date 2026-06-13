@@ -1,0 +1,7 @@
+digraph "BasicInjectorModel" {
+  overlap = false
+  splines = true
+  injector [label="BasicInjectorModel",color=green];
+  node1 [label="MyModel"];
+  injector -> node1 [];
+}

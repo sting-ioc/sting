@@ -72,6 +72,7 @@ import org.realityforge.proton.TypesUtil;
 @SupportedOptions( { "sting.defer.unresolved",
                      "sting.defer.errors",
                      "sting.debug",
+                     "sting.format_generated_source",
                      "sting.profile",
                      "sting.emit_json_descriptors",
                      "sting.emit_dot_reports",

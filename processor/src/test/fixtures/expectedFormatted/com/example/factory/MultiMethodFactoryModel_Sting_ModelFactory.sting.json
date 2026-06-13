@@ -1,0 +1,17 @@
+{
+  "schema": "injectable/1",
+  "id": "com.example.factory.MultiMethodFactoryModel_Sting_ModelFactory",
+  "publishedServices": [
+    {
+      "type": "com.example.factory.MultiMethodFactoryModel.ModelFactory"
+    }
+  ],
+  "dependencies": [
+    {
+      "type": "com.example.factory.MultiMethodFactoryModel.SomeService"
+    },
+    {
+      "type": "com.example.factory.MultiMethodFactoryModel.OtherService"
+    }
+  ]
+}

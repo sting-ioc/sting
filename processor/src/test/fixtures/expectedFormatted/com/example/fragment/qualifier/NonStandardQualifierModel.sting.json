@@ -1,0 +1,14 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.fragment.qualifier.NonStandardQualifierModel#provideRunnable",
+      "publishedServices": [
+        {
+          "qualifier": "‎🎉 Tada!",
+          "type": "java.lang.Runnable"
+        }
+      ]
+    }
+  ]
+}

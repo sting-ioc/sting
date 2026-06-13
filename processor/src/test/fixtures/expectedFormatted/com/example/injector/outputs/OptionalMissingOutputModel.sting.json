@@ -1,0 +1,15 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.OptionalMissingOutputModel.MyModel2"
+  ],
+  "outputs": [
+    {
+      "type": "java.lang.Runnable",
+      "optional": true
+    },
+    {
+      "type": "com.example.injector.outputs.OptionalMissingOutputModel.MyModel2"
+    }
+  ]
+}

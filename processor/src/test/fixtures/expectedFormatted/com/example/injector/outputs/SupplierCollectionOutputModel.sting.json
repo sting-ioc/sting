@@ -1,0 +1,12 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.SupplierCollectionOutputModel.MyModel"
+  ],
+  "outputs": [
+    {
+      "kind": "SUPPLIER_COLLECTION",
+      "type": "com.example.injector.outputs.SupplierCollectionOutputModel.MyModel"
+    }
+  ]
+}

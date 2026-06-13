@@ -1,0 +1,26 @@
+{
+  "schema": "injectable/1",
+  "id": "com.example.injectable.dependency.ComplexDependencyModel",
+  "publishedServices": [
+    {
+      "type": "com.example.injectable.dependency.ComplexDependencyModel"
+    }
+  ],
+  "dependencies": [
+    {
+      "qualifier": "lively",
+      "type": "java.lang.Runnable"
+    },
+    {
+      "type": "java.util.EventListener",
+      "optional": true
+    },
+    {
+      "type": "java.io.Serializable"
+    },
+    {
+      "qualifier": "countDown",
+      "type": "int"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "schema": "injectable/1",
+  "id": "com.example.factory.BasicFactoryModel_Sting_MyComponentFactory",
+  "publishedServices": [
+    {
+      "type": "com.example.factory.BasicFactoryModel.MyComponentFactory"
+    }
+  ],
+  "dependencies": [
+    {
+      "type": "com.example.factory.BasicFactoryModel.SomeService"
+    }
+  ]
+}

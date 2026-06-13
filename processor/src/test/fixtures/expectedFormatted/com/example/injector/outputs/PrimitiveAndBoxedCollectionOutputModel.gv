@@ -1,0 +1,9 @@
+digraph "PrimitiveAndBoxedCollectionOutputModel" {
+  overlap = false
+  splines = true
+  injector [label="PrimitiveAndBoxedCollectionOutputModel",color=green];
+  node2 [label="int"];
+  node1 [label="Integer"];
+  injector -> node2 [label="Integer",dir=both, arrowtail=normal, arrowhead=crow];
+  injector -> node1 [dir=both, arrowtail=normal, arrowhead=crow];
+}

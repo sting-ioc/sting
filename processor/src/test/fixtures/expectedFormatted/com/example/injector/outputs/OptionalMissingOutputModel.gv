@@ -1,0 +1,7 @@
+digraph "OptionalMissingOutputModel" {
+  overlap = false
+  splines = true
+  injector [label="OptionalMissingOutputModel",color=green];
+  node1 [label="MyModel2"];
+  injector -> node1 [];
+}

@@ -1,0 +1,7 @@
+digraph "CollectionOutputModel" {
+  overlap = false
+  splines = true
+  injector [label="CollectionOutputModel",color=green];
+  node1 [label="MyModel"];
+  injector -> node1 [dir=both, arrowtail=normal, arrowhead=crow];
+}

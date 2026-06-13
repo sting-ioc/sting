@@ -1,0 +1,13 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.includes.provider.naming.compound.Outer.Middle.Leaf.MyModel2Impl",
+      "kind": "INJECTABLE"
+    },
+    {
+      "id": "com.example.injector.includes.provider.naming.compound.MyModel1Impl",
+      "kind": "INJECTABLE"
+    }
+  ]
+}

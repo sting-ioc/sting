@@ -1,0 +1,22 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.fragment.types.BasicTypesModel#provideMyModel",
+      "publishedServices": [
+        {
+          "type": "java.lang.Runnable"
+        },
+        {
+          "type": "java.util.EventListener"
+        },
+        {
+          "type": "java.lang.Object"
+        },
+        {
+          "type": "java.util.Properties"
+        }
+      ]
+    }
+  ]
+}

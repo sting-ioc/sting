@@ -1,0 +1,9 @@
+digraph "NameCollisionInjectorModel" {
+  overlap = false
+  splines = true
+  injector [label="NameCollisionInjectorModel",color=green];
+  node2 [label="...pkg1.MyModel"];
+  node1 [label="...pkg2.MyModel"];
+  injector -> node2 [];
+  injector -> node1 [];
+}

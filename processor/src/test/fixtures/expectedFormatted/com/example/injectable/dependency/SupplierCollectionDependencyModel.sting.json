@@ -1,0 +1,15 @@
+{
+  "schema": "injectable/1",
+  "id": "com.example.injectable.dependency.SupplierCollectionDependencyModel",
+  "publishedServices": [
+    {
+      "type": "com.example.injectable.dependency.SupplierCollectionDependencyModel"
+    }
+  ],
+  "dependencies": [
+    {
+      "kind": "SUPPLIER_COLLECTION",
+      "type": "java.lang.Runnable"
+    }
+  ]
+}

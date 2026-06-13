@@ -1,0 +1,26 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.injector.includes.injector.Sting_MyOtherInjectorModel_Provider#provide",
+      "publishedServices": [
+        {
+          "type": "com.example.injector.includes.injector.MyOtherInjectorModel"
+        }
+      ]
+    },
+    {
+      "id": "com.example.injector.includes.injector.Sting_MyOtherInjectorModel_Provider#getMyModel",
+      "publishedServices": [
+        {
+          "type": "com.example.injector.includes.injector.MyModel"
+        }
+      ],
+      "dependencies": [
+        {
+          "type": "com.example.injector.includes.injector.MyOtherInjectorModel"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "schema": "injectable/1",
+  "id": "com.example.injectable.dependency.PublicAccessDependencyModel",
+  "publishedServices": [
+    {
+      "type": "com.example.injectable.dependency.PublicAccessDependencyModel"
+    }
+  ],
+  "dependencies": [
+    {
+      "type": "com.example.injectable.dependency.PublicAccessDependencyModel.MyType1"
+    },
+    {
+      "kind": "SUPPLIER",
+      "type": "com.example.injectable.dependency.PublicAccessDependencyModel.MyType2"
+    },
+    {
+      "kind": "COLLECTION",
+      "type": "com.example.injectable.dependency.PublicAccessDependencyModel.MyType3"
+    },
+    {
+      "kind": "SUPPLIER_COLLECTION",
+      "type": "com.example.injectable.dependency.PublicAccessDependencyModel.MyType4"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "schema": "injectable/1",
+  "id": "com.example.injector.graphviz.pkg1.MyModel",
+  "publishedServices": [
+    {
+      "type": "com.example.injector.graphviz.pkg1.MyModel"
+    }
+  ]
+}

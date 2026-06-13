@@ -1,0 +1,9 @@
+{
+  "schema": "fragment/1",
+  "bindings": [
+    {
+      "id": "com.example.fragment.types.NoTypesModel#provideConfig",
+      "eager": true
+    }
+  ]
+}

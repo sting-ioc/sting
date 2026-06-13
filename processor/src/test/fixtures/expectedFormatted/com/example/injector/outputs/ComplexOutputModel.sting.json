@@ -1,0 +1,26 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.ComplexOutputModel.MyModel1",
+    "com.example.injector.outputs.ComplexOutputModel.MyModel2",
+    "com.example.injector.outputs.ComplexOutputModel.MyModel3"
+  ],
+  "outputs": [
+    {
+      "type": "com.example.injector.outputs.ComplexOutputModel.MyModel1"
+    },
+    {
+      "kind": "SUPPLIER",
+      "type": "com.example.injector.outputs.ComplexOutputModel.MyModel2"
+    },
+    {
+      "kind": "SUPPLIER",
+      "qualifier": "foo",
+      "type": "com.example.injector.outputs.ComplexOutputModel.MyModel3"
+    },
+    {
+      "type": "java.lang.Runnable",
+      "optional": true
+    }
+  ]
+}

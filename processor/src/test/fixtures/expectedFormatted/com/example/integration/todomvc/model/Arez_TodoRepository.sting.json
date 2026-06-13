@@ -1,0 +1,9 @@
+{
+  "schema": "injectable/1",
+  "id": "com.example.integration.todomvc.model.Arez_TodoRepository",
+  "publishedServices": [
+    {
+      "type": "com.example.integration.todomvc.model.TodoRepository"
+    }
+  ]
+}

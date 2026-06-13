@@ -1,0 +1,14 @@
+{
+  "schema": "injector/1",
+  "fragmentOnly": "false",
+  "includes": [
+    "com.example.injector.includes.diamond.MyModel",
+    "com.example.injector.includes.diamond.MyFragment1",
+    "com.example.injector.includes.diamond.MyFragment2"
+  ],
+  "outputs": [
+    {
+      "type": "com.example.injector.includes.diamond.MyModel"
+    }
+  ]
+}

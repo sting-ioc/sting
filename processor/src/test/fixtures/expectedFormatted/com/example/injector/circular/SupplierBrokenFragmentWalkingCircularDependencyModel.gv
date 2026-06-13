@@ -1,0 +1,14 @@
+digraph "SupplierBrokenFragmentWalkingCircularDependencyModel" {
+  overlap = false
+  splines = true
+  injector [label="SupplierBrokenFragmentWalkingCircularDependencyModel",color=green];
+  node2 [label="MyModel1"];
+  node1 [label="MyModel2"];
+  node3 [label="Runnable"];
+  injector -> node2 [];
+  injector -> node1 [];
+  injector -> node3 [];
+  node2 -> node1 [];
+  node1 -> node3 [];
+  node3 -> node2 [arrowhead=odot];
+}

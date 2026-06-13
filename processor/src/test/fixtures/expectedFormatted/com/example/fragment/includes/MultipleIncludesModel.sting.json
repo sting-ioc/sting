@@ -1,0 +1,7 @@
+{
+  "schema": "fragment/1",
+  "includes": [
+    "com.example.fragment.includes.Included1Model",
+    "com.example.fragment.includes.Included2Model"
+  ]
+}

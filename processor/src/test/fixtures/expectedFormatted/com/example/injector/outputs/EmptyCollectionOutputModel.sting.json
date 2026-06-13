@@ -1,0 +1,9 @@
+{
+  "schema": "injector/1",
+  "outputs": [
+    {
+      "kind": "COLLECTION",
+      "type": "java.lang.Runnable"
+    }
+  ]
+}

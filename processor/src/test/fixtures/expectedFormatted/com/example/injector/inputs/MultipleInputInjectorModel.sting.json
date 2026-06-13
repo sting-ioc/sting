@@ -1,0 +1,24 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.inputs.MultipleInputInjectorModel.MyModel"
+  ],
+  "inputs": [
+    {
+      "type": "java.lang.Runnable"
+    },
+    {
+      "qualifier": "hostname",
+      "type": "java.lang.String"
+    }
+  ],
+  "outputs": [
+    {
+      "type": "com.example.injector.inputs.MultipleInputInjectorModel.MyModel"
+    },
+    {
+      "qualifier": "hostname",
+      "type": "java.lang.String"
+    }
+  ]
+}

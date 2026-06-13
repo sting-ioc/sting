@@ -1,0 +1,11 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.includes.injector.MyOtherInjectorModel"
+  ],
+  "outputs": [
+    {
+      "type": "com.example.injector.includes.injector.MyModel"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+digraph "PrimitiveProviderBoxedSupplierKindsOutputModel" {
+  overlap = false
+  splines = true
+  injector [label="PrimitiveProviderBoxedSupplierKindsOutputModel",color=green];
+  node1 [label="int"];
+  injector -> node1 [label="Integer",dir=both, arrowtail=normal, arrowhead=crow];
+  injector -> node1 [label="Integer",arrowhead=odot];
+  injector -> node1 [label="Integer",dir=both, arrowtail=odot, arrowhead=crow];
+}

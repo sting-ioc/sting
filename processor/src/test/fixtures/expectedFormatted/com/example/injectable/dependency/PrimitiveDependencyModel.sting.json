@@ -1,0 +1,35 @@
+{
+  "schema": "injectable/1",
+  "id": "com.example.injectable.dependency.PrimitiveDependencyModel",
+  "publishedServices": [
+    {
+      "type": "com.example.injectable.dependency.PrimitiveDependencyModel"
+    }
+  ],
+  "dependencies": [
+    {
+      "type": "boolean"
+    },
+    {
+      "type": "char"
+    },
+    {
+      "type": "byte"
+    },
+    {
+      "type": "short"
+    },
+    {
+      "type": "int"
+    },
+    {
+      "type": "long"
+    },
+    {
+      "type": "float"
+    },
+    {
+      "type": "double"
+    }
+  ]
+}

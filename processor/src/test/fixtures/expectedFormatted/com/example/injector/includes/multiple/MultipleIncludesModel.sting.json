@@ -1,0 +1,13 @@
+{
+  "schema": "injector/1",
+  "fragmentOnly": "false",
+  "includes": [
+    "com.example.injector.includes.multiple.MyFragment",
+    "com.example.injector.includes.multiple.MyModel"
+  ],
+  "outputs": [
+    {
+      "type": "java.lang.Runnable"
+    }
+  ]
+}

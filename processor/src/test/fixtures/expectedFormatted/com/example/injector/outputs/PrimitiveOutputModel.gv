@@ -1,0 +1,21 @@
+digraph "PrimitiveOutputModel" {
+  overlap = false
+  splines = true
+  injector [label="PrimitiveOutputModel",color=green];
+  node8 [label="char"];
+  node7 [label="boolean"];
+  node6 [label="int"];
+  node5 [label="long"];
+  node4 [label="byte"];
+  node3 [label="short"];
+  node2 [label="float"];
+  node1 [label="double"];
+  injector -> node7 [];
+  injector -> node8 [];
+  injector -> node4 [];
+  injector -> node3 [];
+  injector -> node6 [];
+  injector -> node5 [];
+  injector -> node2 [];
+  injector -> node1 [];
+}

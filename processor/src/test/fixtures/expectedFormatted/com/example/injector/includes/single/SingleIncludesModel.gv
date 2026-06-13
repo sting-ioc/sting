@@ -1,0 +1,7 @@
+digraph "SingleIncludesModel" {
+  overlap = false
+  splines = true
+  injector [label="SingleIncludesModel",color=green];
+  node1 [label="Runnable"];
+  injector -> node1 [];
+}

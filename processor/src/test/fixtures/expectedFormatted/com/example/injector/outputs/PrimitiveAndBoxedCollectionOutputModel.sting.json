@@ -1,0 +1,13 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.PrimitiveAndBoxedCollectionOutputModel.MyFragment1",
+    "com.example.injector.outputs.PrimitiveAndBoxedCollectionOutputModel.MyFragment2"
+  ],
+  "outputs": [
+    {
+      "kind": "COLLECTION",
+      "type": "java.lang.Integer"
+    }
+  ]
+}

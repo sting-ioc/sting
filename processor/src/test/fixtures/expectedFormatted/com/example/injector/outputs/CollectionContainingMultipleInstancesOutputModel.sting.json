@@ -1,0 +1,14 @@
+{
+  "schema": "injector/1",
+  "includes": [
+    "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment1",
+    "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment2",
+    "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel.MyFragment3"
+  ],
+  "outputs": [
+    {
+      "kind": "COLLECTION",
+      "type": "java.lang.Runnable"
+    }
+  ]
+}

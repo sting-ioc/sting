@@ -1,0 +1,29 @@
+{
+  "schema": "graph/1",
+  "nodes": [
+    {
+      "id": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel2",
+      "kind": "INJECTABLE",
+      "dependencies": [
+        {
+          "type": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel1",
+          "supportedBy": [
+            "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel1"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel1",
+      "kind": "INJECTABLE",
+      "dependencies": [
+        {
+          "type": "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel2",
+          "supportedBy": [
+            "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel.MyModel2"
+          ]
+        }
+      ]
+    }
+  ]
+}

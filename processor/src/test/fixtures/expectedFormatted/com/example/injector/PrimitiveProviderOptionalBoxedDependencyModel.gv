@@ -1,0 +1,9 @@
+digraph "PrimitiveProviderOptionalBoxedDependencyModel" {
+  overlap = false
+  splines = true
+  injector [label="PrimitiveProviderOptionalBoxedDependencyModel",color=green];
+  node1 [label="int"];
+  node2 [label="MyModel"];
+  injector -> node2 [];
+  node2 -> node1 [label="Integer",style=dotted];
+}
