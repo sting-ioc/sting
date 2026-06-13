@@ -1,6 +1,8 @@
 # Change Log
 
-### Unreleased
+### [v0.35](https://github.com/sting-ioc/sting/tree/v0.35) (2026-06-13) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.34...v0.35)
+
+Changes in this release:
 
 * Update the `org.realityforge.proton` artifacts to version `0.71` and use Proton's shaded
   generated-source formatting support from the Sting processor.
