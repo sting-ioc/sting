@@ -108,20 +108,19 @@ task 'site:deploy' => ['site:build'] do
   task('site:link_check').invoke
 
   # Only publish the site off the master branch if running out of Travis
-    origin_url = 'https://github.com/sting-ioc/sting-ioc.github.io.git'
+  origin_url = 'https://github.com/sting-ioc/sting-ioc.github.io.git'
 
-    local_dir = "#{WORKSPACE_DIR}/target/remote_site"
-    rm_rf local_dir
+  local_dir = "#{WORKSPACE_DIR}/target/remote_site"
+  rm_rf local_dir
 
-    sh "git clone -b master --depth 1 #{origin_url} #{local_dir}"
+  sh "git clone -b master --depth 1 #{origin_url} #{local_dir}"
 
-    in_dir(local_dir) do
-      cp_r Dir["#{SITE_DIR}/*"], local_dir
-      sh 'git add . -f'
-      unless `git status -s`.strip.empty?
-        sh "git commit -m \"Publish website\""
-        sh 'git push -f origin master'
-      end
+  in_dir(local_dir) do
+    cp_r Dir["#{SITE_DIR}/*"], local_dir
+    sh 'git add . -f'
+    unless `git status -s`.strip.empty?
+      sh "git commit -m \"Publish website\""
+      sh 'git push -f origin master'
     end
   end
 end
