@@ -1,5 +1,7 @@
 # Change Log
 
+### Unreleased
+
 ### [v0.36](https://github.com/sting-ioc/sting/tree/v0.36) (2026-06-13) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.35...v0.36)
 
 Changes in this release:
