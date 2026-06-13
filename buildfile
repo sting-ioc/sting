@@ -16,6 +16,7 @@ FORMATTER_JDK_EXPORTS =
     --add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED
     --add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
   )
+FORMATTER_JAVAC_OPTIONS = FORMATTER_JDK_EXPORTS.map { |arg| "-J#{arg}" }
 
 desc 'sting: A fast, easy to use, compile-time dependency injection toolkit'
 define 'sting' do
@@ -96,6 +97,7 @@ define 'sting' do
     test.using :testng
     test.options[:java_args] = ['-ea']
     test.compile.options[:processor] = true
+    test.compile.options.other += FORMATTER_JAVAC_OPTIONS
     test.compile.with project('core').package(:jar),
                       project('core').compile.dependencies,
                       project('processor').package(:jar),
@@ -186,24 +188,28 @@ define 'sting' do
     test.options[:java_args] = ['-ea']
 
     local_test_repository_url = URI.join('file:///', project._(:target, :local_test_repository)).to_s
-    compile.enhance do
-      projects_to_upload = projects(%w(core processor))
-      old_release_to = repositories.release_to
-      begin
-        # First we install them in a local repository so we don't have to access the network during local builds
-        repositories.release_to = local_test_repository_url
-        projects_to_upload.each do |prj|
-          prj.packages.each do |pkg|
-            # Uninstall version already present in local maven cache
-            pkg.uninstall
-            # Install version into local repository
-            pkg.upload
+    unless ENV['TEST'] == 'no' # These artifacts only required when running tests.
+      task 'prepare_local_test_repository' do
+        projects_to_upload = projects(%w(core processor))
+        old_release_to = repositories.release_to
+        begin
+          # First we install them in a local repository so we don't have to access the network during local builds
+          repositories.release_to = local_test_repository_url
+          projects_to_upload.each do |prj|
+            prj.packages.each do |pkg|
+              # Uninstall version already present in local maven cache
+              pkg.uninstall
+              # Install version into local repository
+              pkg.upload
+            end
           end
+        ensure
+          repositories.release_to = old_release_to
         end
-      ensure
-        repositories.release_to = old_release_to
       end
-    end unless ENV['TEST'] == 'no' # These artifacts only required when running tests.
+      compile.enhance ['prepare_local_test_repository']
+      test.compile.enhance ['prepare_local_test_repository']
+    end
 
     test.compile.enhance do
       cp = project.compile.dependencies.map(&:to_s) + [project.compile.target.to_s]
@@ -244,6 +250,7 @@ define 'sting' do
                  project('processor').compile.dependencies
 
     compile.options[:processor] = true
+    compile.options.other += FORMATTER_JAVAC_OPTIONS
   end
 
   doc.from(projects(%w(core processor))).
