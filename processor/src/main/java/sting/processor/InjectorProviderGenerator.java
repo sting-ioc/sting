@@ -67,14 +67,14 @@ final class InjectorProviderGenerator
     final List<InputDescriptor> inputs = graph.getInjector().getInputs();
     for ( final InputDescriptor input : inputs )
     {
-      final ServiceSpec service = input.getService();
+      final ServiceSpec service = input.service();
       final Coordinate coordinate = service.getCoordinate();
       final ParameterSpec.Builder parameter =
         ParameterSpec
-          .builder( TypeName.get( coordinate.getType() ),
-                    input.getName(),
+          .builder( TypeName.get( coordinate.type() ),
+                    input.name(),
                     Modifier.FINAL );
-      if ( !coordinate.getType().getKind().isPrimitive() )
+      if ( !coordinate.type().getKind().isPrimitive() )
       {
         parameter.addAnnotation( service.isOptional() ?
                                  GeneratorUtil.NULLABLE_CLASSNAME :
@@ -83,7 +83,7 @@ final class InjectorProviderGenerator
       method.addParameter( parameter.build() );
     }
     method.addStatement( "return new $T(" +
-                         inputs.stream().map( InputDescriptor::getName ).collect( Collectors.joining( ", " ) ) +
+                         inputs.stream().map( inputDescriptor -> inputDescriptor.name() ).collect( Collectors.joining( ", " ) ) +
                          ")",
                          StingGeneratorUtil.getGeneratedClassName( element ) );
 
@@ -106,7 +106,7 @@ final class InjectorProviderGenerator
           MethodSpec
             .methodBuilder( serviceRequest.getElement().getSimpleName().toString() )
             .addModifiers( Modifier.PUBLIC, Modifier.DEFAULT )
-            .returns( TypeName.get( serviceRequest.getService().getCoordinate().getType() ) )
+            .returns( TypeName.get( serviceRequest.getService().getCoordinate().type() ) )
             .addParameter( ParameterSpec
                              .builder( TypeName.get( element.asType() ), "injector", Modifier.FINAL )
                              .addAnnotation( GeneratorUtil.NONNULL_CLASSNAME )
@@ -119,7 +119,7 @@ final class InjectorProviderGenerator
           additionalSuppressions.add( "deprecation" );
         }
         final List<TypeMirror> types =
-          Arrays.asList( element.asType(), serviceRequest.getService().getCoordinate().getType() );
+          Arrays.asList( element.asType(), serviceRequest.getService().getCoordinate().type() );
         SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv, method, additionalSuppressions, types );
         method.addStatement( "return injector.$N()", serviceRequest.getElement().getSimpleName().toString() );
         builder.addMethod( method.build() );

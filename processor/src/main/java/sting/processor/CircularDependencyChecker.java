@@ -44,7 +44,7 @@ final class CircularDependencyChecker
                                                            @Nonnull final Set<Node> completed )
   {
     stack.add( entry );
-    for ( final Edge edge : entry.getNode().getDependsOn() )
+    for ( final Edge edge : entry.node().getDependsOn() )
     {
       for ( final Node node : edge.getSatisfiedBy() )
       {
@@ -62,7 +62,7 @@ final class CircularDependencyChecker
         {
           if ( !completed.contains( node ) )
           {
-            completed.add( entry.getNode() );
+            completed.add( entry.node() );
 
             final int size = stack.size();
             verifyNoCircularDependenciesForNode( graph, childEntry, stack, completed );
@@ -81,11 +81,11 @@ final class CircularDependencyChecker
     while ( index > 0 )
     {
       final PathEntry entry = stack.get( index );
-      if ( doesEdgeBreakDependencyChain( entry.getEdge() ) )
+      if ( doesEdgeBreakDependencyChain( entry.edge() ) )
       {
         return -1;
       }
-      else if ( entry.getNode() == node )
+      else if ( entry.node() == node )
       {
         return index - 1;
       }
@@ -124,9 +124,9 @@ final class CircularDependencyChecker
     boolean matched = false;
     for ( final PathEntry entry : stack )
     {
-      final Node node = entry.getNode();
+      final Node node = entry.node();
       final String connector;
-      if ( node == badEntry.getNode() )
+      if ( node == badEntry.node() )
       {
         connector = "+-<";
         matched = true;
@@ -144,7 +144,7 @@ final class CircularDependencyChecker
       sb.append( "\n" );
     }
 
-    sb.append( badEntry.getNode().describe( "+->" ) );
+    sb.append( badEntry.node().describe( "+->" ) );
     sb.append( "\n" );
 
     return sb.toString();

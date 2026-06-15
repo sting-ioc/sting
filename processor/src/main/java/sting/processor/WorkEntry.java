@@ -38,7 +38,7 @@ final class WorkEntry
     for ( int i = 0; i < size; i++ )
     {
       final PathEntry entry = _stack.get( i );
-      final Node node = entry.getNode();
+      final Node node = entry.node();
       final String connector;
       if ( node.hasNoBinding() )
       {

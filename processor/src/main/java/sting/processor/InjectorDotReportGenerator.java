@@ -45,7 +45,7 @@ final class InjectorDotReportGenerator
       final List<ServiceSpec> services = node.getBinding().getPublishedServices();
       if ( !services.isEmpty() )
       {
-        final String qualifier = services.get( 0 ).getCoordinate().getQualifier();
+        final String qualifier = services.get( 0 ).getCoordinate().qualifier();
         if ( !"".equals( qualifier ) )
         {
           sb.append( "/" ).append( qualifier );
@@ -109,12 +109,12 @@ final class InjectorDotReportGenerator
     final ServiceRequest serviceRequest = edge.getServiceRequest();
     final ServiceSpec service = serviceRequest.getService();
     final Coordinate coordinate = service.getCoordinate();
-    final TypeMirror serviceType = coordinate.getType();
+    final TypeMirror serviceType = coordinate.type();
     if ( !processingEnv.getTypeUtils().isSameType( serviceType, toNode.getType() ) )
     {
       sb.append( "label=\"" )
         .append( extractShortestUniqueName( types, serviceType.toString() ) );
-      final String qualifier = coordinate.getQualifier();
+      final String qualifier = coordinate.qualifier();
       if ( !"".equals( qualifier ) )
       {
         sb.append( "/" ).append( qualifier );
@@ -179,7 +179,7 @@ final class InjectorDotReportGenerator
   {
     for ( final Edge edge : node.getDependsOn() )
     {
-      recordType( types, edge.getServiceRequest().getService().getCoordinate().getType().toString() );
+      recordType( types, edge.getServiceRequest().getService().getCoordinate().type().toString() );
     }
   }
 

@@ -123,7 +123,7 @@ final class FragmentDescriptor
       g.writeStartArray( "includes" );
       for ( final IncludeDescriptor include : _includes )
       {
-        g.write( include.getIncludedType().toString() );
+        g.write( include.includedType().toString() );
       }
       g.writeEnd();
     }

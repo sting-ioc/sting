@@ -130,7 +130,7 @@ final class InjectorDescriptor
       g.writeStartArray( "includes" );
       for ( final IncludeDescriptor include : _includes )
       {
-        g.write( include.getIncludedType().toString() );
+        g.write( include.includedType().toString() );
       }
       g.writeEnd();
     }
@@ -139,7 +139,9 @@ final class InjectorDescriptor
       g.writeStartArray( "inputs" );
       for ( final InputDescriptor input : _inputs )
       {
-        input.write( g );
+        g.writeStartObject();
+        input.service().write( g );
+        g.writeEnd();
       }
       g.writeEnd();
     }

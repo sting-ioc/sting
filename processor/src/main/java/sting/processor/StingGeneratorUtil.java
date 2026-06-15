@@ -42,7 +42,7 @@ final class StingGeneratorUtil
   static TypeName getServiceType( @Nonnull final ServiceRequest serviceRequest )
   {
     final ServiceRequest.Kind kind = serviceRequest.getKind();
-    final TypeName baseType = TypeName.get( serviceRequest.getService().getCoordinate().getType() );
+    final TypeName baseType = TypeName.get( serviceRequest.getService().getCoordinate().type() );
     if ( ServiceRequest.Kind.INSTANCE == kind )
     {
       return baseType;
@@ -103,7 +103,7 @@ final class StingGeneratorUtil
       final VariableElement parameter = (VariableElement) service.getElement();
       final String paramName = parameter.getSimpleName().toString();
 
-      typesProcessed.add( service.getService().getCoordinate().getType() );
+      typesProcessed.add( service.getService().getCoordinate().type() );
       final boolean isPublic = service.getService().isPublic();
       allPublic &= isPublic;
 

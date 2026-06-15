@@ -28,8 +28,8 @@ final class ServiceKey
 
   ServiceKey( @Nonnull final Coordinate coordinate )
   {
-    _qualifier = coordinate.getQualifier();
-    _type = normalizeType( coordinate.getType() );
+    _qualifier = coordinate.qualifier();
+    _type = normalizeType( coordinate.type() );
   }
 
   @Nonnull
@@ -57,8 +57,8 @@ final class ServiceKey
   static boolean matches( @Nonnull final Coordinate lhsCoordinate,
                           @Nonnull final Coordinate rhsCoordinate )
   {
-    return matches( lhsCoordinate.getQualifier(), normalizeType( lhsCoordinate.getType() ),
-                    rhsCoordinate.getQualifier(), normalizeType( rhsCoordinate.getType() ) );
+    return matches( lhsCoordinate.qualifier(), normalizeType( lhsCoordinate.type() ),
+                    rhsCoordinate.qualifier(), normalizeType( rhsCoordinate.type() ) );
   }
 
   @Override

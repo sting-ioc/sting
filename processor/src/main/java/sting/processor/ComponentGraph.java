@@ -148,7 +148,7 @@ final class ComponentGraph
       .map( n -> (FragmentDescriptor) n.getBinding().getOwner() )
       .sorted( Comparator.comparing( FragmentDescriptor::getQualifiedTypeName ) )
       .map( f -> new FragmentNode( f, "fragment" + index.incrementAndGet() ) )
-      .peek( f -> fragmentMap.put( f.getFragment(), f ) )
+      .peek( f -> fragmentMap.put( f.fragment(), f ) )
       .collect( Collectors.toList() );
     index.set( 0 );
     _orderedNodes = sortNodes( _nodesById.values() );
@@ -225,7 +225,7 @@ final class ComponentGraph
    */
   void registerInput( @Nonnull final InputDescriptor input )
   {
-    final Binding binding = input.getBinding();
+    final Binding binding = input.binding();
     registerBinding( binding );
     findOrCreateNode( binding );
   }

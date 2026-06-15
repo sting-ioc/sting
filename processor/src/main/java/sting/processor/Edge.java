@@ -43,12 +43,6 @@ final class Edge
   }
 
   @Nonnull
-  Node getNode()
-  {
-    return _node;
-  }
-
-  @Nonnull
   ServiceRequest getServiceRequest()
   {
     return _serviceRequest;

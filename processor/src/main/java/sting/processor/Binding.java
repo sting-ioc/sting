@@ -178,7 +178,7 @@ final class Binding
     {
       final InputDescriptor input = (InputDescriptor) _owner;
       return ( (TypeElement) _element ).getQualifiedName().toString() +
-             "." + input.getName() + "/" + input.getService();
+             "." + input.name() + "/" + input.service();
     }
     else if ( Kind.INJECTABLE == _kind )
     {

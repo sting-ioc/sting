@@ -56,7 +56,7 @@ final class Node
   private String _name;
   /**
    * The java type of the value provided by the node.
-   * this will be null if _binding is null.
+   * this will be null if binding is null.
    */
   @Nullable
   private final TypeMirror _type;
@@ -108,7 +108,8 @@ final class Node
       final Element element = binding.getElement();
       final Binding.Kind kind = binding.getKind();
       _type =
-        Binding.Kind.INPUT == kind ? binding.getPublishedServices().get( 0 ).getCoordinate().getType() :
+        Binding.Kind.INPUT == kind ?
+        binding.getPublishedServices().get( 0 ).getCoordinate().type() :
         Binding.Kind.INJECTABLE == kind ? element.getEnclosingElement().asType() :
         ( (ExecutableElement) element ).getReturnType();
       _public = TypeKind.DECLARED != _type.getKind() ||

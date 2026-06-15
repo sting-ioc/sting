@@ -45,7 +45,7 @@ final class ServiceSpec
 
   boolean isPublic()
   {
-    final TypeMirror type = _coordinate.getType();
+    final TypeMirror type = _coordinate.type();
     return
       TypeKind.DECLARED != type.getKind() ||
       ElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) type ).asElement() );

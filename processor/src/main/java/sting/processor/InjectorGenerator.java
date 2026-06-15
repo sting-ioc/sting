@@ -115,13 +115,13 @@ final class InjectorGenerator
     {
       final ParameterSpec.Builder parameter =
         ParameterSpec
-          .builder( TypeName.get( input.getService().getCoordinate().getType() ),
-                    input.getName(),
+          .builder( TypeName.get( input.service().getCoordinate().type() ),
+                    input.name(),
                     Modifier.FINAL );
 
-      if ( !input.getService().getCoordinate().getType().getKind().isPrimitive() )
+      if ( !input.service().getCoordinate().type().getKind().isPrimitive() )
       {
-        parameter.addAnnotation( input.getService().isOptional() ?
+        parameter.addAnnotation( input.service().isOptional() ?
                                  GeneratorUtil.NULLABLE_CLASSNAME :
                                  GeneratorUtil.NONNULL_CLASSNAME );
       }
@@ -137,13 +137,13 @@ final class InjectorGenerator
         {
           final InputDescriptor input = (InputDescriptor) binding.getOwner();
           final ServiceSpec serviceSpec = binding.getPublishedServices().get( 0 );
-          if ( serviceSpec.isOptional() || serviceSpec.getCoordinate().getType().getKind().isPrimitive() )
+          if ( serviceSpec.isOptional() || serviceSpec.getCoordinate().type().getKind().isPrimitive() )
           {
-            ctor.addStatement( "$N = $N", node.getName(), input.getName() );
+            ctor.addStatement( "$N = $N", node.getName(), input.name() );
           }
           else
           {
-            ctor.addStatement( "$N = $T.requireNonNull( $N )", node.getName(), Objects.class, input.getName() );
+            ctor.addStatement( "$N = $T.requireNonNull( $N )", node.getName(), Objects.class, input.name() );
           }
         }
         else
@@ -314,7 +314,7 @@ final class InjectorGenerator
     if ( node.isFromProvides() )
     {
       code.append( "$N.$N" );
-      args.add( node.getFragment().getName() );
+      args.add( node.getFragment().name() );
       args.add( StingGeneratorUtil.getFragmentProvidesStubName( (ExecutableElement) node.getBinding().getElement() ) );
     }
     else
@@ -483,7 +483,7 @@ final class InjectorGenerator
          ( !node.isPublic() && service.getService().isPublic() ) )
     {
       code.append( "($T) " );
-      args.add( service.getService().getCoordinate().getType() );
+      args.add( service.getService().getCoordinate().type() );
     }
     code.append( node.isEager() ? "$N" : "$N()" );
     args.add( node.getName() );
@@ -495,12 +495,12 @@ final class InjectorGenerator
   {
     for ( final FragmentNode node : graph.getFragments() )
     {
-      final TypeName type = StingGeneratorUtil.getGeneratedClassName( node.getFragment().getElement() );
+      final TypeName type = StingGeneratorUtil.getGeneratedClassName( node.fragment().getElement() );
       final FieldSpec.Builder field = FieldSpec
-        .builder( type, node.getName(), Modifier.PRIVATE, Modifier.FINAL )
+        .builder( type, node.name(), Modifier.PRIVATE, Modifier.FINAL )
         .addAnnotation( GeneratorUtil.NONNULL_CLASSNAME )
         .initializer( "new $T()", type );
-      final List<TypeMirror> types = Collections.singletonList( node.getFragment().getElement().asType() );
+      final List<TypeMirror> types = Collections.singletonList( node.fragment().getElement().asType() );
       SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv, field, Collections.emptyList(), types );
       builder.addField( field.build() );
     }

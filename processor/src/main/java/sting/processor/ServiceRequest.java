@@ -37,20 +37,12 @@ final class ServiceRequest
    */
   @Nonnull
   private final Element _element;
-  /**
-   * The index of the parameter if the service is defined by a constructor or method parameter or -1 if not.
-   */
-  private final int _parameterIndex;
 
-  ServiceRequest( @Nonnull final Kind kind,
-                  @Nonnull final ServiceSpec service,
-                  @Nonnull final Element element,
-                  final int parameterIndex )
+  ServiceRequest( @Nonnull final Kind kind, @Nonnull final ServiceSpec service, @Nonnull final Element element )
   {
     _kind = Objects.requireNonNull( kind );
     _service = Objects.requireNonNull( service );
     _element = Objects.requireNonNull( element );
-    _parameterIndex = parameterIndex;
   }
 
   @Nonnull
@@ -69,11 +61,6 @@ final class ServiceRequest
   Element getElement()
   {
     return _element;
-  }
-
-  int getParameterIndex()
-  {
-    return _parameterIndex;
   }
 
   boolean isOptionalLike()
@@ -138,11 +125,6 @@ final class ServiceRequest
     boolean isCollection()
     {
       return _collection;
-    }
-
-    boolean isOptional()
-    {
-      return _optional;
     }
 
     boolean isOptionalSingular()

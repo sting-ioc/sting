@@ -536,7 +536,7 @@ public final class StingProcessor
       {
         final IncludeDescriptor includeRoot = entry.getKey();
         throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " must not " +
-                                      "include type " + includeRoot.getIncludedType() +
+                                      "include type " + includeRoot.includedType() +
                                       " when the type is not used within the graph",
                                       graph.getInjector().getElement() );
       }
@@ -600,10 +600,10 @@ public final class StingProcessor
   {
     for ( final IncludeDescriptor include : includes )
     {
-      final String classname = include.getActualTypeName();
+      final String classname = include.actualTypeName();
       if ( isDebugEnabled() && include.isProvider() )
       {
-        debug( () -> "Registering include " + classname + " via provider " + include.getIncludedType() +
+        debug( () -> "Registering include " + classname + " via provider " + include.includedType() +
                      " into graph " + graph.getInjector().getElement().getQualifiedName() );
       }
       else
@@ -669,15 +669,15 @@ public final class StingProcessor
     while ( !workList.isEmpty() )
     {
       final WorkEntry workEntry = workList.pop();
-      final Edge edge = workEntry.getEntry().getEdge();
+      final Edge edge = workEntry.getEntry().edge();
       assert null != edge;
       final ServiceRequest serviceRequest = edge.getServiceRequest();
       final Coordinate coordinate = serviceRequest.getService().getCoordinate();
       final List<Binding> bindings = new ArrayList<>( graph.findAllBindingsByCoordinate( coordinate ) );
 
-      if ( bindings.isEmpty() && coordinate.getQualifier().isEmpty() )
+      if ( bindings.isEmpty() && coordinate.qualifier().isEmpty() )
       {
-        final String typename = coordinate.getType().toString();
+        final String typename = coordinate.type().toString();
         final InjectableDescriptor injectable = _registry.findInjectableByClassName( typename );
         if ( null != injectable && injectable.isAutoDiscoverable() )
         {
@@ -897,7 +897,7 @@ public final class StingProcessor
       annotation = AnnotationsUtil.getAnnotationByType( originator, Constants.FRAGMENT_CLASSNAME );
     }
 
-    final String classname = include.getActualTypeName();
+    final String classname = include.actualTypeName();
     final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
     if ( null == element )
     {
@@ -915,11 +915,11 @@ public final class StingProcessor
 
         final String message =
           MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
-          "parameter named 'includes' containing the value " + include.getIncludedType() +
+          "parameter named 'includes' containing the value " + include.includedType() +
           " and that type is annotated by the " +
           MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
           " annotation. The provider annotation expects a " +
-          "provider class named " + include.getActualTypeName() + " but no such class exists. The " +
+          "provider class named " + include.actualTypeName() + " but no such class exists. The " +
           "type needs to be removed from the includes or the provider class needs to be present.";
         reportError( env, message, originator, annotation, null );
       }
@@ -941,11 +941,11 @@ public final class StingProcessor
 
       final String message =
         MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
-        "parameter named 'includes' containing the value " + include.getIncludedType() +
+        "parameter named 'includes' containing the value " + include.includedType() +
         " and that type is annotated by the " +
         MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
         " annotation. The provider annotation expects a " +
-        "provider class named " + include.getActualTypeName() + " but that class is not annotated with either " +
+        "provider class named " + include.actualTypeName() + " but that class is not annotated with either " +
         MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + ", " +
         MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " or " +
         MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME );
@@ -958,19 +958,19 @@ public final class StingProcessor
         fragmentDescriptor.markAsContainsError();
         final String message =
           MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " target has an includes parameter " +
-          "containing the value " + include.getIncludedType() + " that is in the package " +
+          "containing the value " + include.includedType() + " that is in the package " +
           GeneratorUtil.getQualifiedPackageName( element ) + " when the fragment is in the package " +
           GeneratorUtil.getQualifiedPackageName( originator ) + " and localOnly is true";
         throw new ProcessorException( message, originator, annotation );
       }
     }
-    else if ( !include.isAuto() && ( (InjectorDescriptor) descriptor ).isFragmentOnly() && !isFragment )
+    else if ( !include.auto() && ( (InjectorDescriptor) descriptor ).isFragmentOnly() && !isFragment )
     {
       final InjectorDescriptor injectorDescriptor = (InjectorDescriptor) descriptor;
       injectorDescriptor.markAsContainsError();
       final String message =
         MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " target has an includes parameter containing " +
-        "the value " + include.getIncludedType() + " that resolves to " + element.getQualifiedName() +
+        "the value " + include.includedType() + " that resolves to " + element.getQualifiedName() +
         " which is not annotated by " + MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
         " when fragmentOnly is true";
       throw new ProcessorException( message, originator, annotation );
@@ -1017,7 +1017,7 @@ public final class StingProcessor
         return ResolveType.UNRESOLVED;
       }
 
-      if ( !include.isAuto() &&
+      if ( !include.auto() &&
            !injectable.getBinding().isEager() &&
            injectable.isAutoDiscoverable() &&
            ElementsUtil.isWarningNotSuppressed( originator, Constants.WARNING_AUTO_DISCOVERABLE_INCLUDED ) )
@@ -1115,7 +1115,7 @@ public final class StingProcessor
            AnnotationsUtil.hasAnnotationOfType( enclosedElement, Constants.FRAGMENT_CLASSNAME ) )
       {
         final DeclaredType type = (DeclaredType) enclosedElement.asType();
-        if ( includes.stream().noneMatch( d -> Objects.equals( d.getIncludedType(), type ) ) )
+        if ( includes.stream().noneMatch( d -> Objects.equals( d.includedType(), type ) ) )
         {
           includes.add( new IncludeDescriptor( type, type.toString(), true ) );
         }
@@ -1132,7 +1132,7 @@ public final class StingProcessor
                 AnnotationsUtil.hasAnnotationOfType( enclosedElement, Constants.INJECTABLE_CLASSNAME ) )
       {
         final DeclaredType type = (DeclaredType) enclosedElement.asType();
-        if ( includes.stream().noneMatch( d -> Objects.equals( d.getIncludedType(), type ) ) )
+        if ( includes.stream().noneMatch( d -> Objects.equals( d.includedType(), type ) ) )
         {
           includes.add( new IncludeDescriptor( type, type.toString(), true ) );
         }
@@ -1291,7 +1291,7 @@ public final class StingProcessor
 
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
         final ServiceSpec service = new ServiceSpec( coordinate, optional );
-        return new ServiceRequest( kind, service, method, -1 );
+        return new ServiceRequest( kind, service, method );
       }
     }
   }
@@ -1437,20 +1437,6 @@ public final class StingProcessor
     }
   }
 
-  private boolean hasStingProvider( @Nonnull final Element element )
-  {
-    return hasAnnotationWithAnnotationMatching( element,
-                                                ca -> ca.getAnnotationType()
-                                                  .asElement()
-                                                  .getSimpleName()
-                                                  .contentEquals( "StingProvider" ) );
-  }
-
-  private boolean hasActAsStingComponent( @Nonnull final Element element )
-  {
-    return hasValidationRole( element, Constants.ACT_AS_STING_COMPONENT_SIMPLE_NAME );
-  }
-
   private boolean hasActAsStingConsumer( @Nonnull final Element element )
   {
     return hasValidationRole( element,
@@ -1480,7 +1466,7 @@ public final class StingProcessor
       return false;
     }
     final String simpleName = element.getSimpleName().toString();
-    return Arrays.stream( annotationNames ).anyMatch( simpleName::equals );
+    return Arrays.asList( annotationNames ).contains( simpleName );
   }
 
   private boolean hasAnnotationWithAnnotationMatching( @Nonnull final AnnotatedConstruct element,
@@ -1502,36 +1488,35 @@ public final class StingProcessor
     for ( final Element element : elements )
     {
       final AnnotationUsageKind usageKind = classifyTypedElement( element );
-      if ( AnnotationUsageKind.PROCESSED == usageKind ||
-           AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION == usageKind )
+      if ( AnnotationUsageKind.PROCESSED != usageKind &&
+           AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION != usageKind )
       {
-        continue;
-      }
-      else if ( ElementKind.CLASS == element.getKind() )
-      {
-        reportError( env,
-                     MemberChecks.must( Constants.TYPED_CLASSNAME,
-                                        "only be present on a type if the type is annotated with " +
-                                        MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                        " or the type is annotated with an annotation annotated by " +
-                                        MemberChecks.toSimpleName( Constants.ACT_AS_STING_PROVIDER_CLASSNAME ) +
-                                        " or " +
-                                        MemberChecks.toSimpleName( Constants.ACT_AS_STING_COMPONENT_CLASSNAME ) ),
-                     element );
-      }
-      else if ( ElementKind.METHOD == element.getKind() )
-      {
-        reportError( env,
-                     MemberChecks.mustNot( Constants.TYPED_CLASSNAME,
-                                           "be a method unless the method is enclosed in a type annotated with " +
-                                           MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
-                     element );
-      }
-      else
-      {
-        reportError( env,
-                     MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) + " target is not valid",
-                     element );
+        if ( ElementKind.CLASS == element.getKind() )
+        {
+          reportError( env,
+                       MemberChecks.must( Constants.TYPED_CLASSNAME,
+                                          "only be present on a type if the type is annotated with " +
+                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                          " or the type is annotated with an annotation annotated by " +
+                                          MemberChecks.toSimpleName( Constants.ACT_AS_STING_PROVIDER_CLASSNAME ) +
+                                          " or " +
+                                          MemberChecks.toSimpleName( Constants.ACT_AS_STING_COMPONENT_CLASSNAME ) ),
+                       element );
+        }
+        else if ( ElementKind.METHOD == element.getKind() )
+        {
+          reportError( env,
+                       MemberChecks.mustNot( Constants.TYPED_CLASSNAME,
+                                             "be a method unless the method is enclosed in a type annotated with " +
+                                             MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
+                       element );
+        }
+        else
+        {
+          reportError( env,
+                       MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) + " target is not valid",
+                       element );
+        }
       }
     }
   }
@@ -1578,36 +1563,35 @@ public final class StingProcessor
     for ( final Element element : elements )
     {
       final AnnotationUsageKind usageKind = classifyEagerElement( element );
-      if ( AnnotationUsageKind.PROCESSED == usageKind ||
-           AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION == usageKind )
+      if ( AnnotationUsageKind.PROCESSED != usageKind &&
+           AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION != usageKind )
       {
-        continue;
-      }
-      else if ( ElementKind.CLASS == element.getKind() )
-      {
-        reportError( env,
-                     MemberChecks.must( Constants.EAGER_CLASSNAME,
-                                        "only be present on a type if the type is annotated with " +
-                                        MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                        " or the type is annotated with an annotation annotated by " +
-                                        MemberChecks.toSimpleName( Constants.ACT_AS_STING_PROVIDER_CLASSNAME ) +
-                                        " or " +
-                                        MemberChecks.toSimpleName( Constants.ACT_AS_STING_COMPONENT_CLASSNAME ) ),
-                     element );
-      }
-      else if ( ElementKind.METHOD == element.getKind() )
-      {
-        reportError( env,
-                     MemberChecks.must( Constants.EAGER_CLASSNAME,
-                                        "only be present on a method if the method is enclosed in a type annotated with " +
-                                        MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
-                     element );
-      }
-      else
-      {
-        reportError( env,
-                     MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) + " target is not valid",
-                     element );
+        if ( ElementKind.CLASS == element.getKind() )
+        {
+          reportError( env,
+                       MemberChecks.must( Constants.EAGER_CLASSNAME,
+                                          "only be present on a type if the type is annotated with " +
+                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
+                                          " or the type is annotated with an annotation annotated by " +
+                                          MemberChecks.toSimpleName( Constants.ACT_AS_STING_PROVIDER_CLASSNAME ) +
+                                          " or " +
+                                          MemberChecks.toSimpleName( Constants.ACT_AS_STING_COMPONENT_CLASSNAME ) ),
+                       element );
+        }
+        else if ( ElementKind.METHOD == element.getKind() )
+        {
+          reportError( env,
+                       MemberChecks.must( Constants.EAGER_CLASSNAME,
+                                          "only be present on a method if the method is enclosed in a type annotated with " +
+                                          MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
+                       element );
+        }
+        else
+        {
+          reportError( env,
+                       MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) + " target is not valid",
+                       element );
+        }
       }
     }
   }
@@ -1849,7 +1833,7 @@ public final class StingProcessor
           if ( null != provider )
           {
             final String targetQualifiedName =
-              deriveProviderQualifiedName( (TypeElement) includeElement, provider.getProvider() );
+              deriveProviderQualifiedName( (TypeElement) includeElement, provider.provider() );
             results.add( new IncludeDescriptor( (DeclaredType) include, targetQualifiedName, false ) );
           }
           else
@@ -1890,7 +1874,7 @@ public final class StingProcessor
       annotatedType.getAnnotationMirrors()
         .stream()
         .map( a -> {
-          final AnnotationMirror provider = getStingProvider( element, targetDescription, annotatedType, a );
+          final AnnotationMirror provider = getStingProvider( element, targetDescription, a );
           return null != provider ? new ProviderEntry( a, provider ) : null;
         } )
         .filter( Objects::nonNull )
@@ -1903,7 +1887,7 @@ public final class StingProcessor
         " annotations. Matching annotations:\n" +
         providers
           .stream()
-          .map( a -> ( (TypeElement) a.getAnnotation().getAnnotationType().asElement() ).getQualifiedName() )
+          .map( a -> ( (TypeElement) a.annotation().getAnnotationType().asElement() ).getQualifiedName() )
           .map( a -> "  " + a )
           .collect( Collectors.joining( "\n" ) );
       throw new ProcessorException( message, element );
@@ -1914,14 +1898,13 @@ public final class StingProcessor
   @Nullable
   private AnnotationMirror getStingProvider( @Nonnull final TypeElement element,
                                              @Nonnull final String targetDescription,
-                                             @Nonnull final TypeElement annotatedType,
                                              @Nonnull final AnnotationMirror annotation )
   {
     return annotation.getAnnotationType()
       .asElement()
       .getAnnotationMirrors()
       .stream()
-      .filter( ca -> isStingProvider( element, targetDescription, annotatedType, ca ) )
+      .filter( ca -> isStingProvider( element, targetDescription, ca ) )
       .findAny()
       .orElse( null );
   }
@@ -1937,7 +1920,7 @@ public final class StingProcessor
         .replace( "[CompoundName]", getComponentName( annotatedType ) )
         .replace( "[EnclosingName]", getEnclosingName( annotatedType ) )
         .replace( "[FlatEnclosingName]", getEnclosingName( annotatedType ).replace( '.', '_' ) );
-    return ElementsUtil.getPackageElement( annotatedType ).getQualifiedName().toString() + "." + targetCompoundType;
+    return ElementsUtil.getPackageElement( annotatedType ).getQualifiedName() + "." + targetCompoundType;
   }
 
   @Nonnull
@@ -1969,7 +1952,6 @@ public final class StingProcessor
 
   private boolean isStingProvider( @Nonnull final TypeElement element,
                                    @Nonnull final String targetDescription,
-                                   @Nonnull final Element annotatedType,
                                    @Nonnull final AnnotationMirror annotation )
   {
     if ( !annotation.getAnnotationType().asElement().getSimpleName().contentEquals( "StingProvider" ) )
@@ -2014,7 +1996,7 @@ public final class StingProcessor
       return Collections.emptyList();
     }
 
-    final String providerTypeName = deriveProviderQualifiedName( frameworkType, provider.getProvider() );
+    final String providerTypeName = deriveProviderQualifiedName( frameworkType, provider.provider() );
     final TypeElement providerType = processingEnv.getElementUtils().getTypeElement( providerTypeName );
     final Coordinate coordinate = new Coordinate( "", frameworkType.asType() );
     if ( null == providerType )
@@ -2025,7 +2007,7 @@ public final class StingProcessor
                                                                     frameworkType.getQualifiedName() +
                                                                     " expects a provider class named " +
                                                                     providerTypeName + " but no such class exists" ),
-                                    workEntry.getEntry().getEdge().getServiceRequest().getElement() );
+                                    workEntry.getEntry().edge().getServiceRequest().getElement() );
     }
 
     if ( AnnotationsUtil.hasAnnotationOfType( providerType, Constants.FRAGMENT_CLASSNAME ) )
@@ -2083,7 +2065,7 @@ public final class StingProcessor
                                                                     " or " +
                                                                     MemberChecks.toSimpleName(
                                                                       Constants.INJECTABLE_CLASSNAME ) ),
-                                    workEntry.getEntry().getEdge().getServiceRequest().getElement() );
+                                    workEntry.getEntry().edge().getServiceRequest().getElement() );
     }
   }
 
@@ -2099,7 +2081,7 @@ public final class StingProcessor
   {
     for ( final IncludeDescriptor include : includes )
     {
-      final String classname = include.getActualTypeName();
+      final String classname = include.actualTypeName();
       final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
       assert null != element;
       if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
@@ -2151,9 +2133,9 @@ public final class StingProcessor
                                                                     " does not publish the service " +
                                                                     coordinate +
                                                                     " for the framework type " +
-                                                                    coordinate.getType() +
+                                                                    coordinate.type() +
                                                                     ". The provider must publish the framework type with the default qualifier" ),
-                                    workEntry.getEntry().getEdge().getServiceRequest().getElement() );
+                                    workEntry.getEntry().edge().getServiceRequest().getElement() );
     }
   }
 
@@ -2229,7 +2211,7 @@ public final class StingProcessor
     final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) method.asType() ).getParameterTypes();
     for ( final VariableElement parameter : method.getParameters() )
     {
-      dependencies.add( processFragmentServiceParameter( parameter, parameterTypes.get( index ), index ) );
+      dependencies.add( processFragmentServiceParameter( parameter, parameterTypes.get( index ) ) );
       index++;
     }
 
@@ -2321,8 +2303,7 @@ public final class StingProcessor
 
   @Nonnull
   private ServiceRequest processFragmentServiceParameter( @Nonnull final VariableElement parameter,
-                                                          @Nonnull final TypeMirror type,
-                                                          final int parameterIndex )
+                                                          @Nonnull final TypeMirror type )
   {
     if ( TypesUtil.containsArrayType( type ) )
     {
@@ -2384,7 +2365,7 @@ public final class StingProcessor
         }
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
         final ServiceSpec service = new ServiceSpec( coordinate, optional );
-        return new ServiceRequest( kind, service, parameter, parameterIndex );
+        return new ServiceRequest( kind, service, parameter );
       }
     }
   }
@@ -2432,7 +2413,7 @@ public final class StingProcessor
     final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) constructor.asType() ).getParameterTypes();
     for ( final VariableElement parameter : constructor.getParameters() )
     {
-      dependencies.add( handleConstructorParameter( parameter, parameterTypes.get( index ), index ) );
+      dependencies.add( handleConstructorParameter( parameter, parameterTypes.get( index ) ) );
       index++;
     }
 
@@ -2663,7 +2644,7 @@ public final class StingProcessor
       if ( !methodParametersByConstructorIndex.containsKey( i ) )
       {
         final VariableElement constructorParameter = constructorParameters.get( i );
-        final ServiceRequest request = handleConstructorParameter( constructorParameter, constructorParameterTypes.get( i ), i );
+        final ServiceRequest request = handleConstructorParameter( constructorParameter, constructorParameterTypes.get( i ) );
         final FactoryDependencyDescriptor dependency =
           findOrCreateFactoryDependency( request, dependencies, usedFieldNames );
         dependenciesByConstructorIndex.put( i, dependency );
@@ -2755,8 +2736,7 @@ public final class StingProcessor
 
   @Nonnull
   private ServiceRequest handleConstructorParameter( @Nonnull final VariableElement parameter,
-                                                     @Nonnull final TypeMirror type,
-                                                     final int parameterIndex )
+                                                     @Nonnull final TypeMirror type )
   {
     if ( TypesUtil.containsArrayType( type ) )
     {
@@ -2820,7 +2800,7 @@ public final class StingProcessor
         }
         final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
         final ServiceSpec service = new ServiceSpec( coordinate, optional );
-        return new ServiceRequest( kind, service, parameter, parameterIndex );
+        return new ServiceRequest( kind, service, parameter );
       }
     }
   }
@@ -2983,7 +2963,7 @@ public final class StingProcessor
     final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) constructor.asType() ).getParameterTypes();
     for ( final VariableElement parameter : constructor.getParameters() )
     {
-      dependencies.add( handleConstructorParameter( parameter, parameterTypes.get( index ), index ) );
+      dependencies.add( handleConstructorParameter( parameter, parameterTypes.get( index ) ) );
       index++;
     }
 
@@ -3075,7 +3055,7 @@ public final class StingProcessor
 
     for ( final IncludeDescriptor include : includes )
     {
-      final String classname = include.getActualTypeName();
+      final String classname = include.actualTypeName();
       final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
       if ( null == element )
       {
@@ -3084,7 +3064,7 @@ public final class StingProcessor
       if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
       {
         // Only consider explicit direct includes as candidates (for Injector, auto-includes are not considered direct)
-        if ( !include.isAuto() )
+        if ( !include.auto() )
         {
           directInjectables.add( classname );
         }
@@ -3125,7 +3105,7 @@ public final class StingProcessor
     }
     for ( final IncludeDescriptor include : fragment.getIncludes() )
     {
-      final String classname = include.getActualTypeName();
+      final String classname = include.actualTypeName();
       final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
       if ( null == element )
       {
@@ -3152,7 +3132,7 @@ public final class StingProcessor
     final String originClassname = originator.getQualifiedName().toString();
     for ( final IncludeDescriptor include : includes )
     {
-      final String classname = include.getActualTypeName();
+      final String classname = include.actualTypeName();
       final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
       if ( null == element )
       {
@@ -3193,7 +3173,7 @@ public final class StingProcessor
     }
     for ( final IncludeDescriptor include : fragment.getIncludes() )
     {
-      final String classname = include.getActualTypeName();
+      final String classname = include.actualTypeName();
       final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
       if ( null != element && AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
       {
