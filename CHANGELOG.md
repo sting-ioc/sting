@@ -1,6 +1,8 @@
 # Change Log
 
-### Unreleased
+### [v0.37](https://github.com/sting-ioc/sting/tree/v0.37) (2026-06-16) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.36...v0.37)
+
+Changes in this release:
 
 * Update the `org.realityforge.braincheck` artifacts to version `1.33.0`.
 
