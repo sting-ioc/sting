@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Add compile-time service-interface interceptors under `sting.interceptors`, including generic lifecycle interceptors, processor-path plugin interception, graph/report integration, runtime proxy wiring, documentation, and test coverage.
+
 ### [v0.37](https://github.com/sting-ioc/sting/tree/v0.37) (2026-06-16) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.36...v0.37)
 
 Changes in this release:

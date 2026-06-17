@@ -69,6 +69,9 @@ Here are some links to other documents that you may want to look at next.
 * [Factories](factories.md): Factories are generated injectable adapters that combine Sting-managed dependencies
   with runtime parameters supplied by application code.
 
+* [Interceptors](interceptors.md): Interceptors add compile-time lifecycle hooks around calls made through
+  Sting-published service interfaces.
+
 * [Component Autodiscovery](autodiscovery.md): It is not always required to add components to the
   {@link: sting.Injector#includes() @Injector.includes} parameter as the framework has builtin mechanism
   that make autodiscovery of components possible.

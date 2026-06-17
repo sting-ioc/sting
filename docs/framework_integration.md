@@ -12,11 +12,13 @@ that Sting detects by simple name and shape:
 - ActAsStingProvider: marks a framework annotation whose annotated types may carry Sting provider
   metadata for validation purposes.
 - ActAsStingComponent: the union of `ActAsStingConsumer` and `ActAsStingProvider`.
+- InterceptorBinding: identifies a framework interceptor binding annotation for compile-time service-interface
+  interception.
 
 Sting matches these meta‑annotations by simple name and shape (not FQN) so a framework may either:
 
 - Depend on Sting and use `sting.StingProvider`, `sting.ActAsStingConsumer`,
-  `sting.ActAsStingProvider`, and `sting.ActAsStingComponent`, or
+  `sting.ActAsStingProvider`, `sting.ActAsStingComponent`, and `sting.interceptors.InterceptorBinding`, or
 - Define annotations with the same simple names and method signatures in its own package.
 
 Using StingProvider
@@ -92,7 +94,16 @@ ActAsStingComponent
 - This is a convenience shorthand for frameworks that need both consumer-side constructor qualifier
   support and provider-side type metadata support.
 
+InterceptorBinding
+
+- Apply `@InterceptorBinding` (or an equivalent annotation with the same simple name and shape) to a framework
+  interceptor binding annotation.
+- The meta-annotation must expose a compatible `int priority()` member and may expose a
+  `String implementedBy()` member.
+- This hook participates in interception metadata extraction. Sting still validates each effective binding location
+  and service coordinate according to the normal interceptor rules.
+
 For a full placement matrix, see [Annotation Processing](annotation_processing.md).
 
-See also: sting/ActAsStingConsumer, sting/ActAsStingProvider, sting/ActAsStingComponent, and
-sting/StingProvider Javadoc for API details.
+See also: sting/ActAsStingConsumer, sting/ActAsStingProvider, sting/ActAsStingComponent,
+sting/StingProvider, and sting/interceptors/InterceptorBinding Javadoc for API details.

@@ -20,6 +20,10 @@ responsible for creating the object (i.e `GWT.create(MyGwtRpcService.class)` or 
 create the type (i.e. when publishing a component that is constructed by invoking methods on a builder object).
 Sting can also pass in components when creating the injector.
 
+Sting can generate cached service-interface proxies for interceptor bindings under `sting.interceptors`. These
+interceptors run compile-time generated `before`, `after`, and `afterException` lifecycle hooks without reflection or
+runtime annotation lookup.
+
 Sting generates the code injector with no reference to sting-specific implementation classes other than
 the Sting annotations. The code generated is intended to be easy and very similar to the code a human
 would write by hand if given this task.

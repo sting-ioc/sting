@@ -1,8 +1,10 @@
 package sting.processor;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -19,6 +21,13 @@ import org.realityforge.proton.ElementsUtil;
 
 final class Node
 {
+  enum Kind
+  {
+    ROOT,
+    BINDING,
+    PROXY
+  }
+
   /**
    * The component graph that created this node.
    */
@@ -30,6 +39,11 @@ final class Node
    */
   @Nullable
   private final Binding _binding;
+  /**
+   * The proxy descriptor for this node if it represents an intercepted service proxy.
+   */
+  @Nullable
+  private final InterceptorProxyDescriptor _proxy;
   /**
    * The edges to nodes that this node depends upon.
    */
@@ -80,6 +94,7 @@ final class Node
   {
     this( componentGraph,
           null,
+          null,
           componentGraph.getInjector().getOutputs().toArray( new ServiceRequest[ 0 ] ) );
   }
 
@@ -90,15 +105,29 @@ final class Node
    */
   Node( final ComponentGraph componentGraph, @Nonnull final Binding binding )
   {
-    this( componentGraph, binding, binding.getDependencies() );
+    this( componentGraph, binding, null, binding.getDependencies() );
+  }
+
+  /**
+   * Constructor used to construct a Node for an intercepted service proxy.
+   *
+   * @param componentGraph the object graph.
+   * @param proxy          the proxy descriptor.
+   */
+  Node( final ComponentGraph componentGraph, @Nonnull final InterceptorProxyDescriptor proxy )
+  {
+    this( componentGraph, null, proxy, new ServiceRequest[ 0 ] );
   }
 
   private Node( @Nonnull final ComponentGraph componentGraph,
                 @Nullable final Binding binding,
+                @Nullable final InterceptorProxyDescriptor proxy,
                 @Nonnull final ServiceRequest[] dependencies )
   {
     _componentGraph = Objects.requireNonNull( componentGraph );
     _binding = binding;
+    _proxy = proxy;
+    assert null == binding || null == proxy;
     for ( final ServiceRequest dependency : dependencies )
     {
       _dependsOn.put( dependency, new Edge( this, dependency ) );
@@ -115,6 +144,11 @@ final class Node
       _public = TypeKind.DECLARED != _type.getKind() ||
                 ElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) _type ).asElement() );
     }
+    else if ( null != _proxy )
+    {
+      _type = _proxy.getService().service().getCoordinate().type();
+      _public = _proxy.getService().service().isPublic();
+    }
     else
     {
       _type = null;
@@ -124,7 +158,40 @@ final class Node
 
   boolean isFromProvides()
   {
-    return null != _binding && Binding.Kind.PROVIDES == _binding.getKind();
+    return isBinding() && Binding.Kind.PROVIDES == getBinding().getKind();
+  }
+
+  @Nonnull
+  Kind getKind()
+  {
+    return null != _binding ? Kind.BINDING : null != _proxy ? Kind.PROXY : Kind.ROOT;
+  }
+
+  boolean isBinding()
+  {
+    return Kind.BINDING == getKind();
+  }
+
+  boolean isProxy()
+  {
+    return Kind.PROXY == getKind();
+  }
+
+  @Nonnull
+  String getId()
+  {
+    if ( null != _binding )
+    {
+      return _binding.getId();
+    }
+    else if ( null != _proxy )
+    {
+      return _proxy.getId();
+    }
+    else
+    {
+      return "injector";
+    }
   }
 
   @Nonnull
@@ -156,6 +223,11 @@ final class Node
     return _eager;
   }
 
+  boolean isDeclaredEager()
+  {
+    return null != _binding ? _binding.isEager() : null != _proxy && _proxy.getService().binding().isEager();
+  }
+
   void markNodeAndUpstreamAsEager()
   {
     if ( !_eager )
@@ -184,6 +256,19 @@ final class Node
   {
     assert null != _binding;
     return _binding;
+  }
+
+  @Nonnull
+  Binding getProviderBinding()
+  {
+    return null != _binding ? _binding : getProxy().getService().binding();
+  }
+
+  @Nonnull
+  InterceptorProxyDescriptor getProxy()
+  {
+    assert null != _proxy;
+    return _proxy;
   }
 
   @Nonnull
@@ -250,27 +335,60 @@ final class Node
   @Nonnull
   String getTypeLabel()
   {
-    return null == _binding ? "[Injector]   " : _binding.getTypeLabel();
+    return null != _binding ? _binding.getTypeLabel() : null != _proxy ? "[Proxy]      " : "[Injector]   ";
   }
 
   @Nonnull
   String describeBinding()
   {
-    return null == _binding ?
-           _componentGraph.getInjector().getElement().getQualifiedName().toString() :
-           _binding.describe();
+    return null != _binding ?
+           _binding.describe() :
+           null != _proxy ?
+           _proxy.getId() :
+           _componentGraph.getInjector().getElement().getQualifiedName().toString();
+  }
+
+  void addResolvedDependency( @Nonnull final ServiceRequest serviceRequest, @Nonnull final Node node )
+  {
+    final Edge edge = new Edge( this, serviceRequest );
+    edge.setSatisfiedBy( Collections.singletonList( node ) );
+    _dependsOn.put( serviceRequest, edge );
   }
 
   void write( @Nonnull final JsonGenerator g )
   {
     g.writeStartObject();
-    assert null != _binding;
-    g.write( "id", _binding.getId() );
-    final Binding.Kind kind = _binding.getKind();
-    g.write( "kind", kind.name() );
+    g.write( "id", getId() );
+    if ( null != _binding )
+    {
+      final Binding.Kind kind = _binding.getKind();
+      g.write( "kind", kind.name() );
+    }
+    else
+    {
+      assert null != _proxy;
+      g.write( "kind", "PROXY" );
+      g.writeStartObject( "service" );
+      _proxy.getService().service().getCoordinate().write( g );
+      g.writeEnd();
+    }
     if ( _eager )
     {
       g.write( "eager", true );
+    }
+    if ( null != _proxy )
+    {
+      g.write( "target", _proxy.getService().binding().getId() );
+      final List<Binding> interceptors = _proxy.getGenericInterceptorBindings();
+      if ( !interceptors.isEmpty() )
+      {
+        g.writeStartArray( "interceptors" );
+        for ( final Binding binding : interceptors )
+        {
+          g.write( binding.getId() );
+        }
+        g.writeEnd();
+      }
     }
     if ( !_dependsOn.isEmpty() )
     {
@@ -282,7 +400,7 @@ final class Node
         g.writeStartArray( "supportedBy" );
         for ( final Node node : edge.getSatisfiedBy() )
         {
-          g.write( node.getBinding().getId() );
+          g.write( node.getId() );
         }
         g.writeEnd();
         g.writeEnd();

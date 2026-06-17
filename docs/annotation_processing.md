@@ -21,6 +21,7 @@ tolerates an annotation for framework integration, and where a placement is igno
 | `@ActAsStingConsumer` | Integration meta-annotation consulted during validation. | Not applicable. | Does not itself create a Sting binding. |
 | `@ActAsStingProvider` | Integration meta-annotation consulted during validation. | Not applicable. | Does not itself create a Sting binding. |
 | `@ActAsStingComponent` | Integration meta-annotation consulted during validation. | Not applicable. | Does not itself create a Sting binding. |
+| `@InterceptorBinding` | Interceptor binding meta-annotation consulted when a reachable binding publishes service interfaces. | Equivalent simple-name annotations with compatible `priority` and `implementedBy` members. | Does not itself create a Sting binding; method usages are valid only on `@Fragment` provider methods in v1. |
 | `@Injector.Input` | Nested configuration processed only inside `@Injector`. | None. | Not treated as an independent processor trigger. |
 
 ## Notes
@@ -33,5 +34,6 @@ tolerates an annotation for framework integration, and where a placement is igno
   type if they are needed for graph semantics. Providers used only as explicit include aliases usually do not
   need those annotations copied for the framework-managed type, while providers intended to support
   auto-discovery usually do when the framework-managed type should be published with those semantics.
-- Sting matches `@ActAsStingConsumer`, `@ActAsStingProvider`, and `@ActAsStingComponent` by simple name and
-  shape so third-party frameworks may define equivalent annotations without depending directly on Sting.
+- Sting matches `@ActAsStingConsumer`, `@ActAsStingProvider`, `@ActAsStingComponent`, and
+  `@InterceptorBinding` by simple name and shape so third-party frameworks may define equivalent annotations
+  without depending directly on Sting.

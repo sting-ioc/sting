@@ -42,6 +42,11 @@ final class Edge
     }
   }
 
+  boolean isSatisfied()
+  {
+    return null != _satisfiedBy;
+  }
+
   @Nonnull
   ServiceRequest getServiceRequest()
   {

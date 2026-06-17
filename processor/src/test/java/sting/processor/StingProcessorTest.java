@@ -25,6 +25,7 @@ import static org.testng.Assert.*;
 public final class StingProcessorTest
   extends AbstractStingProcessorTest
 {
+  @Nonnull
   @DataProvider( name = "successfulCompiles" )
   public Object[][] successfulCompiles()
   {
@@ -224,6 +225,490 @@ public final class StingProcessorTest
   {
     final Compilation compilation = compile( Collections.singletonList( input( "input", classname ) ) );
     assertCompilationSuccessful( compilation );
+  }
+
+  @DataProvider( name = "successfulInterceptorCompiles" )
+  @Nonnull
+  public Object[][] successfulInterceptorCompiles()
+  {
+    return new Object[][]
+      {
+        new Object[]{ "public interceptor annotations", "com.example.interceptor.BasicInterceptorModel" },
+        new Object[]{ "service-interface binding", "com.example.interceptor.BasicInterceptorModel" },
+        new Object[]{ "third-party simple-name binding", "com.example.interceptor.ThirdPartyBindingModel" },
+        new Object[]{ "descriptor extraction before plugin claims", "com.example.interceptor.ThirdPartyBindingModel" },
+        new Object[]{ "implementation binding source", "com.example.interceptor.ImplementationBindingSourceModel" },
+        new Object[]{ "provider binding source", "com.example.interceptor.ProviderBindingSourceModel" },
+        new Object[]{ "combined service and binding-source annotations",
+                      "com.example.interceptor.CombinedBindingModel" },
+        new Object[]{ "multiple published service interfaces", "com.example.interceptor.MultiServiceBindingModel" },
+        new Object[]{ "qualified service proxies", "com.example.interceptor.QualifiedBindingModel" },
+        new Object[]{ "factory-generated service interface", "com.example.interceptor.FactoryBindingModel" },
+        new Object[]{ "before-only interceptor", "com.example.interceptor.BasicInterceptorModel" },
+        new Object[]{ "after-only interceptor", "com.example.interceptor.VoidResultModel" },
+        new Object[]{ "afterException-only interceptor", "com.example.interceptor.ResultAndThrownModel" },
+        new Object[]{ "all lifecycle phases", "com.example.interceptor.AllLifecyclePhasesModel" },
+        new Object[]{ "service type marker", "com.example.interceptor.LifecycleMetadataModel" },
+        new Object[]{ "method name marker", "com.example.interceptor.LifecycleMetadataModel" },
+        new Object[]{ "arguments marker before", "com.example.interceptor.LifecycleMetadataModel" },
+        new Object[]{ "arguments marker after", "com.example.interceptor.LifecycleMetadataModel" },
+        new Object[]{ "arguments marker afterException", "com.example.interceptor.LifecycleMetadataModel" },
+        new Object[]{ "binding value string", "com.example.interceptor.BindingValueConversionsModel" },
+        new Object[]{ "binding value primitive", "com.example.interceptor.BindingValueConversionsModel" },
+        new Object[]{ "binding value enum", "com.example.interceptor.BindingValueConversionsModel" },
+        new Object[]{ "binding value class", "com.example.interceptor.BindingValueConversionsModel" },
+        new Object[]{ "binding value defaults", "com.example.interceptor.BindingValueConversionsModel" },
+        new Object[]{ "arguments requested", "com.example.interceptor.ArgumentsRequestedModel" },
+        new Object[]{ "result reference", "com.example.interceptor.ResultAndThrownModel" },
+        new Object[]{ "result primitive", "com.example.interceptor.PrimitiveResultModel" },
+        new Object[]{ "result void", "com.example.interceptor.VoidResultModel" },
+        new Object[]{ "thrown checked", "com.example.interceptor.ResultAndThrownModel" },
+        new Object[]{ "thrown runtime", "com.example.interceptor.ResultAndThrownModel" },
+        new Object[]{ "default and inherited interface methods",
+                      "com.example.interceptor.DefaultInheritedMethodsModel" },
+        new Object[]{ "all service request kinds", "com.example.interceptor.RequestKindsModel" },
+        new Object[]{ "overloaded methods", "com.example.interceptor.OverloadedVarargsObjectModel" },
+        new Object[]{ "varargs methods", "com.example.interceptor.OverloadedVarargsObjectModel" },
+        new Object[]{ "redeclared Object methods", "com.example.interceptor.OverloadedVarargsObjectModel" },
+        new Object[]{ "redeclared lifecycle override", "com.example.interceptor.RedeclaredLifecycleOverrideModel" },
+        new Object[]{ "unrelated simple-name lifecycle annotations ignored",
+                      "com.example.interceptor.UnrelatedLifecycleNameModel" },
+        new Object[]{ "unreachable invalid interceptor binding deferred",
+                      "com.example.interceptor.UnreachableInvalidInterceptorModel" },
+        new Object[]{ "eager unrequested interceptor proxy dependencies",
+                      "com.example.interceptor.EagerUnrequestedInterceptorModel" },
+        new Object[]{ "supplier cycle boundary", "com.example.interceptor.SupplierCycleBoundaryModel" },
+        new Object[]{ "proxy emission dedupe", "com.example.interceptor.TwoInjectorsProxyDedupeModel" },
+        new Object[]{ "external plugin public SPI compile", "com.example.interceptor.ExternalPluginModel" }
+      };
+  }
+
+  @Test( dataProvider = "successfulInterceptorCompiles" )
+  public void processSuccessfulInterceptorCompile( @SuppressWarnings( "unused" ) @Nonnull final String label,
+                                                   @Nonnull final String classname )
+  {
+    final Compilation compilation = compile( Collections.singletonList( input( "input", classname ) ) );
+    assertCompilationSuccessful( compilation );
+  }
+
+  @DataProvider( name = "failedInterceptorCompiles" )
+  @Nonnull
+  public Object[][] failedInterceptorCompiles()
+  {
+    return new Object[][]
+      {
+        new Object[]{ "service method binding", "com.example.interceptor.MethodLevelServiceBindingModel",
+                      "Interceptor bindings on service interface methods are not supported" },
+        new Object[]{ "implementation method binding", "com.example.interceptor.MethodLevelImplementationBindingModel",
+                      "Interceptor bindings on implementation methods are not supported" },
+        new Object[]{ "standalone service method binding",
+                      "com.example.interceptor.StandaloneMethodLevelServiceBindingModel",
+                      "Interceptor bindings on service interface methods are not supported" },
+        new Object[]{ "standalone implementation method binding",
+                      "com.example.interceptor.StandaloneMethodLevelImplementationBindingModel",
+                      "Interceptor bindings on implementation methods are not supported" },
+        new Object[]{ "non-fragment method binding", "com.example.interceptor.NonFragmentMethodBindingModel",
+                      "Interceptor bindings on non-fragment methods are not supported" },
+        new Object[]{ "duplicate binding type",
+                      "com.example.interceptor.DuplicateBindingTypeModel",
+                      "Duplicate interceptor binding annotation type com.example.interceptor.DuplicateBindingTypeModel.Trace" },
+        new Object[]{ "duplicate priority", "com.example.interceptor.DuplicatePriorityModel",
+                      "Duplicate interceptor priority 100" },
+        new Object[]{ "concrete published type", "com.example.interceptor.ConcretePublishedTypeModel",
+                      "Intercepted bindings must publish service interfaces only" },
+        new Object[]{ "Object published type", "com.example.interceptor.ObjectPublishedTypeModel",
+                      "Intercepted bindings must not publish java.lang.Object" },
+        new Object[]{ "empty implementedBy", "com.example.interceptor.EmptyImplementedByModel",
+                      "must specify implementedBy or be claimed by exactly one plugin" },
+        new Object[]{ "input interception", "com.example.interceptor.InputInterceptionModel",
+                      "Interceptor bindings on injector input services are not supported" },
+        new Object[]{ "nullable provider interception", "com.example.interceptor.NullableProviderModel",
+                      "Interceptor bindings on nullable or optional provider bindings are not supported" },
+        new Object[]{ "generic service", "com.example.interceptor.GenericServiceModel",
+                      "@Typed specified a type that is a a parameterized type" },
+        new Object[]{ "generic service method", "com.example.interceptor.GenericMethodModel",
+                      "Intercepted service methods must not declare type parameters" },
+        new Object[]{ "source retention", "com.example.interceptor.SourceRetentionModel",
+                      "must not use @Retention(SOURCE)" },
+        new Object[]{ "third-party missing priority", "com.example.interceptor.ThirdPartyMissingPriorityModel",
+                      "must declare an int priority member" },
+        new Object[]{ "third-party bad implementedBy", "com.example.interceptor.ThirdPartyBadImplementedByModel",
+                      "must declare a String implementedBy member when present" },
+        new Object[]{ "missing implementedBy class", "com.example.interceptor.MissingImplementedByClassModel",
+                      "does not exist" },
+        new Object[]{ "binary implementedBy", "com.example.interceptor.BinaryImplementedByModel",
+                      "implementedBy must be a canonical dotted qualified Java name" },
+        new Object[]{ "non-injectable interceptor", "com.example.interceptor.NonInjectableInterceptorModel",
+                      "must be annotated with @Injectable" },
+        new Object[]{ "non-public interceptor", "com.example.interceptor.NonPublicInterceptorModel",
+                      "must be effectively public" },
+        new Object[]{ "private lifecycle method", "com.example.interceptor.PrivateLifecycleMethodModel",
+                      "Interceptor lifecycle methods must be public instance methods" },
+        new Object[]{ "protected lifecycle method", "com.example.interceptor.ProtectedLifecycleMethodModel",
+                      "Interceptor lifecycle methods must be public instance methods" },
+        new Object[]{ "package lifecycle method", "com.example.interceptor.PackageAccessLifecycleMethodModel",
+                      "Interceptor lifecycle methods must be public instance methods" },
+        new Object[]{ "static lifecycle method", "com.example.interceptor.StaticLifecycleMethodModel",
+                      "Interceptor lifecycle methods must be public instance methods" },
+        new Object[]{ "inherited lifecycle method", "com.example.interceptor.InheritedLifecycleMethodModel",
+                      "Inherited interceptor lifecycle annotations are not supported" },
+        new Object[]{ "unannotated lifecycle override", "com.example.interceptor.UnannotatedOverrideLifecycleModel",
+                      "Inherited interceptor lifecycle annotations are not supported" },
+        new Object[]{ "inherited duplicate lifecycle phase", "com.example.interceptor.InheritedDuplicateLifecycleModel",
+                      "Inherited interceptor lifecycle annotations are not supported" },
+        new Object[]{ "non-void lifecycle method", "com.example.interceptor.NonVoidLifecycleMethodModel",
+                      "Interceptor lifecycle methods must return void" },
+        new Object[]{ "generic lifecycle method", "com.example.interceptor.TypeParameterLifecycleMethodModel",
+                      "Interceptor lifecycle methods must not declare type parameters" },
+        new Object[]{ "multiple lifecycle annotations", "com.example.interceptor.MultipleLifecycleAnnotationsModel",
+                      "Interceptor lifecycle method must not have multiple lifecycle annotations" },
+        new Object[]{ "checked lifecycle exception", "com.example.interceptor.CheckedExceptionLifecycleMethodModel",
+                      "Interceptor lifecycle methods must not declare checked exceptions" },
+        new Object[]{ "duplicate lifecycle phase", "com.example.interceptor.DuplicateLifecyclePhaseModel",
+                      "must declare at most one BEFORE lifecycle method" },
+        new Object[]{ "empty interceptor", "com.example.interceptor.NoLifecycleMethodModel",
+                      "must declare at least one lifecycle method" },
+        new Object[]{ "unsupported lifecycle parameter marker",
+                      "com.example.interceptor.UnsupportedLifecycleParameterMarkerModel",
+                      "Interceptor lifecycle parameters must have exactly one marker annotation" },
+        new Object[]{ "unannotated lifecycle parameter", "com.example.interceptor.UnannotatedLifecycleParameterModel",
+                      "Interceptor lifecycle parameters must have exactly one marker annotation" },
+        new Object[]{ "multiple lifecycle parameter markers",
+                      "com.example.interceptor.MultipleMarkerLifecycleParameterModel",
+                      "Interceptor lifecycle parameters must not have multiple marker annotations" },
+        new Object[]{ "ServiceType wrong type", "com.example.interceptor.ServiceTypeWrongTypeModel",
+                      "@ServiceType lifecycle parameter must have type java.lang.String" },
+        new Object[]{ "MethodName wrong type", "com.example.interceptor.MethodNameWrongTypeModel",
+                      "@MethodName lifecycle parameter must have type java.lang.String" },
+        new Object[]{ "Arguments wrong type", "com.example.interceptor.ArgumentsWrongTypeModel",
+                      "@Arguments lifecycle parameter must have type Object[]" },
+        new Object[]{ "Result wrong type", "com.example.interceptor.ResultWrongTypeModel",
+                      "@Result lifecycle parameter must have type java.lang.Object" },
+        new Object[]{ "Thrown wrong type", "com.example.interceptor.ThrownWrongTypeModel",
+                      "@Thrown lifecycle parameter must have type java.lang.Throwable" },
+        new Object[]{ "Result wrong phase", "com.example.interceptor.ResultWrongPhaseModel",
+                      "@Result lifecycle parameter is only valid on @After methods" },
+        new Object[]{ "Thrown wrong phase", "com.example.interceptor.ThrownWrongPhaseModel",
+                      "@Thrown lifecycle parameter is only valid on @AfterException methods" },
+        new Object[]{ "unknown binding value", "com.example.interceptor.UnknownBindingValueModel",
+                      "@BindingValue references unknown interceptor binding member missing" },
+        new Object[]{ "binding value wrong type", "com.example.interceptor.BindingValueWrongTypeModel",
+                      "is not compatible with lifecycle parameter type java.lang.String" },
+        new Object[]{ "binding value array", "com.example.interceptor.BindingValueArrayModel",
+                      "has an unsupported v1 value type" },
+        new Object[]{ "binding value annotation", "com.example.interceptor.BindingValueAnnotationModel",
+                      "has an unsupported v1 value type" },
+        new Object[]{ "interceptor proxy cycle", "com.example.interceptor.InterceptorCycleModel",
+                      "Injector contains a circular dependency" }
+      };
+  }
+
+  @Test( dataProvider = "failedInterceptorCompiles" )
+  public void processFailedInterceptorCompile( @SuppressWarnings( "unused" ) @Nonnull final String label,
+                                               @Nonnull final String classname,
+                                               @Nonnull final String message )
+  {
+    final Compilation compilation = compile( Collections.singletonList( input( "bad_input", classname ) ) );
+    assertFalse( compilation.success() );
+    assertErrorDiagnostic( compilation, message );
+  }
+
+  @Test
+  public void pluginOnlyBindingCompiles()
+    throws Exception
+  {
+    final Compilation compilation =
+      compileWithInterceptorPlugins( "input",
+                                     "com.example.interceptor.PluginOnlyBindingModel",
+                                     List.of( new PluginTraceGenerator() ) );
+    assertCompilationSuccessful( compilation );
+    final String source = readGeneratedInterceptorProxy( compilation, "PluginOnlyBindingModel" );
+    assertTrue( source.contains( "java.util.Objects.requireNonNull(\"run\")" ) );
+    assertFalse( source.contains( "new Object[]" ), source );
+  }
+
+  @Test
+  public void pluginClaimWinsOverGenericInterceptor()
+    throws Exception
+  {
+    final Compilation compilation =
+      compileWithInterceptorPlugins( "input",
+                                     "com.example.interceptor.PluginWithImplementedByModel",
+                                     List.of( new PluginTraceGenerator() ) );
+    assertCompilationSuccessful( compilation );
+    final String source = readGeneratedInterceptorProxy( compilation, "PluginWithImplementedByModel" );
+    assertTrue( source.contains( "java.util.Objects.requireNonNull(\"run\")" ) );
+    assertFalse( source.contains( "$sting$_interceptor" ) );
+  }
+
+  @Test
+  public void pluginClaimStateIsScopedToServiceCoordinate()
+    throws Exception
+  {
+    final Compilation compilation =
+      compileWithInterceptorPlugins( "input",
+                                     "com.example.interceptor.PluginCoordinateClaimModel",
+                                     List.of( new LeftOnlyPluginTraceGenerator() ) );
+    assertCompilationSuccessful( compilation );
+    assertFalse( readGeneratedInterceptorProxy( compilation, "left" ).contains( "$sting$_interceptor" ) );
+    assertTrue( readGeneratedInterceptorProxy( compilation, "right" ).contains( "$sting$_interceptor1" ) );
+  }
+
+  @Test
+  public void multiplePluginClaimsFailWithPluginNames()
+  {
+    final Compilation compilation =
+      compileWithInterceptorPlugins( "input",
+                                     "com.example.interceptor.PluginOnlyBindingModel",
+                                     List.of( new PluginTraceGenerator(), new OtherPluginTraceGenerator() ) );
+    assertFalse( compilation.success() );
+    assertErrorDiagnostic( compilation, "Multiple interceptor plugins claim" );
+    assertErrorDiagnostic( compilation, PluginTraceGenerator.class.getCanonicalName() );
+    assertErrorDiagnostic( compilation, OtherPluginTraceGenerator.class.getCanonicalName() );
+  }
+
+  @Test
+  public void pluginPartialClaimRequiresGenericFallbackForUnclaimedDescriptor()
+  {
+    final Compilation compilation =
+      compileWithInterceptorPlugins( "bad_input",
+                                     "com.example.interceptor.PluginPartialClaimModel",
+                                     List.of( new LeftOnlyPluginTraceGenerator() ) );
+    assertFalse( compilation.success() );
+    assertErrorDiagnostic( compilation, "must specify implementedBy or be claimed by exactly one plugin" );
+  }
+
+  @Test
+  public void serviceLoaderInterceptorPluginIsDiscovered()
+    throws Exception
+  {
+    final Compilation compilation =
+      compile( Collections.singletonList( input( "input",
+                                                 "com.example.interceptor.ServiceLoaderPluginBindingModel" ) ) );
+    assertCompilationSuccessful( compilation );
+    final String source = readGeneratedInterceptorProxy( compilation, "ServiceLoaderPluginBindingModel" );
+    assertTrue( source.contains( "java.util.Objects.requireNonNull(\"run\")" ), source );
+    assertFalse( source.contains( "$sting$_interceptor" ), source );
+  }
+
+  @Test
+  public void pluginArgumentsArrayIsLazyAndShared()
+    throws Exception
+  {
+    final Compilation compilation =
+      compileWithInterceptorPlugins( "input",
+                                     "com.example.interceptor.PluginArgumentsModel",
+                                     List.of( new PluginArgumentsTraceGenerator() ) );
+    assertCompilationSuccessful( compilation );
+    final String source = readGeneratedInterceptorProxy( compilation, "PluginArgumentsModel" );
+    assertEquals( countOccurrences( source, "Object[] arguments = null" ), 1, source );
+    assertEquals( countOccurrences( source, "arguments = new Object[] {name, count}" ), 2, source );
+    assertEquals( countOccurrences( source, "java.util.Objects.requireNonNull(arguments)" ), 2, source );
+  }
+
+  @Test
+  public void pluginInvalidMetadataRequestFailsWithDiagnostic()
+  {
+    final Compilation compilation =
+      compileWithInterceptorPlugins( "input",
+                                     "com.example.interceptor.PluginOnlyBindingModel",
+                                     List.of( new InvalidResultPluginTraceGenerator() ) );
+    assertFalse( compilation.success() );
+    assertErrorDiagnostic( compilation, "result() is only valid during after emission" );
+  }
+
+  @DataProvider( name = "generatedInterceptorSourceAssertions" )
+  @Nonnull
+  public Object[][] generatedInterceptorSourceAssertions()
+  {
+    return new Object[][]
+      {
+        new Object[]{ "no arguments allocation when not requested",
+                      "com.example.interceptor.NoArgumentsModel",
+                      "NoArgumentsModel",
+                      "new Object[]",
+                      false },
+        new Object[]{ "arguments allocation emitted when requested",
+                      "com.example.interceptor.ArgumentsRequestedModel",
+                      "ArgumentsRequestedModel",
+                      "arguments = new Object[] {value}",
+                      true },
+        new Object[]{ "primitive result local is primitive",
+                      "com.example.interceptor.PrimitiveResultModel",
+                      "PrimitiveResultModel",
+                      "int result",
+                      true },
+        new Object[]{ "primitive result reaches lifecycle",
+                      "com.example.interceptor.PrimitiveResultModel",
+                      "PrimitiveResultModel",
+                      "after(result)",
+                      true },
+        new Object[]{ "void result passes null",
+                      "com.example.interceptor.VoidResultModel",
+                      "VoidResultModel",
+                      "after(null)",
+                      true },
+        new Object[]{ "target field uses service interface type",
+                      "com.example.interceptor.NoArgumentsModel",
+                      "NoArgumentsModel",
+                      "NoArgumentsModel.Service $sting$_target",
+                      true },
+        new Object[]{ "bridge create method returns Object",
+                      "com.example.interceptor.NoArgumentsModel",
+                      "NoArgumentsModel",
+                      "public static Object create(",
+                      true },
+        new Object[]{ "deterministic proxy class name",
+                      "com.example.interceptor.NoArgumentsModel",
+                      "NoArgumentsModel",
+                      "Sting_com_example_interceptor_NoArgumentsModel_Model_Service_InterceptorProxy",
+                      true },
+        new Object[]{ "qualified proxy name includes qualifier",
+                      "com.example.interceptor.QualifiedBindingModel",
+                      "left",
+                      "_left_InterceptorProxy",
+                      true },
+        new Object[]{ "checked exception catch block",
+                      "com.example.interceptor.ResultAndThrownModel",
+                      "ResultAndThrownModel",
+                      "catch (IOException t)",
+                      true },
+        new Object[]{ "runtime exception catch block",
+                      "com.example.interceptor.ResultAndThrownModel",
+                      "ResultAndThrownModel",
+                      "catch (RuntimeException t)",
+                      true },
+        new Object[]{ "error catch block",
+                      "com.example.interceptor.ResultAndThrownModel",
+                      "ResultAndThrownModel",
+                      "catch (Error t)",
+                      true },
+        new Object[]{ "lifecycle nesting try block",
+                      "com.example.interceptor.ResultAndThrownModel",
+                      "ResultAndThrownModel",
+                      "try {",
+                      true },
+        new Object[]{ "own before failure observed by outer interceptor only",
+                      "com.example.interceptor.LifecycleFailureNestingModel",
+                      "LifecycleFailureNestingModel",
+                      "$sting$_interceptor1.before();\n" +
+                      "    try {\n" +
+                      "      $sting$_interceptor2.before();",
+                      true },
+        new Object[]{ "own after failure observed by outer interceptor only",
+                      "com.example.interceptor.LifecycleFailureNestingModel",
+                      "LifecycleFailureNestingModel",
+                      "      $sting$_interceptor2.after();\n" +
+                      "    } catch (RuntimeException t) {\n" +
+                      "      $sting$_interceptor1.afterException(t);",
+                      true },
+        new Object[]{ "binding value escaped char",
+                      "com.example.interceptor.BindingValueConversionsModel",
+                      "BindingValueConversionsModel",
+                      "'\\n'",
+                      true },
+        new Object[]{ "proxy generated in service package",
+                      "com.example.interceptor.NoArgumentsModel",
+                      "NoArgumentsModel",
+                      "package com.example.interceptor;",
+                      true }
+      };
+  }
+
+  @Test( dataProvider = "generatedInterceptorSourceAssertions" )
+  public void generatedInterceptorSourceAssertion( @Nonnull final String label,
+                                                   @Nonnull final String classname,
+                                                   @Nonnull final String filenamePart,
+                                                   @Nonnull final String sourceFragment,
+                                                   final boolean present )
+    throws Exception
+  {
+    final Compilation compilation = compile( Collections.singletonList( input( "input", classname ) ) );
+    assertCompilationSuccessful( compilation );
+    final String source = readGeneratedInterceptorProxy( compilation, filenamePart );
+    if ( present )
+    {
+      assertTrue( source.contains( sourceFragment ), label + "\nSource:\n" + source );
+    }
+    else
+    {
+      assertFalse( source.contains( sourceFragment ), label + "\nSource:\n" + source );
+    }
+  }
+
+  @DataProvider( name = "generatedInterceptorProxyFixtures" )
+  @Nonnull
+  public Object[][] generatedInterceptorProxyFixtures()
+  {
+    return new Object[][]
+      {
+        new Object[]{ "no arguments proxy",
+                      "com.example.interceptor.NoArgumentsModel",
+                      "com/example/interceptor/" +
+                      "Sting_com_example_interceptor_NoArgumentsModel_Model_Service_InterceptorProxy.java" },
+        new Object[]{ "arguments metadata proxy",
+                      "com.example.interceptor.ArgumentsRequestedModel",
+                      "com/example/interceptor/" +
+                      "Sting_com_example_interceptor_ArgumentsRequestedModel_Model_Service_InterceptorProxy.java" },
+        new Object[]{ "after-exception nesting proxy",
+                      "com.example.interceptor.ResultAndThrownModel",
+                      "com/example/interceptor/" +
+                      "Sting_com_example_interceptor_ResultAndThrownModel_Model_Service_InterceptorProxy.java" },
+        new Object[]{ "own-before and own-after failure nesting proxy",
+                      "com.example.interceptor.LifecycleFailureNestingModel",
+                      "com/example/interceptor/" +
+                      "Sting_com_example_interceptor_LifecycleFailureNestingModel_Model_Service_InterceptorProxy.java" }
+      };
+  }
+
+  @Test( dataProvider = "generatedInterceptorProxyFixtures" )
+  public void generatedInterceptorProxyFixture( @SuppressWarnings( "unused" ) @Nonnull final String label,
+                                                @Nonnull final String classname,
+                                                @Nonnull final String output )
+    throws Exception
+  {
+    assertSuccessfulCompile( inputs( classname ),
+                             Collections.singletonList( output ),
+                             target -> target.endsWith( output ) );
+  }
+
+  @Test
+  public void interceptorProxyGraphDescriptorContainsProxyMetadata()
+    throws Exception
+  {
+    final Compilation compilation =
+      compile( Collections.singletonList( input( "input", "com.example.interceptor.QualifiedBindingModel" ) ) );
+    assertCompilationSuccessful( compilation );
+    final String graph = readClassOutput( compilation, "__ObjectGraph.sting.json" ).replaceAll( "\\s+", "" );
+    assertTrue( graph.contains( "\"kind\":\"PROXY\"" ), graph );
+    assertTrue( graph.contains( "\"service\"" ), graph );
+    assertTrue( graph.contains( "\"target\":\"com.example.interceptor.QualifiedBindingModel.LeftModel\"" ), graph );
+    assertTrue( graph.contains( "\"interceptors\":[\"com.example.interceptor.QualifiedBindingModel.TraceInterceptor\"]" ),
+                graph );
+  }
+
+  @Test
+  public void interceptorProxyGraphDescriptorUsesProviderNodeIdsForProxyDependencies()
+    throws Exception
+  {
+    final Compilation compilation =
+      compile( Collections.singletonList( input( "input", "com.example.interceptor.SupplierCycleBoundaryModel" ) ) );
+    assertCompilationSuccessful( compilation );
+    final String graph = readClassOutput( compilation, "__ObjectGraph.sting.json" ).replaceAll( "\\s+", "" );
+    assertTrue( graph.contains( "\"supportedBy\":[\"proxy:" ), graph );
+  }
+
+  @Test
+  public void interceptorProxyDotReportContainsProxyLabels()
+    throws Exception
+  {
+    final Compilation compilation =
+      compile( Collections.singletonList( input( "input", "com.example.interceptor.QualifiedBindingModel" ) ) );
+    assertCompilationSuccessful( compilation );
+    final String dot = readClassOutput( compilation, ".gv" );
+    assertTrue( dot.contains( "Proxy Service/right" ), dot );
+    assertTrue( dot.contains( "proxy:com.example.interceptor.QualifiedBindingModel.LeftModel" ), dot );
+    assertTrue( dot.contains( "TraceInterceptor" ), dot );
   }
 
   private boolean emitInjectorGeneratedFile( @Nonnull final String classname, @Nonnull final String target )
@@ -1333,6 +1818,162 @@ public final class StingProcessorTest
     {
       deleteDir( sourceOutput );
       deleteDir( classOutput );
+    }
+  }
+
+  @Nonnull
+  private Compilation compileWithInterceptorPlugins( @Nonnull final String fixtureType,
+                                                     @Nonnull final String classname,
+                                                     @Nonnull final List<InterceptorCodeGenerator> plugins )
+  {
+    return CompileTestUtil.compile( Collections.singletonList( input( fixtureType, classname ) ),
+                                    getOptions(),
+                                    Collections.singletonList( new StingProcessor( plugins ) ),
+                                    Collections.emptyList() );
+  }
+
+  @Nonnull
+  private String readGeneratedInterceptorProxy( @Nonnull final Compilation compilation,
+                                                @Nonnull final String filenamePart )
+    throws IOException
+  {
+    final String filename =
+      compilation
+        .sourceOutputFilenames()
+        .stream()
+        .filter( f -> f.endsWith( "_InterceptorProxy.java" ) )
+        .filter( f -> f.contains( filenamePart ) )
+        .findFirst()
+        .orElseThrow( () -> new AssertionError( "Unable to find interceptor proxy containing " + filenamePart +
+                                                " in " + compilation.sourceOutputFilenames() ) );
+    return Files.readString( compilation.sourceOutput().resolve( filename ), StandardCharsets.UTF_8 );
+  }
+
+  @Nonnull
+  private String readClassOutput( @Nonnull final Compilation compilation, @Nonnull final String suffix )
+    throws IOException
+  {
+    final String filename =
+      compilation
+        .classOutputFilenames()
+        .stream()
+        .filter( f -> f.endsWith( suffix ) )
+        .findFirst()
+        .orElseThrow( () -> new AssertionError( "Unable to find class output ending in " + suffix +
+                                                " in " + compilation.classOutputFilenames() ) );
+    return Files.readString( compilation.classOutput().resolve( filename ), StandardCharsets.UTF_8 );
+  }
+
+  private int countOccurrences( @Nonnull final String text, @Nonnull final String fragment )
+  {
+    int count = 0;
+    int index = 0;
+    while ( -1 != ( index = text.indexOf( fragment, index ) ) )
+    {
+      count++;
+      index += fragment.length();
+    }
+    return count;
+  }
+
+  private static class PluginTraceGenerator
+    implements InterceptorCodeGenerator
+  {
+    public boolean supports( @Nonnull final InterceptorBindingModel binding )
+    {
+      return binding.annotationTypeName().endsWith( ".PluginTrace" );
+    }
+
+    public void emitBefore( @Nonnull final InterceptedMethodModel method,
+                            @Nonnull final InterceptorBindingModel binding,
+                            @Nonnull final LifecycleCodeEmitter emitter )
+    {
+      emitter.emitStatement( "java.util.Objects.requireNonNull(" + emitter.methodName() + ");" );
+    }
+
+    public void emitAfter( @Nonnull final InterceptedMethodModel method,
+                           @Nonnull final InterceptorBindingModel binding,
+                           @Nonnull final LifecycleCodeEmitter emitter )
+    {
+    }
+
+    public void emitAfterException( @Nonnull final InterceptedMethodModel method,
+                                    @Nonnull final InterceptorBindingModel binding,
+                                    @Nonnull final LifecycleCodeEmitter emitter )
+    {
+    }
+  }
+
+  private static final class LeftOnlyPluginTraceGenerator
+    extends PluginTraceGenerator
+  {
+    public boolean supports( @Nonnull final InterceptorBindingModel binding )
+    {
+      return super.supports( binding ) && "left".equals( binding.qualifierKey() );
+    }
+  }
+
+  private static final class OtherPluginTraceGenerator
+    extends PluginTraceGenerator
+  {
+  }
+
+  // Referenced by Services config
+  @SuppressWarnings( "unused" )
+  public static final class ServiceLoadedPluginTraceGenerator
+    implements InterceptorCodeGenerator
+  {
+    public boolean supports( @Nonnull final InterceptorBindingModel binding )
+    {
+      return binding.annotationTypeName().endsWith( ".ServiceLoadedPluginTrace" );
+    }
+
+    public void emitBefore( @Nonnull final InterceptedMethodModel method,
+                            @Nonnull final InterceptorBindingModel binding,
+                            @Nonnull final LifecycleCodeEmitter emitter )
+    {
+      emitter.emitStatement( "java.util.Objects.requireNonNull(" + emitter.methodName() + ");" );
+    }
+
+    public void emitAfter( @Nonnull final InterceptedMethodModel method,
+                           @Nonnull final InterceptorBindingModel binding,
+                           @Nonnull final LifecycleCodeEmitter emitter )
+    {
+    }
+
+    public void emitAfterException( @Nonnull final InterceptedMethodModel method,
+                                    @Nonnull final InterceptorBindingModel binding,
+                                    @Nonnull final LifecycleCodeEmitter emitter )
+    {
+    }
+  }
+
+  private static final class PluginArgumentsTraceGenerator
+    extends PluginTraceGenerator
+  {
+    public void emitBefore( @Nonnull final InterceptedMethodModel method,
+                            @Nonnull final InterceptorBindingModel binding,
+                            @Nonnull final LifecycleCodeEmitter emitter )
+    {
+      emitter.emitStatement( "java.util.Objects.requireNonNull(" + emitter.argumentsArray() + ");" );
+    }
+
+    public void emitAfter( @Nonnull final InterceptedMethodModel method,
+                           @Nonnull final InterceptorBindingModel binding,
+                           @Nonnull final LifecycleCodeEmitter emitter )
+    {
+      emitter.emitStatement( "java.util.Objects.requireNonNull(" + emitter.argumentsArray() + ");" );
+    }
+  }
+
+  private static final class InvalidResultPluginTraceGenerator
+    extends PluginTraceGenerator
+  {
+    public void emitBefore( @Nonnull final InterceptedMethodModel method,
+                            @Nonnull final InterceptorBindingModel binding,
+                            @Nonnull final LifecycleCodeEmitter emitter )
+    {
+      emitter.emitStatement( "java.util.Objects.requireNonNull(" + emitter.result() + ");" );
     }
   }
 

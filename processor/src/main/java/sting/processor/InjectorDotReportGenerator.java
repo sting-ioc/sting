@@ -40,16 +40,29 @@ final class InjectorDotReportGenerator
       sb.append( "  " )
         .append( node.getName() )
         .append( " [label=\"" )
+        .append( node.isProxy() ? "Proxy " : "" )
         .append( extractShortestUniqueName( types, node.getType().toString() ) );
 
-      final List<ServiceSpec> services = node.getBinding().getPublishedServices();
+      final List<ServiceSpec> services = node.getProviderBinding().getPublishedServices();
       if ( !services.isEmpty() )
       {
-        final String qualifier = services.get( 0 ).getCoordinate().qualifier();
-        if ( !"".equals( qualifier ) )
+        final String qualifier;
+        if ( node.isProxy() )
+        {
+          qualifier = node.getProxy().getService().service().getCoordinate().qualifier();
+        }
+        else
+        {
+          qualifier = services.get( 0 ).getCoordinate().qualifier();
+        }
+        if ( !qualifier.isEmpty() )
         {
           sb.append( "/" ).append( qualifier );
         }
+      }
+      if ( node.isProxy() )
+      {
+        sb.append( "\\n" ).append( node.getProxy().getId() );
       }
 
       sb.append( "\"" );
@@ -115,7 +128,7 @@ final class InjectorDotReportGenerator
       sb.append( "label=\"" )
         .append( extractShortestUniqueName( types, serviceType.toString() ) );
       final String qualifier = coordinate.qualifier();
-      if ( !"".equals( qualifier ) )
+      if ( !qualifier.isEmpty() )
       {
         sb.append( "/" ).append( qualifier );
       }

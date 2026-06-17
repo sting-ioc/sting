@@ -1,16 +1,20 @@
 package sting.processor;
 
+import com.palantir.javapoet.CodeBlock;
 import java.io.IOException;
+import java.lang.annotation.Retention;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -164,6 +168,25 @@ public final class StingProcessor
    */
   @Nonnull
   private final Set<String> _resolvingFragmentTypes = new HashSet<>();
+  @Nullable
+  private final List<InterceptorCodeGenerator> _suppliedInterceptorCodeGenerators;
+  @Nonnull
+  private List<InterceptorCodeGenerator> _interceptorCodeGenerators = Collections.emptyList();
+
+  /**
+   * Create the annotation processor.
+   */
+  public StingProcessor()
+  {
+    this( null );
+  }
+
+  StingProcessor( @Nullable final List<InterceptorCodeGenerator> interceptorCodeGenerators )
+  {
+    _suppliedInterceptorCodeGenerators = null == interceptorCodeGenerators ?
+                                         null :
+                                         List.copyOf( interceptorCodeGenerators );
+  }
 
   @Nonnull
   @Override
@@ -185,6 +208,13 @@ public final class StingProcessor
     super.init( processingEnv );
     _emitJsonDescriptors = readBooleanOption( "emit_json_descriptors", false );
     _emitDotReports = readBooleanOption( "emit_dot_reports", false );
+    _interceptorCodeGenerators = null != _suppliedInterceptorCodeGenerators ?
+                                 _suppliedInterceptorCodeGenerators :
+                                 ServiceLoader
+                                   .load( InterceptorCodeGenerator.class, getClass().getClassLoader() )
+                                   .stream()
+                                   .map( ServiceLoader.Provider::get )
+                                   .toList();
   }
 
   @Override
@@ -501,7 +531,7 @@ public final class StingProcessor
     throws Exception
   {
     debug( () -> "Preparing to build component graph for the injector " + injector.getElement().getQualifiedName() );
-    final ComponentGraph graph = new ComponentGraph( injector );
+    final ComponentGraph graph = new ComponentGraph( this, injector, _registry );
     registerIncludesComponents( graph );
 
     registerInputs( graph );
@@ -528,7 +558,11 @@ public final class StingProcessor
     CircularDependencyChecker.verifyNoCircularDependencyLoops( graph );
 
     final Set<Binding> actualBindings =
-      graph.getNodes().stream().map( Node::getBinding ).collect( Collectors.toSet() );
+      graph.getNodes()
+        .stream()
+        .filter( Node::isBinding )
+        .map( Node::getBinding )
+        .collect( Collectors.toSet() );
 
     for ( final Map.Entry<IncludeDescriptor, Set<Binding>> entry : graph.getIncludeRootToBindingMap().entrySet() )
     {
@@ -543,6 +577,7 @@ public final class StingProcessor
     }
 
     emitObjectGraphJsonDescriptor( graph );
+    emitInterceptorProxies( graph );
 
     final String packageName = GeneratorUtil.getQualifiedPackageName( graph.getInjector().getElement() );
 
@@ -557,6 +592,24 @@ public final class StingProcessor
       emitTypeSpec( packageName, InjectorProviderGenerator.buildType( processingEnv, graph ) );
     }
     emitDotReport( graph );
+  }
+
+  private void emitInterceptorProxies( @Nonnull final ComponentGraph graph )
+    throws IOException
+  {
+    for ( final Node node : graph.getNodes() )
+    {
+      if ( node.isProxy() )
+      {
+        final InterceptorProxyDescriptor proxy = node.getProxy();
+        if ( !proxy.isGenerated() )
+        {
+          proxy.markGenerated();
+          emitTypeSpec( proxy.getClassName().packageName(),
+                        InterceptorProxyGenerator.buildType( processingEnv, proxy, _interceptorCodeGenerators ) );
+        }
+      }
+    }
   }
 
   private void emitDotReport( @Nonnull final ComponentGraph graph )
@@ -586,7 +639,7 @@ public final class StingProcessor
     // Propagate Eager flag to all dependencies of eager nodes breaking the propagation at Supplier nodes
     // They may not be configured as eager but they are effectively eager given that they will be created
     // at startup, they may as well be marked as eager objects as that results in smaller code-size.
-    graph.getNodes().stream().filter( n -> n.getBinding().isEager() ).forEach( Node::markNodeAndUpstreamAsEager );
+    graph.getNodes().stream().filter( Node::isDeclaredEager ).forEach( Node::markNodeAndUpstreamAsEager );
   }
 
   private void registerIncludesComponents( @Nonnull final ComponentGraph graph )
@@ -644,7 +697,7 @@ public final class StingProcessor
     rootNode.setDepth( 0 );
     addDependsOnToWorkList( workList, rootNode, null );
     processWorkList( graph, completed, workList );
-    List<Node> eagerNodes = graph.getRawNodeCollection().stream().filter( n -> n.getBinding().isEager() ).toList();
+    List<Node> eagerNodes = graph.getRawNodeCollection().stream().filter( Node::isDeclaredEager ).toList();
     while ( !eagerNodes.isEmpty() )
     {
       for ( final Node node : eagerNodes )
@@ -657,7 +710,7 @@ public final class StingProcessor
         }
       }
       eagerNodes =
-        graph.getRawNodeCollection().stream().filter( n -> n.getBinding().isEager() && n.isDepthNotSet() ).toList();
+        graph.getRawNodeCollection().stream().filter( n -> n.isDeclaredEager() && n.isDepthNotSet() ).toList();
     }
     graph.complete();
   }
@@ -671,6 +724,18 @@ public final class StingProcessor
       final WorkEntry workEntry = workList.pop();
       final Edge edge = workEntry.getEntry().edge();
       assert null != edge;
+      if ( edge.isSatisfied() )
+      {
+        for ( final Node node : edge.getSatisfiedBy() )
+        {
+          if ( !completed.contains( node ) )
+          {
+            completed.add( node );
+            addDependsOnToWorkList( workList, node, workEntry );
+          }
+        }
+        continue;
+      }
       final ServiceRequest serviceRequest = edge.getServiceRequest();
       final Coordinate coordinate = serviceRequest.getService().getCoordinate();
       final List<Binding> bindings = new ArrayList<>( graph.findAllBindingsByCoordinate( coordinate ) );
@@ -741,15 +806,22 @@ public final class StingProcessor
           final List<Node> nodes = new ArrayList<>();
           for ( final Binding binding : bindings )
           {
-            final Node node = graph.findOrCreateNode( binding );
+            final Node node = graph.findOrCreateProviderNode( binding, coordinate );
             nodes.add( node );
+          }
+          edge.setSatisfiedBy( nodes );
+          for ( final Node node : nodes )
+          {
+            if ( node.isProxy() )
+            {
+              graph.attachProxyDependencies( node );
+            }
             if ( !completed.contains( node ) )
             {
               completed.add( node );
               addDependsOnToWorkList( workList, node, workEntry );
             }
           }
-          edge.setSatisfiedBy( nodes );
         }
         else
         {
@@ -1189,6 +1261,11 @@ public final class StingProcessor
                                             @Nonnull final ExecutableElement method )
   {
     assert method.getModifiers().contains( Modifier.ABSTRACT );
+    if ( !findInterceptorBindingAnnotations( method ).isEmpty() )
+    {
+      throw new ProcessorException( "Interceptor bindings on non-fragment methods are not supported",
+                                    method );
+    }
     if ( TypeKind.VOID == method.getReturnType().getKind() )
     {
       throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
@@ -1775,6 +1852,7 @@ public final class StingProcessor
                      true,
                      element,
                      new ServiceRequest[ 0 ] );
+      binding.setInterceptorBindingSource( element, findInterceptorBindingAnnotationValues( element ) );
       results.add( new InputDescriptor( service, binding, "input" + ( i + 1 ) ) );
     }
     return results;
@@ -2298,7 +2376,881 @@ public final class StingProcessor
                    eager,
                    method,
                    dependencies.toArray( new ServiceRequest[ 0 ] ) );
+    binding.setInterceptorBindingSource( method, findInterceptorBindingAnnotationValues( method ) );
     bindings.put( method, binding );
+  }
+
+  void processInterceptorBindings( @Nonnull final Binding binding )
+  {
+    if ( !binding.isInterceptorBindingsProcessed() )
+    {
+      final var bindingSource = binding.getInterceptorBindingSourceOrNull();
+      if ( null != bindingSource )
+      {
+        for ( final var service : binding.getPublishedServices() )
+        {
+          final var serviceBindings = new ArrayList<InterceptorBindingDescriptor>();
+          final var serviceType = service.getCoordinate().type();
+          TypeElement serviceElement = null;
+          if ( TypeKind.DECLARED == serviceType.getKind() )
+          {
+            serviceElement = (TypeElement) ( (DeclaredType) serviceType ).asElement();
+            for ( final var annotation : findInterceptorBindingAnnotations( serviceElement ) )
+            {
+              final var values = extractBindingValues( annotation );
+              serviceBindings.add( createInterceptorBindingDescriptor( service, annotation, serviceElement, values ) );
+            }
+          }
+          if ( Binding.Kind.INPUT != binding.getKind() )
+          {
+            for ( final var entry : binding.getInterceptorBindingSourceAnnotations().entrySet() )
+            {
+              serviceBindings.add( createInterceptorBindingDescriptor( service,
+                                                                       entry.getKey(),
+                                                                       bindingSource,
+                                                                       entry.getValue() ) );
+            }
+          }
+          validateNoMethodLevelInterceptorBindings( binding, serviceElement, bindingSource );
+          if ( !serviceBindings.isEmpty() )
+          {
+            validateInterceptedService( binding, service, serviceElement, serviceBindings, bindingSource );
+            resolvePluginClaims( serviceBindings );
+            resolveGenericInterceptors( serviceBindings );
+            binding.addInterceptedService( new InterceptedServiceDescriptor( binding, service, serviceBindings ) );
+          }
+        }
+      }
+      binding.markInterceptorBindingsProcessed();
+    }
+  }
+
+  @Nonnull
+  private List<AnnotationMirror> findInterceptorBindingAnnotations( @Nonnull final Element element )
+  {
+    final var annotations = new ArrayList<AnnotationMirror>();
+    for ( final var annotation : element.getAnnotationMirrors() )
+    {
+      if ( null != findInterceptorBindingMetaAnnotation( annotation ) )
+      {
+        annotations.add( annotation );
+      }
+    }
+    return annotations;
+  }
+
+  @Nonnull
+  private Map<AnnotationMirror, Map<String, BindingValueModelImpl>> findInterceptorBindingAnnotationValues(
+    @Nonnull final Element element )
+  {
+    final var values = new LinkedHashMap<AnnotationMirror, Map<String, BindingValueModelImpl>>();
+    for ( final var annotation : findInterceptorBindingAnnotations( element ) )
+    {
+      values.put( annotation, extractBindingValues( annotation ) );
+    }
+    return values;
+  }
+
+  @Nullable
+  private AnnotationMirror findInterceptorBindingMetaAnnotation( @Nonnull final AnnotationMirror annotation )
+  {
+    return
+      annotation
+        .getAnnotationType()
+        .asElement()
+        .getAnnotationMirrors()
+        .stream()
+        .filter( a -> Constants.INTERCEPTOR_BINDING_SIMPLE_NAME.contentEquals( a.getAnnotationType()
+                                                                                 .asElement()
+                                                                                 .getSimpleName() ) )
+        .findAny()
+        .orElse( null );
+  }
+
+  @Nonnull
+  private InterceptorBindingDescriptor createInterceptorBindingDescriptor( @Nonnull final ServiceSpec service,
+                                                                           @Nonnull final AnnotationMirror annotation,
+                                                                           @Nonnull final Element usageElement,
+                                                                           @Nonnull final Map<String, BindingValueModelImpl>
+                                                                             values )
+  {
+    final var metaAnnotation = Objects.requireNonNull( findInterceptorBindingMetaAnnotation( annotation ) );
+    validateInterceptorBindingAnnotationType( annotation, metaAnnotation, usageElement );
+    final var annotationType = (TypeElement) annotation.getAnnotationType().asElement();
+    final var metaValues = processingEnv.getElementUtils().getElementValuesWithDefaults( metaAnnotation );
+    final var priorityValue = findAnnotationValueByName( metaValues, "priority" );
+    final var implementedByValue = findAnnotationValueByName( metaValues, "implementedBy" );
+    final int priority = (Integer) Objects.requireNonNull( priorityValue ).getValue();
+    final var implementedBy = null == implementedByValue ? "" : (String) implementedByValue.getValue();
+    return new InterceptorBindingDescriptor( service,
+                                             annotation,
+                                             annotationType,
+                                             usageElement,
+                                             priority,
+                                             implementedBy,
+                                             values );
+  }
+
+  private void validateInterceptorBindingAnnotationType( @Nonnull final AnnotationMirror annotation,
+                                                         @Nonnull final AnnotationMirror metaAnnotation,
+                                                         @Nonnull final Element usageElement )
+  {
+    final var annotationType = (TypeElement) annotation.getAnnotationType().asElement();
+    if ( hasSourceRetention( annotationType ) )
+    {
+      throw new ProcessorException( "Interceptor binding annotation " + annotationType.getQualifiedName() +
+                                    " must not use @Retention(SOURCE)",
+                                    usageElement,
+                                    annotation );
+    }
+    else
+    {
+      final var metaValues = processingEnv.getElementUtils().getElementValuesWithDefaults( metaAnnotation );
+      final var priorityValue = findAnnotationValueByName( metaValues, "priority" );
+      if ( null == priorityValue || !( priorityValue.getValue() instanceof Integer ) )
+      {
+        throw new ProcessorException( "Interceptor binding meta-annotation on " + annotationType.getQualifiedName() +
+                                      " must declare an int priority member",
+                                      usageElement,
+                                      annotation );
+      }
+      else
+      {
+        final var implementedByValue = findAnnotationValueByName( metaValues, "implementedBy" );
+        if ( null != implementedByValue && !( implementedByValue.getValue() instanceof String ) )
+        {
+          throw new ProcessorException( "Interceptor binding meta-annotation on " + annotationType.getQualifiedName() +
+                                        " must declare a String implementedBy member when present",
+                                        usageElement,
+                                        annotation );
+        }
+        else
+        {
+          final var implementedBy = null == implementedByValue ? "" : (String) implementedByValue.getValue();
+          if ( !implementedBy.isEmpty() )
+          {
+            validateImplementedByName( implementedBy, usageElement, annotation );
+          }
+        }
+      }
+    }
+  }
+
+  private boolean hasSourceRetention( @Nonnull final TypeElement annotationType )
+  {
+    final var retention = AnnotationsUtil.findAnnotationByType( annotationType, Retention.class.getName() );
+    if ( null != retention )
+    {
+      final var value = AnnotationsUtil.findAnnotationValue( retention, "value" );
+      return null != value && "SOURCE".equals( value.getValue().toString() );
+    }
+    else
+    {
+      return false;
+    }
+  }
+
+  @Nullable
+  private AnnotationValue findAnnotationValueByName(
+    @Nonnull final Map<? extends ExecutableElement, ? extends AnnotationValue> values,
+    @Nonnull final String name )
+  {
+    return
+      values
+        .entrySet()
+        .stream()
+        .filter( e -> e.getKey().getSimpleName().contentEquals( name ) )
+        .map( Map.Entry::getValue )
+        .findAny()
+        .orElse( null );
+  }
+
+  @Nonnull
+  private Map<String, BindingValueModelImpl> extractBindingValues( @Nonnull final AnnotationMirror annotation )
+  {
+    final var values = new LinkedHashMap<String, BindingValueModelImpl>();
+    for ( final var entry : processingEnv.getElementUtils().getElementValuesWithDefaults( annotation ).entrySet() )
+    {
+      final var name = entry.getKey().getSimpleName().toString();
+      values.put( name, toBindingValueModel( name, entry.getValue().getValue() ) );
+    }
+    return values;
+  }
+
+  @Nonnull
+  private BindingValueModelImpl toBindingValueModel( @Nonnull final String name, @Nullable final Object value )
+  {
+    if ( value instanceof String )
+    {
+      return new BindingValueModelImpl( name,
+                                        BindingValueKind.STRING,
+                                        value,
+                                        null,
+                                        null,
+                                        null,
+                                        CodeBlock.of( "$S", value ).toString() );
+    }
+    else if ( value instanceof Boolean )
+    {
+      return new BindingValueModelImpl( name,
+                                        BindingValueKind.BOOLEAN,
+                                        value,
+                                        null,
+                                        null,
+                                        null,
+                                        value.toString() );
+    }
+    else if ( value instanceof Byte )
+    {
+      return new BindingValueModelImpl( name,
+                                        BindingValueKind.BYTE,
+                                        value,
+                                        null,
+                                        null,
+                                        null,
+                                        "(byte) " + value );
+    }
+    else if ( value instanceof Short )
+    {
+      return new BindingValueModelImpl( name,
+                                        BindingValueKind.SHORT,
+                                        value,
+                                        null,
+                                        null,
+                                        null,
+                                        "(short) " + value );
+    }
+    else if ( value instanceof Integer )
+    {
+      return new BindingValueModelImpl( name, BindingValueKind.INT, value, null, null, null, value.toString() );
+    }
+    else if ( value instanceof Long )
+    {
+      return new BindingValueModelImpl( name, BindingValueKind.LONG, value, null, null, null, value + "L" );
+    }
+    else if ( value instanceof Float )
+    {
+      return new BindingValueModelImpl( name, BindingValueKind.FLOAT, value, null, null, null, value + "F" );
+    }
+    else if ( value instanceof Double )
+    {
+      return new BindingValueModelImpl( name, BindingValueKind.DOUBLE, value, null, null, null, value.toString() );
+    }
+    else if ( value instanceof Character )
+    {
+      final char c = (Character) value;
+      return new BindingValueModelImpl( name,
+                                        BindingValueKind.CHAR,
+                                        value,
+                                        null,
+                                        null,
+                                        null,
+                                        charLiteral( c ) );
+    }
+    else if ( value instanceof TypeMirror )
+    {
+      final String className = value.toString();
+      return new BindingValueModelImpl( name,
+                                        BindingValueKind.CLASS,
+                                        null,
+                                        className,
+                                        null,
+                                        null,
+                                        CodeBlock.of( "$S", className ).toString() );
+    }
+    else if ( value instanceof final VariableElement enumValue )
+    {
+      final var enumTypeName = ( (TypeElement) enumValue.getEnclosingElement() ).getQualifiedName().toString();
+      final var constantName = enumValue.getSimpleName().toString();
+      return new BindingValueModelImpl( name,
+                                        BindingValueKind.ENUM,
+                                        null,
+                                        null,
+                                        enumTypeName,
+                                        constantName,
+                                        CodeBlock.of( "$S", constantName ).toString() );
+    }
+    else
+    {
+      return new BindingValueModelImpl( name, BindingValueKind.UNSUPPORTED, null, null, null, null, "<unsupported>" );
+    }
+  }
+
+  @Nonnull
+  private String charLiteral( final char c )
+  {
+    return switch ( c )
+    {
+      case '\b' -> "'\\b'";
+      case '\t' -> "'\\t'";
+      case '\n' -> "'\\n'";
+      case '\f' -> "'\\f'";
+      case '\r' -> "'\\r'";
+      case '"' -> "'\"'";
+      case '\'' -> "'\\''";
+      case '\\' -> "'\\\\'";
+      default -> Character.isISOControl( c ) ?
+                 String.format( "'\\u%04x'", (int) c ) :
+                 "'" + c + "'";
+    };
+  }
+
+  private void validateInterceptedService( @Nonnull final Binding binding,
+                                           @Nonnull final ServiceSpec service,
+                                           @Nullable final TypeElement serviceElement,
+                                           @Nonnull final List<InterceptorBindingDescriptor> interceptors,
+                                           @Nonnull final Element bindingSource )
+  {
+    if ( Binding.Kind.INPUT == binding.getKind() )
+    {
+      throw new ProcessorException( "Interceptor bindings on injector input services are not supported",
+                                    binding.getElement() );
+    }
+    else if ( service.isOptional() || binding.isOptional() )
+    {
+      throw new ProcessorException( "Interceptor bindings on nullable or optional provider bindings are not supported",
+                                    bindingSource );
+    }
+    else if ( null == serviceElement )
+    {
+      throw new ProcessorException( "Intercepted bindings must publish service interfaces only", bindingSource );
+    }
+    else if ( Object.class.getName().equals( serviceElement.getQualifiedName().toString() ) )
+    {
+      throw new ProcessorException( "Intercepted bindings must not publish java.lang.Object", bindingSource );
+    }
+    else if ( ElementKind.INTERFACE != serviceElement.getKind() )
+    {
+      throw new ProcessorException( "Intercepted bindings must publish service interfaces only", bindingSource );
+    }
+    else if ( !serviceElement.getTypeParameters().isEmpty() )
+    {
+      throw new ProcessorException( "Intercepted service interfaces must not declare type parameters", serviceElement );
+    }
+    else
+    {
+      final var methods =
+        ElementsUtil.getMethods( serviceElement, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
+      for ( final var method : methods )
+      {
+        if ( !method.getTypeParameters().isEmpty() )
+        {
+          throw new ProcessorException( "Intercepted service methods must not declare type parameters", method );
+        }
+      }
+      final var types = new HashSet<String>();
+      final var priorities = new HashSet<Integer>();
+      for ( final var interceptor : interceptors )
+      {
+        if ( !types.add( interceptor.annotationTypeName() ) )
+        {
+          throw new ProcessorException( "Duplicate interceptor binding annotation type " +
+                                        interceptor.annotationTypeName() + " for service " +
+                                        service.getCoordinate(),
+                                        interceptor.getUsageElement(),
+                                        interceptor.getAnnotation() );
+        }
+        else if ( !priorities.add( interceptor.priority() ) )
+        {
+          throw new ProcessorException( "Duplicate interceptor priority " + interceptor.priority() +
+                                        " for service " + service.getCoordinate(),
+                                        interceptor.getUsageElement(),
+                                        interceptor.getAnnotation() );
+        }
+      }
+    }
+  }
+
+  private void validateNoMethodLevelInterceptorBindings( @Nonnull final Binding binding,
+                                                         @Nullable final TypeElement serviceElement,
+                                                         @Nonnull final Element bindingSource )
+  {
+    if ( null != serviceElement )
+    {
+      final var methods =
+        ElementsUtil.getMethods( serviceElement, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
+      for ( final var method : methods )
+      {
+        if ( !findInterceptorBindingAnnotations( method ).isEmpty() )
+        {
+          throw new ProcessorException( "Interceptor bindings on service interface methods are not supported", method );
+        }
+      }
+    }
+    if ( Binding.Kind.INJECTABLE == binding.getKind() )
+    {
+      for ( final var element : bindingSource.getEnclosedElements() )
+      {
+        if ( ElementKind.METHOD == element.getKind() && !findInterceptorBindingAnnotations( element ).isEmpty() )
+        {
+          throw new ProcessorException( "Interceptor bindings on implementation methods are not supported", element );
+        }
+      }
+    }
+  }
+
+  private void resolvePluginClaims( @Nonnull final List<InterceptorBindingDescriptor> interceptors )
+  {
+    for ( final var interceptor : interceptors )
+    {
+      final var pluginIds = new ArrayList<String>();
+      for ( final var generator : _interceptorCodeGenerators )
+      {
+        if ( generator.supports( interceptor ) )
+        {
+          pluginIds.add( pluginId( generator ) );
+        }
+      }
+      final var pluginCount = pluginIds.size();
+      if ( pluginCount > 1 )
+      {
+        interceptor.setConflict( pluginIds );
+        throw new ProcessorException( "Multiple interceptor plugins claim " + interceptor.annotationTypeName() +
+                                      " for service " + interceptor.getService().getCoordinate() + ": " +
+                                      String.join( ", ", interceptor.getPluginIds() ),
+                                      interceptor.getUsageElement(),
+                                      interceptor.getAnnotation() );
+      }
+      else if ( 1 == pluginCount )
+      {
+        interceptor.setClaimedBy( pluginIds.get( 0 ) );
+      }
+    }
+  }
+
+  @Nonnull
+  private String pluginId( @Nonnull final InterceptorCodeGenerator generator )
+  {
+    final var canonicalName = generator.getClass().getCanonicalName();
+    return null == canonicalName ? generator.getClass().getName() : canonicalName;
+  }
+
+  private void resolveGenericInterceptors( @Nonnull final List<InterceptorBindingDescriptor> interceptors )
+  {
+    for ( final var interceptor : interceptors )
+    {
+      if ( InterceptorBindingDescriptor.ClaimState.CLAIMED != interceptor.getClaimState() )
+      {
+        if ( interceptor.getImplementedBy().isEmpty() )
+        {
+          throw new ProcessorException( "Interceptor binding " + interceptor.annotationTypeName() +
+                                        " must specify implementedBy or be claimed by exactly one plugin",
+                                        interceptor.getUsageElement(),
+                                        interceptor.getAnnotation() );
+        }
+        else
+        {
+          interceptor.setInterceptor( resolveGenericInterceptor( interceptor ) );
+        }
+      }
+    }
+  }
+
+  @Nonnull
+  private InterceptorDescriptor resolveGenericInterceptor( @Nonnull final InterceptorBindingDescriptor interceptor )
+  {
+    final var classname = interceptor.getImplementedBy();
+    final var existing = _registry.findInterceptorByClassName( classname );
+    if ( null == existing )
+    {
+      final var element = processingEnv.getElementUtils().getTypeElement( classname );
+      if ( null == element )
+      {
+        throw new ProcessorException( "Interceptor implementation " + classname + " does not exist",
+                                      interceptor.getUsageElement(),
+                                      interceptor.getAnnotation() );
+      }
+      else if ( !ElementsUtil.isEffectivelyPublic( element ) )
+      {
+        throw new ProcessorException( "Interceptor implementation " + classname + " must be effectively public",
+                                      element );
+      }
+      else if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
+      {
+        throw new ProcessorException( "Interceptor implementation " + classname + " must be annotated with " +
+                                      MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ),
+                                      element );
+      }
+      else
+      {
+        var injectable = _registry.findInjectableByClassName( classname );
+        if ( null == injectable )
+        {
+          injectable = deriveInjectableDescriptor( element );
+          if ( null == injectable )
+          {
+            throw new ProcessorException( "Unable to derive interceptor implementation " + classname, element );
+          }
+          _registry.registerInjectable( injectable );
+        }
+        final var descriptor = new InterceptorDescriptor( element,
+                                                          new EnumMap<>( validateLifecycleMethods( element,
+                                                                                                   interceptor ) ),
+                                                          injectable.getBinding() );
+        _registry.registerInterceptor( descriptor );
+        return descriptor;
+      }
+    }
+    else
+    {
+      return existing;
+    }
+  }
+
+  @Nonnull
+  private Map<InterceptorPhase, InterceptorMethodDescriptor> validateLifecycleMethods(
+    @Nonnull final TypeElement element,
+    @Nonnull final InterceptorBindingDescriptor interceptor )
+  {
+    final var methods = new EnumMap<InterceptorPhase, InterceptorMethodDescriptor>( InterceptorPhase.class );
+    for ( final var enclosedElement : element.getEnclosedElements() )
+    {
+      if ( ElementKind.METHOD == enclosedElement.getKind() )
+      {
+        final var method = (ExecutableElement) enclosedElement;
+        final var phases = lifecyclePhases( method );
+        final var phaseCount = phases.size();
+        if ( phaseCount > 1 )
+        {
+          throw new ProcessorException( "Interceptor lifecycle method must not have multiple lifecycle annotations",
+                                        method );
+        }
+        else if ( 1 == phaseCount )
+        {
+          final var phase = phases.get( 0 );
+          validateLifecycleMethodShape( method );
+          final var descriptor =
+            new InterceptorMethodDescriptor( phase,
+                                             method,
+                                             List.copyOf( validateLifecycleParameters( method, phase, interceptor ) ) );
+          if ( null != methods.put( phase, descriptor ) )
+          {
+            throw new ProcessorException( "Interceptor implementation " + element.getQualifiedName() +
+                                          " must declare at most one " + phase + " lifecycle method",
+                                          method );
+          }
+        }
+      }
+    }
+    if ( methods.isEmpty() )
+    {
+      throw new ProcessorException( "Interceptor implementation " + element.getQualifiedName() +
+                                    " must declare at least one lifecycle method",
+                                    element );
+    }
+    validateNoInheritedLifecycleMethods( element );
+    return methods;
+  }
+
+  @Nonnull
+  private List<InterceptorPhase> lifecyclePhases( @Nonnull final ExecutableElement method )
+  {
+    final var phases = new ArrayList<InterceptorPhase>();
+    if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.INTERCEPTOR_BEFORE_CLASSNAME ) )
+    {
+      phases.add( InterceptorPhase.BEFORE );
+    }
+    if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.INTERCEPTOR_AFTER_CLASSNAME ) )
+    {
+      phases.add( InterceptorPhase.AFTER );
+    }
+    if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.INTERCEPTOR_AFTER_EXCEPTION_CLASSNAME ) )
+    {
+      phases.add( InterceptorPhase.AFTER_EXCEPTION );
+    }
+    return phases;
+  }
+
+  private void validateLifecycleMethodShape( @Nonnull final ExecutableElement method )
+  {
+    final var modifiers = method.getModifiers();
+    if ( !modifiers.contains( Modifier.PUBLIC ) ||
+         modifiers.contains( Modifier.STATIC ) ||
+         modifiers.contains( Modifier.PRIVATE ) ||
+         modifiers.contains( Modifier.PROTECTED ) )
+    {
+      throw new ProcessorException( "Interceptor lifecycle methods must be public instance methods", method );
+    }
+    else if ( TypeKind.VOID != method.getReturnType().getKind() )
+    {
+      throw new ProcessorException( "Interceptor lifecycle methods must return void", method );
+    }
+    else if ( !method.getTypeParameters().isEmpty() )
+    {
+      throw new ProcessorException( "Interceptor lifecycle methods must not declare type parameters", method );
+    }
+    else
+    {
+      for ( final var thrownType : method.getThrownTypes() )
+      {
+        if ( !isUncheckedThrowable( thrownType ) )
+        {
+          throw new ProcessorException( "Interceptor lifecycle methods must not declare checked exceptions", method );
+        }
+      }
+    }
+  }
+
+  private boolean isUncheckedThrowable( @Nonnull final TypeMirror type )
+  {
+    final var elementUtils = processingEnv.getElementUtils();
+    final var runtimeException = elementUtils.getTypeElement( RuntimeException.class.getName() );
+    final var error = elementUtils.getTypeElement( Error.class.getName() );
+    final var typeUtils = processingEnv.getTypeUtils();
+    return typeUtils.isAssignable( type, runtimeException.asType() ) ||
+           typeUtils.isAssignable( type, error.asType() );
+  }
+
+  private void validateNoInheritedLifecycleMethods( @Nonnull final TypeElement element )
+  {
+    validateNoInheritedLifecycleMethods( element, element );
+  }
+
+  private void validateNoInheritedLifecycleMethods( @Nonnull final TypeElement element,
+                                                    @Nonnull final TypeElement type )
+  {
+    for ( final var supertype : processingEnv.getTypeUtils().directSupertypes( type.asType() ) )
+    {
+      if ( TypeKind.DECLARED == supertype.getKind() )
+      {
+        final var superElement = (TypeElement) ( (DeclaredType) supertype ).asElement();
+        if ( Object.class.getName().equals( superElement.getQualifiedName().toString() ) )
+        {
+          continue;
+        }
+        for ( final var member : superElement.getEnclosedElements() )
+        {
+          if ( ElementKind.METHOD == member.getKind() )
+          {
+            final var method = (ExecutableElement) member;
+            if ( !lifecyclePhases( method ).isEmpty() )
+            {
+              final var override = findDeclaredOverride( element, method );
+              if ( null == override || lifecyclePhases( override ).isEmpty() )
+              {
+                throw new ProcessorException( "Inherited interceptor lifecycle annotations are not supported",
+                                              element );
+              }
+            }
+          }
+        }
+        validateNoInheritedLifecycleMethods( element, superElement );
+      }
+    }
+  }
+
+  @Nullable
+  private ExecutableElement findDeclaredOverride( @Nonnull final TypeElement element,
+                                                  @Nonnull final ExecutableElement inheritedMethod )
+  {
+    for ( final var enclosedElement : element.getEnclosedElements() )
+    {
+      if ( ElementKind.METHOD == enclosedElement.getKind() )
+      {
+        final var method = (ExecutableElement) enclosedElement;
+        if ( processingEnv.getElementUtils().overrides( method, inheritedMethod, element ) )
+        {
+          return method;
+        }
+      }
+    }
+    return null;
+  }
+
+  @Nonnull
+  private List<LifecycleParameterDescriptor> validateLifecycleParameters( @Nonnull final ExecutableElement method,
+                                                                          @Nonnull final InterceptorPhase phase,
+                                                                          @Nonnull final InterceptorBindingDescriptor interceptor )
+  {
+    final var parameters = new ArrayList<LifecycleParameterDescriptor>();
+    for ( final var parameter : method.getParameters() )
+    {
+      parameters.add( validateLifecycleParameter( parameter, phase, interceptor ) );
+    }
+    return parameters;
+  }
+
+  @Nonnull
+  private LifecycleParameterDescriptor validateLifecycleParameter( @Nonnull final VariableElement parameter,
+                                                                   @Nonnull final InterceptorPhase phase,
+                                                                   @Nonnull final InterceptorBindingDescriptor interceptor )
+  {
+    final var markers = new ArrayList<AnnotationMirror>();
+    for ( final var annotation : parameter.getAnnotationMirrors() )
+    {
+      if ( isLifecycleMarker( annotation ) )
+      {
+        markers.add( annotation );
+      }
+    }
+    if ( markers.isEmpty() )
+    {
+      throw new ProcessorException( "Interceptor lifecycle parameters must have exactly one marker annotation",
+                                    parameter );
+    }
+    else if ( markers.size() > 1 )
+    {
+      throw new ProcessorException( "Interceptor lifecycle parameters must not have multiple marker annotations",
+                                    parameter );
+    }
+    else
+    {
+      final var marker = markers.get( 0 );
+      final var markerType = ( (TypeElement) marker.getAnnotationType().asElement() ).getQualifiedName().toString();
+      final var type = parameter.asType();
+      if ( Constants.INTERCEPTOR_SERVICE_TYPE_CLASSNAME.equals( markerType ) )
+      {
+        requireType( parameter, type, String.class.getName(), "@ServiceType" );
+        return new LifecycleParameterDescriptor( LifecycleParameterDescriptor.Kind.SERVICE_TYPE, "" );
+      }
+      else if ( Constants.INTERCEPTOR_METHOD_NAME_CLASSNAME.equals( markerType ) )
+      {
+        requireType( parameter, type, String.class.getName(), "@MethodName" );
+        return new LifecycleParameterDescriptor( LifecycleParameterDescriptor.Kind.METHOD_NAME, "" );
+      }
+      else if ( Constants.INTERCEPTOR_ARGUMENTS_CLASSNAME.equals( markerType ) )
+      {
+        if ( TypeKind.ARRAY != type.getKind() || !"java.lang.Object[]".equals( type.toString() ) )
+        {
+          throw new ProcessorException( "@Arguments lifecycle parameter must have type Object[]", parameter );
+        }
+        else
+        {
+          return new LifecycleParameterDescriptor( LifecycleParameterDescriptor.Kind.ARGUMENTS, "" );
+        }
+      }
+      else if ( Constants.INTERCEPTOR_RESULT_CLASSNAME.equals( markerType ) )
+      {
+        if ( InterceptorPhase.AFTER != phase )
+        {
+          throw new ProcessorException( "@Result lifecycle parameter is only valid on @After methods", parameter );
+        }
+        else
+        {
+          requireType( parameter, type, Object.class.getName(), "@Result" );
+          return new LifecycleParameterDescriptor( LifecycleParameterDescriptor.Kind.RESULT, "" );
+        }
+      }
+      else if ( Constants.INTERCEPTOR_THROWN_CLASSNAME.equals( markerType ) )
+      {
+        if ( InterceptorPhase.AFTER_EXCEPTION != phase )
+        {
+          throw new ProcessorException( "@Thrown lifecycle parameter is only valid on @AfterException methods",
+                                        parameter );
+        }
+        else
+        {
+          requireType( parameter, type, Throwable.class.getName(), "@Thrown" );
+          return new LifecycleParameterDescriptor( LifecycleParameterDescriptor.Kind.THROWN, "" );
+        }
+      }
+      else
+      {
+        assert Constants.INTERCEPTOR_BINDING_VALUE_CLASSNAME.equals( markerType );
+        final String name = AnnotationsUtil.getAnnotationValueValue( marker, "value" );
+        validateBindingValueParameter( parameter, type, interceptor, name );
+        return new LifecycleParameterDescriptor( LifecycleParameterDescriptor.Kind.BINDING_VALUE, name );
+      }
+    }
+  }
+
+  private boolean isLifecycleMarker( @Nonnull final AnnotationMirror annotation )
+  {
+    final var classname = ( (TypeElement) annotation.getAnnotationType().asElement() ).getQualifiedName().toString();
+    return Constants.INTERCEPTOR_SERVICE_TYPE_CLASSNAME.equals( classname ) ||
+           Constants.INTERCEPTOR_METHOD_NAME_CLASSNAME.equals( classname ) ||
+           Constants.INTERCEPTOR_BINDING_VALUE_CLASSNAME.equals( classname ) ||
+           Constants.INTERCEPTOR_ARGUMENTS_CLASSNAME.equals( classname ) ||
+           Constants.INTERCEPTOR_RESULT_CLASSNAME.equals( classname ) ||
+           Constants.INTERCEPTOR_THROWN_CLASSNAME.equals( classname );
+  }
+
+  private void requireType( @Nonnull final Element element,
+                            @Nonnull final TypeMirror actualType,
+                            @Nonnull final String expectedTypeName,
+                            @Nonnull final String markerName )
+  {
+    final var expected = processingEnv.getElementUtils().getTypeElement( expectedTypeName );
+    if ( null == expected || !processingEnv.getTypeUtils().isSameType( actualType, expected.asType() ) )
+    {
+      throw new ProcessorException( markerName + " lifecycle parameter must have type " + expectedTypeName, element );
+    }
+  }
+
+  private void validateBindingValueParameter( @Nonnull final VariableElement parameter,
+                                              @Nonnull final TypeMirror type,
+                                              @Nonnull final InterceptorBindingDescriptor interceptor,
+                                              @Nonnull final String name )
+  {
+    final var value = interceptor.values().get( name );
+    if ( null == value )
+    {
+      throw new ProcessorException( "@BindingValue references unknown interceptor binding member " + name, parameter );
+    }
+    else if ( BindingValueKind.UNSUPPORTED == value.kind() )
+    {
+      throw new ProcessorException( "@BindingValue member " + name + " has an unsupported v1 value type", parameter );
+    }
+    else if ( BindingValueKind.STRING == value.kind() ||
+              BindingValueKind.ENUM == value.kind() ||
+              BindingValueKind.CLASS == value.kind() )
+    {
+      requireType( parameter, type, String.class.getName(), "@BindingValue" );
+    }
+    else if ( !isPrimitiveOrBoxedMatch( type, value.kind() ) )
+    {
+      throw new ProcessorException( "@BindingValue member " + name +
+                                    " is not compatible with lifecycle parameter type " + type,
+                                    parameter );
+    }
+  }
+
+  private boolean isPrimitiveOrBoxedMatch( @Nonnull final TypeMirror type, @Nonnull final BindingValueKind kind )
+  {
+    final var name = type.toString();
+    return switch ( kind )
+    {
+      case BOOLEAN -> "boolean".equals( name ) || Boolean.class.getName().equals( name );
+      case BYTE -> "byte".equals( name ) || Byte.class.getName().equals( name );
+      case SHORT -> "short".equals( name ) || Short.class.getName().equals( name );
+      case INT -> "int".equals( name ) || Integer.class.getName().equals( name );
+      case LONG -> "long".equals( name ) || Long.class.getName().equals( name );
+      case FLOAT -> "float".equals( name ) || Float.class.getName().equals( name );
+      case DOUBLE -> "double".equals( name ) || Double.class.getName().equals( name );
+      case CHAR -> "char".equals( name ) || Character.class.getName().equals( name );
+      default -> false;
+    };
+  }
+
+  private void validateImplementedByName( @Nonnull final String name,
+                                          @Nonnull final Element element,
+                                          @Nonnull final AnnotationMirror annotation )
+  {
+    if ( name.contains( "$" ) || !isDottedJavaName( name ) )
+    {
+      throw new ProcessorException( "implementedBy must be a canonical dotted qualified Java name",
+                                    element,
+                                    annotation );
+    }
+  }
+
+  private boolean isDottedJavaName( @Nonnull final String name )
+  {
+    if ( name.isEmpty() || name.startsWith( "." ) || name.endsWith( "." ) || name.contains( ".." ) )
+    {
+      return false;
+    }
+    else
+    {
+      for ( final var part : name.split( "\\." ) )
+      {
+        if ( part.isEmpty() || !SourceVersion.isIdentifier( part ) || SourceVersion.isKeyword( part ) )
+        {
+          return false;
+        }
+      }
+      return true;
+    }
   }
 
   @Nonnull
@@ -2512,6 +3464,7 @@ public final class StingProcessor
                    eager,
                    constructor,
                    dependencies.toArray( new ServiceRequest[ 0 ] ) );
+    binding.setInterceptorBindingSource( element, findInterceptorBindingAnnotationValues( element ) );
     final InjectableDescriptor injectable = new InjectableDescriptor( binding );
     _registry.registerInjectable( injectable );
   }
@@ -2522,6 +3475,11 @@ public final class StingProcessor
                                                         @Nonnull final List<FactoryDependencyDescriptor> dependencies,
                                                         @Nonnull final Set<String> usedFieldNames )
   {
+    if ( !findInterceptorBindingAnnotations( method ).isEmpty() )
+    {
+      throw new ProcessorException( "Interceptor bindings on non-fragment methods are not supported",
+                                    method );
+    }
     if ( TypeKind.VOID == method.getReturnType().getKind() )
     {
       throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
@@ -2644,7 +3602,8 @@ public final class StingProcessor
       if ( !methodParametersByConstructorIndex.containsKey( i ) )
       {
         final VariableElement constructorParameter = constructorParameters.get( i );
-        final ServiceRequest request = handleConstructorParameter( constructorParameter, constructorParameterTypes.get( i ) );
+        final ServiceRequest request =
+          handleConstructorParameter( constructorParameter, constructorParameterTypes.get( i ) );
         final FactoryDependencyDescriptor dependency =
           findOrCreateFactoryDependency( request, dependencies, usedFieldNames );
         dependenciesByConstructorIndex.put( i, dependency );
@@ -2682,7 +3641,8 @@ public final class StingProcessor
   }
 
   @Nonnull
-  private String uniqueFactoryFieldName( @Nonnull final String parameterName, @Nonnull final Set<String> usedFieldNames )
+  private String uniqueFactoryFieldName( @Nonnull final String parameterName,
+                                         @Nonnull final Set<String> usedFieldNames )
   {
     final String baseName = StingGeneratorUtil.FRAMEWORK_PREFIX + parameterName;
     String candidate = baseName;
@@ -2695,7 +3655,8 @@ public final class StingProcessor
     return candidate;
   }
 
-  private boolean isFactoryAccessible( @Nonnull final TypeElement factory, @Nonnull final ExecutableElement constructor )
+  private boolean isFactoryAccessible( @Nonnull final TypeElement factory,
+                                       @Nonnull final ExecutableElement constructor )
   {
     final Set<Modifier> modifiers = constructor.getModifiers();
     if ( modifiers.contains( Modifier.PRIVATE ) )

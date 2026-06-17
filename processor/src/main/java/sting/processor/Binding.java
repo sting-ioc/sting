@@ -1,9 +1,14 @@
 package sting.processor;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
@@ -31,7 +36,7 @@ final class Binding
    * The element that created this binding.
    * This will be one of;
    * <ul>
-   *   <lI>A {@link javax.lang.model.element.TypeElement} of the injector for {@link Kind#INPUT} binding</lI>
+   *   <lI>A {@link TypeElement} of the injector for {@link Kind#INPUT} binding</lI>
    *   <lI>A {@link javax.lang.model.element.ExecutableElement} of a constructor for {@link Kind#INJECTABLE} binding</lI>
    *   <lI>A {@link javax.lang.model.element.ExecutableElement} of a method for {@link Kind#PROVIDES} binding</lI>
    * </ul>
@@ -49,6 +54,11 @@ final class Binding
   @Nonnull
   private final List<ServiceSpec> _publishedServices;
   /**
+   * Intercepted published services derived from this binding.
+   */
+  @Nonnull
+  private final List<InterceptedServiceDescriptor> _interceptedServices = new ArrayList<>();
+  /**
    * Flag indicating whether this binding will always create a component or may produce a null value.
    */
   private final boolean _optional;
@@ -56,6 +66,22 @@ final class Binding
    * The descriptor that created the binding.
    */
   private Object _owner;
+  /**
+   * The source element used when discovering interceptor bindings. This is the injectable type for injectable
+   * bindings, the provider method for fragment bindings, and the injector type for input bindings.
+   */
+  @Nullable
+  private Element _interceptorBindingSource;
+  /**
+   * Interceptor binding annotations found on the binding source when the binding is created.
+   */
+  @Nonnull
+  private final Map<AnnotationMirror, Map<String, BindingValueModelImpl>> _interceptorBindingSourceAnnotations =
+    new LinkedHashMap<>();
+  /**
+   * True once interceptor metadata has been validated and resolved for this binding in a reachable graph context.
+   */
+  private boolean _interceptorBindingsProcessed;
 
   Binding( @Nonnull final Kind kind,
            @Nonnull final String id,
@@ -106,6 +132,55 @@ final class Binding
     return _publishedServices;
   }
 
+  void addInterceptedService( @Nonnull final InterceptedServiceDescriptor service )
+  {
+    assert service.binding() == this;
+    _interceptedServices.add( service );
+  }
+
+  void setInterceptorBindingSource( @Nonnull final Element interceptorBindingSource,
+                                    @Nonnull final Map<AnnotationMirror, Map<String, BindingValueModelImpl>>
+                                      interceptorBindingSourceAnnotations )
+  {
+    assert null == _interceptorBindingSource;
+    _interceptorBindingSource = Objects.requireNonNull( interceptorBindingSource );
+    _interceptorBindingSourceAnnotations.putAll( interceptorBindingSourceAnnotations );
+  }
+
+  @Nullable
+  Element getInterceptorBindingSourceOrNull()
+  {
+    return _interceptorBindingSource;
+  }
+
+  @Nonnull
+  Map<AnnotationMirror, Map<String, BindingValueModelImpl>> getInterceptorBindingSourceAnnotations()
+  {
+    return _interceptorBindingSourceAnnotations;
+  }
+
+  boolean isInterceptorBindingsProcessed()
+  {
+    return _interceptorBindingsProcessed;
+  }
+
+  void markInterceptorBindingsProcessed()
+  {
+    assert !_interceptorBindingsProcessed;
+    _interceptorBindingsProcessed = true;
+  }
+
+  @Nullable
+  InterceptedServiceDescriptor findInterceptedService( @Nonnull final Coordinate coordinate )
+  {
+    return
+      _interceptedServices
+        .stream()
+        .filter( s -> s.service().getCoordinate().equals( coordinate ) )
+        .findAny()
+        .orElse( null );
+  }
+
   boolean isEager()
   {
     return _eager;
@@ -149,7 +224,7 @@ final class Binding
     }
     if ( _eager )
     {
-      g.write( "eager", _eager );
+      g.write( "eager", true );
     }
     if ( _dependencies.length > 0 )
     {
@@ -177,8 +252,7 @@ final class Binding
     if ( Kind.INPUT == _kind )
     {
       final InputDescriptor input = (InputDescriptor) _owner;
-      return ( (TypeElement) _element ).getQualifiedName().toString() +
-             "." + input.name() + "/" + input.service();
+      return ( (TypeElement) _element ).getQualifiedName() + "." + input.name() + "/" + input.service();
     }
     else if ( Kind.INJECTABLE == _kind )
     {
@@ -187,9 +261,7 @@ final class Binding
     else
     {
       assert Kind.PROVIDES == _kind;
-      return ( (TypeElement) _element.getEnclosingElement() ).getQualifiedName().toString() +
-             "." +
-             _element.getSimpleName();
+      return ( (TypeElement) _element.getEnclosingElement() ).getQualifiedName() + "." + _element.getSimpleName();
     }
   }
 

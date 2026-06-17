@@ -31,6 +31,16 @@ final class Registry
    */
   @Nonnull
   private final List<InjectorDescriptor> _injectors = new ArrayList<>();
+  /**
+   * The set of interceptor implementation descriptors registered by class name.
+   */
+  @Nonnull
+  private final Map<String, InterceptorDescriptor> _interceptors = new HashMap<>();
+  /**
+   * The set of interceptor proxy descriptors registered by descriptor id.
+   */
+  @Nonnull
+  private final Map<String, InterceptorProxyDescriptor> _interceptorProxies = new HashMap<>();
   void registerFactory( @Nonnull final FactoryDescriptor factory )
   {
     _factories.put( factory.getElement().getQualifiedName().toString(), factory );
@@ -68,6 +78,30 @@ final class Registry
   Collection<InjectableDescriptor> getInjectables()
   {
     return _injectables.values();
+  }
+
+  void registerInterceptor( @Nonnull final InterceptorDescriptor interceptor )
+  {
+    _interceptors.put( interceptor.element().getQualifiedName().toString(), interceptor );
+  }
+
+  @Nullable
+  InterceptorDescriptor findInterceptorByClassName( @Nonnull final String name )
+  {
+    return _interceptors.get( name );
+  }
+
+  @Nonnull
+  InterceptorProxyDescriptor findOrCreateInterceptorProxy( @Nonnull final InterceptedServiceDescriptor service )
+  {
+    final InterceptorProxyDescriptor descriptor = new InterceptorProxyDescriptor( service );
+    return _interceptorProxies.computeIfAbsent( descriptor.getId(), id -> descriptor );
+  }
+
+  @Nonnull
+  Collection<InterceptorProxyDescriptor> getInterceptorProxies()
+  {
+    return _interceptorProxies.values();
   }
 
   /**
@@ -125,5 +159,7 @@ final class Registry
     _injectables.clear();
     _fragments.clear();
     _injectors.clear();
+    _interceptors.clear();
+    _interceptorProxies.clear();
   }
 }

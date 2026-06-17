@@ -20,10 +20,17 @@ import javax.json.stream.JsonGenerator;
 final class ComponentGraph
 {
   /**
+   * The processor building the graph.
+   */
+  @Nonnull
+  private final StingProcessor _processor;
+  /**
    * The injector that defines the graph.
    */
   @Nonnull
   private final InjectorDescriptor _injector;
+  @Nonnull
+  private final Registry _registry;
   /**
    * The list of types included in the graph.
    * This is used to skip registers for types that are already present.
@@ -69,9 +76,13 @@ final class ComponentGraph
   @Nullable
   private List<FragmentNode> _fragmentNodes;
 
-  ComponentGraph( @Nonnull final InjectorDescriptor injector )
+  ComponentGraph( @Nonnull final StingProcessor processor,
+                  @Nonnull final InjectorDescriptor injector,
+                  @Nonnull final Registry registry )
   {
+    _processor = Objects.requireNonNull( processor );
     _injector = Objects.requireNonNull( injector );
+    _registry = Objects.requireNonNull( registry );
     _rootNode = new Node( this );
   }
 
@@ -200,9 +211,32 @@ final class ComponentGraph
    */
   private void registerBinding( @Nonnull final Binding binding )
   {
-    for ( final ServiceSpec service : binding.getPublishedServices() )
+    for ( final var service : binding.getPublishedServices() )
     {
-      _publishedTypes.computeIfAbsent( new ServiceKey( service.getCoordinate() ), c -> new ArrayList<>() ).add( binding );
+      _publishedTypes
+        .computeIfAbsent( new ServiceKey( service.getCoordinate() ), c -> new ArrayList<>() )
+        .add( binding );
+    }
+  }
+
+  private void registerEagerBinding( @Nonnull final Binding binding )
+  {
+    _processor.processInterceptorBindings( binding );
+    var proxiedService = false;
+    for ( final var service : binding.getPublishedServices() )
+    {
+      final var interceptedService = binding.findInterceptedService( service.getCoordinate() );
+      if ( null != interceptedService )
+      {
+        findOrCreateNode( binding );
+        final var proxyNode = findOrCreateNode( _registry.findOrCreateInterceptorProxy( interceptedService ) );
+        attachProxyDependencies( proxyNode );
+        proxiedService = true;
+      }
+    }
+    if ( !proxiedService )
+    {
+      findOrCreateNode( binding );
     }
   }
 
@@ -216,6 +250,58 @@ final class ComponentGraph
   List<Binding> findAllBindingsByCoordinate( @Nonnull final Coordinate coordinate )
   {
     return _publishedTypes.getOrDefault( new ServiceKey( coordinate ), Collections.emptyList() );
+  }
+
+  @Nonnull
+  Node findOrCreateProviderNode( @Nonnull final Binding binding, @Nonnull final Coordinate coordinate )
+  {
+    _processor.processInterceptorBindings( binding );
+    final var interceptedService = binding.findInterceptedService( coordinate );
+    return null == interceptedService ?
+           findOrCreateNode( binding ) :
+           findOrCreateNode( _registry.findOrCreateInterceptorProxy( interceptedService ) );
+  }
+
+  @Nonnull
+  Node findOrCreateNode( @Nonnull final InterceptorProxyDescriptor proxy )
+  {
+    assert !_complete;
+    final var id = proxy.getId();
+    final var node = _nodesById.get( id );
+    if ( null == node )
+    {
+      final var newNode = new Node( this, proxy );
+      _nodesById.put( id, newNode );
+      return newNode;
+    }
+    else
+    {
+      return node;
+    }
+  }
+
+  void attachProxyDependencies( @Nonnull final Node proxyNode )
+  {
+    assert proxyNode.isProxy();
+    if ( proxyNode.getDependsOn().isEmpty() )
+    {
+      final var proxy = proxyNode.getProxy();
+      final var service = proxy.getService();
+      final var targetNode = findOrCreateNode( service.binding() );
+      proxyNode.addResolvedDependency( new ServiceRequest( ServiceRequest.Kind.INSTANCE,
+                                                           service.service(),
+                                                           service.binding().getElement() ),
+                                       targetNode );
+      for ( final var binding : proxy.getGenericInterceptorBindings() )
+      {
+        final var interceptorService = binding.getPublishedServices().get( 0 );
+        final var interceptorNode = findOrCreateNode( binding );
+        proxyNode.addResolvedDependency( new ServiceRequest( ServiceRequest.Kind.INSTANCE,
+                                                             interceptorService,
+                                                             binding.getElement() ),
+                                         interceptorNode );
+      }
+    }
   }
 
   /**
@@ -257,7 +343,7 @@ final class ComponentGraph
       registerBinding( binding );
       if ( binding.isEager() )
       {
-        findOrCreateNode( binding );
+        registerEagerBinding( binding );
       }
     }
   }
@@ -290,7 +376,7 @@ final class ComponentGraph
         registerBinding( binding );
         if ( binding.isEager() )
         {
-          findOrCreateNode( binding );
+          registerEagerBinding( binding );
         }
       }
     }

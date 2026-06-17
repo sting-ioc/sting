@@ -82,7 +82,7 @@ tasks:
 
   - id: API-001
     title: Add public interceptor API annotations
-    status: pending
+    status: completed
     priority: 1
     depends_on:
       - PLAN-APPROVAL
@@ -95,14 +95,18 @@ tasks:
       - "core/src/main/java/sting/interceptors/*.java"
       - "processor/src/main/java/sting/processor/Constants.java"
       - "core/src/main/java/sting/interceptors/package-info.java"
-    evidence: []
+    evidence:
+      - command: "bundle exec buildr sting:doc-examples:compile"
+        result: "Passed; compiled core interceptor annotations and downstream doc examples using package sting.interceptors."
+      - command: "bundle exec buildr sting:processor:test"
+        result: "Passed after implementation-review fixes: 484 tests, 484 passes, 0 failures."
     commit:
-      hash: "pending"
-      message: "Add interceptor API annotations"
+      hash: "uncommitted"
+      message: "Commit not requested by user."
 
   - id: MODEL-001
     title: Add processor metadata model for effective interceptor bindings
-    status: pending
+    status: completed
     priority: 1
     depends_on:
       - API-001
@@ -125,14 +129,18 @@ tasks:
       - "processor/src/main/java/sting/processor/Node.java"
       - "processor/src/main/java/sting/processor/ComponentGraph.java"
       - "processor/src/main/java/sting/processor/InjectorDotReportGenerator.java"
-    evidence: []
+    evidence:
+      - command: "bundle exec buildr sting:processor:test"
+        result: "Passed; interceptor model fixtures and graph/report assertions included in 484-test processor suite."
+      - command: "manual generated-source/report review"
+        result: "Verified proxy descriptors preserve binding-service identity, generated-state dedupe, provider-node ids, and dot labels via processor assertions."
     commit:
-      hash: "pending"
-      message: "Model interceptor binding metadata"
+      hash: "uncommitted"
+      message: "Commit not requested by user."
 
   - id: SPI-001
     title: Add ServiceLoader plugin SPI
-    status: pending
+    status: completed
     priority: 2
     depends_on:
       - MODEL-001
@@ -154,14 +162,16 @@ tasks:
       - "processor/src/main/java/sting/processor/*Model.java"
       - "processor/src/main/java/sting/processor/StingProcessor.java"
       - "processor/src/test/**/*"
-    evidence: []
+    evidence:
+      - command: "bundle exec buildr sting:processor:test"
+        result: "Passed; plugin-only, plugin-wins, descriptor-scoped claim, multiple-claim diagnostic, partial-claim fallback, and external-style public SPI tests included."
     commit:
-      hash: "pending"
-      message: "Add interceptor plugin SPI"
+      hash: "uncommitted"
+      message: "Commit not requested by user."
 
   - id: VALID-001
     title: Validate interceptor binding usage
-    status: pending
+    status: completed
     priority: 1
     depends_on:
       - SPI-001
@@ -182,14 +192,16 @@ tasks:
       - "processor/src/main/java/sting/processor/StingProcessor.java"
       - "processor/src/test/fixtures/bad_input/**/*.java"
       - "processor/src/test/java/sting/processor/StingProcessorTest.java"
-    evidence: []
+    evidence:
+      - command: "bundle exec buildr sting:processor:test"
+        result: "Passed; 49 named interceptor bad-fixture checks cover binding locations, service types, duplicate binding/priority, inputs, nullable providers, generics, retention, and third-party hook shape."
     commit:
-      hash: "pending"
-      message: "Validate interceptor binding usage"
+      hash: "uncommitted"
+      message: "Commit not requested by user."
 
   - id: INT-001
     title: Resolve and validate generic interceptor implementations
-    status: pending
+    status: completed
     priority: 1
     depends_on:
       - VALID-001
@@ -206,14 +218,18 @@ tasks:
       - "processor/src/main/java/sting/processor/StingProcessor.java"
       - "processor/src/main/java/sting/processor/ComponentGraph.java"
       - "processor/src/test/fixtures/**/*.java"
-    evidence: []
+    evidence:
+      - command: "bundle exec buildr sting:processor:test"
+        result: "Passed; lifecycle method, marker parameter, BindingValue conversion, implementedBy resolution, and interceptor cycle fixtures included."
+      - command: "bundle exec buildr sting:integration-tests:test"
+        result: "Passed earlier targeted integration suite: 46 tests, 46 passes, 0 failures."
     commit:
-      hash: "pending"
-      message: "Resolve interceptor components"
+      hash: "uncommitted"
+      message: "Commit not requested by user."
 
   - id: GEN-001
     title: Generate service-interface proxy classes
-    status: pending
+    status: completed
     priority: 1
     depends_on:
       - INT-001
@@ -233,14 +249,18 @@ tasks:
       - "processor/src/main/java/sting/processor/InterceptorProxyGenerator.java"
       - "processor/src/main/java/sting/processor/StingGeneratorUtil.java"
       - "processor/src/test/fixtures/expected/**/*.java"
-    evidence: []
+    evidence:
+      - command: "bundle exec buildr sting:processor:test"
+        result: "Passed; 17 generated-source assertions and 4 full proxy fixture comparisons cover arguments/result allocation, bridge construction, deterministic names, lifecycle nesting, own-before/own-after failure shape, checked/runtime/error throws, escaped binding values, and service-package proxy generation."
+      - command: "manual generated-source review"
+        result: "Reviewed generated AccountService interceptor proxy for lifecycle readability, no debug logging, used imports, requested-only Object[] allocation, and clear generated proxy names."
     commit:
-      hash: "pending"
-      message: "Generate interceptor proxies"
+      hash: "uncommitted"
+      message: "Commit not requested by user."
 
   - id: INJECT-001
     title: Wire proxy caches into injector generation
-    status: pending
+    status: completed
     priority: 1
     depends_on:
       - GEN-001
@@ -258,14 +278,20 @@ tasks:
       - "processor/src/main/java/sting/processor/Node.java"
       - "processor/src/main/java/sting/processor/Edge.java"
       - "processor/src/test/fixtures/expected/**/*.java"
-    evidence: []
+    evidence:
+      - command: "bundle exec buildr sting:processor:test"
+        result: "Passed; proxy graph JSON/dot assertions and provider-node dependency assertions included."
+      - command: "bundle exec buildr sting:integration-tests:test"
+        result: "Passed; direct, optional, supplier, supplier optional, collection, supplier collection, and supplier optional collection proxy delivery covered."
+      - command: "manual generated injector review"
+        result: "Reviewed generated doc-example injector and confirmed raw targets and cached proxy nodes are distinct."
     commit:
-      hash: "pending"
-      message: "Wire interceptor proxies into injectors"
+      hash: "uncommitted"
+      message: "Commit not requested by user."
 
   - id: TEST-001
     title: Add integration coverage for interceptor runtime behavior
-    status: pending
+    status: completed
     priority: 1
     depends_on:
       - INJECT-001
@@ -282,14 +308,20 @@ tasks:
       - "integration-tests/src/test/java/sting/integration/**/*Interceptor*.java"
       - "processor/src/test/fixtures/input/**/*.java"
       - "processor/src/test/fixtures/expected/**/*.java"
-    evidence: []
+    evidence:
+      - command: "awk provider-count check over StingProcessorTest.java"
+        result: "Interceptor provider counts: 42 good compile checks, 49 bad compile checks, 17 generated-source assertions, and 4 full proxy fixture comparisons."
+      - command: "bundle exec buildr sting:integration-tests:test"
+        result: "Passed earlier targeted integration suite: 46 tests, 46 passes, 0 failures."
+      - command: "coverage accounting"
+        result: "Meets 133-check floor with 172 accounted top-level checks: 42 good + 49 bad + 2 cycle-boundary + 46 integration + 17 generated-source assertions + 4 full proxy fixture comparisons + 7 documentation validation + 5 manual generated-source review."
     commit:
-      hash: "pending"
-      message: "Cover interceptor runtime behavior"
+      hash: "uncommitted"
+      message: "Commit not requested by user."
 
   - id: DOC-001
     title: Document interceptors v1
-    status: pending
+    status: completed
     priority: 2
     depends_on:
       - TEST-001
@@ -303,16 +335,21 @@ tasks:
       - "README.md"
       - "docs/**/*"
       - "doc-examples/src/main/java/**/*"
+      - "website/sidebars.json"
       - "CHANGELOG.md"
       - "AGENTS.md"
-    evidence: []
+    evidence:
+      - command: "bundle exec buildr sting:doc-examples:compile"
+        result: "Passed; 82 doc-example sources compiled, including interceptor examples importing sting.interceptors annotations."
+      - command: "manual docs review"
+        result: "README, docs/interceptors.md, framework integration docs, annotation-processing matrix, AGENTS.md, changelog, and sidebar updated."
     commit:
-      hash: "pending"
-      message: "Document interceptor support"
+      hash: "uncommitted"
+      message: "Commit not requested by user."
 
   - id: GATE-001
     title: Run full validation and clean up
-    status: pending
+    status: completed
     priority: 1
     depends_on:
       - DOC-001
@@ -322,7 +359,15 @@ tasks:
       - "Task board evidence and commit metadata are complete."
     files_touched:
       - "plans/sting-interceptors-v1/20-task-board.yaml"
-    evidence: []
+    evidence:
+      - command: "bundle exec buildr ci J2CL=no"
+        result: "Passed after round-three implementation-review fixes; completed in 5m38.940s with processor tests 488/488, integration tests 46/46, downstream tests 4/4, and site link check reporting 2914 links found, 2757 excluded, 0 broken. Only remaining warning was the existing external Oracle Javadoc redirect."
+      - command: "git diff --check"
+        result: "Passed with no whitespace errors."
+      - command: "ruby -e 'require \"yaml\"; YAML.load_file(\"plans/sting-interceptors-v1/20-task-board.yaml\"); puts \"ok\"'"
+        result: "Passed; task board YAML parsed successfully."
+      - command: "artifact scan over implementation sources, new fixtures, docs, and task board"
+        result: "No interceptor implementation or new fixture artifacts found; matches were existing doc-example println calls outside the interceptor changes."
     commit:
-      hash: "pending"
-      message: "Finalize interceptor implementation validation"
+      hash: "uncommitted"
+      message: "Commit not requested by user."

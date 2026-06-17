@@ -23,6 +23,26 @@ final class Constants
   @Nonnull
   static final String ACT_AS_STING_COMPONENT_CLASSNAME = "sting.ActAsStingComponent";
   @Nonnull
+  static final String INTERCEPTOR_BEFORE_CLASSNAME = "sting.interceptors.Before";
+  @Nonnull
+  static final String INTERCEPTOR_AFTER_CLASSNAME = "sting.interceptors.After";
+  @Nonnull
+  static final String INTERCEPTOR_AFTER_EXCEPTION_CLASSNAME = "sting.interceptors.AfterException";
+  @Nonnull
+  static final String INTERCEPTOR_SERVICE_TYPE_CLASSNAME = "sting.interceptors.ServiceType";
+  @Nonnull
+  static final String INTERCEPTOR_METHOD_NAME_CLASSNAME = "sting.interceptors.MethodName";
+  @Nonnull
+  static final String INTERCEPTOR_BINDING_VALUE_CLASSNAME = "sting.interceptors.BindingValue";
+  @Nonnull
+  static final String INTERCEPTOR_ARGUMENTS_CLASSNAME = "sting.interceptors.Arguments";
+  @Nonnull
+  static final String INTERCEPTOR_RESULT_CLASSNAME = "sting.interceptors.Result";
+  @Nonnull
+  static final String INTERCEPTOR_THROWN_CLASSNAME = "sting.interceptors.Thrown";
+  @Nonnull
+  static final String INTERCEPTOR_BINDING_SIMPLE_NAME = "InterceptorBinding";
+  @Nonnull
   static final String ACT_AS_STING_CONSUMER_SIMPLE_NAME = "ActAsStingConsumer";
   @Nonnull
   static final String ACT_AS_STING_PROVIDER_SIMPLE_NAME = "ActAsStingProvider";

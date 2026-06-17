@@ -132,7 +132,7 @@ final class InjectorGenerator
     {
       if ( node.isEager() )
       {
-        final Binding binding = node.getBinding();
+        final Binding binding = node.getProviderBinding();
         if ( Binding.Kind.INPUT == binding.getKind() )
         {
           final InputDescriptor input = (InputDescriptor) binding.getOwner();
@@ -165,12 +165,12 @@ final class InjectorGenerator
   {
     for ( final Node node : graph.getNodes() )
     {
-      final FieldSpec.Builder field =
-        FieldSpec
+        final FieldSpec.Builder field =
+          FieldSpec
           .builder( getPublicTypeName( node ), node.getName(), Modifier.PRIVATE );
       if ( !node.getType().getKind().isPrimitive() )
       {
-        field.addAnnotation( node.isEager() && node.getBinding().isRequired() ?
+        field.addAnnotation( node.isEager() && node.getProviderBinding().isRequired() ?
                              GeneratorUtil.NONNULL_CLASSNAME :
                              GeneratorUtil.NULLABLE_CLASSNAME );
       }
@@ -188,7 +188,7 @@ final class InjectorGenerator
 
       builder.addField( field.build() );
 
-      if ( !node.isEager() && ( node.getBinding().isOptional() || node.getType().getKind().isPrimitive() ) )
+      if ( !node.isEager() && ( node.getProviderBinding().isOptional() || node.getType().getKind().isPrimitive() ) )
       {
         builder.addField( FieldSpec.builder( TypeName.BOOLEAN, getFlagFieldName( node ), Modifier.PRIVATE ).build() );
       }
@@ -214,7 +214,7 @@ final class InjectorGenerator
   private static String getOutputCollectionCacheName( @Nonnull final Edge edge )
   {
     return StingGeneratorUtil.FRAMEWORK_PREFIX +
-           edge.getServiceRequest().getElement().getSimpleName().toString() +
+           edge.getServiceRequest().getElement().getSimpleName() +
            "Cache";
   }
 
@@ -236,7 +236,7 @@ final class InjectorGenerator
             .methodBuilder( node.getName() )
             .addModifiers( Modifier.PRIVATE, Modifier.SYNCHRONIZED )
             .returns( getPublicTypeName( node ) );
-        final Binding binding = node.getBinding();
+        final Binding binding = node.getProviderBinding();
         final Element element = binding.getElement();
         final List<TypeMirror> types = Collections.singletonList( element.getEnclosingElement().asType() );
         final List<String> additionalSuppressions = new ArrayList<>();
@@ -304,14 +304,24 @@ final class InjectorGenerator
   {
     code.append( "$N = " );
     args.add( node.getName() );
-    final boolean isNonnull = node.getBinding().isRequired();
+    final boolean isNonnull = node.getProviderBinding().isRequired();
     final boolean requireNonNull = isNonnull && !node.getType().getKind().isPrimitive();
     if ( requireNonNull )
     {
       code.append( "$T.requireNonNull( " );
       args.add( Objects.class );
     }
-    if ( node.isFromProvides() )
+    if ( node.isProxy() && node.isPublic() )
+    {
+      code.append( "($T) " );
+      args.add( node.getType() );
+    }
+    if ( node.isProxy() )
+    {
+      code.append( "$T.create" );
+      args.add( node.getProxy().getClassName() );
+    }
+    else if ( node.isFromProvides() )
     {
       code.append( "$N.$N" );
       args.add( node.getFragment().name() );
@@ -372,7 +382,7 @@ final class InjectorGenerator
         args.add( Collections.class );
       }
       else if ( ServiceRequest.Kind.COLLECTION == kind &&
-                satisfiedBy.stream().anyMatch( node -> node.getBinding().isOptional() ) )
+                satisfiedBy.stream().anyMatch( node -> node.getProviderBinding().isOptional() ) )
       {
         code.append( "$T.asList( " );
         args.add( Arrays.class );

@@ -8,6 +8,7 @@
     "Essentials": [
       "fragments",
       "factories",
+      "interceptors",
       "graph",
       "typing",
       "naming",
