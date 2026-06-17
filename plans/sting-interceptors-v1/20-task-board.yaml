@@ -1,0 +1,328 @@
+plan:
+  id: sting-interceptors-v1
+  title: Sting Interceptors v1
+  status: accepted
+  required_full_gate: "bundle exec buildr ci J2CL=no"
+  optional_gate: "bundle exec buildr ci"
+  active_task: null
+  review_history:
+    - round: 1
+      reviewer: "iterative-plan-review subagent"
+      result: "Eight findings accepted and addressed in plan artifacts: proxy graph model, plugin ordering, package-access bridge, proxy emission dedupe, plugin SPI contract, BindingValue mapping, lifecycle signatures, and input/nullable scope."
+    - round: 2
+      reviewer: "iterative-plan-review subagent"
+      result: "Four findings accepted and addressed in plan artifacts: phase ordering, qualified coordinates, factory-generated services, and proxy method signature surface."
+    - round: 3
+      reviewer: "iterative-plan-review subagent"
+      result: "Five findings accepted and addressed in plan artifacts: plugin emitter contract, canonical lifecycle failure semantics, binding retention validation, implementedBy name format, and eager proxy construction."
+    - round: 4
+      reviewer: "iterative-plan-review subagent"
+      result: "Two findings accepted and addressed in plan artifacts: binding metadata extraction now precedes plugin claim resolution, and public SPI model getters are explicitly specified."
+    - round: 5
+      reviewer: "iterative-plan-review subagent"
+      result: "Two findings accepted and addressed in plan artifacts: InterceptorBinding discovery follows Sting's simple-name integration-hook policy, and all seven ServiceRequest.Kind proxy paths are explicitly required."
+    - round: package-update
+      reviewer: "main agent"
+      result: "User package decision incorporated: all public interceptor annotations are planned under package sting.interceptors."
+    - round: 6
+      reviewer: "iterative-plan-review subagent"
+      result: "Three findings accepted and addressed in plan artifacts: synthetic proxy graph contract, descriptor-scoped plugin claim identity, and lifecycle marker validation matrix."
+    - round: 7
+      reviewer: "iterative-plan-review subagent"
+      result: "Three findings accepted and addressed in plan artifacts: stable plugin identity for diagnostics, declared-only lifecycle inheritance rules, and interceptor/proxy cycle fixtures."
+
+tasks:
+  - id: PLAN-001
+    title: Author structured plan artifacts
+    status: completed
+    priority: 0
+    depends_on: []
+    acceptance_criteria:
+      - "Requirements, implementation plan, task board, and test strategy exist under plans/sting-interceptors-v1/."
+      - "All grill-me design decisions are recorded as resolved."
+      - "Plan approval remains pending for user review."
+    files_touched:
+      - "plans/sting-interceptors-v1/00-requirements.md"
+      - "plans/sting-interceptors-v1/10-implementation-plan.md"
+      - "plans/sting-interceptors-v1/20-task-board.yaml"
+      - "plans/sting-interceptors-v1/40-test-strategy.md"
+    evidence:
+      - command: "manual review"
+        result: "Planning artifacts created from resolved design discussion; no implementation code changed."
+    commit:
+      hash: "not_required"
+      message: "not_required"
+    history:
+      - "Created draft plan artifacts for user review."
+      - "Round 1 plan-review findings incorporated into planning artifacts."
+
+  - id: PLAN-APPROVAL
+    title: User review and approval
+    status: completed
+    priority: 0
+    depends_on:
+      - PLAN-001
+    acceptance_criteria:
+      - "User has reviewed the latest plan artifacts."
+      - "Requested changes, if any, are incorporated into requirements, implementation plan, and task board."
+      - "Plan status is changed from draft_pending_review to accepted only after review feedback is handled."
+    files_touched:
+      - "plans/sting-interceptors-v1/00-requirements.md"
+      - "plans/sting-interceptors-v1/10-implementation-plan.md"
+      - "plans/sting-interceptors-v1/20-task-board.yaml"
+      - "plans/sting-interceptors-v1/40-test-strategy.md"
+    evidence:
+      - command: "user approval"
+        result: "User requested to accept and commit the Sting Interceptors v1 plan."
+    commit:
+      hash: "not_required"
+      message: "not_required"
+    history:
+      - "User accepted the plan after iterative review and package update."
+
+  - id: API-001
+    title: Add public interceptor API annotations
+    status: pending
+    priority: 1
+    depends_on:
+      - PLAN-APPROVAL
+    acceptance_criteria:
+      - "Core annotations compile with correct targets and retention."
+      - "All public interceptor annotations live in package sting.interceptors."
+      - "Javadocs document v1 scope and no-reflection expectations."
+      - "Processor fully qualified and simple-name constants exist for every new integration hook annotation."
+    files_touched:
+      - "core/src/main/java/sting/interceptors/*.java"
+      - "processor/src/main/java/sting/processor/Constants.java"
+      - "core/src/main/java/sting/interceptors/package-info.java"
+    evidence: []
+    commit:
+      hash: "pending"
+      message: "Add interceptor API annotations"
+
+  - id: MODEL-001
+    title: Add processor metadata model for effective interceptor bindings
+    status: pending
+    priority: 1
+    depends_on:
+      - API-001
+    acceptance_criteria:
+      - "Effective bindings are represented per Binding plus ServiceSpec."
+      - "Interceptor binding annotations are detected by simple-name meta-annotation policy and extracted into descriptors before plugin claim resolution."
+      - "Proxy/service identity includes the full service coordinate, including qualifier."
+      - "Service-interface and binding-source annotations are modeled separately then merged."
+      - "Binding annotation values are available as compile-time constants for codegen."
+      - "Synthetic proxy nodes and proxy descriptors are modeled per binding-service coordinate."
+      - "Graph provider nodes are kind-aware so binding nodes and proxy nodes have explicit ids and metadata."
+      - "Proxy node JSON and dot report output include stable proxy ids, service coordinates, target node ids, and interceptor node ids."
+      - "Include-root unused validation treats proxy-reachable raw target and interceptor bindings as used without counting proxy nodes as include roots."
+      - "Proxy descriptors track generated state to deduplicate source emission across injectors and rounds."
+    files_touched:
+      - "processor/src/main/java/sting/processor/*Interceptor*.java"
+      - "processor/src/main/java/sting/processor/Binding.java"
+      - "processor/src/main/java/sting/processor/ServiceSpec.java"
+      - "processor/src/main/java/sting/processor/Registry.java"
+      - "processor/src/main/java/sting/processor/Node.java"
+      - "processor/src/main/java/sting/processor/ComponentGraph.java"
+      - "processor/src/main/java/sting/processor/InjectorDotReportGenerator.java"
+    evidence: []
+    commit:
+      hash: "pending"
+      message: "Model interceptor binding metadata"
+
+  - id: SPI-001
+    title: Add ServiceLoader plugin SPI
+    status: pending
+    priority: 2
+    depends_on:
+      - MODEL-001
+    acceptance_criteria:
+      - "Plugins are discovered from the annotation processor path with ServiceLoader."
+      - "Exactly zero or one plugin may claim each effective descriptor keyed by binding id, service coordinate, binding annotation type, and normalized values."
+      - "Plugin-only effective descriptors with empty implementedBy compile only when that descriptor is claimed."
+      - "Plugin claim state is independent for the same annotation on different service coordinates."
+      - "Plugin conflict diagnostics use stable plugin implementation class names."
+      - "The v1 SPI exposes lifecycle-only emission and immutable metadata models."
+      - "The v1 SPI public surface does not expose shaded Javapoet or Proton types."
+      - "The v1 SPI cannot request graph/runtime dependencies."
+      - "LifecycleCodeEmitter operations are specified for service type, method name, binding values, arguments, result, thrown, and raw statement emission."
+      - "InterceptorBindingModel exposes annotation type, priority, service type, qualifier, and binding member values."
+      - "InterceptedMethodModel exposes method name, return type, parameter types, thrown types, default-method flag, and varargs flag."
+      - "An external-style test plugin compiles against only the public SPI."
+    files_touched:
+      - "processor/src/main/java/sting/processor/InterceptorCodeGenerator.java"
+      - "processor/src/main/java/sting/processor/*Model.java"
+      - "processor/src/main/java/sting/processor/StingProcessor.java"
+      - "processor/src/test/**/*"
+    evidence: []
+    commit:
+      hash: "pending"
+      message: "Add interceptor plugin SPI"
+
+  - id: VALID-001
+    title: Validate interceptor binding usage
+    status: pending
+    priority: 1
+    depends_on:
+      - SPI-001
+    acceptance_criteria:
+      - "Valid locations are service interface type, injectable class, and fragment provider method."
+      - "Method-level service/implementation bindings are rejected."
+      - "Intercepted bindings publish service interfaces only."
+      - "Duplicate binding annotation types and equal priorities fail with clear diagnostics."
+      - "Reachability-scoped validation avoids unrelated annotation use."
+      - "Input interception and nullable intercepted provider bindings are rejected in v1."
+      - "Qualified intercepted services with the same type and different qualifiers remain distinct."
+      - "Factory-generated injectable services are included when bindings are on the factory interface."
+      - "Generic service interfaces and generic service methods are rejected for intercepted services."
+      - "Binding annotations using @InterceptorBinding with @Retention(SOURCE) are rejected."
+      - "`implementedBy` accepts canonical dotted names, including nested dotted names, and rejects binary names containing `$`."
+      - "Third-party simple-name InterceptorBinding hooks require compatible priority and implementedBy members."
+    files_touched:
+      - "processor/src/main/java/sting/processor/StingProcessor.java"
+      - "processor/src/test/fixtures/bad_input/**/*.java"
+      - "processor/src/test/java/sting/processor/StingProcessorTest.java"
+    evidence: []
+    commit:
+      hash: "pending"
+      message: "Validate interceptor binding usage"
+
+  - id: INT-001
+    title: Resolve and validate generic interceptor implementations
+    status: pending
+    priority: 1
+    depends_on:
+      - VALID-001
+    acceptance_criteria:
+      - "`implementedBy` resolves to an effectively public @Injectable class."
+      - "Interceptor injectables are auto-added to the graph."
+      - "Lifecycle methods are public void instance methods, max one per phase, one lifecycle annotation per method, and no checked throws."
+      - "Lifecycle methods are declared directly on the interceptor implementation class; inherited lifecycle annotations are rejected in v1."
+      - "Supported parameter markers are validated by lifecycle phase and exact parameter type."
+      - "Unannotated lifecycle parameters and multiple marker annotations on one parameter are rejected."
+      - "`@BindingValue` member-to-parameter conversions match the requirements."
+      - "At least one lifecycle method is required."
+    files_touched:
+      - "processor/src/main/java/sting/processor/StingProcessor.java"
+      - "processor/src/main/java/sting/processor/ComponentGraph.java"
+      - "processor/src/test/fixtures/**/*.java"
+    evidence: []
+    commit:
+      hash: "pending"
+      message: "Resolve interceptor components"
+
+  - id: GEN-001
+    title: Generate service-interface proxy classes
+    status: pending
+    priority: 1
+    depends_on:
+      - INT-001
+    acceptance_criteria:
+      - "One proxy is generated per intercepted binding plus service interface."
+      - "Proxy lives where it can implement the service interface."
+      - "Proxy target is typed as the service interface."
+      - "Package-access service interfaces are constructed through a service-package bridge factory accepting Object/raw values where needed."
+      - "Proxy implements inherited/default instance methods and excludes static/private/Object methods."
+      - "Proxy supports overloaded methods, varargs methods, and explicitly redeclared Object methods."
+      - "Generated lifecycle ordering matches the canonical nested template."
+      - "An interceptor's own @AfterException is not invoked for its own @Before or @After failures, while outer interceptors still observe those failures."
+      - "Generated code preserves checked exception signatures."
+      - "Arguments/result metadata are allocated only when requested."
+      - "Proxy source emission is deduplicated across multiple injectors."
+    files_touched:
+      - "processor/src/main/java/sting/processor/InterceptorProxyGenerator.java"
+      - "processor/src/main/java/sting/processor/StingGeneratorUtil.java"
+      - "processor/src/test/fixtures/expected/**/*.java"
+    evidence: []
+    commit:
+      hash: "pending"
+      message: "Generate interceptor proxies"
+
+  - id: INJECT-001
+    title: Wire proxy caches into injector generation
+    status: pending
+    priority: 1
+    depends_on:
+      - GEN-001
+    acceptance_criteria:
+      - "Injector caches proxy instances per binding-service interface."
+      - "All seven ServiceRequest.Kind values receive proxies for intercepted service coordinates."
+      - "Collection output caching behavior remains stable."
+      - "Raw target remains internal and is not returned for intercepted service coordinates."
+      - "Synthetic proxy nodes participate in graph JSON/dot output and cycle/eager analysis."
+      - "Eager intercepted services construct raw targets, cached proxy nodes, and generic interceptor dependencies during injector creation."
+      - "A required interceptor dependency cycle through the intercepted service proxy fails with a clear diagnostic."
+    files_touched:
+      - "processor/src/main/java/sting/processor/InjectorGenerator.java"
+      - "processor/src/main/java/sting/processor/ComponentGraph.java"
+      - "processor/src/main/java/sting/processor/Node.java"
+      - "processor/src/main/java/sting/processor/Edge.java"
+      - "processor/src/test/fixtures/expected/**/*.java"
+    evidence: []
+    commit:
+      hash: "pending"
+      message: "Wire interceptor proxies into injectors"
+
+  - id: TEST-001
+    title: Add integration coverage for interceptor runtime behavior
+    status: pending
+    priority: 1
+    depends_on:
+      - INJECT-001
+    acceptance_criteria:
+      - "Runtime tests cover before/after/exception ordering."
+      - "Runtime tests cover multi-service interface identity divergence."
+      - "Runtime tests cover optional, supplier, supplier optional, collection, supplier collection, and supplier optional collection proxy delivery."
+      - "Runtime tests cover provider-method and implementation-class binding sources."
+      - "Runtime tests cover qualified services and factory-generated service interfaces."
+      - "Runtime tests cover eager intercepted service construction and own-before/own-after lifecycle failure behavior."
+      - "Processor fixtures cover proxy-node JSON/dot output, descriptor-scoped plugin claim behavior, lifecycle marker validation failures, lifecycle inheritance behavior, and interceptor/proxy cycle detection."
+      - "The implemented suite meets or exceeds the 133 top-level check minimum defined in 40-test-strategy.md."
+    files_touched:
+      - "integration-tests/src/test/java/sting/integration/**/*Interceptor*.java"
+      - "processor/src/test/fixtures/input/**/*.java"
+      - "processor/src/test/fixtures/expected/**/*.java"
+    evidence: []
+    commit:
+      hash: "pending"
+      message: "Cover interceptor runtime behavior"
+
+  - id: DOC-001
+    title: Document interceptors v1
+    status: pending
+    priority: 2
+    depends_on:
+      - TEST-001
+    acceptance_criteria:
+      - "README/docs describe binding locations, lifecycle API, ordering, and exclusions."
+      - "Docs and examples import interceptor annotations from sting.interceptors."
+      - "AGENTS.md processor integration notes document the InterceptorBinding simple-name hook."
+      - "CHANGELOG documents user-visible feature."
+      - "Doc examples compile through the full gate."
+    files_touched:
+      - "README.md"
+      - "docs/**/*"
+      - "doc-examples/src/main/java/**/*"
+      - "CHANGELOG.md"
+      - "AGENTS.md"
+    evidence: []
+    commit:
+      hash: "pending"
+      message: "Document interceptor support"
+
+  - id: GATE-001
+    title: Run full validation and clean up
+    status: pending
+    priority: 1
+    depends_on:
+      - DOC-001
+    acceptance_criteria:
+      - "Required full gate passes: bundle exec buildr ci J2CL=no."
+      - "No debug artifacts, temporary files, or commented-out experiments remain."
+      - "Task board evidence and commit metadata are complete."
+    files_touched:
+      - "plans/sting-interceptors-v1/20-task-board.yaml"
+    evidence: []
+    commit:
+      hash: "pending"
+      message: "Finalize interceptor implementation validation"
