@@ -164,6 +164,9 @@ Required scenarios:
 
 Expected generated-source fixtures should verify:
 
+- Interceptor proxy methods copy whitelisted method annotations from service methods: `@Nonnull`, `@Nullable`, and `@Deprecated`.
+- Interceptor proxy method parameters copy whitelisted parameter annotations from service methods: `@Nonnull`, `@Nullable`, and `@Deprecated` where legal.
+- Source `@SuppressWarnings` is not copied as a source annotation; generated suppressions remain synthesized only when required by generated-code warning analysis.
 - No `Object[]` allocation when no interceptor requests arguments.
 - Exactly one `Object[]` allocation per proxy method invocation when requested.
 - Primitive result boxing appears only when `@Result` is requested.

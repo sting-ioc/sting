@@ -23,7 +23,7 @@ public final class Sting_com_example_interceptor_NoArgumentsModel_Model_Service_
   }
 
   @Override
-  public void run(String value) {
+  public void run(final String value) {
     $sting$_interceptor1.before();
     $sting$_target.run(value);
   }

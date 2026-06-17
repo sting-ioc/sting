@@ -30,6 +30,9 @@ plan:
     - round: 7
       reviewer: "iterative-plan-review subagent"
       result: "Three findings accepted and addressed in plan artifacts: stable plugin identity for diagnostics, declared-only lifecycle inheritance rules, and interceptor/proxy cycle fixtures."
+    - round: post-implementation-issue-PI-01
+      reviewer: "main agent"
+      result: "Recorded follow-up issue: generated interceptor proxy methods omit whitelisted method/parameter annotations that existing Sting generated variants preserve."
 
 tasks:
   - id: PLAN-001
@@ -101,8 +104,8 @@ tasks:
       - command: "bundle exec buildr sting:processor:test"
         result: "Passed after implementation-review fixes: 484 tests, 484 passes, 0 failures."
     commit:
-      hash: "uncommitted"
-      message: "Commit not requested by user."
+      hash: "current_commit"
+      message: "fix(interceptors): preserve proxy method annotations"
 
   - id: MODEL-001
     title: Add processor metadata model for effective interceptor bindings
@@ -135,8 +138,8 @@ tasks:
       - command: "manual generated-source/report review"
         result: "Verified proxy descriptors preserve binding-service identity, generated-state dedupe, provider-node ids, and dot labels via processor assertions."
     commit:
-      hash: "uncommitted"
-      message: "Commit not requested by user."
+      hash: "current_commit"
+      message: "fix(interceptors): preserve proxy method annotations"
 
   - id: SPI-001
     title: Add ServiceLoader plugin SPI
@@ -166,8 +169,8 @@ tasks:
       - command: "bundle exec buildr sting:processor:test"
         result: "Passed; plugin-only, plugin-wins, descriptor-scoped claim, multiple-claim diagnostic, partial-claim fallback, and external-style public SPI tests included."
     commit:
-      hash: "uncommitted"
-      message: "Commit not requested by user."
+      hash: "current_commit"
+      message: "fix(interceptors): preserve proxy method annotations"
 
   - id: VALID-001
     title: Validate interceptor binding usage
@@ -368,6 +371,118 @@ tasks:
         result: "Passed; task board YAML parsed successfully."
       - command: "artifact scan over implementation sources, new fixtures, docs, and task board"
         result: "No interceptor implementation or new fixture artifacts found; matches were existing doc-example println calls outside the interceptor changes."
+    commit:
+      hash: "uncommitted"
+      message: "Commit not requested by user."
+
+  - id: POST-ANN-APPROVAL
+    title: Review and approve proxy annotation preservation response
+    status: completed
+    priority: 0
+    depends_on:
+      - GATE-001
+    acceptance_criteria:
+      - "PI-01 is recorded in plans/sting-interceptors-v1/50-implementation-issues.md."
+      - "Requirements, implementation plan, test strategy, and task board describe the annotation-preservation response."
+      - "User has reviewed the proposed response and approved or revised the implementation scope before implementation files are edited."
+    files_touched:
+      - "plans/sting-interceptors-v1/00-requirements.md"
+      - "plans/sting-interceptors-v1/10-implementation-plan.md"
+      - "plans/sting-interceptors-v1/20-task-board.yaml"
+      - "plans/sting-interceptors-v1/40-test-strategy.md"
+      - "plans/sting-interceptors-v1/50-implementation-issues.md"
+    evidence:
+      - command: "manual investigation"
+        result: "Confirmed InterceptorsIntegrationTest.MyService declares @Nonnull annotations that generated interceptor proxy methods currently omit."
+      - command: "source review"
+        result: "Confirmed existing FactoryGenerator/FragmentGenerator copy GeneratorUtil whitelisted annotations, while InterceptorProxyGenerator uses MethodSpec.overriding without an explicit copy step."
+      - command: "user approval"
+        result: "User approved implementation with instruction: implement."
+    commit:
+      hash: "not_required"
+      message: "not_required"
+    history:
+      - "Draft issue response plan generated for user review."
+      - "User approved implementation scope."
+
+  - id: POST-ANN-FIX
+    title: Copy whitelisted annotations onto generated proxy methods
+    status: completed
+    priority: 1
+    depends_on:
+      - POST-ANN-APPROVAL
+    acceptance_criteria:
+      - "Interceptor proxy service methods copy whitelisted method annotations from service interface methods."
+      - "Interceptor proxy service method parameters copy whitelisted parameter annotations from service interface methods."
+      - "Copied annotations are limited to GeneratorUtil.ANNOTATION_WHITELIST: @Nonnull, @Nullable, and @Deprecated."
+      - "Source @SuppressWarnings annotations are not copied; generated suppressions remain synthesized only when required."
+      - "Resolved method signatures, declared checked exceptions, varargs shape, default/inherited methods, and @Override remain correct."
+    files_touched:
+      - "processor/src/main/java/sting/processor/InterceptorProxyGenerator.java"
+      - "processor/src/test/fixtures/input/com/example/interceptor/**/*.java"
+      - "processor/src/test/fixtures/expected/com/example/interceptor/**/*.java"
+      - "processor/src/test/fixtures/expectedFormatted/com/example/interceptor/**/*.java"
+    evidence:
+      - command: "implementation diff review"
+        result: "InterceptorProxyGenerator now calls GeneratorUtil.overrideMethod(processingEnv, serviceElement, method), reusing the existing Sting whitelisted annotation-copying path for proxy service methods and parameters."
+      - command: "bundle exec buildr sting:processor:test"
+        result: "Passed; 492 tests, 492 passes, 0 failures. Expected proxy fixtures updated for helper-induced final parameters."
+    commit:
+      hash: "uncommitted"
+      message: "Commit not requested by user."
+
+  - id: POST-ANN-TEST
+    title: Add generated-source coverage for proxy annotation copying
+    status: completed
+    priority: 1
+    depends_on:
+      - POST-ANN-FIX
+    acceptance_criteria:
+      - "Processor generated-source assertions prove @Nonnull return annotations are copied onto interceptor proxy methods."
+      - "Processor generated-source assertions prove @Nonnull or @Nullable parameter annotations are copied onto interceptor proxy method parameters."
+      - "Processor generated-source assertions prove @Deprecated method annotations are copied onto interceptor proxy methods."
+      - "Expected proxy fixtures are updated for annotation-copying output and any helper-induced final parameter modifiers."
+      - "Integration generated output for InterceptorsIntegrationTest.MyService proxy shows @Nonnull on ok(...) and its name parameter after regeneration."
+    files_touched:
+      - "processor/src/test/java/sting/processor/StingProcessorTest.java"
+      - "processor/src/test/fixtures/input/com/example/interceptor/**/*.java"
+      - "processor/src/test/fixtures/expected/com/example/interceptor/**/*.java"
+      - "processor/src/test/fixtures/expectedFormatted/com/example/interceptor/**/*.java"
+      - "integration-tests/generated/processors/test/java/sting/integration/**/*InterceptorProxy.java"
+    evidence:
+      - command: "bundle exec buildr sting:processor:test"
+        result: "Passed; new AnnotationCopyModel fixture and generated-source assertions verify copied @Deprecated method, @Nonnull return, and @Nullable parameter annotations."
+      - command: "bundle exec buildr sting:integration-tests:test"
+        result: "Passed; 46 tests, 46 passes, 0 failures."
+      - command: "rg -n \"@Nonnull|@Nullable|public String ok|final String name\" integration-tests/generated/processors/test/java/sting/integration/Sting_sting_integration_InterceptorsIntegrationTest_MyServiceImpl_MyService_InterceptorProxy.java"
+        result: "Confirmed regenerated integration proxy contains public String ok(@Nonnull final String name) with copied return annotation."
+    commit:
+      hash: "uncommitted"
+      message: "Commit not requested by user."
+
+  - id: POST-ANN-GATE
+    title: Validate proxy annotation preservation fix
+    status: completed
+    priority: 1
+    depends_on:
+      - POST-ANN-TEST
+    acceptance_criteria:
+      - "git diff --check passes."
+      - "bundle exec buildr sting:processor:test passes."
+      - "bundle exec buildr sting:integration-tests:test passes."
+      - "bundle exec buildr ci J2CL=no passes before issue is marked resolved."
+      - "50-implementation-issues.md records PI-01 as resolved with validation evidence."
+      - "Task board records validation evidence and commit metadata."
+    files_touched:
+      - "plans/sting-interceptors-v1/20-task-board.yaml"
+      - "plans/sting-interceptors-v1/50-implementation-issues.md"
+    evidence:
+      - command: "bundle exec buildr ci J2CL=no"
+        result: "Passed in 5m54.940s; completed clean package, processor/integration/downstream validation, docs build, Javadoc, and site link check. Downstream tests reported 4 passes; link check reported 2913 links found, 2756 excluded, 0 broken."
+      - command: "git diff --check"
+        result: "Passed with no whitespace errors."
+      - command: "ruby -e 'require \"yaml\"; YAML.load_file(\"plans/sting-interceptors-v1/20-task-board.yaml\"); puts \"task board yaml: ok\"'"
+        result: "Passed; task board yaml: ok."
     commit:
       hash: "uncommitted"
       message: "Commit not requested by user."

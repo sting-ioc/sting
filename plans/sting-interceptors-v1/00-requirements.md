@@ -270,6 +270,44 @@ bundle exec buildr ci
 - Identity compatibility is intentionally relaxed for intercepted multi-service bindings.
 - Async completion semantics are intentionally not modeled in v1.
 
+## Post-Implementation Issue Requirements
+
+### PI-01: Proxy whitelisted annotation preservation
+
+Mission:
+
+- Align interceptor proxy method generation with existing Sting generated variants that preserve whitelisted source annotations.
+
+Evidence:
+
+- `InterceptorsIntegrationTest.MyService.ok(@Nonnull String)` declares `@Nonnull` on the return value and parameter.
+- The generated `Sting_sting_integration_InterceptorsIntegrationTest_MyServiceImpl_MyService_InterceptorProxy.ok(String)` omits both annotations.
+- Existing generators such as `FactoryGenerator` and `FragmentGenerator` explicitly call `GeneratorUtil.copyWhitelistedAnnotations(...)`; `InterceptorProxyGenerator` currently relies on `MethodSpec.overriding(...)`, and JavaPoet does not copy overridden method or parameter annotations.
+
+Scope boundaries:
+
+- In scope: copied whitelisted annotations on generated interceptor proxy service methods.
+- In scope: copied whitelisted annotations on generated interceptor proxy service method parameters.
+- In scope: `@Nonnull`, `@Nullable`, and `@Deprecated`, matching `GeneratorUtil.ANNOTATION_WHITELIST`.
+- In scope: generated-source fixture updates and assertions proving copied annotations appear in interceptor proxy output.
+- Out of scope: copying arbitrary annotations, interceptor binding annotations, lifecycle annotations, or user-defined annotations outside the whitelist.
+- Out of scope: copying source `@SuppressWarnings`; Sting continues to synthesize `@SuppressWarnings` only when generated code requires rawtype/deprecation/unchecked suppression.
+- Out of scope: changing interceptor runtime behavior, lifecycle ordering, proxy identity, request-kind routing, or graph semantics.
+
+Behavior expectations:
+
+- Interceptor proxy overrides must preserve whitelisted method annotations from the service interface declaration.
+- Interceptor proxy override parameters must preserve whitelisted parameter annotations from the service interface declaration.
+- Type resolution must remain correct for inherited methods and methods viewed through the proxied service `DeclaredType`.
+- Generated proxy methods must continue to include `@Override`, resolved return/parameter/throws types, varargs shape, and declared checked exception signatures.
+- Existing generated proxy fixtures may legitimately gain `final` on parameters if the implementation switches to the existing `GeneratorUtil.overrideMethod(...)` helper.
+
+Quality gates:
+
+- Targeted gate: `bundle exec buildr sting:processor:test`
+- Targeted gate: `bundle exec buildr sting:integration-tests:test`
+- Required full gate before issue resolution: `bundle exec buildr ci J2CL=no`
+
 ## Acceptance Criteria
 
 - New public annotations compile and are documented.
@@ -289,6 +327,7 @@ bundle exec buildr ci
 - Eager intercepted services construct raw targets, generic interceptor dependencies, and cached proxy nodes according to eager graph reachability rules.
 - Proxy source emission is deduplicated across multiple injectors that include the same intercepted binding.
 - Generated proxies wrap service calls with correct lifecycle ordering and exception behavior.
+- Generated interceptor proxy methods and parameters preserve whitelisted source annotations (`@Nonnull`, `@Nullable`, `@Deprecated`) from service interface methods, matching existing generated variants.
 - Generated proxies avoid argument/result allocation unless requested by interceptor method signatures.
 - All request kinds receive proxies for intercepted service coordinates.
 - Explicit request-kind coverage includes instance, optional, supplier, supplier optional, collection, supplier collection, and supplier optional collection.

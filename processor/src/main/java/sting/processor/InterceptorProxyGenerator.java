@@ -164,7 +164,6 @@ final class InterceptorProxyGenerator
                                           @Nonnull final List<InterceptorCodeGenerator> plugins,
                                           @Nonnull final TypeElement serviceElement )
   {
-    final var serviceType = (DeclaredType) serviceElement.asType();
     final var emitted = new HashSet<String>();
     final var methods =
       ElementsUtil.getMethods( serviceElement, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
@@ -175,7 +174,7 @@ final class InterceptorProxyGenerator
         final var signature = method.getSimpleName() + "/" + method.getParameters().size() + "/" + method.asType();
         if ( emitted.add( signature ) )
         {
-          builder.addMethod( buildServiceMethod( processingEnv, proxy, plugins, serviceType, method ) );
+          builder.addMethod( buildServiceMethod( processingEnv, proxy, plugins, serviceElement, method ) );
         }
       }
     }
@@ -201,10 +200,10 @@ final class InterceptorProxyGenerator
   private static MethodSpec buildServiceMethod( @Nonnull final ProcessingEnvironment processingEnv,
                                                 @Nonnull final InterceptorProxyDescriptor proxy,
                                                 @Nonnull final List<InterceptorCodeGenerator> plugins,
-                                                @Nonnull final DeclaredType serviceType,
+                                                @Nonnull final TypeElement serviceElement,
                                                 @Nonnull final ExecutableElement method )
   {
-    final var builder = MethodSpec.overriding( method, serviceType, processingEnv.getTypeUtils() );
+    final var builder = GeneratorUtil.overrideMethod( processingEnv, serviceElement, method );
     final var parameters = method.getParameters();
     final var arguments = new ArgumentState( parameters, mayRequestArguments( proxy ) );
     final var voidReturn = TypeKind.VOID == method.getReturnType().getKind();

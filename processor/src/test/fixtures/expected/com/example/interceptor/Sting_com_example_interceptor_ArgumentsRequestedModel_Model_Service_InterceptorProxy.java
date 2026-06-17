@@ -24,7 +24,7 @@ public final class Sting_com_example_interceptor_ArgumentsRequestedModel_Model_S
   }
 
   @Override
-  public void run(String value) {
+  public void run(final String value) {
     Object[] arguments = null;
     if ( null == arguments ) {
       arguments = new Object[] {value};

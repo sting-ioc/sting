@@ -565,6 +565,93 @@ bundle exec buildr ci J2CL=no
 | 6 | Added kind-aware synthetic proxy graph-node contract, descriptor-scoped plugin claim identity, and complete lifecycle marker validation matrix. |
 | 7 | Added stable plugin identity, declared-only lifecycle inheritance rules, and interceptor/proxy cycle fixtures. |
 
+## Post-Implementation Issue Response Plan
+
+### PI-01: Preserve whitelisted annotations on generated interceptor proxy methods
+
+Status: implemented
+
+Issue register:
+
+- Tracked in `50-implementation-issues.md` as `PI-01`.
+
+Required validation:
+
+```bash
+bundle exec buildr ci J2CL=no
+```
+
+Targeted validation while iterating:
+
+```bash
+bundle exec buildr sting:processor:test
+bundle exec buildr sting:integration-tests:test
+```
+
+Implementation sequence:
+
+1. **Confirm generator parity target**
+   - Treat existing `GeneratorUtil.ANNOTATION_WHITELIST` as the complete annotation-copy contract.
+   - Preserve `@Nonnull`, `@Nullable`, and `@Deprecated` only.
+   - Keep source `@SuppressWarnings` out of the copy path; continue using `SuppressWarningsUtil` only where generated code needs it.
+
+2. **Change interceptor proxy method construction**
+   - Update `InterceptorProxyGenerator.buildServiceMethod(...)` so proxy override construction follows the existing Sting helper path rather than relying solely on `MethodSpec.overriding(...)`.
+   - Preferred implementation: pass or derive the service `TypeElement` and call `GeneratorUtil.overrideMethod(processingEnv, serviceElement, method)`.
+   - Preserve the current resolved member type behavior for inherited/default methods, varargs methods, declared checked exceptions, and service-interface target typing.
+   - Re-check generated method parameter modifiers because the helper emits `final` parameters.
+
+3. **Add source-generation assertions**
+   - Add a processor fixture, or extend an existing interceptor fixture, with an intercepted service method that has:
+     - `@Nonnull` return annotation.
+     - `@Nullable` or `@Nonnull` parameter annotation.
+     - `@Deprecated` method annotation.
+   - Add generated-source assertions in `StingProcessorTest` that prove the interceptor proxy method and parameters include the copied whitelist annotations.
+   - Prefer direct generated-source assertions over runtime reflection because annotation retention differs by annotation type and runtime behavior is unchanged.
+
+4. **Update expected generated fixtures**
+   - Update interceptor proxy expected files in both formatted and unformatted fixture trees when generated output changes.
+   - Keep fixture updates limited to annotation preservation and any helper-induced formatting/`final` parameter changes.
+
+5. **Verify and close**
+   - Run targeted processor and integration tests.
+   - Run `git diff --check`.
+   - Run the required full gate.
+   - After validation, update `50-implementation-issues.md` and `20-task-board.yaml` with command evidence and commit metadata.
+
+Implementation result:
+
+- `InterceptorProxyGenerator.buildServiceMethod(...)` now constructs proxy service methods through `GeneratorUtil.overrideMethod(processingEnv, serviceElement, method)`.
+- Added `AnnotationCopyModel` to exercise `@Deprecated`, `@Nonnull`, and `@Nullable` on an intercepted service method.
+- Added processor generated-source assertions for copied method and parameter annotations.
+- Updated affected proxy expected fixtures for helper-induced `final` service method parameters.
+- Verified the regenerated integration proxy contains `public String ok(@Nonnull final String name)` with the copied return annotation.
+- No arbitrary annotation copying or source `@SuppressWarnings` copying was added.
+
+Validation result:
+
+- `bundle exec buildr sting:processor:test`: passed, 492 tests, 492 passes, 0 failures.
+- `bundle exec buildr sting:integration-tests:test`: passed, 46 tests, 46 passes, 0 failures.
+- `bundle exec buildr ci J2CL=no`: passed in 5m54.940s, including downstream tests and site link check.
+
+High-risk areas and mitigations:
+
+- Risk: `MethodSpec.overriding(...)` and `GeneratorUtil.overrideMethod(...)` differ in subtle formatting or parameter modifiers.
+  - Mitigation: accept existing Sting helper output and update expected fixtures only for mechanical generated-code parity.
+- Risk: copying arbitrary annotations could leak interceptor binding annotations into generated methods.
+  - Mitigation: use `GeneratorUtil.copyWhitelistedAnnotations(...)` via the helper or equivalent explicit whitelist copying only.
+- Risk: inherited service methods need resolved member types.
+  - Mitigation: preserve service `DeclaredType`/`TypeElement` context through `GeneratorUtil.overrideMethod(...)` and keep inherited/default method fixture coverage.
+- Risk: `@SuppressWarnings` behavior changes accidentally.
+  - Mitigation: do not include `SuppressWarnings` in the copy whitelist; rely only on existing synthesis paths.
+
+Decision Log:
+
+| question | outcome | concrete plan impact |
+| --- | --- | --- |
+| PI-01-Q-01 | No new user decision required; follow existing generated-code whitelist. | The response plan copies only `@Nonnull`, `@Nullable`, and `@Deprecated` onto proxy methods/parameters. |
+| PI-01-Q-02 | No new user decision required; keep `@SuppressWarnings` synthesized, not copied. | The response plan leaves `SuppressWarningsUtil` behavior unchanged and adds no source-copy support for `@SuppressWarnings`. |
+
 ## Review Gate
 
 This plan is accepted. `PLAN-APPROVAL` in `20-task-board.yaml` records user approval; implementation tasks may proceed in dependency order.
