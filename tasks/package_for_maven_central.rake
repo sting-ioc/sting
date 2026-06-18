@@ -94,5 +94,5 @@ end
 
 desc 'Create Package and deploy to Maven Central'
 task 'upload_to_maven_central' do
-  release_to_maven_central('sting', %w(sting:core sting:processor))
+  release_to_maven_central('sting', %w(sting:core sting:processor-spi sting:processor))
 end

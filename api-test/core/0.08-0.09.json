@@ -1,0 +1,32 @@
+[
+  {
+    "code": "java.class.added",
+    "description": "Class was added.",
+    "newElement": "@interface sting.AutoFragment",
+    "classification": {
+      "SOURCE": "NON_BREAKING",
+      "BINARY": "NON_BREAKING"
+    },
+    "attachments": {
+      "classQualifiedName": "sting.AutoFragment",
+      "classSimpleName": "AutoFragment",
+      "elementKind": "@interface",
+      "package": "sting"
+    }
+  },
+  {
+    "code": "java.class.added",
+    "description": "Class was added.",
+    "newElement": "@interface sting.ContributeTo",
+    "classification": {
+      "SOURCE": "NON_BREAKING",
+      "BINARY": "NON_BREAKING"
+    },
+    "attachments": {
+      "classQualifiedName": "sting.ContributeTo",
+      "classSimpleName": "ContributeTo",
+      "elementKind": "@interface",
+      "package": "sting"
+    }
+  }
+]

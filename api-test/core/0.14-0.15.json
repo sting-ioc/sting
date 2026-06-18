@@ -1,0 +1,17 @@
+[
+  {
+    "code": "java.class.added",
+    "description": "Class was added.",
+    "newElement": "@interface sting.InjectorFragment",
+    "classification": {
+      "SOURCE": "NON_BREAKING",
+      "BINARY": "NON_BREAKING"
+    },
+    "attachments": {
+      "classQualifiedName": "sting.InjectorFragment",
+      "classSimpleName": "InjectorFragment",
+      "elementKind": "@interface",
+      "package": "sting"
+    }
+  }
+]

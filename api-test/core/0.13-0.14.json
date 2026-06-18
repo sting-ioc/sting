@@ -1,0 +1,17 @@
+[
+  {
+    "code": "java.class.added",
+    "description": "Class was added.",
+    "newElement": "@interface sting.ActAsStingComponent",
+    "classification": {
+      "SOURCE": "NON_BREAKING",
+      "BINARY": "NON_BREAKING"
+    },
+    "attachments": {
+      "classQualifiedName": "sting.ActAsStingComponent",
+      "classSimpleName": "ActAsStingComponent",
+      "elementKind": "@interface",
+      "package": "sting"
+    }
+  }
+]

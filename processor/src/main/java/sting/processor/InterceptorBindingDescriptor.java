@@ -12,6 +12,8 @@ import javax.annotation.Nullable;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
+import sting.processor.spi.BindingValueModel;
+import sting.processor.spi.InterceptorBindingModel;
 
 final class InterceptorBindingDescriptor
   implements InterceptorBindingModel

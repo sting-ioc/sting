@@ -19,6 +19,10 @@ import org.realityforge.proton.qa.Compilation;
 import org.realityforge.proton.qa.CompileTestUtil;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
+import sting.processor.spi.InterceptedMethodModel;
+import sting.processor.spi.InterceptorBindingModel;
+import sting.processor.spi.InterceptorCodeGenerator;
+import sting.processor.spi.LifecycleCodeEmitter;
 import static org.testng.Assert.*;
 
 @SuppressWarnings( "TextBlockMigration" )

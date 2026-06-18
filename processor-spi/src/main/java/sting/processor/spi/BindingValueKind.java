@@ -1,4 +1,4 @@
-package sting.processor;
+package sting.processor.spi;
 
 /**
  * The supported v1 interceptor binding value kinds.

@@ -2,10 +2,10 @@ package com.example.interceptor;
 
 import java.util.Objects;
 import javax.annotation.Nonnull;
-import sting.processor.InterceptedMethodModel;
-import sting.processor.InterceptorBindingModel;
-import sting.processor.InterceptorCodeGenerator;
-import sting.processor.LifecycleCodeEmitter;
+import sting.processor.spi.InterceptedMethodModel;
+import sting.processor.spi.InterceptorBindingModel;
+import sting.processor.spi.InterceptorCodeGenerator;
+import sting.processor.spi.LifecycleCodeEmitter;
 
 public final class ExternalPluginModel
   implements InterceptorCodeGenerator

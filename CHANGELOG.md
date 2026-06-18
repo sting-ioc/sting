@@ -3,6 +3,10 @@
 ### Unreleased
 
 * Add compile-time service-interface interceptors under `sting.interceptors`, including generic lifecycle interceptors, processor-path plugin interception, graph/report integration, runtime proxy wiring, documentation, and test coverage.
+* Extract the interceptor processor plugin SPI into `org.realityforge.sting:sting-processor-spi` under
+  `sting.processor.spi.*`; plugin jars must use
+  `META-INF/services/sting.processor.spi.InterceptorCodeGenerator`. The processor jar still carries the SPI classes
+  for processor-path execution, but the old `sting.processor.*` SPI imports and old service descriptor are removed.
 
 ### [v0.37](https://github.com/sting-ioc/sting/tree/v0.37) (2026-06-16) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.36...v0.37)
 

@@ -1,4 +1,4 @@
-package sting.processor;
+package sting.processor.spi;
 
 import java.util.List;
 import javax.annotation.Nonnull;

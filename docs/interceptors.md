@@ -96,3 +96,12 @@ service coordinate.
 
 Plugin emission is intentionally lifecycle-only. Plugins cannot add graph dependencies, fields, helper methods,
 constructor parameters, imports, or runtime service requests.
+
+Plugin implementations compile against `org.realityforge.sting:sting-processor-spi` and import SPI types from
+`sting.processor.spi.*`. Register plugin implementations in
+`META-INF/services/sting.processor.spi.InterceptorCodeGenerator`.
+
+The `sting-processor` artifact contains the SPI classes in the same `sting.processor.spi` package so annotation
+processor users can keep only `sting-processor` and plugin jars on the processor path. The old
+`sting.processor.*` SPI imports and `META-INF/services/sting.processor.InterceptorCodeGenerator` descriptor are not
+supported.

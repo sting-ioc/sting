@@ -52,11 +52,25 @@ define 'sting' do
     test.using :testng
   end
 
+  desc 'The processor SPI module'
+  define 'processor-spi' do
+    deps = artifacts(:javax_annotation)
+    pom.include_transitive_dependencies << deps
+    pom.dependency_filter = Proc.new { |dep| dep[:scope].to_s != 'test' && deps.include?(dep[:artifact]) }
+
+    compile.with deps
+
+    package(:jar)
+    package(:sources)
+    package(:javadoc)
+  end
+
   desc 'The Annotation processor'
   define 'processor' do
     pom.dependency_filter = Proc.new { |_| false }
 
-    compile.with :proton_core,
+    compile.with project('processor-spi').package(:jar),
+                 :proton_core,
                  :javax_json,
                  :javapoet,
                  :javax_annotation
@@ -72,6 +86,7 @@ define 'sting' do
     package(:javadoc)
 
     package(:jar).enhance do |jar|
+      jar.merge(project('processor-spi').package(:jar))
       jar.merge(artifact(:javapoet))
       jar.merge(artifact(:proton_core))
       jar.enhance do |f|
@@ -190,7 +205,7 @@ define 'sting' do
     local_test_repository_url = URI.join('file:///', project._(:target, :local_test_repository)).to_s
     unless ENV['TEST'] == 'no' # These artifacts only required when running tests.
       task 'prepare_local_test_repository' do
-        projects_to_upload = projects(%w(core processor))
+        projects_to_upload = projects(%w(core processor-spi processor))
         old_release_to = repositories.release_to
         begin
           # First we install them in a local repository so we don't have to access the network during local builds
@@ -253,14 +268,15 @@ define 'sting' do
     compile.options.other += FORMATTER_JAVAC_OPTIONS
   end
 
-  doc.from(projects(%w(core processor))).
+  doc.from(projects(%w(core processor processor-spi))).
     using(:javadoc,
           :windowtitle => 'Sting API Documentation',
           :linksource => true,
           :link => %w(https://sting-ioc.github.io/api https://docs.oracle.com/javase/8/docs/api),
           :group => {
-            'Core' => 'sting*',
-            'Compiler' => 'sting.processor*'
+            'Core' => 'sting:sting.interceptors',
+            'Compiler' => 'sting.processor',
+            'Processor SPI' => 'sting.processor.spi'
           }
     )
   cleanup_javadocs(project, 'sting')

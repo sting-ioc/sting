@@ -55,6 +55,8 @@ import org.realityforge.proton.ResourceUtil;
 import org.realityforge.proton.StopWatch;
 import org.realityforge.proton.SuperficialValidation;
 import org.realityforge.proton.TypesUtil;
+import sting.processor.spi.BindingValueKind;
+import sting.processor.spi.InterceptorCodeGenerator;
 
 /**
  * The annotation processor that analyzes Sting annotated source code and generates an injector and supporting artifacts.

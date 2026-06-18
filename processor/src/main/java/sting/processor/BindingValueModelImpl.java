@@ -2,6 +2,8 @@ package sting.processor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import sting.processor.spi.BindingValueKind;
+import sting.processor.spi.BindingValueModel;
 
 record BindingValueModelImpl(@Nonnull String name, @Nonnull BindingValueKind kind, @Nullable Object scalarValue,
                              @Nullable String className, @Nullable String enumTypeName,

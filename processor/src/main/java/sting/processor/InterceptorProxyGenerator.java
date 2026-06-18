@@ -24,6 +24,9 @@ import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.ProcessorException;
 import org.realityforge.proton.SuppressWarningsUtil;
+import sting.processor.spi.InterceptedMethodModel;
+import sting.processor.spi.InterceptorCodeGenerator;
+import sting.processor.spi.LifecycleCodeEmitter;
 
 final class InterceptorProxyGenerator
 {
