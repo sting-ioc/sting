@@ -70,7 +70,6 @@ final class InterceptorProxyDescriptor
       _service
         .interceptors()
         .stream()
-        .filter( InterceptorBindingDescriptor::hasGenericInterceptor )
         .map( i -> i.getInterceptor().binding() )
         .collect( Collectors.toList() );
   }

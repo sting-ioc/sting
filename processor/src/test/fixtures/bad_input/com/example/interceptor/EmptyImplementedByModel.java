@@ -37,7 +37,7 @@ public final class EmptyImplementedByModel
     }
   }
 
-  @InterceptorBinding( priority = 100 )
+  @InterceptorBinding( implementedBy = "", priority = 100 )
   @Retention( RetentionPolicy.CLASS )
   @Target( { ElementType.TYPE, ElementType.METHOD } )
   @interface Trace

@@ -14,7 +14,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.Stack;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -55,8 +54,6 @@ import org.realityforge.proton.ResourceUtil;
 import org.realityforge.proton.StopWatch;
 import org.realityforge.proton.SuperficialValidation;
 import org.realityforge.proton.TypesUtil;
-import sting.processor.spi.BindingValueKind;
-import sting.processor.spi.InterceptorCodeGenerator;
 
 /**
  * The annotation processor that analyzes Sting annotated source code and generates an injector and supporting artifacts.
@@ -170,24 +167,12 @@ public final class StingProcessor
    */
   @Nonnull
   private final Set<String> _resolvingFragmentTypes = new HashSet<>();
-  @Nullable
-  private final List<InterceptorCodeGenerator> _suppliedInterceptorCodeGenerators;
-  @Nonnull
-  private List<InterceptorCodeGenerator> _interceptorCodeGenerators = Collections.emptyList();
 
   /**
    * Create the annotation processor.
    */
   public StingProcessor()
   {
-    this( null );
-  }
-
-  StingProcessor( @Nullable final List<InterceptorCodeGenerator> interceptorCodeGenerators )
-  {
-    _suppliedInterceptorCodeGenerators = null == interceptorCodeGenerators ?
-                                         null :
-                                         List.copyOf( interceptorCodeGenerators );
   }
 
   @Nonnull
@@ -210,13 +195,6 @@ public final class StingProcessor
     super.init( processingEnv );
     _emitJsonDescriptors = readBooleanOption( "emit_json_descriptors", false );
     _emitDotReports = readBooleanOption( "emit_dot_reports", false );
-    _interceptorCodeGenerators = null != _suppliedInterceptorCodeGenerators ?
-                                 _suppliedInterceptorCodeGenerators :
-                                 ServiceLoader
-                                   .load( InterceptorCodeGenerator.class, getClass().getClassLoader() )
-                                   .stream()
-                                   .map( ServiceLoader.Provider::get )
-                                   .toList();
   }
 
   @Override
@@ -607,8 +585,7 @@ public final class StingProcessor
         if ( !proxy.isGenerated() )
         {
           proxy.markGenerated();
-          emitTypeSpec( proxy.getClassName().packageName(),
-                        InterceptorProxyGenerator.buildType( processingEnv, proxy, _interceptorCodeGenerators ) );
+          emitTypeSpec( proxy.getClassName().packageName(), InterceptorProxyGenerator.buildType( processingEnv, proxy ) );
         }
       }
     }
@@ -2417,7 +2394,6 @@ public final class StingProcessor
           if ( !serviceBindings.isEmpty() )
           {
             validateInterceptedService( binding, service, serviceElement, serviceBindings, bindingSource );
-            resolvePluginClaims( serviceBindings );
             resolveGenericInterceptors( serviceBindings );
             binding.addInterceptedService( new InterceptedServiceDescriptor( binding, service, serviceBindings ) );
           }
@@ -2442,10 +2418,10 @@ public final class StingProcessor
   }
 
   @Nonnull
-  private Map<AnnotationMirror, Map<String, BindingValueModelImpl>> findInterceptorBindingAnnotationValues(
+  private Map<AnnotationMirror, Map<String, BindingValueModel>> findInterceptorBindingAnnotationValues(
     @Nonnull final Element element )
   {
-    final var values = new LinkedHashMap<AnnotationMirror, Map<String, BindingValueModelImpl>>();
+    final var values = new LinkedHashMap<AnnotationMirror, Map<String, BindingValueModel>>();
     for ( final var annotation : findInterceptorBindingAnnotations( element ) )
     {
       values.put( annotation, extractBindingValues( annotation ) );
@@ -2473,7 +2449,7 @@ public final class StingProcessor
   private InterceptorBindingDescriptor createInterceptorBindingDescriptor( @Nonnull final ServiceSpec service,
                                                                            @Nonnull final AnnotationMirror annotation,
                                                                            @Nonnull final Element usageElement,
-                                                                           @Nonnull final Map<String, BindingValueModelImpl>
+                                                                           @Nonnull final Map<String, BindingValueModel>
                                                                              values )
   {
     final var metaAnnotation = Objects.requireNonNull( findInterceptorBindingMetaAnnotation( annotation ) );
@@ -2484,8 +2460,7 @@ public final class StingProcessor
     final var implementedByValue = findAnnotationValueByName( metaValues, "implementedBy" );
     final int priority = (Integer) Objects.requireNonNull( priorityValue ).getValue();
     final var implementedBy = null == implementedByValue ? "" : (String) implementedByValue.getValue();
-    return new InterceptorBindingDescriptor( service,
-                                             annotation,
+    return new InterceptorBindingDescriptor( annotation,
                                              annotationType,
                                              usageElement,
                                              priority,
@@ -2519,20 +2494,25 @@ public final class StingProcessor
       else
       {
         final var implementedByValue = findAnnotationValueByName( metaValues, "implementedBy" );
-        if ( null != implementedByValue && !( implementedByValue.getValue() instanceof String ) )
+        if ( null == implementedByValue || !( implementedByValue.getValue() instanceof String ) )
         {
           throw new ProcessorException( "Interceptor binding meta-annotation on " + annotationType.getQualifiedName() +
-                                        " must declare a String implementedBy member when present",
+                                        " must declare a non-empty String implementedBy member",
                                         usageElement,
                                         annotation );
         }
         else
         {
-          final var implementedBy = null == implementedByValue ? "" : (String) implementedByValue.getValue();
-          if ( !implementedBy.isEmpty() )
+          final var implementedBy = (String) implementedByValue.getValue();
+          if ( implementedBy.isEmpty() )
           {
-            validateImplementedByName( implementedBy, usageElement, annotation );
+            throw new ProcessorException( "Interceptor binding meta-annotation on " +
+                                          annotationType.getQualifiedName() +
+                                          " must declare a non-empty String implementedBy member",
+                                          usageElement,
+                                          annotation );
           }
+          validateImplementedByName( implementedBy, usageElement, annotation );
         }
       }
     }
@@ -2568,9 +2548,9 @@ public final class StingProcessor
   }
 
   @Nonnull
-  private Map<String, BindingValueModelImpl> extractBindingValues( @Nonnull final AnnotationMirror annotation )
+  private Map<String, BindingValueModel> extractBindingValues( @Nonnull final AnnotationMirror annotation )
   {
-    final var values = new LinkedHashMap<String, BindingValueModelImpl>();
+    final var values = new LinkedHashMap<String, BindingValueModel>();
     for ( final var entry : processingEnv.getElementUtils().getElementValuesWithDefaults( annotation ).entrySet() )
     {
       final var name = entry.getKey().getSimpleName().toString();
@@ -2580,101 +2560,101 @@ public final class StingProcessor
   }
 
   @Nonnull
-  private BindingValueModelImpl toBindingValueModel( @Nonnull final String name, @Nullable final Object value )
+  private BindingValueModel toBindingValueModel( @Nonnull final String name, @Nullable final Object value )
   {
     if ( value instanceof String )
     {
-      return new BindingValueModelImpl( name,
-                                        BindingValueKind.STRING,
-                                        value,
-                                        null,
-                                        null,
-                                        null,
-                                        CodeBlock.of( "$S", value ).toString() );
+      return new BindingValueModel( name,
+                                    BindingValueKind.STRING,
+                                    value,
+                                    null,
+                                    null,
+                                    null,
+                                    CodeBlock.of( "$S", value ).toString() );
     }
     else if ( value instanceof Boolean )
     {
-      return new BindingValueModelImpl( name,
-                                        BindingValueKind.BOOLEAN,
-                                        value,
-                                        null,
-                                        null,
-                                        null,
-                                        value.toString() );
+      return new BindingValueModel( name,
+                                    BindingValueKind.BOOLEAN,
+                                    value,
+                                    null,
+                                    null,
+                                    null,
+                                    value.toString() );
     }
     else if ( value instanceof Byte )
     {
-      return new BindingValueModelImpl( name,
-                                        BindingValueKind.BYTE,
-                                        value,
-                                        null,
-                                        null,
-                                        null,
+      return new BindingValueModel( name,
+                                    BindingValueKind.BYTE,
+                                    value,
+                                    null,
+                                    null,
+                                    null,
                                         "(byte) " + value );
     }
     else if ( value instanceof Short )
     {
-      return new BindingValueModelImpl( name,
-                                        BindingValueKind.SHORT,
-                                        value,
-                                        null,
-                                        null,
-                                        null,
+      return new BindingValueModel( name,
+                                    BindingValueKind.SHORT,
+                                    value,
+                                    null,
+                                    null,
+                                    null,
                                         "(short) " + value );
     }
     else if ( value instanceof Integer )
     {
-      return new BindingValueModelImpl( name, BindingValueKind.INT, value, null, null, null, value.toString() );
+      return new BindingValueModel( name, BindingValueKind.INT, value, null, null, null, value.toString() );
     }
     else if ( value instanceof Long )
     {
-      return new BindingValueModelImpl( name, BindingValueKind.LONG, value, null, null, null, value + "L" );
+      return new BindingValueModel( name, BindingValueKind.LONG, value, null, null, null, value + "L" );
     }
     else if ( value instanceof Float )
     {
-      return new BindingValueModelImpl( name, BindingValueKind.FLOAT, value, null, null, null, value + "F" );
+      return new BindingValueModel( name, BindingValueKind.FLOAT, value, null, null, null, value + "F" );
     }
     else if ( value instanceof Double )
     {
-      return new BindingValueModelImpl( name, BindingValueKind.DOUBLE, value, null, null, null, value.toString() );
+      return new BindingValueModel( name, BindingValueKind.DOUBLE, value, null, null, null, value.toString() );
     }
     else if ( value instanceof Character )
     {
       final char c = (Character) value;
-      return new BindingValueModelImpl( name,
-                                        BindingValueKind.CHAR,
-                                        value,
-                                        null,
-                                        null,
-                                        null,
-                                        charLiteral( c ) );
+      return new BindingValueModel( name,
+                                    BindingValueKind.CHAR,
+                                    value,
+                                    null,
+                                    null,
+                                    null,
+                                    charLiteral( c ) );
     }
     else if ( value instanceof TypeMirror )
     {
       final String className = value.toString();
-      return new BindingValueModelImpl( name,
-                                        BindingValueKind.CLASS,
-                                        null,
-                                        className,
-                                        null,
-                                        null,
-                                        CodeBlock.of( "$S", className ).toString() );
+      return new BindingValueModel( name,
+                                    BindingValueKind.CLASS,
+                                    null,
+                                    className,
+                                    null,
+                                    null,
+                                    CodeBlock.of( "$S", className ).toString() );
     }
     else if ( value instanceof final VariableElement enumValue )
     {
       final var enumTypeName = ( (TypeElement) enumValue.getEnclosingElement() ).getQualifiedName().toString();
       final var constantName = enumValue.getSimpleName().toString();
-      return new BindingValueModelImpl( name,
-                                        BindingValueKind.ENUM,
-                                        null,
-                                        null,
-                                        enumTypeName,
-                                        constantName,
-                                        CodeBlock.of( "$S", constantName ).toString() );
+      return new BindingValueModel( name,
+                                    BindingValueKind.ENUM,
+                                    null,
+                                    null,
+                                    enumTypeName,
+                                    constantName,
+                                    CodeBlock.of( "$S", constantName ).toString() );
     }
     else
     {
-      return new BindingValueModelImpl( name, BindingValueKind.UNSUPPORTED, null, null, null, null, "<unsupported>" );
+      return new BindingValueModel( name, BindingValueKind.UNSUPPORTED, null, null, null, null, "<unsupported>" );
     }
   }
 
@@ -2791,60 +2771,11 @@ public final class StingProcessor
     }
   }
 
-  private void resolvePluginClaims( @Nonnull final List<InterceptorBindingDescriptor> interceptors )
-  {
-    for ( final var interceptor : interceptors )
-    {
-      final var pluginIds = new ArrayList<String>();
-      for ( final var generator : _interceptorCodeGenerators )
-      {
-        if ( generator.supports( interceptor ) )
-        {
-          pluginIds.add( pluginId( generator ) );
-        }
-      }
-      final var pluginCount = pluginIds.size();
-      if ( pluginCount > 1 )
-      {
-        interceptor.setConflict( pluginIds );
-        throw new ProcessorException( "Multiple interceptor plugins claim " + interceptor.annotationTypeName() +
-                                      " for service " + interceptor.getService().getCoordinate() + ": " +
-                                      String.join( ", ", interceptor.getPluginIds() ),
-                                      interceptor.getUsageElement(),
-                                      interceptor.getAnnotation() );
-      }
-      else if ( 1 == pluginCount )
-      {
-        interceptor.setClaimedBy( pluginIds.get( 0 ) );
-      }
-    }
-  }
-
-  @Nonnull
-  private String pluginId( @Nonnull final InterceptorCodeGenerator generator )
-  {
-    final var canonicalName = generator.getClass().getCanonicalName();
-    return null == canonicalName ? generator.getClass().getName() : canonicalName;
-  }
-
   private void resolveGenericInterceptors( @Nonnull final List<InterceptorBindingDescriptor> interceptors )
   {
     for ( final var interceptor : interceptors )
     {
-      if ( InterceptorBindingDescriptor.ClaimState.CLAIMED != interceptor.getClaimState() )
-      {
-        if ( interceptor.getImplementedBy().isEmpty() )
-        {
-          throw new ProcessorException( "Interceptor binding " + interceptor.annotationTypeName() +
-                                        " must specify implementedBy or be claimed by exactly one plugin",
-                                        interceptor.getUsageElement(),
-                                        interceptor.getAnnotation() );
-        }
-        else
-        {
-          interceptor.setInterceptor( resolveGenericInterceptor( interceptor ) );
-        }
-      }
+      interceptor.setInterceptor( resolveGenericInterceptor( interceptor ) );
     }
   }
 

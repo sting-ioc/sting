@@ -1,6 +1,5 @@
 package sting.processor;
 
-import com.palantir.javapoet.CodeBlock;
 import com.palantir.javapoet.FieldSpec;
 import com.palantir.javapoet.MethodSpec;
 import com.palantir.javapoet.ParameterSpec;
@@ -22,11 +21,7 @@ import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
-import org.realityforge.proton.ProcessorException;
 import org.realityforge.proton.SuppressWarningsUtil;
-import sting.processor.spi.InterceptedMethodModel;
-import sting.processor.spi.InterceptorCodeGenerator;
-import sting.processor.spi.LifecycleCodeEmitter;
 
 final class InterceptorProxyGenerator
 {
@@ -36,8 +31,7 @@ final class InterceptorProxyGenerator
 
   @Nonnull
   static TypeSpec buildType( @Nonnull final ProcessingEnvironment processingEnv,
-                             @Nonnull final InterceptorProxyDescriptor proxy,
-                             @Nonnull final List<InterceptorCodeGenerator> plugins )
+                             @Nonnull final InterceptorProxyDescriptor proxy )
   {
     final var serviceElement =
       (TypeElement) ( (DeclaredType) proxy.getService().service().getCoordinate().type() ).asElement();
@@ -51,7 +45,7 @@ final class InterceptorProxyGenerator
     emitFields( builder, proxy );
     emitConstructor( builder, proxy );
     emitCreateMethod( processingEnv, builder, proxy );
-    emitServiceMethods( processingEnv, builder, proxy, plugins, serviceElement );
+    emitServiceMethods( processingEnv, builder, proxy, serviceElement );
 
     return builder.build();
   }
@@ -68,15 +62,12 @@ final class InterceptorProxyGenerator
     var index = 1;
     for ( final var interceptor : proxy.getService().interceptors() )
     {
-      if ( interceptor.hasGenericInterceptor() )
-      {
-        builder.addField( FieldSpec.builder( TypeName.get( interceptor.getInterceptor().element().asType() ),
-                                             interceptorFieldName( index++ ),
-                                             Modifier.PRIVATE,
-                                             Modifier.FINAL )
-                            .addAnnotation( GeneratorUtil.NONNULL_CLASSNAME )
-                            .build() );
-      }
+      builder.addField( FieldSpec.builder( TypeName.get( interceptor.getInterceptor().element().asType() ),
+                                           interceptorFieldName( index++ ),
+                                           Modifier.PRIVATE,
+                                           Modifier.FINAL )
+                          .addAnnotation( GeneratorUtil.NONNULL_CLASSNAME )
+                          .build() );
     }
   }
 
@@ -91,24 +82,18 @@ final class InterceptorProxyGenerator
     var index = 1;
     for ( final var interceptor : proxy.getService().interceptors() )
     {
-      if ( interceptor.hasGenericInterceptor() )
-      {
-        ctor.addParameter( ParameterSpec.builder( TypeName.get( interceptor.getInterceptor().element().asType() ),
-                                                  "interceptor" + index,
-                                                  Modifier.FINAL )
-                             .build() );
-        index++;
-      }
+      ctor.addParameter( ParameterSpec.builder( TypeName.get( interceptor.getInterceptor().element().asType() ),
+                                                "interceptor" + index,
+                                                Modifier.FINAL )
+                           .build() );
+      index++;
     }
     ctor.addStatement( "$N = $N", "$sting$_target", "target" );
     index = 1;
     for ( final var interceptor : proxy.getService().interceptors() )
     {
-      if ( interceptor.hasGenericInterceptor() )
-      {
-        ctor.addStatement( "$N = $N", interceptorFieldName( index ), "interceptor" + index );
-        index++;
-      }
+      ctor.addStatement( "$N = $N", interceptorFieldName( index ), "interceptor" + index );
+      index++;
     }
     builder.addMethod( ctor.build() );
   }
@@ -128,12 +113,9 @@ final class InterceptorProxyGenerator
     var index = 1;
     for ( final var interceptor : proxy.getService().interceptors() )
     {
-      if ( interceptor.hasGenericInterceptor() )
-      {
-        method.addParameter( Object.class, "interceptor" + index, Modifier.FINAL );
-        suppressTypes.add( interceptor.getInterceptor().element().asType() );
-        index++;
-      }
+      method.addParameter( Object.class, "interceptor" + index, Modifier.FINAL );
+      suppressTypes.add( interceptor.getInterceptor().element().asType() );
+      index++;
     }
     final var code = new StringBuilder();
     final var args = new ArrayList<>();
@@ -144,13 +126,10 @@ final class InterceptorProxyGenerator
     index = 1;
     for ( final var interceptor : proxy.getService().interceptors() )
     {
-      if ( interceptor.hasGenericInterceptor() )
-      {
-        code.append( ", ($T) $N" );
-        args.add( interceptor.getInterceptor().element().asType() );
-        args.add( "interceptor" + index );
-        index++;
-      }
+      code.append( ", ($T) $N" );
+      args.add( interceptor.getInterceptor().element().asType() );
+      args.add( "interceptor" + index );
+      index++;
     }
     code.append( " )" );
     method.addStatement( code.toString(), args.toArray() );
@@ -164,7 +143,6 @@ final class InterceptorProxyGenerator
   private static void emitServiceMethods( @Nonnull final ProcessingEnvironment processingEnv,
                                           @Nonnull final TypeSpec.Builder builder,
                                           @Nonnull final InterceptorProxyDescriptor proxy,
-                                          @Nonnull final List<InterceptorCodeGenerator> plugins,
                                           @Nonnull final TypeElement serviceElement )
   {
     final var emitted = new HashSet<String>();
@@ -177,7 +155,7 @@ final class InterceptorProxyGenerator
         final var signature = method.getSimpleName() + "/" + method.getParameters().size() + "/" + method.asType();
         if ( emitted.add( signature ) )
         {
-          builder.addMethod( buildServiceMethod( processingEnv, proxy, plugins, serviceElement, method ) );
+          builder.addMethod( buildServiceMethod( processingEnv, proxy, serviceElement, method ) );
         }
       }
     }
@@ -202,7 +180,6 @@ final class InterceptorProxyGenerator
   @Nonnull
   private static MethodSpec buildServiceMethod( @Nonnull final ProcessingEnvironment processingEnv,
                                                 @Nonnull final InterceptorProxyDescriptor proxy,
-                                                @Nonnull final List<InterceptorCodeGenerator> plugins,
                                                 @Nonnull final TypeElement serviceElement,
                                                 @Nonnull final ExecutableElement method )
   {
@@ -217,9 +194,7 @@ final class InterceptorProxyGenerator
     }
     emitInterceptorBlock( builder,
                           proxy,
-                          plugins,
                           method,
-                          modelFor( method ),
                           0,
                           catchTypes( processingEnv, method ),
                           arguments );
@@ -232,9 +207,7 @@ final class InterceptorProxyGenerator
 
   private static void emitInterceptorBlock( @Nonnull final MethodSpec.Builder builder,
                                             @Nonnull final InterceptorProxyDescriptor proxy,
-                                            @Nonnull final List<InterceptorCodeGenerator> plugins,
                                             @Nonnull final ExecutableElement method,
-                                            @Nonnull final InterceptedMethodModel methodModel,
                                             final int index,
                                             @Nonnull final List<TypeMirror> catchTypes,
                                             @Nonnull final ArgumentState arguments )
@@ -249,9 +222,7 @@ final class InterceptorProxyGenerator
       final var interceptor = interceptors.get( index );
       emitLifecycle( builder,
                      proxy,
-                     plugins,
                      method,
-                     methodModel,
                      interceptor,
                      InterceptorPhase.BEFORE,
                      null,
@@ -259,7 +230,7 @@ final class InterceptorProxyGenerator
       if ( hasAfterException( interceptor ) )
       {
         builder.beginControlFlow( "try" );
-        emitInterceptorBlock( builder, proxy, plugins, method, methodModel, index + 1, catchTypes, arguments );
+        emitInterceptorBlock( builder, proxy, method, index + 1, catchTypes, arguments );
         var first = true;
         for ( final var catchType : catchTypes )
         {
@@ -274,9 +245,7 @@ final class InterceptorProxyGenerator
           }
           emitLifecycle( builder,
                          proxy,
-                         plugins,
                          method,
-                         methodModel,
                          interceptor,
                          InterceptorPhase.AFTER_EXCEPTION,
                          "t",
@@ -287,13 +256,11 @@ final class InterceptorProxyGenerator
       }
       else
       {
-        emitInterceptorBlock( builder, proxy, plugins, method, methodModel, index + 1, catchTypes, arguments );
+        emitInterceptorBlock( builder, proxy, method, index + 1, catchTypes, arguments );
       }
       emitLifecycle( builder,
                      proxy,
-                     plugins,
                      method,
-                     methodModel,
                      interceptor,
                      InterceptorPhase.AFTER,
                      null,
@@ -303,9 +270,7 @@ final class InterceptorProxyGenerator
 
   private static boolean hasAfterException( @Nonnull final InterceptorBindingDescriptor interceptor )
   {
-    return interceptor.hasGenericInterceptor() ?
-           null != interceptor.getInterceptor().findMethod( InterceptorPhase.AFTER_EXCEPTION ) :
-           InterceptorBindingDescriptor.ClaimState.CLAIMED == interceptor.getClaimState();
+    return null != interceptor.getInterceptor().findMethod( InterceptorPhase.AFTER_EXCEPTION );
   }
 
   private static void emitTargetCall( @Nonnull final MethodSpec.Builder builder,
@@ -336,60 +301,17 @@ final class InterceptorProxyGenerator
 
   private static void emitLifecycle( @Nonnull final MethodSpec.Builder builder,
                                      @Nonnull final InterceptorProxyDescriptor proxy,
-                                     @Nonnull final List<InterceptorCodeGenerator> plugins,
                                      @Nonnull final ExecutableElement method,
-                                     @Nonnull final InterceptedMethodModel methodModel,
                                      @Nonnull final InterceptorBindingDescriptor interceptor,
                                      @Nonnull final InterceptorPhase phase,
                                      @Nullable final String thrownName,
                                      @Nonnull final ArgumentState arguments )
   {
-    if ( interceptor.hasGenericInterceptor() )
+    final var lifecycleMethod = interceptor.getInterceptor().findMethod( phase );
+    if ( null != lifecycleMethod )
     {
-      final var lifecycleMethod = interceptor.getInterceptor().findMethod( phase );
-      if ( null != lifecycleMethod )
-      {
-        emitGenericLifecycle( builder, proxy, method, interceptor, lifecycleMethod, thrownName, arguments );
-      }
+      emitGenericLifecycle( builder, proxy, method, interceptor, lifecycleMethod, thrownName, arguments );
     }
-    else if ( InterceptorBindingDescriptor.ClaimState.CLAIMED == interceptor.getClaimState() )
-    {
-      final var generator = findPlugin( plugins, interceptor );
-      if ( null != generator )
-      {
-        final var emitter =
-          new PluginLifecycleCodeEmitter( builder, method, interceptor, phase, thrownName, arguments );
-        if ( InterceptorPhase.BEFORE == phase )
-        {
-          generator.emitBefore( methodModel, interceptor, emitter );
-        }
-        else if ( InterceptorPhase.AFTER == phase )
-        {
-          generator.emitAfter( methodModel, interceptor, emitter );
-        }
-        else
-        {
-          generator.emitAfterException( methodModel, interceptor, emitter );
-        }
-      }
-    }
-  }
-
-  @Nullable
-  private static InterceptorCodeGenerator findPlugin( @Nonnull final List<InterceptorCodeGenerator> plugins,
-                                                      @Nonnull final InterceptorBindingDescriptor interceptor )
-  {
-    final var pluginId = interceptor.getPluginIds().get( 0 );
-    for ( final var plugin : plugins )
-    {
-      final var canonicalName = plugin.getClass().getCanonicalName();
-      final var id = null == canonicalName ? plugin.getClass().getName() : canonicalName;
-      if ( pluginId.equals( id ) )
-      {
-        return plugin;
-      }
-    }
-    return null;
   }
 
   private static void emitGenericLifecycle( @Nonnull final MethodSpec.Builder builder,
@@ -470,7 +392,7 @@ final class InterceptorProxyGenerator
       {
         return interceptorFieldName( index );
       }
-      else if ( interceptor.hasGenericInterceptor() )
+      else
       {
         index++;
       }
@@ -488,7 +410,7 @@ final class InterceptorProxyGenerator
   {
     return proxy.getService().interceptors()
       .stream()
-      .anyMatch( i -> !i.hasGenericInterceptor() || i.getInterceptor().requestsArguments() );
+      .anyMatch( i -> i.getInterceptor().requestsArguments() );
   }
 
   @Nonnull
@@ -518,125 +440,6 @@ final class InterceptorProxyGenerator
     final var typeUtils = processingEnv.getTypeUtils();
     return typeUtils.isAssignable( type, runtimeException.asType() ) ||
            typeUtils.isAssignable( type, error.asType() );
-  }
-
-  @Nonnull
-  private static InterceptedMethodModel modelFor( @Nonnull final ExecutableElement method )
-  {
-    return new InterceptedMethodModelImpl( method.getSimpleName().toString(),
-                                           method.getReturnType().toString(),
-                                           method.getParameters().stream().map( p -> p.asType().toString() ).toList(),
-                                           method.getThrownTypes().stream().map( TypeMirror::toString ).toList(),
-                                           method.getModifiers().contains( Modifier.DEFAULT ),
-                                           method.isVarArgs() );
-  }
-
-  private record PluginLifecycleCodeEmitter(@Nonnull MethodSpec.Builder builder, @Nonnull ExecutableElement method,
-                                            @Nonnull InterceptorBindingDescriptor binding,
-                                            @Nonnull InterceptorPhase phase, @Nullable String thrownName,
-                                            @Nonnull ArgumentState arguments)
-    implements LifecycleCodeEmitter
-  {
-    @Nonnull
-    @Override
-    public String serviceType()
-    {
-      return stringLiteral( binding.serviceTypeName() );
-    }
-
-    @Nonnull
-    @Override
-    public String methodName()
-    {
-      return stringLiteral( method.getSimpleName().toString() );
-    }
-
-    @Nonnull
-    @Override
-    public String bindingValue( @Nonnull final String name )
-    {
-      final var value = binding.values().get( name );
-      if ( null == value )
-      {
-        throw pluginError( "@BindingValue references unknown interceptor binding member " + name );
-      }
-      else
-      {
-        return value.javaLiteral();
-      }
-    }
-
-    @Nonnull
-    @Override
-    public String argument( final int index )
-    {
-      if ( index < 0 || index >= method.getParameters().size() )
-      {
-        throw pluginError( "argument(" + index + ") is outside the intercepted method parameter range" );
-      }
-      else
-      {
-        return method.getParameters().get( index ).getSimpleName().toString();
-      }
-    }
-
-    @Nonnull
-    @Override
-    public String argumentsArray()
-    {
-      return arguments.expression( builder );
-    }
-
-    @Nonnull
-    @Override
-    public String result()
-    {
-      if ( InterceptorPhase.AFTER != phase )
-      {
-        throw pluginError( "result() is only valid during after emission" );
-      }
-      else
-      {
-        return TypeKind.VOID == method.getReturnType().getKind() ? "null" : "result";
-      }
-    }
-
-    @Nonnull
-    @Override
-    public String thrown()
-    {
-      if ( InterceptorPhase.AFTER_EXCEPTION != phase )
-      {
-        throw pluginError( "thrown() is only valid during afterException emission" );
-      }
-      else
-      {
-        assert null != thrownName;
-        return thrownName;
-      }
-    }
-
-    @Override
-    public void emitStatement( @Nonnull final String javaStatement )
-    {
-      builder.addCode( escapeCode( javaStatement ) );
-      if ( !javaStatement.endsWith( "\n" ) )
-      {
-        builder.addCode( "\n" );
-      }
-    }
-
-    @Nonnull
-    private String stringLiteral( @Nonnull final String value )
-    {
-      return CodeBlock.of( "$S", value ).toString();
-    }
-
-    @Nonnull
-    private ProcessorException pluginError( @Nonnull final String message )
-    {
-      return new ProcessorException( message, binding.getUsageElement(), binding.getAnnotation() );
-    }
   }
 
   private record ArgumentState(@Nonnull List<? extends VariableElement> parameters, boolean required)
@@ -673,11 +476,5 @@ final class InterceptorProxyGenerator
       builder.endControlFlow();
       return "arguments";
     }
-  }
-
-  @Nonnull
-  private static String escapeCode( @Nonnull final String code )
-  {
-    return code.replace( "$", "$$" );
   }
 }

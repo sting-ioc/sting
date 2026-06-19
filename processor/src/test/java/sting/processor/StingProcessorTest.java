@@ -19,10 +19,6 @@ import org.realityforge.proton.qa.Compilation;
 import org.realityforge.proton.qa.CompileTestUtil;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import sting.processor.spi.InterceptedMethodModel;
-import sting.processor.spi.InterceptorBindingModel;
-import sting.processor.spi.InterceptorCodeGenerator;
-import sting.processor.spi.LifecycleCodeEmitter;
 import static org.testng.Assert.*;
 
 @SuppressWarnings( "TextBlockMigration" )
@@ -240,7 +236,6 @@ public final class StingProcessorTest
         new Object[]{ "public interceptor annotations", "com.example.interceptor.BasicInterceptorModel" },
         new Object[]{ "service-interface binding", "com.example.interceptor.BasicInterceptorModel" },
         new Object[]{ "third-party simple-name binding", "com.example.interceptor.ThirdPartyBindingModel" },
-        new Object[]{ "descriptor extraction before plugin claims", "com.example.interceptor.ThirdPartyBindingModel" },
         new Object[]{ "implementation binding source", "com.example.interceptor.ImplementationBindingSourceModel" },
         new Object[]{ "provider binding source", "com.example.interceptor.ProviderBindingSourceModel" },
         new Object[]{ "combined service and binding-source annotations",
@@ -283,8 +278,7 @@ public final class StingProcessorTest
         new Object[]{ "eager unrequested interceptor proxy dependencies",
                       "com.example.interceptor.EagerUnrequestedInterceptorModel" },
         new Object[]{ "supplier cycle boundary", "com.example.interceptor.SupplierCycleBoundaryModel" },
-        new Object[]{ "proxy emission dedupe", "com.example.interceptor.TwoInjectorsProxyDedupeModel" },
-        new Object[]{ "external plugin public SPI compile", "com.example.interceptor.ExternalPluginModel" }
+        new Object[]{ "proxy emission dedupe", "com.example.interceptor.TwoInjectorsProxyDedupeModel" }
       };
   }
 
@@ -324,7 +318,7 @@ public final class StingProcessorTest
         new Object[]{ "Object published type", "com.example.interceptor.ObjectPublishedTypeModel",
                       "Intercepted bindings must not publish java.lang.Object" },
         new Object[]{ "empty implementedBy", "com.example.interceptor.EmptyImplementedByModel",
-                      "must specify implementedBy or be claimed by exactly one plugin" },
+                      "must declare a non-empty String implementedBy member" },
         new Object[]{ "input interception", "com.example.interceptor.InputInterceptionModel",
                       "Interceptor bindings on injector input services are not supported" },
         new Object[]{ "nullable provider interception", "com.example.interceptor.NullableProviderModel",
@@ -338,7 +332,7 @@ public final class StingProcessorTest
         new Object[]{ "third-party missing priority", "com.example.interceptor.ThirdPartyMissingPriorityModel",
                       "must declare an int priority member" },
         new Object[]{ "third-party bad implementedBy", "com.example.interceptor.ThirdPartyBadImplementedByModel",
-                      "must declare a String implementedBy member when present" },
+                      "must declare a non-empty String implementedBy member" },
         new Object[]{ "missing implementedBy class", "com.example.interceptor.MissingImplementedByClassModel",
                       "does not exist" },
         new Object[]{ "binary implementedBy", "com.example.interceptor.BinaryImplementedByModel",
@@ -416,110 +410,6 @@ public final class StingProcessorTest
     final Compilation compilation = compile( Collections.singletonList( input( "bad_input", classname ) ) );
     assertFalse( compilation.success() );
     assertErrorDiagnostic( compilation, message );
-  }
-
-  @Test
-  public void pluginOnlyBindingCompiles()
-    throws Exception
-  {
-    final Compilation compilation =
-      compileWithInterceptorPlugins( "input",
-                                     "com.example.interceptor.PluginOnlyBindingModel",
-                                     List.of( new PluginTraceGenerator() ) );
-    assertCompilationSuccessful( compilation );
-    final String source = readGeneratedInterceptorProxy( compilation, "PluginOnlyBindingModel" );
-    assertTrue( source.contains( "java.util.Objects.requireNonNull(\"run\")" ) );
-    assertFalse( source.contains( "new Object[]" ), source );
-  }
-
-  @Test
-  public void pluginClaimWinsOverGenericInterceptor()
-    throws Exception
-  {
-    final Compilation compilation =
-      compileWithInterceptorPlugins( "input",
-                                     "com.example.interceptor.PluginWithImplementedByModel",
-                                     List.of( new PluginTraceGenerator() ) );
-    assertCompilationSuccessful( compilation );
-    final String source = readGeneratedInterceptorProxy( compilation, "PluginWithImplementedByModel" );
-    assertTrue( source.contains( "java.util.Objects.requireNonNull(\"run\")" ) );
-    assertFalse( source.contains( "$sting$_interceptor" ) );
-  }
-
-  @Test
-  public void pluginClaimStateIsScopedToServiceCoordinate()
-    throws Exception
-  {
-    final Compilation compilation =
-      compileWithInterceptorPlugins( "input",
-                                     "com.example.interceptor.PluginCoordinateClaimModel",
-                                     List.of( new LeftOnlyPluginTraceGenerator() ) );
-    assertCompilationSuccessful( compilation );
-    assertFalse( readGeneratedInterceptorProxy( compilation, "left" ).contains( "$sting$_interceptor" ) );
-    assertTrue( readGeneratedInterceptorProxy( compilation, "right" ).contains( "$sting$_interceptor1" ) );
-  }
-
-  @Test
-  public void multiplePluginClaimsFailWithPluginNames()
-  {
-    final Compilation compilation =
-      compileWithInterceptorPlugins( "input",
-                                     "com.example.interceptor.PluginOnlyBindingModel",
-                                     List.of( new PluginTraceGenerator(), new OtherPluginTraceGenerator() ) );
-    assertFalse( compilation.success() );
-    assertErrorDiagnostic( compilation, "Multiple interceptor plugins claim" );
-    assertErrorDiagnostic( compilation, PluginTraceGenerator.class.getCanonicalName() );
-    assertErrorDiagnostic( compilation, OtherPluginTraceGenerator.class.getCanonicalName() );
-  }
-
-  @Test
-  public void pluginPartialClaimRequiresGenericFallbackForUnclaimedDescriptor()
-  {
-    final Compilation compilation =
-      compileWithInterceptorPlugins( "bad_input",
-                                     "com.example.interceptor.PluginPartialClaimModel",
-                                     List.of( new LeftOnlyPluginTraceGenerator() ) );
-    assertFalse( compilation.success() );
-    assertErrorDiagnostic( compilation, "must specify implementedBy or be claimed by exactly one plugin" );
-  }
-
-  @Test
-  public void serviceLoaderInterceptorPluginIsDiscovered()
-    throws Exception
-  {
-    final Compilation compilation =
-      compile( Collections.singletonList( input( "input",
-                                                 "com.example.interceptor.ServiceLoaderPluginBindingModel" ) ) );
-    assertCompilationSuccessful( compilation );
-    final String source = readGeneratedInterceptorProxy( compilation, "ServiceLoaderPluginBindingModel" );
-    assertTrue( source.contains( "java.util.Objects.requireNonNull(\"run\")" ), source );
-    assertFalse( source.contains( "$sting$_interceptor" ), source );
-  }
-
-  @Test
-  public void pluginArgumentsArrayIsLazyAndShared()
-    throws Exception
-  {
-    final Compilation compilation =
-      compileWithInterceptorPlugins( "input",
-                                     "com.example.interceptor.PluginArgumentsModel",
-                                     List.of( new PluginArgumentsTraceGenerator() ) );
-    assertCompilationSuccessful( compilation );
-    final String source = readGeneratedInterceptorProxy( compilation, "PluginArgumentsModel" );
-    assertEquals( countOccurrences( source, "Object[] arguments = null" ), 1, source );
-    assertEquals( countOccurrences( source, "arguments = new Object[] {name, count}" ), 2, source );
-    assertEquals( countOccurrences( source, "java.util.Objects.requireNonNull(arguments)" ), 2, source );
-  }
-
-  @Test
-  public void pluginInvalidMetadataRequestFailsWithDiagnostic()
-  {
-    final Compilation compilation =
-      compileWithInterceptorPlugins( "input",
-                                     "com.example.interceptor.PluginOnlyBindingModel",
-                                     List.of( new InvalidResultPluginTraceGenerator() ) );
-    assertFalse( compilation.success() );
-    assertErrorDiagnostic( compilation, "result() is only valid during after emission" );
   }
 
   @DataProvider( name = "generatedInterceptorSourceAssertions" )
@@ -1842,17 +1732,6 @@ public final class StingProcessorTest
   }
 
   @Nonnull
-  private Compilation compileWithInterceptorPlugins( @Nonnull final String fixtureType,
-                                                     @Nonnull final String classname,
-                                                     @Nonnull final List<InterceptorCodeGenerator> plugins )
-  {
-    return CompileTestUtil.compile( Collections.singletonList( input( fixtureType, classname ) ),
-                                    getOptions(),
-                                    Collections.singletonList( new StingProcessor( plugins ) ),
-                                    Collections.emptyList() );
-  }
-
-  @Nonnull
   private String readGeneratedInterceptorProxy( @Nonnull final Compilation compilation,
                                                 @Nonnull final String filenamePart )
     throws IOException
@@ -1882,119 +1761,6 @@ public final class StingProcessorTest
         .orElseThrow( () -> new AssertionError( "Unable to find class output ending in " + suffix +
                                                 " in " + compilation.classOutputFilenames() ) );
     return Files.readString( compilation.classOutput().resolve( filename ), StandardCharsets.UTF_8 );
-  }
-
-  private int countOccurrences( @Nonnull final String text, @Nonnull final String fragment )
-  {
-    int count = 0;
-    int index = 0;
-    while ( -1 != ( index = text.indexOf( fragment, index ) ) )
-    {
-      count++;
-      index += fragment.length();
-    }
-    return count;
-  }
-
-  private static class PluginTraceGenerator
-    implements InterceptorCodeGenerator
-  {
-    public boolean supports( @Nonnull final InterceptorBindingModel binding )
-    {
-      return binding.annotationTypeName().endsWith( ".PluginTrace" );
-    }
-
-    public void emitBefore( @Nonnull final InterceptedMethodModel method,
-                            @Nonnull final InterceptorBindingModel binding,
-                            @Nonnull final LifecycleCodeEmitter emitter )
-    {
-      emitter.emitStatement( "java.util.Objects.requireNonNull(" + emitter.methodName() + ");" );
-    }
-
-    public void emitAfter( @Nonnull final InterceptedMethodModel method,
-                           @Nonnull final InterceptorBindingModel binding,
-                           @Nonnull final LifecycleCodeEmitter emitter )
-    {
-    }
-
-    public void emitAfterException( @Nonnull final InterceptedMethodModel method,
-                                    @Nonnull final InterceptorBindingModel binding,
-                                    @Nonnull final LifecycleCodeEmitter emitter )
-    {
-    }
-  }
-
-  private static final class LeftOnlyPluginTraceGenerator
-    extends PluginTraceGenerator
-  {
-    public boolean supports( @Nonnull final InterceptorBindingModel binding )
-    {
-      return super.supports( binding ) && "left".equals( binding.qualifierKey() );
-    }
-  }
-
-  private static final class OtherPluginTraceGenerator
-    extends PluginTraceGenerator
-  {
-  }
-
-  // Referenced by Services config
-  @SuppressWarnings( "unused" )
-  public static final class ServiceLoadedPluginTraceGenerator
-    implements InterceptorCodeGenerator
-  {
-    public boolean supports( @Nonnull final InterceptorBindingModel binding )
-    {
-      return binding.annotationTypeName().endsWith( ".ServiceLoadedPluginTrace" );
-    }
-
-    public void emitBefore( @Nonnull final InterceptedMethodModel method,
-                            @Nonnull final InterceptorBindingModel binding,
-                            @Nonnull final LifecycleCodeEmitter emitter )
-    {
-      emitter.emitStatement( "java.util.Objects.requireNonNull(" + emitter.methodName() + ");" );
-    }
-
-    public void emitAfter( @Nonnull final InterceptedMethodModel method,
-                           @Nonnull final InterceptorBindingModel binding,
-                           @Nonnull final LifecycleCodeEmitter emitter )
-    {
-    }
-
-    public void emitAfterException( @Nonnull final InterceptedMethodModel method,
-                                    @Nonnull final InterceptorBindingModel binding,
-                                    @Nonnull final LifecycleCodeEmitter emitter )
-    {
-    }
-  }
-
-  private static final class PluginArgumentsTraceGenerator
-    extends PluginTraceGenerator
-  {
-    public void emitBefore( @Nonnull final InterceptedMethodModel method,
-                            @Nonnull final InterceptorBindingModel binding,
-                            @Nonnull final LifecycleCodeEmitter emitter )
-    {
-      emitter.emitStatement( "java.util.Objects.requireNonNull(" + emitter.argumentsArray() + ");" );
-    }
-
-    public void emitAfter( @Nonnull final InterceptedMethodModel method,
-                           @Nonnull final InterceptorBindingModel binding,
-                           @Nonnull final LifecycleCodeEmitter emitter )
-    {
-      emitter.emitStatement( "java.util.Objects.requireNonNull(" + emitter.argumentsArray() + ");" );
-    }
-  }
-
-  private static final class InvalidResultPluginTraceGenerator
-    extends PluginTraceGenerator
-  {
-    public void emitBefore( @Nonnull final InterceptedMethodModel method,
-                            @Nonnull final InterceptorBindingModel binding,
-                            @Nonnull final LifecycleCodeEmitter emitter )
-    {
-      emitter.emitStatement( "java.util.Objects.requireNonNull(" + emitter.result() + ");" );
-    }
   }
 
   @SuppressWarnings( "ResultOfMethodCallIgnored" )

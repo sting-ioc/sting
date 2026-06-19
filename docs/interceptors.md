@@ -17,7 +17,7 @@ the `sting.interceptors` package.
 
 {@file_content: file=sting/doc/examples/interceptors/Timed.java start_line=@InterceptorBinding}
 
-The `implementedBy` value is the canonical dotted name of an {@link: sting.Injectable @Injectable} interceptor
+The required `implementedBy` value is the canonical dotted name of an {@link: sting.Injectable @Injectable} interceptor
 implementation. Lower `priority` values run outermost. Equal effective priorities for one intercepted service are
 compile errors.
 
@@ -85,23 +85,3 @@ requests, suppliers, supplier optionals, collections, supplier collections, and 
 target remains internal to the generated injector and proxy.
 
 {@file_content: file=sting/doc/examples/interceptors/InterceptorsInjector.java start_line=@Injector}
-
-## Plugin Bindings
-
-Processor-path plugins may claim a binding and emit dependency-free lifecycle code directly. A binding intended only
-for plugins leaves `implementedBy` empty and must be claimed by exactly one plugin for every effective intercepted
-service coordinate.
-
-{@file_content: file=sting/doc/examples/interceptors/PluginOnly.java start_line=@InterceptorBinding}
-
-Plugin emission is intentionally lifecycle-only. Plugins cannot add graph dependencies, fields, helper methods,
-constructor parameters, imports, or runtime service requests.
-
-Plugin implementations compile against `org.realityforge.sting:sting-processor-spi` and import SPI types from
-`sting.processor.spi.*`. Register plugin implementations in
-`META-INF/services/sting.processor.spi.InterceptorCodeGenerator`.
-
-The `sting-processor` artifact contains the SPI classes in the same `sting.processor.spi` package so annotation
-processor users can keep only `sting-processor` and plugin jars on the processor path. The old
-`sting.processor.*` SPI imports and `META-INF/services/sting.processor.InterceptorCodeGenerator` descriptor are not
-supported.

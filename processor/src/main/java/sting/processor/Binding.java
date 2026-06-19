@@ -76,7 +76,7 @@ final class Binding
    * Interceptor binding annotations found on the binding source when the binding is created.
    */
   @Nonnull
-  private final Map<AnnotationMirror, Map<String, BindingValueModelImpl>> _interceptorBindingSourceAnnotations =
+  private final Map<AnnotationMirror, Map<String, BindingValueModel>> _interceptorBindingSourceAnnotations =
     new LinkedHashMap<>();
   /**
    * True once interceptor metadata has been validated and resolved for this binding in a reachable graph context.
@@ -139,7 +139,7 @@ final class Binding
   }
 
   void setInterceptorBindingSource( @Nonnull final Element interceptorBindingSource,
-                                    @Nonnull final Map<AnnotationMirror, Map<String, BindingValueModelImpl>>
+                                    @Nonnull final Map<AnnotationMirror, Map<String, BindingValueModel>>
                                       interceptorBindingSourceAnnotations )
   {
     assert null == _interceptorBindingSource;
@@ -154,7 +154,7 @@ final class Binding
   }
 
   @Nonnull
-  Map<AnnotationMirror, Map<String, BindingValueModelImpl>> getInterceptorBindingSourceAnnotations()
+  Map<AnnotationMirror, Map<String, BindingValueModel>> getInterceptorBindingSourceAnnotations()
   {
     return _interceptorBindingSourceAnnotations;
   }

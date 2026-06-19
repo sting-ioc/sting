@@ -22,12 +22,10 @@ public @interface InterceptorBinding
   /**
    * The canonical dotted name of the {@code @Injectable} interceptor implementation.
    *
-   * <p>Leave empty only when a processor-path interceptor plugin claims the binding.</p>
-   *
    * @return the canonical dotted name of the interceptor implementation.
    */
   @Nonnull
-  String implementedBy() default "";
+  String implementedBy();
 
   /**
    * The interceptor priority.
