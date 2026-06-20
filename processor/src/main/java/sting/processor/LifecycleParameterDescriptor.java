@@ -10,6 +10,7 @@ record LifecycleParameterDescriptor(@Nonnull Kind kind, @Nonnull String name)
     METHOD_NAME,
     BINDING_VALUE,
     ARGUMENTS,
+    PROCEED,
     RESULT,
     THROWN
   }

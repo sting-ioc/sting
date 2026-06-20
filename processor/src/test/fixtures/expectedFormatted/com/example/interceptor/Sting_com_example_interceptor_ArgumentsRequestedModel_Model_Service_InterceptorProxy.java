@@ -8,16 +8,16 @@ public final
 class Sting_com_example_interceptor_ArgumentsRequestedModel_Model_Service_InterceptorProxy
     implements ArgumentsRequestedModel.Service {
   @Nonnull
-  private final ArgumentsRequestedModel.Service $sting$_target;
+  private final ArgumentsRequestedModel.Service _target;
 
   @Nonnull
-  private final ArgumentsRequestedModel.TraceInterceptor $sting$_interceptor1;
+  private final ArgumentsRequestedModel.TraceInterceptor _interceptor1;
 
   private Sting_com_example_interceptor_ArgumentsRequestedModel_Model_Service_InterceptorProxy(
       final ArgumentsRequestedModel.Service target,
       final ArgumentsRequestedModel.TraceInterceptor interceptor1) {
-    $sting$_target = target;
-    $sting$_interceptor1 = interceptor1;
+    _target = target;
+    _interceptor1 = interceptor1;
   }
 
   @Nonnull
@@ -33,7 +33,7 @@ class Sting_com_example_interceptor_ArgumentsRequestedModel_Model_Service_Interc
     if (null == arguments) {
       arguments = new Object[] {value};
     }
-    $sting$_interceptor1.before(arguments);
-    $sting$_target.run(value);
+    _interceptor1.before(arguments);
+    _target.run(value);
   }
 }

@@ -25,6 +25,8 @@ final class Constants
   @Nonnull
   static final String INTERCEPTOR_BEFORE_CLASSNAME = "sting.interceptors.Before";
   @Nonnull
+  static final String INTERCEPTOR_AROUND_CLASSNAME = "sting.interceptors.Around";
+  @Nonnull
   static final String INTERCEPTOR_AFTER_CLASSNAME = "sting.interceptors.After";
   @Nonnull
   static final String INTERCEPTOR_AFTER_EXCEPTION_CLASSNAME = "sting.interceptors.AfterException";
@@ -36,6 +38,10 @@ final class Constants
   static final String INTERCEPTOR_BINDING_VALUE_CLASSNAME = "sting.interceptors.BindingValue";
   @Nonnull
   static final String INTERCEPTOR_ARGUMENTS_CLASSNAME = "sting.interceptors.Arguments";
+  @Nonnull
+  static final String INTERCEPTOR_PROCEED_CLASSNAME = "sting.interceptors.Proceed";
+  @Nonnull
+  static final String INTERCEPTOR_INVOCATION_CLASSNAME = "sting.interceptors.Invocation";
   @Nonnull
   static final String INTERCEPTOR_RESULT_CLASSNAME = "sting.interceptors.Result";
   @Nonnull

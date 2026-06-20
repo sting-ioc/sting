@@ -2851,7 +2851,7 @@ public final class StingProcessor
         else if ( 1 == phaseCount )
         {
           final var phase = phases.get( 0 );
-          validateLifecycleMethodShape( method );
+          validateLifecycleMethodShape( method, phase );
           final var descriptor =
             new InterceptorMethodDescriptor( phase,
                                              method,
@@ -2883,6 +2883,10 @@ public final class StingProcessor
     {
       phases.add( InterceptorPhase.BEFORE );
     }
+    if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.INTERCEPTOR_AROUND_CLASSNAME ) )
+    {
+      phases.add( InterceptorPhase.AROUND );
+    }
     if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.INTERCEPTOR_AFTER_CLASSNAME ) )
     {
       phases.add( InterceptorPhase.AFTER );
@@ -2894,7 +2898,8 @@ public final class StingProcessor
     return phases;
   }
 
-  private void validateLifecycleMethodShape( @Nonnull final ExecutableElement method )
+  private void validateLifecycleMethodShape( @Nonnull final ExecutableElement method,
+                                             @Nonnull final InterceptorPhase phase )
   {
     final var modifiers = method.getModifiers();
     if ( !modifiers.contains( Modifier.PUBLIC ) ||
@@ -2903,6 +2908,19 @@ public final class StingProcessor
          modifiers.contains( Modifier.PROTECTED ) )
     {
       throw new ProcessorException( "Interceptor lifecycle methods must be public instance methods", method );
+    }
+    else if ( InterceptorPhase.AROUND == phase )
+    {
+      final var objectType = processingEnv.getElementUtils().getTypeElement( Object.class.getName() );
+      if ( null == objectType ||
+           !processingEnv.getTypeUtils().isSameType( method.getReturnType(), objectType.asType() ) )
+      {
+        throw new ProcessorException( "Interceptor @Around lifecycle methods must return java.lang.Object", method );
+      }
+      else if ( !method.getTypeParameters().isEmpty() )
+      {
+        throw new ProcessorException( "Interceptor lifecycle methods must not declare type parameters", method );
+      }
     }
     else if ( TypeKind.VOID != method.getReturnType().getKind() )
     {
@@ -3000,6 +3018,12 @@ public final class StingProcessor
     {
       parameters.add( validateLifecycleParameter( parameter, phase, interceptor ) );
     }
+    if ( InterceptorPhase.AROUND == phase &&
+         1 != parameters.stream().filter( p -> LifecycleParameterDescriptor.Kind.PROCEED == p.kind() ).count() )
+    {
+      throw new ProcessorException( "Interceptor @Around lifecycle methods must declare exactly one @Proceed parameter",
+                                    method );
+    }
     return parameters;
   }
 
@@ -3052,6 +3076,21 @@ public final class StingProcessor
           return new LifecycleParameterDescriptor( LifecycleParameterDescriptor.Kind.ARGUMENTS, "" );
         }
       }
+      else if ( Constants.INTERCEPTOR_PROCEED_CLASSNAME.equals( markerType ) )
+      {
+        if ( InterceptorPhase.AROUND != phase )
+        {
+          throw new ProcessorException( "@Proceed lifecycle parameter is only valid on @Around methods", parameter );
+        }
+        else
+        {
+          requireType( parameter,
+                       type,
+                       Constants.INTERCEPTOR_INVOCATION_CLASSNAME,
+                       "@Proceed" );
+          return new LifecycleParameterDescriptor( LifecycleParameterDescriptor.Kind.PROCEED, "" );
+        }
+      }
       else if ( Constants.INTERCEPTOR_RESULT_CLASSNAME.equals( markerType ) )
       {
         if ( InterceptorPhase.AFTER != phase )
@@ -3094,6 +3133,7 @@ public final class StingProcessor
            Constants.INTERCEPTOR_METHOD_NAME_CLASSNAME.equals( classname ) ||
            Constants.INTERCEPTOR_BINDING_VALUE_CLASSNAME.equals( classname ) ||
            Constants.INTERCEPTOR_ARGUMENTS_CLASSNAME.equals( classname ) ||
+           Constants.INTERCEPTOR_PROCEED_CLASSNAME.equals( classname ) ||
            Constants.INTERCEPTOR_RESULT_CLASSNAME.equals( classname ) ||
            Constants.INTERCEPTOR_THROWN_CLASSNAME.equals( classname );
   }
