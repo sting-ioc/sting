@@ -47,6 +47,21 @@
   {
     "code": "java.class.added",
     "description": "Class was added.",
+    "newElement": "@interface sting.interceptors.Around",
+    "classification": {
+      "SOURCE": "NON_BREAKING",
+      "BINARY": "NON_BREAKING"
+    },
+    "attachments": {
+      "classQualifiedName": "sting.interceptors.Around",
+      "classSimpleName": "Around",
+      "elementKind": "@interface",
+      "package": "sting.interceptors"
+    }
+  },
+  {
+    "code": "java.class.added",
+    "description": "Class was added.",
     "newElement": "@interface sting.interceptors.Before",
     "classification": {
       "SOURCE": "NON_BREAKING",
@@ -107,6 +122,21 @@
   {
     "code": "java.class.added",
     "description": "Class was added.",
+    "newElement": "@interface sting.interceptors.Proceed",
+    "classification": {
+      "SOURCE": "NON_BREAKING",
+      "BINARY": "NON_BREAKING"
+    },
+    "attachments": {
+      "classQualifiedName": "sting.interceptors.Proceed",
+      "classSimpleName": "Proceed",
+      "elementKind": "@interface",
+      "package": "sting.interceptors"
+    }
+  },
+  {
+    "code": "java.class.added",
+    "description": "Class was added.",
     "newElement": "@interface sting.interceptors.Result",
     "classification": {
       "SOURCE": "NON_BREAKING",
@@ -146,6 +176,21 @@
       "classQualifiedName": "sting.interceptors.Thrown",
       "classSimpleName": "Thrown",
       "elementKind": "@interface",
+      "package": "sting.interceptors"
+    }
+  },
+  {
+    "code": "java.class.added",
+    "description": "Class was added.",
+    "newElement": "class sting.interceptors.Invocation",
+    "classification": {
+      "SOURCE": "NON_BREAKING",
+      "BINARY": "NON_BREAKING"
+    },
+    "attachments": {
+      "classQualifiedName": "sting.interceptors.Invocation",
+      "classSimpleName": "Invocation",
+      "elementKind": "class",
       "package": "sting.interceptors"
     }
   }
