@@ -20,9 +20,16 @@ import javax.annotation.Nonnull;
 public @interface InterceptorBinding
 {
   /**
-   * The canonical dotted name of the {@code @Injectable} interceptor implementation.
+   * The canonical dotted name of the {@code @Injectable} interceptor implementation, or a template that resolves to
+   * one.
    *
-   * @return the canonical dotted name of the interceptor implementation.
+   * <p>Templates may contain placeholders such as {@code {value}}. Placeholder names refer to members on the
+   * interceptor binding annotation and are supported only for scalar enum members. The effective enum value on each
+   * reachable binding usage is converted to PascalCase by splitting the enum constant name on underscores and applying
+   * locale-independent case conversion. Enum constants with leading, trailing, or repeated underscores are rejected
+   * when selected by a reachable binding usage. The resolved value must be a canonical dotted Java name.</p>
+   *
+   * @return the canonical dotted name or enum-backed template for the interceptor implementation.
    */
   @Nonnull
   String implementedBy();

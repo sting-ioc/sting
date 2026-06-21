@@ -4,6 +4,8 @@
 
 * Add compile-time service-interface interceptors under `sting.interceptors`, including lifecycle interceptors,
   graph/report integration, runtime proxy wiring, documentation, and test coverage.
+* Add enum-backed `{memberName}` templates for `@InterceptorBinding.implementedBy`, resolving selected enum values to
+  PascalCase interceptor implementation class names at compile time.
 
 ### [v0.37](https://github.com/sting-ioc/sting/tree/v0.37) (2026-06-16) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.36...v0.37)
 

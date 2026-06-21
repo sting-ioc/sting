@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -2454,24 +2455,26 @@ public final class StingProcessor
                                                                              values )
   {
     final var metaAnnotation = Objects.requireNonNull( findInterceptorBindingMetaAnnotation( annotation ) );
-    validateInterceptorBindingAnnotationType( annotation, metaAnnotation, usageElement );
+    validateInterceptorBindingAnnotationType( annotation, metaAnnotation, usageElement, values );
     final var annotationType = (TypeElement) annotation.getAnnotationType().asElement();
     final var metaValues = processingEnv.getElementUtils().getElementValuesWithDefaults( metaAnnotation );
     final var priorityValue = findAnnotationValueByName( metaValues, "priority" );
     final var implementedByValue = findAnnotationValueByName( metaValues, "implementedBy" );
     final int priority = (Integer) Objects.requireNonNull( priorityValue ).getValue();
     final var implementedBy = null == implementedByValue ? "" : (String) implementedByValue.getValue();
+    final var resolvedImplementedBy = resolveImplementedByName( implementedBy, values, usageElement, annotation );
     return new InterceptorBindingDescriptor( annotation,
                                              annotationType,
                                              usageElement,
                                              priority,
-                                             implementedBy,
+                                             resolvedImplementedBy,
                                              values );
   }
 
   private void validateInterceptorBindingAnnotationType( @Nonnull final AnnotationMirror annotation,
                                                          @Nonnull final AnnotationMirror metaAnnotation,
-                                                         @Nonnull final Element usageElement )
+                                                         @Nonnull final Element usageElement,
+                                                         @Nonnull final Map<String, BindingValueModel> values )
   {
     final var annotationType = (TypeElement) annotation.getAnnotationType().asElement();
     if ( hasSourceRetention( annotationType ) )
@@ -2513,7 +2516,7 @@ public final class StingProcessor
                                           usageElement,
                                           annotation );
           }
-          validateImplementedByName( implementedBy, usageElement, annotation );
+          validateImplementedByTemplate( implementedBy, values, usageElement, annotation );
         }
       }
     }
@@ -2546,6 +2549,159 @@ public final class StingProcessor
         .map( Map.Entry::getValue )
         .findAny()
         .orElse( null );
+  }
+
+  private void validateImplementedByTemplate( @Nonnull final String implementedBy,
+                                              @Nonnull final Map<String, BindingValueModel> values,
+                                              @Nonnull final Element element,
+                                              @Nonnull final AnnotationMirror annotation )
+  {
+    if ( isImplementedByTemplate( implementedBy ) )
+    {
+      resolveImplementedByTemplate( implementedBy, values, element, annotation );
+    }
+    else
+    {
+      validateImplementedByName( implementedBy, element, annotation );
+    }
+  }
+
+  @Nonnull
+  private String resolveImplementedByName( @Nonnull final String implementedBy,
+                                           @Nonnull final Map<String, BindingValueModel> values,
+                                           @Nonnull final Element element,
+                                           @Nonnull final AnnotationMirror annotation )
+  {
+    if ( isImplementedByTemplate( implementedBy ) )
+    {
+      final var resolved = resolveImplementedByTemplate( implementedBy, values, element, annotation );
+      validateImplementedByName( resolved, element, annotation );
+      return resolved;
+    }
+    else
+    {
+      validateImplementedByName( implementedBy, element, annotation );
+      return implementedBy;
+    }
+  }
+
+  private boolean isImplementedByTemplate( @Nonnull final String implementedBy )
+  {
+    return implementedBy.indexOf( '{' ) != -1 || implementedBy.indexOf( '}' ) != -1;
+  }
+
+  @Nonnull
+  private String resolveImplementedByTemplate( @Nonnull final String implementedBy,
+                                               @Nonnull final Map<String, BindingValueModel> values,
+                                               @Nonnull final Element element,
+                                               @Nonnull final AnnotationMirror annotation )
+  {
+    final var resolved = new StringBuilder();
+    int offset = 0;
+    while ( offset < implementedBy.length() )
+    {
+      final int openIndex = implementedBy.indexOf( '{', offset );
+      final int closeIndex = implementedBy.indexOf( '}', offset );
+      if ( -1 == openIndex )
+      {
+        if ( -1 != closeIndex )
+        {
+          throw new ProcessorException( "implementedBy template contains an unmatched '}'",
+                                        element,
+                                        annotation );
+        }
+        resolved.append( implementedBy.substring( offset ) );
+        break;
+      }
+      else if ( -1 != closeIndex && closeIndex < openIndex )
+      {
+        throw new ProcessorException( "implementedBy template contains an unmatched '}'",
+                                      element,
+                                      annotation );
+      }
+      else
+      {
+        final int endIndex = implementedBy.indexOf( '}', openIndex + 1 );
+        if ( -1 == endIndex )
+        {
+          throw new ProcessorException( "implementedBy template contains an unmatched '{'",
+                                        element,
+                                        annotation );
+        }
+        resolved.append( implementedBy, offset, openIndex );
+        final var name = implementedBy.substring( openIndex + 1, endIndex );
+        if ( name.isEmpty() )
+        {
+          throw new ProcessorException( "implementedBy template contains an empty placeholder",
+                                        element,
+                                        annotation );
+        }
+        else if ( !SourceVersion.isIdentifier( name ) || SourceVersion.isKeyword( name ) )
+        {
+          throw new ProcessorException( "implementedBy template placeholder {" + name +
+                                        "} must be a Java identifier",
+                                        element,
+                                        annotation );
+        }
+        resolved.append( resolveImplementedByPlaceholder( name, values, element, annotation ) );
+        offset = endIndex + 1;
+      }
+    }
+    return resolved.toString();
+  }
+
+  @Nonnull
+  private String resolveImplementedByPlaceholder( @Nonnull final String name,
+                                                  @Nonnull final Map<String, BindingValueModel> values,
+                                                  @Nonnull final Element element,
+                                                  @Nonnull final AnnotationMirror annotation )
+  {
+    final var value = values.get( name );
+    if ( null == value )
+    {
+      throw new ProcessorException( "implementedBy template references unknown interceptor binding member " + name,
+                                    element,
+                                    annotation );
+    }
+    else if ( value.array() || BindingValueKind.ENUM != value.kind() )
+    {
+      throw new ProcessorException( "implementedBy template placeholder {" + name +
+                                    "} must reference a scalar enum interceptor binding member",
+                                    element,
+                                    annotation );
+    }
+    else
+    {
+      return enumConstantNameToPascalCase( Objects.requireNonNull( value.enumConstantName() ),
+                                           name,
+                                           element,
+                                           annotation );
+    }
+  }
+
+  @Nonnull
+  private String enumConstantNameToPascalCase( @Nonnull final String constantName,
+                                               @Nonnull final String placeholderName,
+                                               @Nonnull final Element element,
+                                               @Nonnull final AnnotationMirror annotation )
+  {
+    final var parts = constantName.split( "_", -1 );
+    final var result = new StringBuilder();
+    for ( final var part : parts )
+    {
+      if ( part.isEmpty() )
+      {
+        throw new ProcessorException( "Enum constant " + constantName + " referenced by implementedBy template " +
+                                      "placeholder {" + placeholderName +
+                                      "} must not contain leading, trailing, or repeated underscores",
+                                      element,
+                                      annotation );
+      }
+      final var lower = part.toLowerCase( Locale.ROOT );
+      result.append( lower.substring( 0, 1 ).toUpperCase( Locale.ROOT ) );
+      result.append( lower.substring( 1 ) );
+    }
+    return result.toString();
   }
 
   @Nonnull

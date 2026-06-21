@@ -21,7 +21,7 @@ tolerates an annotation for framework integration, and where a placement is igno
 | `@ActAsStingConsumer` | Integration meta-annotation consulted during validation. | Not applicable. | Does not itself create a Sting binding. |
 | `@ActAsStingProvider` | Integration meta-annotation consulted during validation. | Not applicable. | Does not itself create a Sting binding. |
 | `@ActAsStingComponent` | Integration meta-annotation consulted during validation. | Not applicable. | Does not itself create a Sting binding. |
-| `@InterceptorBinding` | Interceptor binding meta-annotation consulted when a reachable binding publishes service interfaces. | Equivalent simple-name annotations with compatible `priority` and `implementedBy` members. | Does not itself create a Sting binding; method usages are valid only on `@Fragment` provider methods in v1. |
+| `@InterceptorBinding` | Interceptor binding meta-annotation consulted when a reachable binding publishes service interfaces. Enum-backed `implementedBy` templates are resolved from the effective binding value before interceptor lookup. | Equivalent simple-name annotations with compatible `priority` and `implementedBy` members. | Does not itself create a Sting binding; method usages are valid only on `@Fragment` provider methods in v1. |
 | `@Injector.Input` | Nested configuration processed only inside `@Injector`. | None. | Not treated as an independent processor trigger. |
 
 ## Notes
@@ -37,3 +37,5 @@ tolerates an annotation for framework integration, and where a placement is igno
 - Sting matches `@ActAsStingConsumer`, `@ActAsStingProvider`, `@ActAsStingComponent`, and
   `@InterceptorBinding` by simple name and shape so third-party frameworks may define equivalent annotations
   without depending directly on Sting.
+- `@InterceptorBinding.implementedBy` templates validate only the effective enum member value selected by reachable
+  binding usages. Unused enum constants are not resolved to interceptor classes until a reachable usage selects them.

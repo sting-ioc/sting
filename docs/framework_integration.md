@@ -100,6 +100,11 @@ InterceptorBinding
   interceptor binding annotation.
 - The meta-annotation must expose a compatible `int priority()` member and may expose a
   `String implementedBy()` member.
+- `implementedBy` may be a canonical dotted interceptor implementation name or an enum-backed template using
+  `{memberName}` placeholders. Template placeholders must reference scalar enum members on the effective binding
+  annotation. Sting converts the selected enum constant to PascalCase, rejects leading/trailing/repeated underscores
+  in the selected value, validates the resolved canonical dotted class name, and then uses the normal interceptor
+  lookup path.
 - This hook participates in interception metadata extraction. Sting still validates each effective binding location
   and service coordinate according to the normal interceptor rules.
 

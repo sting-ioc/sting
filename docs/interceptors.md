@@ -21,6 +21,25 @@ The required `implementedBy` value is the canonical dotted name of an {@link: st
 implementation. Lower `priority` values run outermost. Equal effective priorities for one intercepted service are
 compile errors.
 
+`implementedBy` may also be an enum-backed template. A template contains `{memberName}` placeholders that refer to
+members on the interceptor binding annotation. Placeholders are supported only for scalar enum members; `String`,
+primitive, `Class`, annotation-valued, and array-valued members are rejected with compile-time diagnostics.
+
+```java
+@InterceptorBinding( implementedBy = "com.example.{value}TraceInterceptor", priority = 100 )
+@interface Traced
+{
+  TraceMode value() default TraceMode.DEFAULT;
+}
+```
+
+Sting resolves the template from the effective annotation value on each reachable binding usage. It does not enumerate
+or validate unused enum constants up front. The selected enum constant name is split on underscores and converted to
+PascalCase using locale-independent case conversion, so `DEFAULT` becomes `Default` and `REQUIRES_NEW` becomes
+`RequiresNew`. Enum constants with leading, trailing, or repeated underscores are rejected when that value is selected.
+After substitution, the resolved name is validated as a canonical dotted Java name and then resolved through the normal
+interceptor implementation checks.
+
 Bindings may be placed on:
 
 - service interface types,
