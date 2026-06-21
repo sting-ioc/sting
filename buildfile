@@ -151,7 +151,8 @@ define 'sting' do
           'sting.perf.variant' => variant,
           'sting.next.version' => ENV['PRODUCT_VERSION'] || p.version,
         }
-        Java::Commands.java 'sting.performance.BuildTimePerformanceTest', { :classpath => cp, :properties => properties }
+        Java::Commands.java 'sting.performance.BuildTimePerformanceTest',
+                            { :classpath => cp, :properties => properties, :java_args => FORMATTER_JDK_EXPORTS }
       end
     end
 
@@ -166,7 +167,8 @@ define 'sting' do
           'sting.perf.variant' => variant,
           'sting.next.version' => ENV['PRODUCT_VERSION'] || p.version,
         }
-        Java::Commands.java 'sting.performance.CodeSizePerformanceTest', { :classpath => cp, :properties => properties }
+        Java::Commands.java 'sting.performance.CodeSizePerformanceTest',
+                            { :classpath => cp, :properties => properties, :java_args => FORMATTER_JDK_EXPORTS }
       end
     end
   end
@@ -280,7 +282,7 @@ define 'sting' do
                              'sting.performance.BuildTimePerformanceTest',
                              :name => 'BuildTimePerformanceTest',
                              :dir => 'file://$PROJECT_DIR$/performance-tests',
-                             :jvm_args => "-Dsting.perf.working_directory=generated/perf -Dsting.perf.fixture_dir=src/test/fixtures -Dsting.perf.variant=medium -Dsting.next.version=#{ENV['PRODUCT_VERSION']}")
+                             :jvm_args => "#{FORMATTER_JDK_EXPORTS.join(' ')} -Dsting.perf.working_directory=generated/perf -Dsting.perf.fixture_dir=src/test/fixtures -Dsting.perf.variant=medium -Dsting.next.version=#{ENV['PRODUCT_VERSION']}")
 
   ipr.add_code_insight_settings
   ipr.add_nullable_manager
