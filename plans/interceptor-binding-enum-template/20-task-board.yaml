@@ -78,8 +78,8 @@ tasks:
       - command: "git diff --check"
         result: "exit 0"
     commit:
-      hash: pending
-      message: pending
+      hash: 7a6caf86eead16a95c92af42f4f1bdce0585f73c
+      message: "feat(interceptors): support enum implementedBy templates"
     history:
       - "Implemented by worker subagent Galileo and verified in main thread."
 
@@ -103,8 +103,8 @@ tasks:
       - command: "bundle exec buildr sting:processor:test"
         result: "exit 0"
     commit:
-      hash: pending
-      message: pending
+      hash: 7a6caf86eead16a95c92af42f4f1bdce0585f73c
+      message: "feat(interceptors): support enum implementedBy templates"
     history:
       - "Added positive enum-template fixture and negative diagnostics fixtures for planned cases."
 
@@ -129,8 +129,8 @@ tasks:
       - command: "Documentation update"
         result: "Updated Javadoc, user docs, framework integration docs, annotation processing notes, and changelog."
     commit:
-      hash: pending
-      message: pending
+      hash: 7a6caf86eead16a95c92af42f4f1bdce0585f73c
+      message: "feat(interceptors): support enum implementedBy templates"
     history:
       - "Documentation aligned with enum-only templates, effective-value validation, and Locale.ROOT PascalCase conversion."
 
@@ -149,8 +149,8 @@ tasks:
       - command: "bundle exec buildr test"
         result: "exit 0"
     commit:
-      hash: pending
-      message: pending
+      hash: 7a6caf86eead16a95c92af42f4f1bdce0585f73c
+      message: "feat(interceptors): support enum implementedBy templates"
     history:
       - "Required full gate passed in main thread."
 
