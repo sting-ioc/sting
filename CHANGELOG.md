@@ -4,6 +4,8 @@
 
 * Add compile-time service-interface interceptors under `sting.interceptors`, including lifecycle interceptors,
   graph/report integration, runtime proxy wiring, documentation, and test coverage.
+* Support array-valued interceptor binding members, including primitive and `String` arrays plus `Class[]` and enum
+  arrays supplied to lifecycle methods as `String[]` binding values.
 
 ### [v0.37](https://github.com/sting-ioc/sting/tree/v0.37) (2026-06-16) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.36...v0.37)
 

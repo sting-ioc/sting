@@ -3,7 +3,8 @@ package sting.processor;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-record BindingValueModel(@Nonnull String name, @Nonnull BindingValueKind kind, @Nullable Object scalarValue,
+record BindingValueModel(@Nonnull String name, @Nonnull BindingValueKind kind, boolean array,
+                         @Nullable Object scalarValue,
                          @Nullable String className, @Nullable String enumTypeName,
                          @Nullable String enumConstantName, @Nonnull String javaLiteral)
 {

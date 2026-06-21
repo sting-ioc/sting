@@ -11,9 +11,13 @@ import sting.interceptors.Before;
 import sting.interceptors.BindingValue;
 import sting.interceptors.InterceptorBinding;
 
-public final class BindingValueArrayModel
+public final class BindingValueAnnotationArrayModel
 {
-  private BindingValueArrayModel()
+  private BindingValueAnnotationArrayModel()
+  {
+  }
+
+  @interface Nested
   {
   }
 
@@ -39,16 +43,17 @@ public final class BindingValueArrayModel
   public static class TraceInterceptor
   {
     @Before
-    public void before( @BindingValue( "values" ) final Object[] values )
+    public void before( @BindingValue( "nested" ) final String[] nested )
     {
     }
   }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.BindingValueArrayModel.TraceInterceptor", priority = 100 )
+  @InterceptorBinding( implementedBy = "com.example.interceptor.BindingValueAnnotationArrayModel.TraceInterceptor",
+                       priority = 100 )
   @Retention( RetentionPolicy.CLASS )
   @Target( { ElementType.TYPE, ElementType.METHOD } )
   @interface Trace
   {
-    String[] values() default {};
+    Nested[] nested() default {};
   }
 }

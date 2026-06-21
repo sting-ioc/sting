@@ -1,5 +1,6 @@
 package com.example.interceptor;
 
+import java.io.IOException;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -19,7 +20,8 @@ public final class BindingValueConversionsModel
 
   enum Mode
   {
-    On
+    On,
+    Off
   }
 
   @Injector( includes = Model.class, fragmentOnly = false )
@@ -58,7 +60,19 @@ public final class BindingValueConversionsModel
                         @BindingValue( "doubleValue" ) final Double doubleValue,
                         @BindingValue( "charValue" ) final char charValue,
                         @BindingValue( "mode" ) final String mode,
-                        @BindingValue( "type" ) final String type )
+                        @BindingValue( "type" ) final String type,
+                        @BindingValue( "texts" ) final String[] texts,
+                        @BindingValue( "flags" ) final boolean[] flags,
+                        @BindingValue( "bytes" ) final byte[] bytes,
+                        @BindingValue( "shorts" ) final short[] shorts,
+                        @BindingValue( "counts" ) final int[] counts,
+                        @BindingValue( "longs" ) final long[] longs,
+                        @BindingValue( "floats" ) final float[] floats,
+                        @BindingValue( "doubles" ) final double[] doubles,
+                        @BindingValue( "chars" ) final char[] chars,
+                        @BindingValue( "modes" ) final String[] modes,
+                        @BindingValue( "rollbackOn" ) final String[] rollbackOn,
+                        @BindingValue( "dontRollbackOn" ) final String[] dontRollbackOn )
     {
     }
   }
@@ -89,5 +103,29 @@ public final class BindingValueConversionsModel
     Mode mode() default Mode.On;
 
     Class<?> type() default String.class;
+
+    String[] texts() default { "alpha", "beta" };
+
+    boolean[] flags() default { true, false };
+
+    byte[] bytes() default { 1 };
+
+    short[] shorts() default { 2 };
+
+    int[] counts() default { 3 };
+
+    long[] longs() default { 4L };
+
+    float[] floats() default { 5.0F };
+
+    double[] doubles() default { 6.0 };
+
+    char[] chars() default { '\n', '\'' };
+
+    Mode[] modes() default { Mode.On, Mode.Off };
+
+    Class<?>[] rollbackOn() default { IOException.class };
+
+    Class[] dontRollbackOn() default {};
   }
 }

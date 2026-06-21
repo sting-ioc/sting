@@ -78,13 +78,22 @@ Supported metadata:
 
 - {@link: sting.interceptors.ServiceType @ServiceType} `String`: the intercepted service interface name.
 - {@link: sting.interceptors.MethodName @MethodName} `String`: the service method name.
-- {@link: sting.interceptors.BindingValue @BindingValue} scalar values from the binding annotation.
+- {@link: sting.interceptors.BindingValue @BindingValue} values from the binding annotation.
 - {@link: sting.interceptors.Arguments @Arguments} `Object[]`: the active arguments at this interceptor boundary.
 - {@link: sting.interceptors.Proceed @Proceed} `Invocation`: the next step for `@Around`.
 - {@link: sting.interceptors.Result @Result} `Object`: successful return value for `@After`.
 - {@link: sting.interceptors.Thrown @Thrown} `Throwable`: thrown failure for `@AfterException`.
 
 {@file_content: file=sting/doc/examples/interceptors/AuditInterceptor.java start_line=@Injectable}
+
+`@BindingValue` parameters read compile-time annotation member values from the active interceptor binding. Supported
+scalar members are `String`, primitive types, `char`, `Class`, and enums. `String` members map to `String`, primitive
+and `char` members map to the matching primitive or boxed parameter type, and `Class` or enum members map to `String`
+class names or enum constant names.
+
+Array binding members are also supported when their component type is one of the supported scalar member types.
+`String[]` and primitive arrays map to the same array type. `Class[]`, `Class<?>[]`, and enum arrays map to `String[]`.
+Empty array defaults are supported. Annotation-valued members and annotation-array-valued members are not supported.
 
 `@Arguments` is metadata only. Mutating the array does not rewrite the arguments passed to the target method.
 `@Result` is valid only on `@After`, and `@Thrown` is valid only on `@AfterException`; around methods observe results

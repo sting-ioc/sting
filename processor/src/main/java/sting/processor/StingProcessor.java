@@ -36,6 +36,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.ArrayType;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
@@ -2554,18 +2555,130 @@ public final class StingProcessor
     for ( final var entry : processingEnv.getElementUtils().getElementValuesWithDefaults( annotation ).entrySet() )
     {
       final var name = entry.getKey().getSimpleName().toString();
-      values.put( name, toBindingValueModel( name, entry.getValue().getValue() ) );
+      values.put( name, toBindingValueModel( name, entry.getKey().getReturnType(), entry.getValue().getValue() ) );
     }
     return values;
   }
 
   @Nonnull
-  private BindingValueModel toBindingValueModel( @Nonnull final String name, @Nullable final Object value )
+  private BindingValueModel toBindingValueModel( @Nonnull final String name,
+                                                 @Nonnull final TypeMirror type,
+                                                 @Nullable final Object value )
+  {
+    if ( TypeKind.ARRAY == type.getKind() )
+    {
+      return toArrayBindingValueModel( name, (ArrayType) type, value );
+    }
+    else
+    {
+      return toScalarBindingValueModel( name, value );
+    }
+  }
+
+  @Nonnull
+  private BindingValueModel toArrayBindingValueModel( @Nonnull final String name,
+                                                      @Nonnull final ArrayType type,
+                                                      @Nullable final Object value )
+  {
+    final var componentKind = bindingValueKind( type.getComponentType() );
+    if ( BindingValueKind.UNSUPPORTED == componentKind || !( value instanceof final List<?> values ) )
+    {
+      return unsupportedBindingValueModel( name, true );
+    }
+
+    final var javaLiteral = new StringBuilder();
+    javaLiteral.append( "new " ).append( arrayLiteralType( componentKind ) ).append( "[] {" );
+    for ( int i = 0; i < values.size(); i++ )
+    {
+      final var element = values.get( i );
+      if ( !( element instanceof final AnnotationValue annotationValue ) )
+      {
+        return unsupportedBindingValueModel( name, true );
+      }
+
+      final var component = toScalarBindingValueModel( name, annotationValue.getValue() );
+      if ( componentKind != component.kind() )
+      {
+        return unsupportedBindingValueModel( name, true );
+      }
+
+      javaLiteral.append( 0 == i ? " " : ", " ).append( component.javaLiteral() );
+    }
+    if ( !values.isEmpty() )
+    {
+      javaLiteral.append( " " );
+    }
+    javaLiteral.append( "}" );
+    return new BindingValueModel( name, componentKind, true, null, null, null, null, javaLiteral.toString() );
+  }
+
+  @Nonnull
+  private BindingValueKind bindingValueKind( @Nonnull final TypeMirror type )
+  {
+    return switch ( type.getKind() )
+    {
+      case BOOLEAN -> BindingValueKind.BOOLEAN;
+      case BYTE -> BindingValueKind.BYTE;
+      case SHORT -> BindingValueKind.SHORT;
+      case INT -> BindingValueKind.INT;
+      case LONG -> BindingValueKind.LONG;
+      case FLOAT -> BindingValueKind.FLOAT;
+      case DOUBLE -> BindingValueKind.DOUBLE;
+      case CHAR -> BindingValueKind.CHAR;
+      case DECLARED -> bindingValueDeclaredKind( (DeclaredType) type );
+      default -> BindingValueKind.UNSUPPORTED;
+    };
+  }
+
+  @Nonnull
+  private BindingValueKind bindingValueDeclaredKind( @Nonnull final DeclaredType type )
+  {
+    final var element = (TypeElement) type.asElement();
+    final var typeName = element.getQualifiedName().toString();
+    if ( String.class.getName().equals( typeName ) )
+    {
+      return BindingValueKind.STRING;
+    }
+    else if ( Class.class.getName().equals( typeName ) )
+    {
+      return BindingValueKind.CLASS;
+    }
+    else if ( ElementKind.ENUM == element.getKind() )
+    {
+      return BindingValueKind.ENUM;
+    }
+    else
+    {
+      return BindingValueKind.UNSUPPORTED;
+    }
+  }
+
+  @Nonnull
+  private String arrayLiteralType( @Nonnull final BindingValueKind kind )
+  {
+    return switch ( kind )
+    {
+      case STRING, CLASS, ENUM -> "String";
+      case BOOLEAN -> "boolean";
+      case BYTE -> "byte";
+      case SHORT -> "short";
+      case INT -> "int";
+      case LONG -> "long";
+      case FLOAT -> "float";
+      case DOUBLE -> "double";
+      case CHAR -> "char";
+      case UNSUPPORTED -> throw new IllegalArgumentException( "Unsupported binding value kind" );
+    };
+  }
+
+  @Nonnull
+  private BindingValueModel toScalarBindingValueModel( @Nonnull final String name, @Nullable final Object value )
   {
     if ( value instanceof String )
     {
       return new BindingValueModel( name,
                                     BindingValueKind.STRING,
+                                    false,
                                     value,
                                     null,
                                     null,
@@ -2576,6 +2689,7 @@ public final class StingProcessor
     {
       return new BindingValueModel( name,
                                     BindingValueKind.BOOLEAN,
+                                    false,
                                     value,
                                     null,
                                     null,
@@ -2586,43 +2700,46 @@ public final class StingProcessor
     {
       return new BindingValueModel( name,
                                     BindingValueKind.BYTE,
+                                    false,
                                     value,
                                     null,
                                     null,
                                     null,
-                                        "(byte) " + value );
+                                    "(byte) " + value );
     }
     else if ( value instanceof Short )
     {
       return new BindingValueModel( name,
                                     BindingValueKind.SHORT,
+                                    false,
                                     value,
                                     null,
                                     null,
                                     null,
-                                        "(short) " + value );
+                                    "(short) " + value );
     }
     else if ( value instanceof Integer )
     {
-      return new BindingValueModel( name, BindingValueKind.INT, value, null, null, null, value.toString() );
+      return new BindingValueModel( name, BindingValueKind.INT, false, value, null, null, null, value.toString() );
     }
     else if ( value instanceof Long )
     {
-      return new BindingValueModel( name, BindingValueKind.LONG, value, null, null, null, value + "L" );
+      return new BindingValueModel( name, BindingValueKind.LONG, false, value, null, null, null, value + "L" );
     }
     else if ( value instanceof Float )
     {
-      return new BindingValueModel( name, BindingValueKind.FLOAT, value, null, null, null, value + "F" );
+      return new BindingValueModel( name, BindingValueKind.FLOAT, false, value, null, null, null, value + "F" );
     }
     else if ( value instanceof Double )
     {
-      return new BindingValueModel( name, BindingValueKind.DOUBLE, value, null, null, null, value.toString() );
+      return new BindingValueModel( name, BindingValueKind.DOUBLE, false, value, null, null, null, value.toString() );
     }
     else if ( value instanceof Character )
     {
       final char c = (Character) value;
       return new BindingValueModel( name,
                                     BindingValueKind.CHAR,
+                                    false,
                                     value,
                                     null,
                                     null,
@@ -2634,6 +2751,7 @@ public final class StingProcessor
       final String className = value.toString();
       return new BindingValueModel( name,
                                     BindingValueKind.CLASS,
+                                    false,
                                     null,
                                     className,
                                     null,
@@ -2646,6 +2764,7 @@ public final class StingProcessor
       final var constantName = enumValue.getSimpleName().toString();
       return new BindingValueModel( name,
                                     BindingValueKind.ENUM,
+                                    false,
                                     null,
                                     null,
                                     enumTypeName,
@@ -2654,8 +2773,14 @@ public final class StingProcessor
     }
     else
     {
-      return new BindingValueModel( name, BindingValueKind.UNSUPPORTED, null, null, null, null, "<unsupported>" );
+      return unsupportedBindingValueModel( name, false );
     }
+  }
+
+  @Nonnull
+  private BindingValueModel unsupportedBindingValueModel( @Nonnull final String name, final boolean array )
+  {
+    return new BindingValueModel( name, BindingValueKind.UNSUPPORTED, array, null, null, null, null, "<unsupported>" );
   }
 
   @Nonnull
@@ -3164,6 +3289,15 @@ public final class StingProcessor
     {
       throw new ProcessorException( "@BindingValue member " + name + " has an unsupported v1 value type", parameter );
     }
+    else if ( value.array() )
+    {
+      if ( !isArrayMatch( type, value.kind() ) )
+      {
+        throw new ProcessorException( "@BindingValue member " + name +
+                                      " is not compatible with lifecycle parameter type " + type,
+                                      parameter );
+      }
+    }
     else if ( BindingValueKind.STRING == value.kind() ||
               BindingValueKind.ENUM == value.kind() ||
               BindingValueKind.CLASS == value.kind() )
@@ -3176,6 +3310,24 @@ public final class StingProcessor
                                     " is not compatible with lifecycle parameter type " + type,
                                     parameter );
     }
+  }
+
+  private boolean isArrayMatch( @Nonnull final TypeMirror type, @Nonnull final BindingValueKind kind )
+  {
+    final var name = type.toString();
+    return switch ( kind )
+    {
+      case STRING, ENUM, CLASS -> "java.lang.String[]".equals( name );
+      case BOOLEAN -> "boolean[]".equals( name );
+      case BYTE -> "byte[]".equals( name );
+      case SHORT -> "short[]".equals( name );
+      case INT -> "int[]".equals( name );
+      case LONG -> "long[]".equals( name );
+      case FLOAT -> "float[]".equals( name );
+      case DOUBLE -> "double[]".equals( name );
+      case CHAR -> "char[]".equals( name );
+      case UNSUPPORTED -> false;
+    };
   }
 
   private boolean isPrimitiveOrBoxedMatch( @Nonnull final TypeMirror type, @Nonnull final BindingValueKind kind )
