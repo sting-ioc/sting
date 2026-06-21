@@ -1,5 +1,5 @@
 initiative: interceptor-binding-array-values
-status: accepted
+status: completed
 required_full_gate: bundle exec buildr test
 tasks:
   - id: PLAN-01
@@ -53,8 +53,8 @@ tasks:
       - command: bundle exec buildr test
         result: Passed in main thread; completed in 9.561s.
     commit:
-      hash: pending
-      message: pending
+      hash: 143daa66
+      message: "feat(interceptors): support binding value arrays"
 
   - id: IMPL-02
     title: Validate lifecycle parameters for binding value arrays
@@ -79,8 +79,8 @@ tasks:
       - command: bundle exec buildr test
         result: Passed in main thread; completed in 9.561s.
     commit:
-      hash: pending
-      message: pending
+      hash: 143daa66
+      message: "feat(interceptors): support binding value arrays"
 
   - id: TEST-01
     title: Cover transactional-style binding values
@@ -109,8 +109,8 @@ tasks:
       - command: bundle exec buildr test
         result: Passed in main thread; integration tests reported 60 passes, 0 failures.
     commit:
-      hash: pending
-      message: pending
+      hash: 143daa66
+      message: "feat(interceptors): support binding value arrays"
 
   - id: DOC-01
     title: Document binding value array support and changelog
@@ -134,5 +134,5 @@ tasks:
       - command: bundle exec buildr test
         result: Passed in main thread; completed in 9.561s.
     commit:
-      hash: pending
-      message: pending
+      hash: 143daa66
+      message: "feat(interceptors): support binding value arrays"
