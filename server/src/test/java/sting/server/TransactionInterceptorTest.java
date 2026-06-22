@@ -383,6 +383,64 @@ public final class TransactionInterceptorTest
   }
 
   @Test
+  public void requiresNewResumesAfterGetStatusFailureDuringCompletion()
+  {
+    final FakeTransactionManager manager = new FakeTransactionManager();
+    final FakeTransaction existing = new FakeTransaction();
+    manager.current = existing;
+    manager.getStatusFailure = new SystemException( "getStatus" );
+
+    final TransactionalException exception =
+      expectThrows( TransactionalException.class,
+                    () -> new RequiresNewTransactionInterceptor( manager ).around( invocation( manager,
+                                                                                               "target",
+                                                                                               "ok" ) ) );
+
+    assertSame( exception.getCause(), manager.getStatusFailure );
+    assertSame( manager.current, existing );
+    manager.assertTrace( "getTransaction suspend begin target getStatus resume" );
+  }
+
+  @Test
+  public void requiresNewResumesAfterCommitFailure()
+  {
+    final FakeTransactionManager manager = new FakeTransactionManager();
+    final FakeTransaction existing = new FakeTransaction();
+    manager.current = existing;
+    manager.commitFailure = new SystemException( "commit" );
+
+    final TransactionalException exception =
+      expectThrows( TransactionalException.class,
+                    () -> new RequiresNewTransactionInterceptor( manager ).around( invocation( manager,
+                                                                                               "target",
+                                                                                               "ok" ) ) );
+
+    assertSame( exception.getCause(), manager.commitFailure );
+    assertSame( manager.current, existing );
+    manager.assertTrace( "getTransaction suspend begin target getStatus commit resume" );
+  }
+
+  @Test
+  public void requiresNewResumesAfterRollbackFailure()
+  {
+    final FakeTransactionManager manager = new FakeTransactionManager();
+    final FakeTransaction existing = new FakeTransaction();
+    manager.current = existing;
+    manager.rollbackFailure = new SystemException( "rollback" );
+    final IllegalStateException failure = new IllegalStateException( "boom" );
+
+    final TransactionalException exception =
+      expectThrows( TransactionalException.class,
+                    () -> new RequiresNewTransactionInterceptor( manager ).around( failingInvocation( manager,
+                                                                                                       "target",
+                                                                                                       failure ) ) );
+
+    assertSame( exception.getCause(), manager.rollbackFailure );
+    assertSame( manager.current, existing );
+    manager.assertTrace( "getTransaction suspend begin target getTransaction setRollbackOnly rollback resume" );
+  }
+
+  @Test
   public void requiresNewResumeFailureReplacesApplicationException()
   {
     final FakeTransactionManager manager = new FakeTransactionManager();
