@@ -92,6 +92,27 @@ define 'sting' do
     iml.test_source_directories << _('src/test/fixtures/input')
   end
 
+  desc 'The server module'
+  define 'server' do
+    deps = [project('core').package(:jar), artifact(:javax_transaction_api)]
+    pom.include_transitive_dependencies << deps
+    pom.dependency_filter = Proc.new { |dep| dep[:scope].to_s != 'test' && deps.include?(dep[:artifact]) }
+
+    compile.with deps,
+                 project('core').compile.dependencies,
+                 project('processor').package(:jar),
+                 project('processor').compile.dependencies
+    compile.options[:processor] = true
+    compile.options.other += FORMATTER_JAVAC_OPTIONS
+
+    test.using :testng
+    test.options[:java_args] = ['-ea']
+
+    package(:jar)
+    package(:sources)
+    package(:javadoc)
+  end
+
   desc 'Integration Tests'
   define 'integration-tests' do
     test.using :testng
@@ -102,6 +123,21 @@ define 'sting' do
                       project('core').compile.dependencies,
                       project('processor').package(:jar),
                       project('processor').compile.dependencies
+  end
+
+  desc 'Server Integration Tests'
+  define 'server-integration-tests' do
+    test.using :testng
+    test.options[:java_args] = ['-ea']
+    test.compile.options[:processor] = true
+    test.compile.options.other += FORMATTER_JAVAC_OPTIONS
+    test.compile.with project('core').package(:jar),
+                      project('core').compile.dependencies,
+                      project('server').package(:jar),
+                      project('server').compile.dependencies,
+                      project('processor').package(:jar),
+                      project('processor').compile.dependencies,
+                      :javax_transaction_api
   end
 
   desc 'Performance Tests'
@@ -255,13 +291,14 @@ define 'sting' do
     compile.options.other += FORMATTER_JAVAC_OPTIONS
   end
 
-  doc.from(projects(%w(core processor))).
+  doc.from(projects(%w(core processor server))).
     using(:javadoc,
           :windowtitle => 'Sting API Documentation',
           :linksource => true,
           :link => %w(https://sting-ioc.github.io/api https://docs.oracle.com/javase/8/docs/api),
           :group => {
             'Core' => 'sting:sting.interceptors',
+            'Server' => 'sting.server',
             'Compiler' => 'sting.processor'
           }
     )

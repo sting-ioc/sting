@@ -9,6 +9,7 @@
       "fragments",
       "factories",
       "interceptors",
+      "server",
       "graph",
       "typing",
       "naming",

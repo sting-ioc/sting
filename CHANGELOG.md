@@ -6,6 +6,8 @@
   graph/report integration, runtime proxy wiring, documentation, and test coverage.
 * Add enum-backed `{memberName}` templates for `@InterceptorBinding.implementedBy`, resolving selected enum values to
   PascalCase interceptor implementation class names at compile time.
+* Add the `sting-server` artifact with a JTA-backed `@Transactional` interceptor binding for Sting service-interface
+  transaction boundaries.
 
 ### [v0.37](https://github.com/sting-ioc/sting/tree/v0.37) (2026-06-16) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.36...v0.37)
 
