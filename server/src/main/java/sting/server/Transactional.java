@@ -7,10 +7,25 @@ import java.lang.annotation.Target;
 import sting.interceptors.InterceptorBinding;
 
 /**
- * Declares the JTA transaction boundary used when a Sting-published service interface is invoked.
+ * Defines the transaction boundary for a Sting-published service.
  *
- * <p>The binding is resolved at compile time. The selected {@link TxType} chooses one concrete interceptor class
- * in the {@code sting.server.interceptors} package through the enum-backed {@code implementedBy} template.</p>
+ * <p>Apply this annotation to a service interface, or to an injectable implementation type that publishes service
+ * interfaces, when calls to that service should execute with a JTA transaction policy. Sting applies the policy when
+ * callers enter the service through a generated service proxy. Direct calls inside the same implementation instance
+ * are not intercepted.</p>
+ *
+ * <p>The default policy is {@link TxType#REQUIRED}: use the caller's transaction when one is active, otherwise start
+ * and complete a new transaction for the service call.</p>
+ *
+ * <p>Applications must provide a {@link javax.transaction.TransactionManager} as a Sting service. This module does not
+ * look up a transaction manager globally.</p>
+ *
+ * <p>Runtime exceptions and {@link Error}s mark the active transaction rollback-only. Checked exceptions do not mark
+ * rollback-only by default. Unlike the Java EE annotation, this annotation does not provide {@code rollbackOn} or
+ * {@code dontRollbackOn} members.</p>
+ *
+ * <p>This annotation is type-level only. Method-level transaction policies and Java EE method override rules are not
+ * supported.</p>
  */
 @InterceptorBinding( implementedBy = "sting.server.interceptors.{value}TransactionInterceptor", priority = 200 )
 @Retention( RetentionPolicy.CLASS )
@@ -18,44 +33,67 @@ import sting.interceptors.InterceptorBinding;
 public @interface Transactional
 {
   /**
-   * The transaction behavior for the intercepted service boundary.
+   * Selects the transaction policy to use when a caller invokes the intercepted service boundary.
    *
-   * @return the transaction behavior.
+   * @return the transaction policy.
    */
   TxType value() default TxType.REQUIRED;
 
   /**
-   * Transaction propagation behavior supported by the Sting server interceptor binding.
+   * Transaction policies supported by the Sting server interceptor binding.
    */
   enum TxType
   {
     /**
-     * Use the current transaction or begin a new one when none exists.
+     * Run the service call in a transaction.
+     *
+     * <p>If the caller already has an active transaction, the service call runs in that transaction. If the caller has
+     * no active transaction, Sting starts a new JTA transaction and completes it when the service call returns or
+     * fails.</p>
      */
     REQUIRED,
 
     /**
-     * Suspend the current transaction, if present, and invoke the service in a new transaction.
+     * Run the service call in its own new transaction.
+     *
+     * <p>If the caller already has an active transaction, that transaction is suspended for the duration of the service
+     * call and resumed after the new transaction completes. If the caller has no active transaction, Sting simply
+     * starts and completes a new transaction for the service call.</p>
      */
     REQUIRES_NEW,
 
     /**
-     * Require an existing transaction before invoking the service.
+     * Require the caller to already have an active transaction.
+     *
+     * <p>The service call runs in the caller's transaction. If there is no active transaction, the call fails with a
+     * {@link javax.transaction.TransactionalException} whose cause is a
+     * {@link javax.transaction.TransactionRequiredException}.</p>
      */
     MANDATORY,
 
     /**
-     * Invoke the service with or without an existing transaction.
+     * Run with the caller's transaction state unchanged.
+     *
+     * <p>If the caller has an active transaction, the service call runs in that transaction. If the caller has no active
+     * transaction, the service call runs without one. Choose this policy only for services that behave correctly in both
+     * modes.</p>
      */
     SUPPORTS,
 
     /**
-     * Suspend the current transaction, if present, and invoke the service outside a transaction.
+     * Run the service call without an active transaction.
+     *
+     * <p>If the caller has an active transaction, that transaction is suspended while the service call runs and then
+     * resumed afterwards. If the caller has no active transaction, the service call proceeds without starting one.</p>
      */
     NOT_SUPPORTED,
 
     /**
-     * Require that no transaction exists before invoking the service.
+     * Require the caller to have no active transaction.
+     *
+     * <p>The service call runs without a transaction. If there is an active transaction, the call fails with a
+     * {@link javax.transaction.TransactionalException} whose cause is a
+     * {@link javax.transaction.InvalidTransactionException}.</p>
      */
     NEVER
   }
