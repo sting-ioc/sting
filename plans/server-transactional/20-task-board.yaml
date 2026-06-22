@@ -156,11 +156,16 @@ tasks:
         result: "exit 0 in warm run."
       - command: "bundle exec buildr sting:server:clean sting:server:test"
         result: "exit 0; TestNG reported 26 tests run, 26 passes, 0 failures, 0 skips."
+      - command: "Plan implementation review round 1"
+        result: "Valid finding: REQUIRES_NEW resume-after-completion-failure coverage was missing."
+      - command: "bundle exec buildr sting:server:clean sting:server:test"
+        result: "exit 0 after round 1 fix; TestNG reported 29 tests run, 29 passes, 0 failures, 0 skips."
     commit:
       hash: 5d666cbe405d99b4a73c0977cd53c6c188eff873
       message: "feat(server): add JTA transactional interceptors"
     history:
       - "Added exact fake TransactionManager tests for all TxTypes, rollback behavior, suspend/resume cleanup, and JTA failure wrapping."
+      - "Round 1 implementation review added REQUIRES_NEW resume-after-getStatus, resume-after-commit, and resume-after-rollback failure coverage."
 
   - id: INT-01
     title: Add server integration tests
@@ -227,11 +232,14 @@ tasks:
     evidence:
       - command: "bundle exec buildr test"
         result: "exit 0; Buildr tested sting, core, doc-examples, downstream-test, integration-tests, performance-tests, processor, server, and server-integration-tests."
+      - command: "bundle exec buildr test"
+        result: "exit 0 after round 1 implementation-review fix."
     commit:
       hash: 5d666cbe405d99b4a73c0977cd53c6c188eff873
       message: "feat(server): add JTA transactional interceptors"
     history:
       - "Required full gate passed in main thread."
+      - "Required full gate passed again after round 1 implementation-review fix."
 
 history:
   - timestamp: "2026-06-22"
@@ -278,3 +286,11 @@ history:
     task: GATE-01
     commit: 5d666cbe405d99b4a73c0977cd53c6c188eff873
     note: "Required full gate passed with bundle exec buildr test."
+  - timestamp: "2026-06-23"
+    task: TEST-01
+    commit: 5098839ac422a4666206b55b4117cbd14c1719be
+    note: "Round 1 implementation-review finding fixed with three additional REQUIRES_NEW completion-failure resume tests."
+  - timestamp: "2026-06-23"
+    task: GATE-01
+    commit: 5098839ac422a4666206b55b4117cbd14c1719be
+    note: "bundle exec buildr test passed after the round 1 implementation-review fix."
