@@ -1,6 +1,10 @@
 # Change Log
 
-### Unreleased
+### [v0.38](https://github.com/sting-ioc/sting/tree/v0.38) (2026-06-23) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.37...v0.38) · [API Differences](https://sting-ioc.github.io/api-diff?key=sting&old=0.37&new=0.38)
+
+The release includes 13 non breaking API changes.
+
+Changes in this release:
 
 * Add compile-time service-interface interceptors under `sting.interceptors`, including lifecycle interceptors,
   graph/report integration, runtime proxy wiring, documentation, and test coverage.
