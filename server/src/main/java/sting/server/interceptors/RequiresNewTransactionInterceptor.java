@@ -1,4 +1,4 @@
-package sting.server;
+package sting.server.interceptors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -7,12 +7,13 @@ import sting.Injectable;
 import sting.interceptors.Around;
 import sting.interceptors.Invocation;
 import sting.interceptors.Proceed;
+import sting.server.Transactional;
 
 /**
- * Interceptor for {@link Transactional.TxType#NEVER} transactional service boundaries.
+ * Interceptor for {@link Transactional.TxType#REQUIRES_NEW} transactional service boundaries.
  */
 @Injectable
-public final class NeverTransactionInterceptor
+public final class RequiresNewTransactionInterceptor
   extends TransactionInterceptorSupport
 {
   /**
@@ -20,13 +21,13 @@ public final class NeverTransactionInterceptor
    *
    * @param transactionManager the JTA transaction manager.
    */
-  NeverTransactionInterceptor( @Nonnull final TransactionManager transactionManager )
+  RequiresNewTransactionInterceptor( @Nonnull final TransactionManager transactionManager )
   {
     super( transactionManager );
   }
 
   /**
-   * Invoke the service only when no transaction is active.
+   * Suspend any current transaction and invoke the service in a new transaction.
    *
    * @param invocation the inner interceptor chain or target service invocation.
    * @return the service result.
@@ -37,6 +38,6 @@ public final class NeverTransactionInterceptor
   public Object around( @Proceed @Nonnull final Invocation invocation )
     throws Throwable
   {
-    return never( invocation );
+    return requiresNew( invocation );
   }
 }

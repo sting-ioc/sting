@@ -1,4 +1,4 @@
-package sting.server;
+package sting.server.interceptors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

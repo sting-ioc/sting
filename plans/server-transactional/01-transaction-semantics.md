@@ -15,7 +15,7 @@ provide JavaEE-like transaction boundaries without changing the core processor o
 - `@Transactional` is a type-level interceptor binding.
 - `@Transactional.value()` selects one `TxType` enum value.
 - `@InterceptorBinding.implementedBy` resolves the concrete interceptor class with
-  `sting.server.{value}TransactionInterceptor`.
+  `sting.server.interceptors.{value}TransactionInterceptor`.
 - Concrete interceptors receive `TransactionManager` through constructor injection.
 
 ## Behavior Requirements

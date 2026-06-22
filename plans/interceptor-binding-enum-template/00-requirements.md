@@ -9,7 +9,7 @@ Add support for enum-backed placeholders in `@InterceptorBinding.implementedBy` 
 Example target behavior:
 
 ```java
-@InterceptorBinding( implementedBy = "sting.server.{value}TransactionInterceptor", priority = 50 )
+@InterceptorBinding( implementedBy = "sting.server.interceptors.{value}TransactionInterceptor", priority = 50 )
 @Target( ElementType.TYPE )
 @Retention( RetentionPolicy.CLASS )
 public @interface Transactional
@@ -22,12 +22,12 @@ public @interface Transactional
 
 Effective interceptor classname examples:
 
-- `TxType.REQUIRED` -> `sting.server.RequiredTransactionInterceptor`
-- `TxType.REQUIRES_NEW` -> `sting.server.RequiresNewTransactionInterceptor`
-- `TxType.MANDATORY` -> `sting.server.MandatoryTransactionInterceptor`
-- `TxType.SUPPORTS` -> `sting.server.SupportsTransactionInterceptor`
-- `TxType.NOT_SUPPORTED` -> `sting.server.NotSupportedTransactionInterceptor`
-- `TxType.NEVER` -> `sting.server.NeverTransactionInterceptor`
+- `TxType.REQUIRED` -> `sting.server.interceptors.RequiredTransactionInterceptor`
+- `TxType.REQUIRES_NEW` -> `sting.server.interceptors.RequiresNewTransactionInterceptor`
+- `TxType.MANDATORY` -> `sting.server.interceptors.MandatoryTransactionInterceptor`
+- `TxType.SUPPORTS` -> `sting.server.interceptors.SupportsTransactionInterceptor`
+- `TxType.NOT_SUPPORTED` -> `sting.server.interceptors.NotSupportedTransactionInterceptor`
+- `TxType.NEVER` -> `sting.server.interceptors.NeverTransactionInterceptor`
 
 ## Scope Boundaries
 

@@ -5,7 +5,7 @@ Status: accepted.
 ## Phase Sequence
 
 1. Add build metadata for `server`, `server-integration-tests`, and `javax_transaction_api`.
-2. Add `sting.server.Transactional` and public concrete interceptor classes.
+2. Add `sting.server.Transactional` and public concrete interceptor classes in `sting.server.interceptors`.
 3. Add package-private transaction base/helper logic.
 4. Add focused `server` tests with a fake `TransactionManager`.
 5. Add `server-integration-tests` with annotation processing enabled.
@@ -74,8 +74,10 @@ bundle exec buildr ci J2CL=no
 - `build.yaml`
 - `buildfile`
 - `server/src/main/java/sting/server/*.java`
+- `server/src/main/java/sting/server/interceptors/*.java`
 - `server/src/main/java/sting/server/package-info.java`
-- `server/src/test/java/sting/server/*.java`
+- `server/src/main/java/sting/server/interceptors/package-info.java`
+- `server/src/test/java/sting/server/interceptors/*.java`
 - `server-integration-tests/src/test/java/sting/server/integration/*.java`
 - `docs/server.md`
 - `website/sidebars.json`
@@ -86,10 +88,11 @@ bundle exec buildr ci J2CL=no
 
 - `sting:server` compiles and packages as `sting-server`.
 - `@Transactional` has no `rollbackOn` or `dontRollbackOn`.
-- `@Transactional` resolves concrete interceptors through `sting.server.{value}TransactionInterceptor`.
+- `@Transactional` resolves concrete interceptors through `sting.server.interceptors.{value}TransactionInterceptor`.
 - All six concrete interceptors are public, effectively public, `@Injectable`, and constructor-inject
   `TransactionManager`.
-- `sting.server` has package-level Javadocs and all public server API types have concise Javadocs.
+- `sting.server` and `sting.server.interceptors` have package-level Javadocs and all public server API types have
+  concise Javadocs.
 - No server implementation performs JNDI or global lookup.
 - Unit tests cover each `TxType`, unchecked rollback marking, checked exception behavior, started transaction
   completion, suspend/resume cleanup, forced rollback after unchecked `Invocation.proceed()` failures from inner

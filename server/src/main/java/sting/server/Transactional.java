@@ -10,9 +10,9 @@ import sting.interceptors.InterceptorBinding;
  * Declares the JTA transaction boundary used when a Sting-published service interface is invoked.
  *
  * <p>The binding is resolved at compile time. The selected {@link TxType} chooses one concrete interceptor class
- * in this package through the enum-backed {@code implementedBy} template.</p>
+ * in the {@code sting.server.interceptors} package through the enum-backed {@code implementedBy} template.</p>
  */
-@InterceptorBinding( implementedBy = "sting.server.{value}TransactionInterceptor", priority = 200 )
+@InterceptorBinding( implementedBy = "sting.server.interceptors.{value}TransactionInterceptor", priority = 200 )
 @Retention( RetentionPolicy.CLASS )
 @Target( ElementType.TYPE )
 public @interface Transactional

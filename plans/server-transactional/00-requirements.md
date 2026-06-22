@@ -47,9 +47,9 @@ Out of scope:
 - `@Transactional` is `@Retention(RetentionPolicy.CLASS)`.
 - `@Transactional` is `@Target(ElementType.TYPE)` only.
 - `@Transactional` is not `@Inherited`.
-- `@Transactional` uses `@InterceptorBinding( implementedBy = "sting.server.{value}TransactionInterceptor", priority = 200 )`.
+- `@Transactional` uses `@InterceptorBinding( implementedBy = "sting.server.interceptors.{value}TransactionInterceptor", priority = 200 )`.
 - `@Transactional.value()` defaults to `TxType.REQUIRED`.
-- Concrete interceptor classes are public:
+- Concrete interceptor classes live in `sting.server.interceptors` and are public:
   - `RequiredTransactionInterceptor`
   - `RequiresNewTransactionInterceptor`
   - `MandatoryTransactionInterceptor`
@@ -70,7 +70,7 @@ Out of scope:
 Example API shape:
 
 ```java
-@InterceptorBinding( implementedBy = "sting.server.{value}TransactionInterceptor", priority = 200 )
+@InterceptorBinding( implementedBy = "sting.server.interceptors.{value}TransactionInterceptor", priority = 200 )
 @Retention( RetentionPolicy.CLASS )
 @Target( ElementType.TYPE )
 public @interface Transactional

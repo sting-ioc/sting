@@ -1,4 +1,4 @@
-package sting.server;
+package sting.server.interceptors;
 
 import java.util.ArrayList;
 import java.util.List;

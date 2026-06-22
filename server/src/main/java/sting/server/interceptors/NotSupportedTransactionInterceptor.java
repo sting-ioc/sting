@@ -1,4 +1,4 @@
-package sting.server;
+package sting.server.interceptors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -7,12 +7,13 @@ import sting.Injectable;
 import sting.interceptors.Around;
 import sting.interceptors.Invocation;
 import sting.interceptors.Proceed;
+import sting.server.Transactional;
 
 /**
- * Interceptor for {@link Transactional.TxType#MANDATORY} transactional service boundaries.
+ * Interceptor for {@link Transactional.TxType#NOT_SUPPORTED} transactional service boundaries.
  */
 @Injectable
-public final class MandatoryTransactionInterceptor
+public final class NotSupportedTransactionInterceptor
   extends TransactionInterceptorSupport
 {
   /**
@@ -20,13 +21,13 @@ public final class MandatoryTransactionInterceptor
    *
    * @param transactionManager the JTA transaction manager.
    */
-  MandatoryTransactionInterceptor( @Nonnull final TransactionManager transactionManager )
+  NotSupportedTransactionInterceptor( @Nonnull final TransactionManager transactionManager )
   {
     super( transactionManager );
   }
 
   /**
-   * Invoke the service only when a transaction is already active.
+   * Suspend any current transaction and invoke the service outside a transaction.
    *
    * @param invocation the inner interceptor chain or target service invocation.
    * @return the service result.
@@ -37,6 +38,6 @@ public final class MandatoryTransactionInterceptor
   public Object around( @Proceed @Nonnull final Invocation invocation )
     throws Throwable
   {
-    return mandatory( invocation );
+    return notSupported( invocation );
   }
 }

@@ -1,4 +1,4 @@
-package sting.server;
+package sting.server.interceptors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -7,6 +7,7 @@ import sting.Injectable;
 import sting.interceptors.Around;
 import sting.interceptors.Invocation;
 import sting.interceptors.Proceed;
+import sting.server.Transactional;
 
 /**
  * Interceptor for {@link Transactional.TxType#REQUIRED} transactional service boundaries.
