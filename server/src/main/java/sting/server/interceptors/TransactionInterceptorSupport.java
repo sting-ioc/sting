@@ -2,13 +2,13 @@ package sting.server.interceptors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.transaction.InvalidTransactionException;
-import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
-import javax.transaction.TransactionRequiredException;
-import javax.transaction.TransactionalException;
+import jakarta.transaction.InvalidTransactionException;
+import jakarta.transaction.Status;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.Transaction;
+import jakarta.transaction.TransactionManager;
+import jakarta.transaction.TransactionRequiredException;
+import jakarta.transaction.TransactionalException;
 import sting.interceptors.Invocation;
 
 abstract class TransactionInterceptorSupport

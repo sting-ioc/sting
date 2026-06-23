@@ -2,7 +2,7 @@ package sting.server.interceptors;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 import sting.Injectable;
 import sting.interceptors.Around;
 import sting.interceptors.Invocation;

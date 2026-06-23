@@ -94,7 +94,7 @@ define 'sting' do
 
   desc 'The server module'
   define 'server' do
-    deps = [project('core').package(:jar), artifact(:javax_transaction_api)]
+    deps = [project('core').package(:jar), artifact(:jakarta_transaction_api)]
     pom.include_transitive_dependencies << deps
     pom.dependency_filter = Proc.new { |dep| dep[:scope].to_s != 'test' && deps.include?(dep[:artifact]) }
 
@@ -137,7 +137,7 @@ define 'sting' do
                       project('server').compile.dependencies,
                       project('processor').package(:jar),
                       project('processor').compile.dependencies,
-                      :javax_transaction_api
+                      :jakarta_transaction_api
   end
 
   desc 'Performance Tests'

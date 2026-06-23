@@ -3,7 +3,7 @@ title: Server
 ---
 
 The `sting-server` module provides a Sting-native {@link: sting.server.Transactional @Transactional} interceptor
-binding backed by `javax.transaction.TransactionManager`.
+binding backed by `jakarta.transaction.TransactionManager`.
 
 It manages transaction boundaries when calls cross Sting-published service interfaces. Like all Sting interception,
 this is compile-time proxy wiring: no reflection, runtime annotation lookup, JNDI lookup, or classpath scanning is
@@ -22,7 +22,7 @@ processor.
 </dependency>
 ```
 
-Applications must expose a `javax.transaction.TransactionManager` as a Sting service. The server module does not look
+Applications must expose a `jakarta.transaction.TransactionManager` as a Sting service. The server module does not look
 up a transaction manager globally.
 
 ```java
@@ -79,7 +79,7 @@ When a transaction is started by the transaction interceptor:
 - all other statuses are passed to `commit()`, allowing the transaction manager to reject invalid states.
 
 JTA failures from transaction lookup, begin, status lookup, commit, rollback, suspend, resume, and rollback-only
-marking are reported as `javax.transaction.TransactionalException` where they are not preserving an original
+marking are reported as `jakarta.transaction.TransactionalException` where they are not preserving an original
 application exception. Cleanup failures, such as rollback or resume failures, throw `TransactionalException` even when
 that replaces an application exception.
 
@@ -88,8 +88,8 @@ that replaces an application exception.
 Interception applies only at Sting service-interface boundaries. Self-invocation inside the same implementation
 instance is not intercepted.
 
-`@Transactional` targets types only. Method-level transaction declarations, JavaEE-style method override semantics,
+`@Transactional` targets types only. Method-level transaction declarations, Jakarta EE-style method override semantics,
 `rollbackOn`, and `dontRollbackOn` are not part of this module.
 
-The module intentionally omits JavaEE `UserTransaction` call restrictions. It does not control `UserTransaction`
+The module intentionally omits Jakarta EE `UserTransaction` call restrictions. It does not control `UserTransaction`
 access and does not perform JNDI or global lookup.

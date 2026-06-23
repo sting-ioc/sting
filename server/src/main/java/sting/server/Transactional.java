@@ -17,15 +17,15 @@ import sting.interceptors.InterceptorBinding;
  * <p>The default policy is {@link TxType#REQUIRED}: use the caller's transaction when one is active, otherwise start
  * and complete a new transaction for the service call.</p>
  *
- * <p>Applications must provide a {@link javax.transaction.TransactionManager} as a Sting service. This module does not
+ * <p>Applications must provide a {@link jakarta.transaction.TransactionManager} as a Sting service. This module does not
  * look up a transaction manager globally.</p>
  *
  * <p>Runtime exceptions and {@link Error}s mark the active transaction rollback-only. Checked exceptions do not mark
- * rollback-only by default. Unlike the Java EE annotation, this annotation does not provide {@code rollbackOn} or
- * {@code dontRollbackOn} members.</p>
+ * rollback-only by default. Unlike {@link jakarta.transaction.Transactional}, this annotation does not provide
+ * {@code rollbackOn} or {@code dontRollbackOn} members.</p>
  *
- * <p>This annotation is type-level only. Method-level transaction policies and Java EE method override rules are not
- * supported.</p>
+ * <p>This annotation is type-level only. Method-level transaction policies and Jakarta Transactions method override
+ * rules are not supported.</p>
  */
 @InterceptorBinding( implementedBy = "sting.server.interceptors.{value}TransactionInterceptor", priority = 200 )
 @Retention( RetentionPolicy.CLASS )
@@ -66,8 +66,8 @@ public @interface Transactional
      * Require the caller to already have an active transaction.
      *
      * <p>The service call runs in the caller's transaction. If there is no active transaction, the call fails with a
-     * {@link javax.transaction.TransactionalException} whose cause is a
-     * {@link javax.transaction.TransactionRequiredException}.</p>
+     * {@link jakarta.transaction.TransactionalException} whose cause is a
+     * {@link jakarta.transaction.TransactionRequiredException}.</p>
      */
     MANDATORY,
 
@@ -92,8 +92,8 @@ public @interface Transactional
      * Require the caller to have no active transaction.
      *
      * <p>The service call runs without a transaction. If there is an active transaction, the call fails with a
-     * {@link javax.transaction.TransactionalException} whose cause is a
-     * {@link javax.transaction.InvalidTransactionException}.</p>
+     * {@link jakarta.transaction.TransactionalException} whose cause is a
+     * {@link jakarta.transaction.InvalidTransactionException}.</p>
      */
     NEVER
   }

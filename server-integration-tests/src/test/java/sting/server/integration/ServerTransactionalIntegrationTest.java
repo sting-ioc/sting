@@ -4,15 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.transaction.HeuristicMixedException;
-import javax.transaction.HeuristicRollbackException;
-import javax.transaction.InvalidTransactionException;
-import javax.transaction.NotSupportedException;
-import javax.transaction.RollbackException;
-import javax.transaction.Status;
-import javax.transaction.SystemException;
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
+import jakarta.transaction.HeuristicMixedException;
+import jakarta.transaction.HeuristicRollbackException;
+import jakarta.transaction.InvalidTransactionException;
+import jakarta.transaction.NotSupportedException;
+import jakarta.transaction.RollbackException;
+import jakarta.transaction.Status;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.Transaction;
+import jakarta.transaction.TransactionManager;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import sting.Injectable;
@@ -188,7 +188,7 @@ public final class ServerTransactionalIntegrationTest
     }
 
     @Override
-    public void registerSynchronization( @Nonnull final javax.transaction.Synchronization synchronization )
+    public void registerSynchronization( @Nonnull final jakarta.transaction.Synchronization synchronization )
     {
       throw new UnsupportedOperationException();
     }

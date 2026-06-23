@@ -28,7 +28,7 @@ artifacts:
   akasha: org.realityforge.akasha:akasha-gwt:jar:0.30
 
   javaee_api: javax:javaee-api:jar:8.0
-  javax_transaction_api: javax.transaction:javax.transaction-api:jar:1.3
+  jakarta_transaction_api: jakarta.transaction:jakarta.transaction-api:jar:2.0.1
 
   javacsv: net.sourceforge.javacsv:javacsv:jar:2.1
 
