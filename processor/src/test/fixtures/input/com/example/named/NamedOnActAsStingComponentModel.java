@@ -3,16 +3,11 @@ package com.example.named;
 import sting.ActAsStingComponent;
 import sting.Named;
 
-public class NamedOnActAsStingComponentModel
-{
-  @ActAsStingComponent
-  @interface MyFramework
-  {
-  }
+public class NamedOnActAsStingComponentModel {
+    @ActAsStingComponent
+    @interface MyFramework {}
 
-  @MyFramework
-  @Named( "Foo" )
-  static class MyComponentType
-  {
-  }
+    @MyFramework
+    @Named("Foo")
+    static class MyComponentType {}
 }

@@ -5,11 +5,9 @@ import sting.Named;
 import sting.Typed;
 
 @Injectable
-@Named( "system:lighting" )
-@Typed( SimulationSystem.class )
-public class DynamicLightingSystem
-  implements SimulationSystem
-{
-  //DOC ELIDE START
-  //DOC ELIDE END
+@Named("system:lighting")
+@Typed(SimulationSystem.class)
+public class DynamicLightingSystem implements SimulationSystem {
+    // DOC ELIDE START
+    // DOC ELIDE END
 }

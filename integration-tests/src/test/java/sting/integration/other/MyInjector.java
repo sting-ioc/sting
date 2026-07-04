@@ -11,26 +11,26 @@ import sting.integration.other.pkg2.Model4;
 import sting.integration.other.pkg2.MyFragment;
 import sting.integration.other.pkg2.MyService3;
 
-@Injector( fragmentOnly = false, includes = { Model1.class, Model2.class, MyFragment.class } )
-public interface MyInjector
-{
-  @Nonnull
-  static MyInjector create()
-  {
-    return new Sting_MyInjector();
-  }
+@Injector(
+        fragmentOnly = false,
+        includes = {Model1.class, Model2.class, MyFragment.class})
+public interface MyInjector {
+    @Nonnull
+    static MyInjector create() {
+        return new Sting_MyInjector();
+    }
 
-  Model1 getModel1();
+    Model1 getModel1();
 
-  Model2 getModel2();
+    Model2 getModel2();
 
-  Model3 getModel3();
+    Model3 getModel3();
 
-  Model4 getModel4();
+    Model4 getModel4();
 
-  Collection<MyService1> getService1Collection();
+    Collection<MyService1> getService1Collection();
 
-  MyService3 getService3();
+    MyService3 getService3();
 
-  Collection<Object> getObjects();
+    Collection<Object> getObjects();
 }

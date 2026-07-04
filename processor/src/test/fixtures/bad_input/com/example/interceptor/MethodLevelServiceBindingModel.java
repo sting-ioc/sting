@@ -10,48 +10,36 @@ import sting.Typed;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class MethodLevelServiceBindingModel
-{
-  private MethodLevelServiceBindingModel()
-  {
-  }
+public final class MethodLevelServiceBindingModel {
+    private MethodLevelServiceBindingModel() {}
 
-  @Injector( includes = MethodLevelServiceBindingModel.Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-  Service service();
-  }
+    @Injector(includes = MethodLevelServiceBindingModel.Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
+    }
 
-  @Trace
-  interface Service
-  {
     @Trace
-    void run();
-  }
-
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-    public void run()
-    {
+    interface Service {
+        @Trace
+        void run();
     }
-  }
 
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before()
-    {
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {
+        public void run() {}
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.MethodLevelServiceBindingModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before() {}
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.MethodLevelServiceBindingModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

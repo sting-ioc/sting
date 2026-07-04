@@ -5,10 +5,8 @@ import sting.Injectable;
 
 @Injectable
 @Eager
-public class AuthenticationService
-{
-  public String currentUsername()
-  {
-    return "";
-  }
+public class AuthenticationService {
+    public String currentUsername() {
+        return "";
+    }
 }

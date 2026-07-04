@@ -5,6 +5,4 @@ import sting.Injectable;
 
 @Injectable
 @Typed
-public class CdiTypedModel
-{
-}
+public class CdiTypedModel {}

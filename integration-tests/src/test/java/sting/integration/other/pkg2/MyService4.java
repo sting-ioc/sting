@@ -1,5 +1,3 @@
 package sting.integration.other.pkg2;
 
-interface MyService4
-{
-}
+interface MyService4 {}

@@ -2,7 +2,5 @@ package com.example.unclaimed.typed;
 
 import sting.Typed;
 
-@Typed( {} )
-public class UnclaimedTypedTypeModel
-{
-}
+@Typed({})
+public class UnclaimedTypedTypeModel {}

@@ -6,12 +6,9 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-public interface OptionalCollectionOutputModel
-{
-  Optional<Collection<MyModel>> getMyModel();
+public interface OptionalCollectionOutputModel {
+    Optional<Collection<MyModel>> getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-  }
+    @Injectable
+    class MyModel {}
 }

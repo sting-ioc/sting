@@ -6,9 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import sting.interceptors.InterceptorBinding;
 
-@InterceptorBinding( implementedBy = "sting.doc.examples.interceptors.TimingInterceptor", priority = 100 )
-@Retention( RetentionPolicy.CLASS )
-@Target( { ElementType.TYPE, ElementType.METHOD } )
-public @interface Timed
-{
-}
+@InterceptorBinding(implementedBy = "sting.doc.examples.interceptors.TimingInterceptor", priority = 100)
+@Retention(RetentionPolicy.CLASS)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Timed {}

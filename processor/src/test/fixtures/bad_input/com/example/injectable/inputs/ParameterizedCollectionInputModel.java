@@ -5,9 +5,6 @@ import java.util.List;
 import sting.Injectable;
 
 @Injectable
-public class ParameterizedCollectionInputModel
-{
-  ParameterizedCollectionInputModel( Collection<List<String>> someValue )
-  {
-  }
+public class ParameterizedCollectionInputModel {
+    ParameterizedCollectionInputModel(Collection<List<String>> someValue) {}
 }

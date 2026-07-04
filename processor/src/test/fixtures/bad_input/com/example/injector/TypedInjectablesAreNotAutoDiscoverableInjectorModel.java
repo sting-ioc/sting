@@ -4,17 +4,13 @@ import sting.Injectable;
 import sting.Injector;
 import sting.Typed;
 
-public interface TypedInjectablesAreNotAutoDiscoverableInjectorModel
-{
-  @Injector
-  interface MyInjector
-  {
-    MyModel getMyModel();
-  }
+public interface TypedInjectablesAreNotAutoDiscoverableInjectorModel {
+    @Injector
+    interface MyInjector {
+        MyModel getMyModel();
+    }
 
-  @Injectable
-  @Typed( { Object.class, MyModel.class } )
-  class MyModel
-  {
-  }
+    @Injectable
+    @Typed({Object.class, MyModel.class})
+    class MyModel {}
 }

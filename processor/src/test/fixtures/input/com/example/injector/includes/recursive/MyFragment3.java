@@ -4,11 +4,9 @@ import sting.Fragment;
 import sting.Named;
 
 @Fragment
-interface MyFragment3
-{
-  @Named( "Fragment3" )
-  default Runnable provideRunnable()
-  {
-    return null;
-  }
+interface MyFragment3 {
+    @Named("Fragment3")
+    default Runnable provideRunnable() {
+        return null;
+    }
 }

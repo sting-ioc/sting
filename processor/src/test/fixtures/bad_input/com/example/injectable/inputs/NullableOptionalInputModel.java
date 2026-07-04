@@ -5,9 +5,6 @@ import javax.annotation.Nullable;
 import sting.Injectable;
 
 @Injectable
-public class NullableOptionalInputModel
-{
-  NullableOptionalInputModel( @Nullable Optional<String> someValue )
-  {
-  }
+public class NullableOptionalInputModel {
+    NullableOptionalInputModel(@Nullable Optional<String> someValue) {}
 }

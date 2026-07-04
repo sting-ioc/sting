@@ -26,8 +26,6 @@ import java.lang.annotation.Target;
  * @see ActAsStingComponent
  */
 @Documented
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.ANNOTATION_TYPE )
-public @interface ActAsStingProvider
-{
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.ANNOTATION_TYPE)
+public @interface ActAsStingProvider {}

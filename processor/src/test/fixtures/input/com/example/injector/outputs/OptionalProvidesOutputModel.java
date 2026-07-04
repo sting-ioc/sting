@@ -5,18 +5,15 @@ import sting.Fragment;
 import sting.Injector;
 
 @Injector
-interface OptionalProvidesOutputModel
-{
-  @Nullable
-  Runnable getRunnable();
-
-  @Fragment
-  interface MyFragment
-  {
+interface OptionalProvidesOutputModel {
     @Nullable
-    default Runnable provideRunnable()
-    {
-      return null;
+    Runnable getRunnable();
+
+    @Fragment
+    interface MyFragment {
+        @Nullable
+        default Runnable provideRunnable() {
+            return null;
+        }
     }
-  }
 }

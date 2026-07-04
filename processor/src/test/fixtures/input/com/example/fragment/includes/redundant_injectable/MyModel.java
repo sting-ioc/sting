@@ -4,7 +4,5 @@ import sting.Injectable;
 import sting.Typed;
 
 @Injectable
-@Typed( Object.class )
-public class MyModel
-{
-}
+@Typed(Object.class)
+public class MyModel {}

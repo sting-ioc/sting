@@ -11,96 +11,78 @@ import sting.Injector;
 import sting.Typed;
 import sting.interceptors.Around;
 import sting.interceptors.InterceptorBinding;
-import sting.interceptors.Proceed;
 import sting.interceptors.Invocation;
+import sting.interceptors.Proceed;
 
-public final class AroundNullabilityModel
-{
-  private AroundNullabilityModel()
-  {
-  }
+public final class AroundNullabilityModel {
+    private AroundNullabilityModel() {}
 
-  @Trace
-  interface NonnullService
-  {
-    @Nonnull
-    String run();
-  }
-
-  @Trace
-  interface NullableService
-  {
-    @Nullable
-    String run();
-  }
-
-  @Trace
-  interface PrimitiveService
-  {
-    int run();
-  }
-
-  @Injectable
-  @Typed( NonnullService.class )
-  static class NonnullModel
-    implements NonnullService
-  {
-    @Nonnull
-    public String run()
-    {
-      return "";
+    @Trace
+    interface NonnullService {
+        @Nonnull
+        String run();
     }
-  }
 
-  @Injectable
-  @Typed( NullableService.class )
-  static class NullableModel
-    implements NullableService
-  {
-    @Nullable
-    public String run()
-    {
-      return null;
+    @Trace
+    interface NullableService {
+        @Nullable
+        String run();
     }
-  }
 
-  @Injectable
-  @Typed( PrimitiveService.class )
-  static class PrimitiveModel
-    implements PrimitiveService
-  {
-    public int run()
-    {
-      return 0;
+    @Trace
+    interface PrimitiveService {
+        int run();
     }
-  }
 
-  @Injector( includes = { NonnullModel.class, NullableModel.class, PrimitiveModel.class }, fragmentOnly = false )
-  interface MyInjector
-  {
-    NonnullService nonnullService();
-
-    NullableService nullableService();
-
-    PrimitiveService primitiveService();
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Around
-    public Object around( @Proceed final Invocation invocation )
-      throws Throwable
-    {
-      return invocation.proceed();
+    @Injectable
+    @Typed(NonnullService.class)
+    static class NonnullModel implements NonnullService {
+        @Nonnull
+        public String run() {
+            return "";
+        }
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.AroundNullabilityModel.TraceInterceptor",
-                       priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injectable
+    @Typed(NullableService.class)
+    static class NullableModel implements NullableService {
+        @Nullable
+        public String run() {
+            return null;
+        }
+    }
+
+    @Injectable
+    @Typed(PrimitiveService.class)
+    static class PrimitiveModel implements PrimitiveService {
+        public int run() {
+            return 0;
+        }
+    }
+
+    @Injector(
+            includes = {NonnullModel.class, NullableModel.class, PrimitiveModel.class},
+            fragmentOnly = false)
+    interface MyInjector {
+        NonnullService nonnullService();
+
+        NullableService nullableService();
+
+        PrimitiveService primitiveService();
+    }
+
+    @Injectable
+    public static class TraceInterceptor {
+        @Around
+        public Object around(@Proceed final Invocation invocation) throws Throwable {
+            return invocation.proceed();
+        }
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.AroundNullabilityModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

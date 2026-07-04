@@ -4,10 +4,7 @@ import javax.inject.Inject;
 import sting.Injectable;
 
 @Injectable
-public class Jsr330InjectModel
-{
-  @Inject
-  Jsr330InjectModel()
-  {
-  }
+public class Jsr330InjectModel {
+    @Inject
+    Jsr330InjectModel() {}
 }

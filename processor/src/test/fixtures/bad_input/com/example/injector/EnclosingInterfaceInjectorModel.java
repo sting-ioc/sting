@@ -4,16 +4,11 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface EnclosingInterfaceInjectorModel
-{
-  MyModel getMyModel();
+interface EnclosingInterfaceInjectorModel {
+    MyModel getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-  }
+    @Injectable
+    class MyModel {}
 
-  interface Foo
-  {
-  }
+    interface Foo {}
 }

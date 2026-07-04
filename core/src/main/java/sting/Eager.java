@@ -13,8 +13,6 @@ import java.lang.annotation.Target;
  * {@link ActAsStingComponent}, or to methods contained in types annotated by {@link Fragment}.
  */
 @Documented
-@Retention( RetentionPolicy.RUNTIME )
-@Target( { ElementType.TYPE, ElementType.METHOD } )
-public @interface Eager
-{
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Eager {}

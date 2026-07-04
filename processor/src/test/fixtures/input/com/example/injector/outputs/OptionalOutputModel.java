@@ -5,13 +5,10 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface OptionalOutputModel
-{
-  @Nullable
-  MyModel getMyModel();
+interface OptionalOutputModel {
+    @Nullable
+    MyModel getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-  }
+    @Injectable
+    class MyModel {}
 }

@@ -7,12 +7,10 @@ import sting.Injectable;
 import sting.Named;
 
 @Injectable
-public class ComplexDependencyModel
-{
-  ComplexDependencyModel( @Named( "lively" ) Runnable runnable,
-                          @Nullable EventListener listener,
-                          Serializable serializable,
-                          @Named( "countDown" ) int countDown )
-  {
-  }
+public class ComplexDependencyModel {
+    ComplexDependencyModel(
+            @Named("lively") Runnable runnable,
+            @Nullable EventListener listener,
+            Serializable serializable,
+            @Named("countDown") int countDown) {}
 }

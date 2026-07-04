@@ -5,6 +5,4 @@ import sting.Injectable;
 
 @Injectable
 @Eager
-public class FileSystemService
-{
-}
+public class FileSystemService {}

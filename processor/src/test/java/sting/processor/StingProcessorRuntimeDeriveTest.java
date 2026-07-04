@@ -10,76 +10,65 @@ import org.realityforge.proton.qa.Compilation;
 import org.realityforge.proton.qa.CompileTestUtil;
 import org.testng.annotations.Test;
 
-public final class StingProcessorRuntimeDeriveTest
-  extends AbstractStingProcessorTest
-{
-  @Test
-  public void runtimeDerive_resolves_includes()
-    throws Exception
-  {
-    final Compilation stage1 =
-      compile( Arrays.asList( input( "unresolved", "com.example.injector.MyModel" ),
-                              input( "unresolved", "com.example.injector.MyFragment" ) ) );
+public final class StingProcessorRuntimeDeriveTest extends AbstractStingProcessorTest {
+    @Test
+    public void runtimeDerive_resolves_includes() throws Exception {
+        final Compilation stage1 = compile(Arrays.asList(
+                input("unresolved", "com.example.injector.MyModel"),
+                input("unresolved", "com.example.injector.MyFragment")));
 
-    assertCompilationSuccessful( stage1 );
+        assertCompilationSuccessful(stage1);
 
-    final Path targetDir = Files.createTempDirectory( "sting-runtime-derive" );
-    CompileTestUtil.outputFiles( stage1.classOutputFilenames(), stage1.classOutput(), targetDir );
+        final Path targetDir = Files.createTempDirectory("sting-runtime-derive");
+        CompileTestUtil.outputFiles(stage1.classOutputFilenames(), stage1.classOutput(), targetDir);
 
-    final List<File> classPath = buildClasspath( targetDir.toFile() );
-    final Compilation stage2 =
-      CompileTestUtil.compile( Collections.singletonList( input( "unresolved",
-                                                                 "com.example.injector.UnresolvedElementsInjectorModel" ) ),
-                               getOptions(),
-                               processors(),
-                               classPath );
+        final List<File> classPath = buildClasspath(targetDir.toFile());
+        final Compilation stage2 = CompileTestUtil.compile(
+                Collections.singletonList(input("unresolved", "com.example.injector.UnresolvedElementsInjectorModel")),
+                getOptions(),
+                processors(),
+                classPath);
 
-    assertCompilationSuccessful( stage2 );
-  }
+        assertCompilationSuccessful(stage2);
+    }
 
-  @Test
-  public void runtimeDerive_autodiscovery()
-    throws Exception
-  {
-    final Compilation stage1 =
-      compile( Collections.singletonList( input( "unresolved", "com.example.autodetect.LibModel" ) ) );
-    assertCompilationSuccessful( stage1 );
+    @Test
+    public void runtimeDerive_autodiscovery() throws Exception {
+        final Compilation stage1 =
+                compile(Collections.singletonList(input("unresolved", "com.example.autodetect.LibModel")));
+        assertCompilationSuccessful(stage1);
 
-    final Path targetDir = Files.createTempDirectory( "sting-runtime-derive-autod" );
-    CompileTestUtil.outputFiles( stage1.classOutputFilenames(), stage1.classOutput(), targetDir );
+        final Path targetDir = Files.createTempDirectory("sting-runtime-derive-autod");
+        CompileTestUtil.outputFiles(stage1.classOutputFilenames(), stage1.classOutput(), targetDir);
 
-    final List<File> classPath = buildClasspath( targetDir.toFile() );
-    final Compilation stage2 =
-      CompileTestUtil.compile( Collections.singletonList( input( "unresolved",
-                                                                 "com.example.autodetect.AppInjector" ) ),
-                               getOptions(),
-                               processors(),
-                               classPath );
+        final List<File> classPath = buildClasspath(targetDir.toFile());
+        final Compilation stage2 = CompileTestUtil.compile(
+                Collections.singletonList(input("unresolved", "com.example.autodetect.AppInjector")),
+                getOptions(),
+                processors(),
+                classPath);
 
-    assertCompilationSuccessful( stage2 );
-  }
+        assertCompilationSuccessful(stage2);
+    }
 
-  @Test
-  public void runtimeDerive_providerAutodiscovery()
-    throws Exception
-  {
-    final Compilation stage1 =
-      compile( Arrays.asList( input( "unresolved", "com.example.autodetect.provider.MyFrameworkComponent" ),
-                              input( "unresolved", "com.example.autodetect.provider.LibModel" ),
-                              input( "unresolved", "com.example.autodetect.provider.LibModelImpl" ) ) );
-    assertCompilationSuccessful( stage1 );
+    @Test
+    public void runtimeDerive_providerAutodiscovery() throws Exception {
+        final Compilation stage1 = compile(Arrays.asList(
+                input("unresolved", "com.example.autodetect.provider.MyFrameworkComponent"),
+                input("unresolved", "com.example.autodetect.provider.LibModel"),
+                input("unresolved", "com.example.autodetect.provider.LibModelImpl")));
+        assertCompilationSuccessful(stage1);
 
-    final Path targetDir = Files.createTempDirectory( "sting-runtime-derive-provider-autod" );
-    CompileTestUtil.outputFiles( stage1.classOutputFilenames(), stage1.classOutput(), targetDir );
+        final Path targetDir = Files.createTempDirectory("sting-runtime-derive-provider-autod");
+        CompileTestUtil.outputFiles(stage1.classOutputFilenames(), stage1.classOutput(), targetDir);
 
-    final List<File> classPath = buildClasspath( targetDir.toFile() );
-    final Compilation stage2 =
-      CompileTestUtil.compile( Collections.singletonList( input( "unresolved",
-                                                                 "com.example.autodetect.provider.AppInjector" ) ),
-                               getOptions(),
-                               processors(),
-                               classPath );
+        final List<File> classPath = buildClasspath(targetDir.toFile());
+        final Compilation stage2 = CompileTestUtil.compile(
+                Collections.singletonList(input("unresolved", "com.example.autodetect.provider.AppInjector")),
+                getOptions(),
+                processors(),
+                classPath);
 
-    assertCompilationSuccessful( stage2 );
-  }
+        assertCompilationSuccessful(stage2);
+    }
 }

@@ -5,12 +5,9 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface JavaOptionalOutputModel
-{
-  Optional<MyModel> getMyModel();
+interface JavaOptionalOutputModel {
+    Optional<MyModel> getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-  }
+    @Injectable
+    class MyModel {}
 }

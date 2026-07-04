@@ -9,42 +9,31 @@ import sting.Injector;
 import sting.Typed;
 import sting.interceptors.InterceptorBinding;
 
-public final class NonCanonicalTemplateClassnameModel
-{
-  private NonCanonicalTemplateClassnameModel()
-  {
-  }
+public final class NonCanonicalTemplateClassnameModel {
+    private NonCanonicalTemplateClassnameModel() {}
 
-  enum Mode
-  {
-    BAD$name
-  }
+    enum Mode {
+        BAD$name
+    }
 
-  @Trace
-  interface Service
-  {
-  }
+    @Trace
+    interface Service {}
 
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-  }
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {}
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
+    }
 
-  @InterceptorBinding(
-    implementedBy = "com.example.interceptor.NonCanonicalTemplateClassnameModel.{value}Interceptor",
-    priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-    Mode value() default Mode.BAD$name;
-  }
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.NonCanonicalTemplateClassnameModel.{value}Interceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {
+        Mode value() default Mode.BAD$name;
+    }
 }

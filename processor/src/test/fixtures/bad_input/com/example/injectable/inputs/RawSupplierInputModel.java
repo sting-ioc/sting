@@ -4,10 +4,7 @@ import java.util.function.Supplier;
 import sting.Injectable;
 
 @Injectable
-public class RawSupplierInputModel
-{
-  @SuppressWarnings( "rawtypes" )
-  RawSupplierInputModel( Supplier someValue )
-  {
-  }
+public class RawSupplierInputModel {
+    @SuppressWarnings("rawtypes")
+    RawSupplierInputModel(Supplier someValue) {}
 }

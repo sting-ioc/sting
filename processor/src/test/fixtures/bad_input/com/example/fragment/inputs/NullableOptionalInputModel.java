@@ -5,10 +5,8 @@ import javax.annotation.Nullable;
 import sting.Fragment;
 
 @Fragment
-public interface NullableOptionalInputModel
-{
-  default String provideX( @Nullable Optional<String> supplier )
-  {
-    return "";
-  }
+public interface NullableOptionalInputModel {
+    default String provideX(@Nullable Optional<String> supplier) {
+        return "";
+    }
 }

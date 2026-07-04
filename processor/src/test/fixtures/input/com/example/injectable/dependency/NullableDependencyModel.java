@@ -4,9 +4,6 @@ import javax.annotation.Nullable;
 import sting.Injectable;
 
 @Injectable
-public class NullableDependencyModel
-{
-  NullableDependencyModel( @Nullable Runnable runnable )
-  {
-  }
+public class NullableDependencyModel {
+    NullableDependencyModel(@Nullable Runnable runnable) {}
 }

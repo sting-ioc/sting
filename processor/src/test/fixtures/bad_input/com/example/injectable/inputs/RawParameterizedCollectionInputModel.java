@@ -5,10 +5,7 @@ import java.util.List;
 import sting.Injectable;
 
 @Injectable
-public class RawParameterizedCollectionInputModel
-{
-  @SuppressWarnings( "rawtypes" )
-  RawParameterizedCollectionInputModel( Collection<List> someValue )
-  {
-  }
+public class RawParameterizedCollectionInputModel {
+    @SuppressWarnings("rawtypes")
+    RawParameterizedCollectionInputModel(Collection<List> someValue) {}
 }

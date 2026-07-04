@@ -6,7 +6,6 @@ import java.util.function.Supplier;
 import sting.Injector;
 
 @Injector
-public interface ParameterizedSupplierCollectionOutputModel
-{
-  Collection<Supplier<List<String>>> getMyThing();
+public interface ParameterizedSupplierCollectionOutputModel {
+    Collection<Supplier<List<String>>> getMyThing();
 }

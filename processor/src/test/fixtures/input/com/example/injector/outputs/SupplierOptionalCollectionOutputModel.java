@@ -7,12 +7,9 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface SupplierOptionalCollectionOutputModel
-{
-  Collection<Supplier<Optional<MyModel>>> getMyModel();
+interface SupplierOptionalCollectionOutputModel {
+    Collection<Supplier<Optional<MyModel>>> getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-  }
+    @Injectable
+    class MyModel {}
 }

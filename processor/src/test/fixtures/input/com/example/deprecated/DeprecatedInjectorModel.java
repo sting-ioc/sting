@@ -5,12 +5,9 @@ import sting.Injector;
 
 @Injector
 @Deprecated
-public interface DeprecatedInjectorModel
-{
-  MyModel getMyModel();
+public interface DeprecatedInjectorModel {
+    MyModel getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-  }
+    @Injectable
+    class MyModel {}
 }

@@ -6,12 +6,13 @@ import com.example.multistage.stage1.MyFragment;
 import com.example.multistage.stage2.Model3;
 import sting.Injector;
 
-@Injector( fragmentOnly = false, includes = { Model1.class, MyFragment.class } )
-interface MultiStageInjectorModel
-{
-  // From MyFragment
-  Model2 getModel2();
+@Injector(
+        fragmentOnly = false,
+        includes = {Model1.class, MyFragment.class})
+interface MultiStageInjectorModel {
+    // From MyFragment
+    Model2 getModel2();
 
-  // This dependency should be auto-added by virtue of being an @Injectable
-  Model3 getModel3();
+    // This dependency should be auto-added by virtue of being an @Injectable
+    Model3 getModel3();
 }

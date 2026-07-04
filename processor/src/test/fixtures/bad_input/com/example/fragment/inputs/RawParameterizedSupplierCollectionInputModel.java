@@ -6,11 +6,9 @@ import java.util.function.Supplier;
 import sting.Fragment;
 
 @Fragment
-public interface RawParameterizedSupplierCollectionInputModel
-{
-  @SuppressWarnings( "rawtypes" )
-  default String provideX( Collection<Supplier<List>> supplier )
-  {
-    return null;
-  }
+public interface RawParameterizedSupplierCollectionInputModel {
+    @SuppressWarnings("rawtypes")
+    default String provideX(Collection<Supplier<List>> supplier) {
+        return null;
+    }
 }

@@ -4,11 +4,9 @@ import sting.Injectable;
 import sting.Named;
 
 @Injectable
-public class UnclaimedNamedMethodModel
-{
-  @Named( "X" )
-  String myMethod()
-  {
-    return "";
-  }
+public class UnclaimedNamedMethodModel {
+    @Named("X")
+    String myMethod() {
+        return "";
+    }
 }

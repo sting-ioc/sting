@@ -21,17 +21,16 @@ import javax.annotation.Nonnull;
  * by {@link ActAsStingComponent} receive both validation allowances.</p>
  */
 @Documented
-@Retention( RetentionPolicy.RUNTIME )
-@Target( { ElementType.PARAMETER, ElementType.METHOD, ElementType.TYPE } )
-public @interface Named
-{
-  /**
-   * An opaque string that qualifies the service.
-   * The string is user-supplied and used to distinguish two different services with the same type
-   * but different semantics.
-   *
-   * @return an opaque qualifier string or name.
-   */
-  @Nonnull
-  String value();
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.PARAMETER, ElementType.METHOD, ElementType.TYPE})
+public @interface Named {
+    /**
+     * An opaque string that qualifies the service.
+     * The string is user-supplied and used to distinguish two different services with the same type
+     * but different semantics.
+     *
+     * @return an opaque qualifier string or name.
+     */
+    @Nonnull
+    String value();
 }

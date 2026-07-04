@@ -9,48 +9,38 @@ import sting.Injector;
 import sting.Typed;
 import sting.interceptors.Around;
 import sting.interceptors.InterceptorBinding;
-import sting.interceptors.Proceed;
 import sting.interceptors.Invocation;
+import sting.interceptors.Proceed;
 
-public final class PrivateAroundMethodModel
-{
-  @Trace
-  interface Service
-  {
-    void run();
-  }
-
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-    public void run()
-    {
+public final class PrivateAroundMethodModel {
+    @Trace
+    interface Service {
+        void run();
     }
-  }
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Around
-    private Object around( @Proceed final Invocation invocation )
-      throws Throwable
-    {
-      return invocation.proceed();
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {
+        public void run() {}
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.PrivateAroundMethodModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
+    }
+
+    @Injectable
+    public static class TraceInterceptor {
+        @Around
+        private Object around(@Proceed final Invocation invocation) throws Throwable {
+            return invocation.proceed();
+        }
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.PrivateAroundMethodModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

@@ -11,48 +11,34 @@ import sting.Typed;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class EagerUnrequestedInterceptorModel
-{
-  private EagerUnrequestedInterceptorModel()
-  {
-  }
+public final class EagerUnrequestedInterceptorModel {
+    private EagerUnrequestedInterceptorModel() {}
 
-  @Trace
-  interface Service
-  {
-    void run();
-  }
-
-  @Eager
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-    public void run()
-    {
+    @Trace
+    interface Service {
+        void run();
     }
-  }
 
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before()
-    {
+    @Eager
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {
+        public void run() {}
     }
-  }
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-  }
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before() {}
+    }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.EagerUnrequestedInterceptorModel.TraceInterceptor",
-                       priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {}
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.EagerUnrequestedInterceptorModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

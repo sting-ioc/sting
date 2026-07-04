@@ -10,54 +10,40 @@ import sting.Injector;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class ProviderBindingSourceModel
-{
-  private ProviderBindingSourceModel()
-  {
-  }
+public final class ProviderBindingSourceModel {
+    private ProviderBindingSourceModel() {}
 
-  @Injector( includes = ProviderBindingSourceModel.MyFragment.class )
-  interface MyInjector
-  {
-  Service service();
-  }
-
-  interface Service
-  {
-    void run();
-  }
-
-  static final class Model
-    implements Service
-  {
-    public void run()
-    {
+    @Injector(includes = ProviderBindingSourceModel.MyFragment.class)
+    interface MyInjector {
+        Service service();
     }
-  }
 
-  @Fragment
-  interface MyFragment
-  {
-    @Trace
-    default Service service()
-    {
-      return new Model();
+    interface Service {
+        void run();
     }
-  }
 
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before()
-    {
+    static final class Model implements Service {
+        public void run() {}
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.ProviderBindingSourceModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Fragment
+    interface MyFragment {
+        @Trace
+        default Service service() {
+            return new Model();
+        }
+    }
+
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before() {}
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.ProviderBindingSourceModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

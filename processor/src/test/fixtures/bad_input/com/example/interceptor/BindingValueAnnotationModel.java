@@ -11,48 +11,35 @@ import sting.interceptors.Before;
 import sting.interceptors.BindingValue;
 import sting.interceptors.InterceptorBinding;
 
-public final class BindingValueAnnotationModel
-{
-  private BindingValueAnnotationModel()
-  {
-  }
+public final class BindingValueAnnotationModel {
+    private BindingValueAnnotationModel() {}
 
-  @interface Nested
-  {
-  }
+    @interface Nested {}
 
-  @Trace
-  interface Service
-  {
-  }
+    @Trace
+    interface Service {}
 
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-  }
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {}
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before( @BindingValue( "nested" ) final String nested )
-    {
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.BindingValueAnnotationModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-    Nested nested() default @Nested;
-  }
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before(@BindingValue("nested") final String nested) {}
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.BindingValueAnnotationModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {
+        Nested nested() default @Nested;
+    }
 }

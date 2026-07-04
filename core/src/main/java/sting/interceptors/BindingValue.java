@@ -13,15 +13,14 @@ import javax.annotation.Nonnull;
  * types. {@code Class} and enum members are supplied as {@code String} values; {@code Class[]} and enum array members
  * are supplied as {@code String[]} values.</p>
  */
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.PARAMETER )
-public @interface BindingValue
-{
-  /**
-   * The binding annotation member name.
-   *
-   * @return the binding annotation member name.
-   */
-  @Nonnull
-  String value();
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+public @interface BindingValue {
+    /**
+     * The binding annotation member name.
+     *
+     * @return the binding annotation member name.
+     */
+    @Nonnull
+    String value();
 }

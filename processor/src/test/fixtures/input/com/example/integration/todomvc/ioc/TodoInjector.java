@@ -6,14 +6,11 @@ import com.example.integration.todomvc.model.TodoService;
 import com.example.integration.todomvc.model.ViewService;
 import sting.Injector;
 
-@Injector( fragmentOnly = false,
-           includes = { TodoRepository.class,
-                        BrowserLocationFragment.class,
-                        TodoService.class,
-                        ViewService.class } )
-public interface TodoInjector
-{
-  TodoService getTodoService();
+@Injector(
+        fragmentOnly = false,
+        includes = {TodoRepository.class, BrowserLocationFragment.class, TodoService.class, ViewService.class})
+public interface TodoInjector {
+    TodoService getTodoService();
 
-  ViewService getViewService();
+    ViewService getViewService();
 }

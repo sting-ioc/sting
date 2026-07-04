@@ -3,16 +3,11 @@ package com.example.named;
 import sting.ActAsStingConsumer;
 import sting.Named;
 
-public class NamedOnTypeInActAsStingConsumerModel
-{
-  @ActAsStingConsumer
-  @interface MyFramework
-  {
-  }
+public class NamedOnTypeInActAsStingConsumerModel {
+    @ActAsStingConsumer
+    @interface MyFramework {}
 
-  @MyFramework
-  @Named( "Foo" )
-  static class MyComponentType
-  {
-  }
+    @MyFramework
+    @Named("Foo")
+    static class MyComponentType {}
 }

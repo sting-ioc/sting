@@ -144,113 +144,111 @@ import javax.annotation.Nonnull;
  * on the supplier when access to the service is needed.</p>
  */
 @Documented
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.TYPE )
-@StingProvider( "[FlatEnclosingName]Sting_[SimpleName]_Provider" )
-public @interface Injector
-{
-  /**
-   * A list of types that contribute to the object graph.
-   * When {@link #fragmentOnly()} is true, these types must be {@link Fragment @Fragment}-annotated interfaces.
-   * When {@link #fragmentOnly()} is false, these types can also be {@link Injectable @Injectable}-annotated
-   * classes. Types annotated with annotations meta-annotated by {@link StingProvider} may also be
-   * explicitly included, in which case Sting resolves the framework-managed type to the provider
-   * type before contributing bindings to the object graph.
-   * The de-duplicated contributions of the {@code @Fragment}-annotated interfaces in the {@code includes},
-   * and of their inclusions recursively, are all contributed to the object graph.
-   *
-   * <p>If the annotation processor detects a dependency that is required but not explicitly included in the
-   * includes list then it will attempt to automatically add the type to the graph. This first
-   * attempts direct auto-discovery for {@link Injectable @Injectable} types and then
-   * provider-backed auto-discovery for framework-managed types annotated with an annotation
-   * meta-annotated by {@link StingProvider}. In the provider-backed case, the resolved provider
-   * must publish the framework-managed type using the default qualifier. The current implementation
-   * includes types if they were compiled in the same invocation of the java compiler. In the future
-   * the annotation processor will load the descriptors from the filesystem.</p>
-   *
-   * @return a list of types that contribute to the injector's object graph.
-   */
-  @Nonnull
-  Class<?>[] includes() default {};
-
-  /**
-   * A flag controlling whether explicitly included types must be {@link Fragment @Fragment}-annotated.
-   * If set to false, the injector may explicitly include {@link Injectable @Injectable}-annotated types.
-   * This also applies when an explicit include resolves via {@link StingProvider} to an
-   * {@link Injectable}-annotated provider type.
-   *
-   * @return true to require explicit includes to be {@link Fragment @Fragment}-annotated, false otherwise.
-   */
-  boolean fragmentOnly() default true;
-
-  /**
-   * A list of services that must be passed into the injector.
-   * The annotation processor will generate a constructor with one parameter for every input. Each input
-   * value MUST specify the type parameter otherwise the annotation processor is unable to determine the
-   * type of the binding.
-   *
-   * @return a list of services that must be passed into the injector.
-   */
-  @Nonnull
-  Input[] inputs() default {};
-
-  /**
-   * A flag controlling whether the injector implementation can be added to other injectors.
-   * If set to true, then the injector can be included in another injector. The {@link #inputs()}
-   * are services that need to be provided while the service methods will define services that this
-   * injector provides.
-   *
-   * @return true to make the injector able to be included in another injector, false otherwise.
-   */
-  boolean injectable() default false;
-
-  /**
-   * A flag controlling whether the injector implementation will be optimized for compilation by GWT.
-   * This primarily involves the addition of the {@code @DoNotInline} annotation to lazy component accessors
-   * within the injector implementation to avoid inlining a component accessor and all transitive lazy component
-   * accessors that can increase code-size, compilation time and run time.
-   *
-   * <p>If set to {@link Feature#AUTODETECT} then the optimization for gwt will be enabled if the class
-   * {@code javaemul.internal.annotations.DoNotInline} is present on the classpath.</p>
-   *
-   * @return true to optimize the injector implementation for transpilation to javascript, false otherwise.
-   */
-  @Nonnull
-  Feature gwt() default Feature.AUTODETECT;
-
-  /**
-   * A specification of a service that is supplied to an injector during construction.
-   * The service is added to the the component graph and is made available for other components to consume
-   */
-  @Retention( RetentionPolicy.RUNTIME )
-  @Documented
-  @Target( {} )
-  @interface Input
-  {
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@StingProvider("[FlatEnclosingName]Sting_[SimpleName]_Provider")
+public @interface Injector {
     /**
-     * An opaque string that qualifies the service.
-     * The string is user-supplied and used to distinguish two different services with the same {@link #type()}
-     * but different semantics.
+     * A list of types that contribute to the object graph.
+     * When {@link #fragmentOnly()} is true, these types must be {@link Fragment @Fragment}-annotated interfaces.
+     * When {@link #fragmentOnly()} is false, these types can also be {@link Injectable @Injectable}-annotated
+     * classes. Types annotated with annotations meta-annotated by {@link StingProvider} may also be
+     * explicitly included, in which case Sting resolves the framework-managed type to the provider
+     * type before contributing bindings to the object graph.
+     * The de-duplicated contributions of the {@code @Fragment}-annotated interfaces in the {@code includes},
+     * and of their inclusions recursively, are all contributed to the object graph.
      *
-     * @return an opaque qualifier string.
+     * <p>If the annotation processor detects a dependency that is required but not explicitly included in the
+     * includes list then it will attempt to automatically add the type to the graph. This first
+     * attempts direct auto-discovery for {@link Injectable @Injectable} types and then
+     * provider-backed auto-discovery for framework-managed types annotated with an annotation
+     * meta-annotated by {@link StingProvider}. In the provider-backed case, the resolved provider
+     * must publish the framework-managed type using the default qualifier. The current implementation
+     * includes types if they were compiled in the same invocation of the java compiler. In the future
+     * the annotation processor will load the descriptors from the filesystem.</p>
+     *
+     * @return a list of types that contribute to the injector's object graph.
      */
     @Nonnull
-    String qualifier() default "";
+    Class<?>[] includes() default {};
 
     /**
-     * The java type of the service.
+     * A flag controlling whether explicitly included types must be {@link Fragment @Fragment}-annotated.
+     * If set to false, the injector may explicitly include {@link Injectable @Injectable}-annotated types.
+     * This also applies when an explicit include resolves via {@link StingProvider} to an
+     * {@link Injectable}-annotated provider type.
      *
-     * <p>Sting does not support classes defined with type parameters.</p>
-     *
-     * @return the java type of the service.
+     * @return true to require explicit includes to be {@link Fragment @Fragment}-annotated, false otherwise.
      */
-    Class<?> type();
+    boolean fragmentOnly() default true;
 
     /**
-     * A flag indicating whether the input is optional and may be null or required.
+     * A list of services that must be passed into the injector.
+     * The annotation processor will generate a constructor with one parameter for every input. Each input
+     * value MUST specify the type parameter otherwise the annotation processor is unable to determine the
+     * type of the binding.
      *
-     * @return a flag indicating whether the input is optional and may be null or required.
+     * @return a list of services that must be passed into the injector.
      */
-    boolean optional() default false;
-  }
+    @Nonnull
+    Input[] inputs() default {};
+
+    /**
+     * A flag controlling whether the injector implementation can be added to other injectors.
+     * If set to true, then the injector can be included in another injector. The {@link #inputs()}
+     * are services that need to be provided while the service methods will define services that this
+     * injector provides.
+     *
+     * @return true to make the injector able to be included in another injector, false otherwise.
+     */
+    boolean injectable() default false;
+
+    /**
+     * A flag controlling whether the injector implementation will be optimized for compilation by GWT.
+     * This primarily involves the addition of the {@code @DoNotInline} annotation to lazy component accessors
+     * within the injector implementation to avoid inlining a component accessor and all transitive lazy component
+     * accessors that can increase code-size, compilation time and run time.
+     *
+     * <p>If set to {@link Feature#AUTODETECT} then the optimization for gwt will be enabled if the class
+     * {@code javaemul.internal.annotations.DoNotInline} is present on the classpath.</p>
+     *
+     * @return true to optimize the injector implementation for transpilation to javascript, false otherwise.
+     */
+    @Nonnull
+    Feature gwt() default Feature.AUTODETECT;
+
+    /**
+     * A specification of a service that is supplied to an injector during construction.
+     * The service is added to the the component graph and is made available for other components to consume
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @Target({})
+    @interface Input {
+        /**
+         * An opaque string that qualifies the service.
+         * The string is user-supplied and used to distinguish two different services with the same {@link #type()}
+         * but different semantics.
+         *
+         * @return an opaque qualifier string.
+         */
+        @Nonnull
+        String qualifier() default "";
+
+        /**
+         * The java type of the service.
+         *
+         * <p>Sting does not support classes defined with type parameters.</p>
+         *
+         * @return the java type of the service.
+         */
+        Class<?> type();
+
+        /**
+         * A flag indicating whether the input is optional and may be null or required.
+         *
+         * @return a flag indicating whether the input is optional and may be null or required.
+         */
+        boolean optional() default false;
+    }
 }

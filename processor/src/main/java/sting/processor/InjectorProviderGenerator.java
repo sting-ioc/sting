@@ -19,111 +19,98 @@ import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
 
-final class InjectorProviderGenerator
-{
-  private InjectorProviderGenerator()
-  {
-  }
+final class InjectorProviderGenerator {
+    private InjectorProviderGenerator() {}
 
-  @Nonnull
-  static TypeSpec buildType( @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final ComponentGraph graph )
-  {
-    final InjectorDescriptor injector = graph.getInjector();
-    final TypeElement element = injector.getElement();
-    final TypeSpec.Builder builder =
-      TypeSpec
-        .interfaceBuilder( GeneratorUtil.getGeneratedSimpleClassName( element, "Sting_", "_Provider" ) )
-        .addModifiers( Modifier.PUBLIC );
-    GeneratorUtil.addOriginatingTypes( element, builder );
-    GeneratorUtil.addGeneratedAnnotation( processingEnv, builder, StingProcessor.class.getName() );
+    @Nonnull
+    static TypeSpec buildType(@Nonnull final ProcessingEnvironment processingEnv, @Nonnull final ComponentGraph graph) {
+        final InjectorDescriptor injector = graph.getInjector();
+        final TypeElement element = injector.getElement();
+        final TypeSpec.Builder builder = TypeSpec.interfaceBuilder(
+                        GeneratorUtil.getGeneratedSimpleClassName(element, "Sting_", "_Provider"))
+                .addModifiers(Modifier.PUBLIC);
+        GeneratorUtil.addOriginatingTypes(element, builder);
+        GeneratorUtil.addGeneratedAnnotation(processingEnv, builder, StingProcessor.class.getName());
 
-    GeneratorUtil.copyWhitelistedAnnotations( element, builder );
-    SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv,
-                                                        builder,
-                                                        Collections.emptyList(),
-                                                        Collections.singletonList( element.asType() ) );
+        GeneratorUtil.copyWhitelistedAnnotations(element, builder);
+        SuppressWarningsUtil.addSuppressWarningsIfRequired(
+                processingEnv, builder, Collections.emptyList(), Collections.singletonList(element.asType()));
 
-    builder.addAnnotation( ClassName.get( "sting", "Fragment" ) );
+        builder.addAnnotation(ClassName.get("sting", "Fragment"));
 
-    emitInjectorProvide( graph, builder );
-    emitOutputProvides( processingEnv, graph, builder );
+        emitInjectorProvide(graph, builder);
+        emitOutputProvides(processingEnv, graph, builder);
 
-    return builder.build();
-  }
-
-  private static void emitInjectorProvide( @Nonnull final ComponentGraph graph,
-                                           @Nonnull final TypeSpec.Builder builder )
-  {
-    final InjectorDescriptor injector = graph.getInjector();
-    final TypeElement element = injector.getElement();
-
-    final MethodSpec.Builder method =
-      MethodSpec
-        .methodBuilder( "provide" )
-        .addAnnotation( GeneratorUtil.NONNULL_CLASSNAME )
-        .addModifiers( Modifier.PUBLIC, Modifier.DEFAULT )
-        .returns( TypeName.get( element.asType() ) );
-
-    final List<InputDescriptor> inputs = graph.getInjector().getInputs();
-    for ( final InputDescriptor input : inputs )
-    {
-      final ServiceSpec service = input.service();
-      final Coordinate coordinate = service.getCoordinate();
-      final ParameterSpec.Builder parameter =
-        ParameterSpec
-          .builder( TypeName.get( coordinate.type() ),
-                    input.name(),
-                    Modifier.FINAL );
-      if ( !coordinate.type().getKind().isPrimitive() )
-      {
-        parameter.addAnnotation( service.isOptional() ?
-                                 GeneratorUtil.NULLABLE_CLASSNAME :
-                                 GeneratorUtil.NONNULL_CLASSNAME );
-      }
-      method.addParameter( parameter.build() );
+        return builder.build();
     }
-    method.addStatement( "return new $T(" +
-                         inputs.stream().map( inputDescriptor -> inputDescriptor.name() ).collect( Collectors.joining( ", " ) ) +
-                         ")",
-                         StingGeneratorUtil.getGeneratedClassName( element ) );
 
-    builder.addMethod( method.build() );
-  }
+    private static void emitInjectorProvide(
+            @Nonnull final ComponentGraph graph, @Nonnull final TypeSpec.Builder builder) {
+        final InjectorDescriptor injector = graph.getInjector();
+        final TypeElement element = injector.getElement();
 
-  private static void emitOutputProvides( @Nonnull final ProcessingEnvironment processingEnv,
-                                          @Nonnull final ComponentGraph graph,
-                                          @Nonnull final TypeSpec.Builder builder )
-  {
-    final InjectorDescriptor injector = graph.getInjector();
-    final TypeElement element = injector.getElement();
+        final MethodSpec.Builder method = MethodSpec.methodBuilder("provide")
+                .addAnnotation(GeneratorUtil.NONNULL_CLASSNAME)
+                .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
+                .returns(TypeName.get(element.asType()));
 
-    for ( final Edge edge : graph.getRootNode().getDependsOn() )
-    {
-      final ServiceRequest serviceRequest = edge.getServiceRequest();
-      if ( ServiceRequest.Kind.INSTANCE == serviceRequest.getKind() )
-      {
-        final MethodSpec.Builder method =
-          MethodSpec
-            .methodBuilder( serviceRequest.getElement().getSimpleName().toString() )
-            .addModifiers( Modifier.PUBLIC, Modifier.DEFAULT )
-            .returns( TypeName.get( serviceRequest.getService().getCoordinate().type() ) )
-            .addParameter( ParameterSpec
-                             .builder( TypeName.get( element.asType() ), "injector", Modifier.FINAL )
-                             .addAnnotation( GeneratorUtil.NONNULL_CLASSNAME )
-                             .build() );
-
-        GeneratorUtil.copyWhitelistedAnnotations( serviceRequest.getElement(), method );
-        final List<String> additionalSuppressions = new ArrayList<>();
-        if ( ElementsUtil.isDeprecated( serviceRequest.getElement() ) )
-        {
-          additionalSuppressions.add( "deprecation" );
+        final List<InputDescriptor> inputs = graph.getInjector().getInputs();
+        for (final InputDescriptor input : inputs) {
+            final ServiceSpec service = input.service();
+            final Coordinate coordinate = service.getCoordinate();
+            final ParameterSpec.Builder parameter =
+                    ParameterSpec.builder(TypeName.get(coordinate.type()), input.name(), Modifier.FINAL);
+            if (!coordinate.type().getKind().isPrimitive()) {
+                parameter.addAnnotation(
+                        service.isOptional() ? GeneratorUtil.NULLABLE_CLASSNAME : GeneratorUtil.NONNULL_CLASSNAME);
+            }
+            method.addParameter(parameter.build());
         }
-        final List<TypeMirror> types =
-          Arrays.asList( element.asType(), serviceRequest.getService().getCoordinate().type() );
-        SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv, method, additionalSuppressions, types );
-        method.addStatement( "return injector.$N()", serviceRequest.getElement().getSimpleName().toString() );
-        builder.addMethod( method.build() );
-      }
+        method.addStatement(
+                "return new $T("
+                        + inputs.stream()
+                                .map(inputDescriptor -> inputDescriptor.name())
+                                .collect(Collectors.joining(", "))
+                        + ")",
+                StingGeneratorUtil.getGeneratedClassName(element));
+
+        builder.addMethod(method.build());
     }
-  }
+
+    private static void emitOutputProvides(
+            @Nonnull final ProcessingEnvironment processingEnv,
+            @Nonnull final ComponentGraph graph,
+            @Nonnull final TypeSpec.Builder builder) {
+        final InjectorDescriptor injector = graph.getInjector();
+        final TypeElement element = injector.getElement();
+
+        for (final Edge edge : graph.getRootNode().getDependsOn()) {
+            final ServiceRequest serviceRequest = edge.getServiceRequest();
+            if (ServiceRequest.Kind.INSTANCE == serviceRequest.getKind()) {
+                final MethodSpec.Builder method = MethodSpec.methodBuilder(
+                                serviceRequest.getElement().getSimpleName().toString())
+                        .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
+                        .returns(TypeName.get(
+                                serviceRequest.getService().getCoordinate().type()))
+                        .addParameter(ParameterSpec.builder(TypeName.get(element.asType()), "injector", Modifier.FINAL)
+                                .addAnnotation(GeneratorUtil.NONNULL_CLASSNAME)
+                                .build());
+
+                GeneratorUtil.copyWhitelistedAnnotations(serviceRequest.getElement(), method);
+                final List<String> additionalSuppressions = new ArrayList<>();
+                if (ElementsUtil.isDeprecated(serviceRequest.getElement())) {
+                    additionalSuppressions.add("deprecation");
+                }
+                final List<TypeMirror> types = Arrays.asList(
+                        element.asType(),
+                        serviceRequest.getService().getCoordinate().type());
+                SuppressWarningsUtil.addSuppressWarningsIfRequired(
+                        processingEnv, method, additionalSuppressions, types);
+                method.addStatement(
+                        "return injector.$N()",
+                        serviceRequest.getElement().getSimpleName().toString());
+                builder.addMethod(method.build());
+            }
+        }
+    }
 }

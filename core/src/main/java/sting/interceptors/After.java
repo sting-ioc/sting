@@ -10,8 +10,6 @@ import java.lang.annotation.Target;
  *
  * <p>A short-circuited {@link Around} method that returns normally is a successful invocation.</p>
  */
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.METHOD )
-public @interface After
-{
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface After {}

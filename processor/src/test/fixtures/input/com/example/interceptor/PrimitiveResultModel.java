@@ -11,48 +11,35 @@ import sting.interceptors.After;
 import sting.interceptors.InterceptorBinding;
 import sting.interceptors.Result;
 
-public final class PrimitiveResultModel
-{
-  private PrimitiveResultModel()
-  {
-  }
+public final class PrimitiveResultModel {
+    private PrimitiveResultModel() {}
 
-  @Trace
-  interface Service
-  {
-    int value();
-  }
-
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-    public int value()
-    {
-      return 1;
+    @Trace
+    interface Service {
+        int value();
     }
-  }
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @After
-    public void after( @Result final Object result )
-    {
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {
+        public int value() {
+            return 1;
+        }
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.PrimitiveResultModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
+    }
+
+    @Injectable
+    public static class TraceInterceptor {
+        @After
+        public void after(@Result final Object result) {}
+    }
+
+    @InterceptorBinding(implementedBy = "com.example.interceptor.PrimitiveResultModel.TraceInterceptor", priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

@@ -11,52 +11,36 @@ import sting.interceptors.After;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class InheritedLifecycleMethodModel
-{
-  private InheritedLifecycleMethodModel()
-  {
-  }
+public final class InheritedLifecycleMethodModel {
+    private InheritedLifecycleMethodModel() {}
 
-  @Trace
-  interface Service
-  {
-  }
+    @Trace
+    interface Service {}
 
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-  }
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {}
 
-  public static class BaseInterceptor
-  {
-    @Before
-    public void before()
-    {
+    public static class BaseInterceptor {
+        @Before
+        public void before() {}
     }
-  }
 
-  @Injectable
-  public static class TraceInterceptor
-    extends BaseInterceptor
-  {
-    @After
-    public void after()
-    {
+    @Injectable
+    public static class TraceInterceptor extends BaseInterceptor {
+        @After
+        public void after() {}
     }
-  }
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
+    }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.InheritedLifecycleMethodModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.InheritedLifecycleMethodModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

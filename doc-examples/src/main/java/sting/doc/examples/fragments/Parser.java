@@ -1,5 +1,3 @@
 package sting.doc.examples.fragments;
 
-final class Parser
-{
-}
+final class Parser {}

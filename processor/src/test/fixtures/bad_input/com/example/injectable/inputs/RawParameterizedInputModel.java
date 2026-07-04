@@ -4,10 +4,7 @@ import java.util.function.Consumer;
 import sting.Injectable;
 
 @Injectable
-public class RawParameterizedInputModel
-{
-  @SuppressWarnings( "rawtypes" )
-  RawParameterizedInputModel( Consumer consumer )
-  {
-  }
+public class RawParameterizedInputModel {
+    @SuppressWarnings("rawtypes")
+    RawParameterizedInputModel(Consumer consumer) {}
 }

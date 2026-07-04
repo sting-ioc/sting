@@ -9,157 +9,139 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-final class Registry
-{
-  /**
-   * The set of factories registered.
-   */
-  @Nonnull
-  private final Map<String, FactoryDescriptor> _factories = new HashMap<>();
-  /**
-   * The set of injectables registered.
-   */
-  @Nonnull
-  private final Map<String, InjectableDescriptor> _injectables = new HashMap<>();
-  /**
-   * The set of fragments registered.
-   */
-  @Nonnull
-  private final Map<String, FragmentDescriptor> _fragments = new HashMap<>();
-  /**
-   * The set of injectors registered.
-   */
-  @Nonnull
-  private final List<InjectorDescriptor> _injectors = new ArrayList<>();
-  /**
-   * The set of interceptor implementation descriptors registered by class name.
-   */
-  @Nonnull
-  private final Map<String, InterceptorDescriptor> _interceptors = new HashMap<>();
-  /**
-   * The set of interceptor proxy descriptors registered by descriptor id.
-   */
-  @Nonnull
-  private final Map<String, InterceptorProxyDescriptor> _interceptorProxies = new HashMap<>();
-  void registerFactory( @Nonnull final FactoryDescriptor factory )
-  {
-    _factories.put( factory.getElement().getQualifiedName().toString(), factory );
-  }
+final class Registry {
+    /**
+     * The set of factories registered.
+     */
+    @Nonnull
+    private final Map<String, FactoryDescriptor> _factories = new HashMap<>();
+    /**
+     * The set of injectables registered.
+     */
+    @Nonnull
+    private final Map<String, InjectableDescriptor> _injectables = new HashMap<>();
+    /**
+     * The set of fragments registered.
+     */
+    @Nonnull
+    private final Map<String, FragmentDescriptor> _fragments = new HashMap<>();
+    /**
+     * The set of injectors registered.
+     */
+    @Nonnull
+    private final List<InjectorDescriptor> _injectors = new ArrayList<>();
+    /**
+     * The set of interceptor implementation descriptors registered by class name.
+     */
+    @Nonnull
+    private final Map<String, InterceptorDescriptor> _interceptors = new HashMap<>();
+    /**
+     * The set of interceptor proxy descriptors registered by descriptor id.
+     */
+    @Nonnull
+    private final Map<String, InterceptorProxyDescriptor> _interceptorProxies = new HashMap<>();
 
-  @Nonnull
-  Collection<FactoryDescriptor> getFactories()
-  {
-    return _factories.values();
-  }
+    void registerFactory(@Nonnull final FactoryDescriptor factory) {
+        _factories.put(factory.getElement().getQualifiedName().toString(), factory);
+    }
 
-  /**
-   * Register the Injectable in the local cache.
-   *
-   * @param injectable the injectable.
-   */
-  void registerInjectable( @Nonnull final InjectableDescriptor injectable )
-  {
-    _injectables.put( injectable.getElement().getQualifiedName().toString(), injectable );
-  }
+    @Nonnull
+    Collection<FactoryDescriptor> getFactories() {
+        return _factories.values();
+    }
 
-  @Nullable
-  InjectableDescriptor findInjectableByClassName( @Nonnull final String name )
-  {
-    return _injectables.get( name );
-  }
+    /**
+     * Register the Injectable in the local cache.
+     *
+     * @param injectable the injectable.
+     */
+    void registerInjectable(@Nonnull final InjectableDescriptor injectable) {
+        _injectables.put(injectable.getElement().getQualifiedName().toString(), injectable);
+    }
 
-  @Nonnull
-  InjectableDescriptor getInjectableByClassName( @Nonnull final String name )
-  {
-    return Objects.requireNonNull( findInjectableByClassName( name ) );
-  }
+    @Nullable
+    InjectableDescriptor findInjectableByClassName(@Nonnull final String name) {
+        return _injectables.get(name);
+    }
 
-  @Nonnull
-  Collection<InjectableDescriptor> getInjectables()
-  {
-    return _injectables.values();
-  }
+    @Nonnull
+    InjectableDescriptor getInjectableByClassName(@Nonnull final String name) {
+        return Objects.requireNonNull(findInjectableByClassName(name));
+    }
 
-  void registerInterceptor( @Nonnull final InterceptorDescriptor interceptor )
-  {
-    _interceptors.put( interceptor.element().getQualifiedName().toString(), interceptor );
-  }
+    @Nonnull
+    Collection<InjectableDescriptor> getInjectables() {
+        return _injectables.values();
+    }
 
-  @Nullable
-  InterceptorDescriptor findInterceptorByClassName( @Nonnull final String name )
-  {
-    return _interceptors.get( name );
-  }
+    void registerInterceptor(@Nonnull final InterceptorDescriptor interceptor) {
+        _interceptors.put(interceptor.element().getQualifiedName().toString(), interceptor);
+    }
 
-  @Nonnull
-  InterceptorProxyDescriptor findOrCreateInterceptorProxy( @Nonnull final InterceptedServiceDescriptor service )
-  {
-    final InterceptorProxyDescriptor descriptor = new InterceptorProxyDescriptor( service );
-    return _interceptorProxies.computeIfAbsent( descriptor.getId(), id -> descriptor );
-  }
+    @Nullable
+    InterceptorDescriptor findInterceptorByClassName(@Nonnull final String name) {
+        return _interceptors.get(name);
+    }
 
-  @Nonnull
-  Collection<InterceptorProxyDescriptor> getInterceptorProxies()
-  {
-    return _interceptorProxies.values();
-  }
+    @Nonnull
+    InterceptorProxyDescriptor findOrCreateInterceptorProxy(@Nonnull final InterceptedServiceDescriptor service) {
+        final InterceptorProxyDescriptor descriptor = new InterceptorProxyDescriptor(service);
+        return _interceptorProxies.computeIfAbsent(descriptor.getId(), id -> descriptor);
+    }
 
-  /**
-   * Register the fragment in the local cache.
-   *
-   * @param fragment the fragment.
-   */
-  void registerFragment( @Nonnull final FragmentDescriptor fragment )
-  {
-    _fragments.put( fragment.getElement().getQualifiedName().toString(), fragment );
-  }
+    @Nonnull
+    Collection<InterceptorProxyDescriptor> getInterceptorProxies() {
+        return _interceptorProxies.values();
+    }
 
-  @Nullable
-  FragmentDescriptor findFragmentByClassName( @Nonnull final String name )
-  {
-    return _fragments.get( name );
-  }
+    /**
+     * Register the fragment in the local cache.
+     *
+     * @param fragment the fragment.
+     */
+    void registerFragment(@Nonnull final FragmentDescriptor fragment) {
+        _fragments.put(fragment.getElement().getQualifiedName().toString(), fragment);
+    }
 
-  @Nonnull
-  FragmentDescriptor getFragmentByClassName( @Nonnull final String name )
-  {
-    return Objects.requireNonNull( findFragmentByClassName( name ) );
-  }
+    @Nullable
+    FragmentDescriptor findFragmentByClassName(@Nonnull final String name) {
+        return _fragments.get(name);
+    }
 
-  @Nonnull
-  Collection<FragmentDescriptor> getFragments()
-  {
-    return _fragments.values();
-  }
+    @Nonnull
+    FragmentDescriptor getFragmentByClassName(@Nonnull final String name) {
+        return Objects.requireNonNull(findFragmentByClassName(name));
+    }
 
-  /**
-   * Register the injector in the local cache.
-   *
-   * @param injector the injector.
-   */
-  void registerInjector( @Nonnull final InjectorDescriptor injector )
-  {
-    _injectors.add( injector );
-  }
+    @Nonnull
+    Collection<FragmentDescriptor> getFragments() {
+        return _fragments.values();
+    }
 
-  void deregisterInjector( @Nonnull final InjectorDescriptor injector )
-  {
-    _injectors.remove( injector );
-  }
+    /**
+     * Register the injector in the local cache.
+     *
+     * @param injector the injector.
+     */
+    void registerInjector(@Nonnull final InjectorDescriptor injector) {
+        _injectors.add(injector);
+    }
 
-  @Nonnull
-  List<InjectorDescriptor> getInjectors()
-  {
-    return _injectors;
-  }
+    void deregisterInjector(@Nonnull final InjectorDescriptor injector) {
+        _injectors.remove(injector);
+    }
 
-  void clear()
-  {
-    _factories.clear();
-    _injectables.clear();
-    _fragments.clear();
-    _injectors.clear();
-    _interceptors.clear();
-    _interceptorProxies.clear();
-  }
+    @Nonnull
+    List<InjectorDescriptor> getInjectors() {
+        return _injectors;
+    }
+
+    void clear() {
+        _factories.clear();
+        _injectables.clear();
+        _fragments.clear();
+        _injectors.clear();
+        _interceptors.clear();
+        _interceptorProxies.clear();
+    }
 }

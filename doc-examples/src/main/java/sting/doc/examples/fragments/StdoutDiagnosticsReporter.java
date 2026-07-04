@@ -1,6 +1,3 @@
 package sting.doc.examples.fragments;
 
-public class StdoutDiagnosticsReporter
-  implements DiagnosticsReporter
-{
-}
+public class StdoutDiagnosticsReporter implements DiagnosticsReporter {}

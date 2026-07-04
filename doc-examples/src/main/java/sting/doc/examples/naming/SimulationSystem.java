@@ -1,5 +1,3 @@
 package sting.doc.examples.naming;
 
-public interface SimulationSystem
-{
-}
+public interface SimulationSystem {}

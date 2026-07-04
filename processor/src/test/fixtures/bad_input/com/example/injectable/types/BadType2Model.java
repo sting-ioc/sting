@@ -5,16 +5,10 @@ import sting.Injectable;
 import sting.Typed;
 
 @Injectable
-@Typed( { BadType2Model.class, Runnable.class, Object.class, Callable.class } )
-public class BadType2Model
-  implements Runnable
-{
-  BadType2Model()
-  {
-  }
+@Typed({BadType2Model.class, Runnable.class, Object.class, Callable.class})
+public class BadType2Model implements Runnable {
+    BadType2Model() {}
 
-  @Override
-  public void run()
-  {
-  }
+    @Override
+    public void run() {}
 }

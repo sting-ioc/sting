@@ -4,11 +4,9 @@ import sting.Eager;
 import sting.Fragment;
 
 @Fragment
-public interface EagerModel
-{
-  @Eager
-  default Runnable provideRunnable()
-  {
-    return null;
-  }
+public interface EagerModel {
+    @Eager
+    default Runnable provideRunnable() {
+        return null;
+    }
 }

@@ -6,7 +6,5 @@ import sting.Typed;
 
 @Eager
 @Injectable
-@Typed( {} )
-public class NoTypesModel
-{
-}
+@Typed({})
+public class NoTypesModel {}

@@ -4,8 +4,7 @@ import java.util.function.Consumer;
 import sting.Injector;
 
 @Injector
-public interface RawParameterizedOutputModel
-{
-  @SuppressWarnings( "rawtypes" )
-  Consumer getMyThing();
+public interface RawParameterizedOutputModel {
+    @SuppressWarnings("rawtypes")
+    Consumer getMyThing();
 }

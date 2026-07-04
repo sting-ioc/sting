@@ -4,11 +4,9 @@ import sting.Fragment;
 import sting.Typed;
 
 @Fragment
-public interface NoTypesAndLazyModel
-{
-  @Typed( {} )
-  default String provideX()
-  {
-    return "";
-  }
+public interface NoTypesAndLazyModel {
+    @Typed({})
+    default String provideX() {
+        return "";
+    }
 }

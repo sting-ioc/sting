@@ -5,8 +5,7 @@ import javax.annotation.Nullable;
 import sting.Injector;
 
 @Injector
-public interface NullableOptionalOutputModel
-{
-  @Nullable
-  Optional<String> getValue();
+public interface NullableOptionalOutputModel {
+    @Nullable
+    Optional<String> getValue();
 }

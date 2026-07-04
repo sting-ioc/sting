@@ -10,43 +10,31 @@ import sting.Typed;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class StaticLifecycleMethodModel
-{
-  private StaticLifecycleMethodModel()
-  {
-  }
+public final class StaticLifecycleMethodModel {
+    private StaticLifecycleMethodModel() {}
 
-  @Trace
-  interface Service
-  {
-  }
+    @Trace
+    interface Service {}
 
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-  }
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {}
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public static void before()
-    {
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.StaticLifecycleMethodModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public static void before() {}
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.StaticLifecycleMethodModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

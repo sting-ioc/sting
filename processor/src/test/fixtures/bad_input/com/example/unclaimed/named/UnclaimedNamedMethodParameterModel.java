@@ -4,9 +4,6 @@ import sting.Injectable;
 import sting.Named;
 
 @Injectable
-public class UnclaimedNamedMethodParameterModel
-{
-  void myMethod( @Named( "blah" ) String someValue )
-  {
-  }
+public class UnclaimedNamedMethodParameterModel {
+    void myMethod(@Named("blah") String someValue) {}
 }

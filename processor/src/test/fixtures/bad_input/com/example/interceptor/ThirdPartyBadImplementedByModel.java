@@ -9,52 +9,37 @@ import sting.Injector;
 import sting.Typed;
 import sting.interceptors.Before;
 
-public final class ThirdPartyBadImplementedByModel
-{
-  private ThirdPartyBadImplementedByModel()
-  {
-  }
+public final class ThirdPartyBadImplementedByModel {
+    private ThirdPartyBadImplementedByModel() {}
 
-  @Trace
-  interface Service
-  {
-  }
+    @Trace
+    interface Service {}
 
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-  }
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {}
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before()
-    {
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
     }
-  }
 
-  @InterceptorBinding( implementedBy = TraceInterceptor.class, priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before() {}
+    }
 
-  @Retention( RetentionPolicy.CLASS )
-  @Target( ElementType.ANNOTATION_TYPE )
-  @interface InterceptorBinding
-  {
-    Class<?> implementedBy() default Object.class;
+    @InterceptorBinding(implementedBy = TraceInterceptor.class, priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 
-    int priority();
-  }
+    @Retention(RetentionPolicy.CLASS)
+    @Target(ElementType.ANNOTATION_TYPE)
+    @interface InterceptorBinding {
+        Class<?> implementedBy() default Object.class;
+
+        int priority();
+    }
 }

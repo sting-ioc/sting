@@ -5,6 +5,4 @@ import sting.Injectable;
 
 @Singleton
 @Injectable
-public class Jsr330ScopedModel
-{
-}
+public class Jsr330ScopedModel {}

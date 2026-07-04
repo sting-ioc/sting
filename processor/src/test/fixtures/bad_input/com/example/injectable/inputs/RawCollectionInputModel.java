@@ -4,10 +4,7 @@ import java.util.Collection;
 import sting.Injectable;
 
 @Injectable
-public class RawCollectionInputModel
-{
-  @SuppressWarnings( "rawtypes" )
-  RawCollectionInputModel( Collection someValue )
-  {
-  }
+public class RawCollectionInputModel {
+    @SuppressWarnings("rawtypes")
+    RawCollectionInputModel(Collection someValue) {}
 }

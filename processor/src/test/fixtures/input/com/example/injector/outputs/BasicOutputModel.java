@@ -4,12 +4,9 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface BasicOutputModel
-{
-  MyModel getMyModel();
+interface BasicOutputModel {
+    MyModel getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-  }
+    @Injectable
+    class MyModel {}
 }

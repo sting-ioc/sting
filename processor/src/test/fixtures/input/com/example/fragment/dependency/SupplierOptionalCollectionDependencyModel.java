@@ -6,10 +6,8 @@ import java.util.function.Supplier;
 import sting.Fragment;
 
 @Fragment
-public interface SupplierOptionalCollectionDependencyModel
-{
-  default Runnable provideRunnable( Collection<Supplier<Optional<String>>> name )
-  {
-    return null;
-  }
+public interface SupplierOptionalCollectionDependencyModel {
+    default Runnable provideRunnable(Collection<Supplier<Optional<String>>> name) {
+        return null;
+    }
 }

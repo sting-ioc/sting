@@ -10,49 +10,35 @@ import sting.Typed;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class UnsupportedLifecycleParameterMarkerModel
-{
-  private UnsupportedLifecycleParameterMarkerModel()
-  {
-  }
+public final class UnsupportedLifecycleParameterMarkerModel {
+    private UnsupportedLifecycleParameterMarkerModel() {}
 
-  @Trace
-  interface Service
-  {
-  }
+    @Trace
+    interface Service {}
 
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-  }
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {}
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before( @Unsupported final String value )
-    {
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
     }
-  }
 
-  @Retention( RetentionPolicy.RUNTIME )
-  @Target( ElementType.PARAMETER )
-  @interface Unsupported
-  {
-  }
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before(@Unsupported final String value) {}
+    }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.UnsupportedLifecycleParameterMarkerModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.PARAMETER)
+    @interface Unsupported {}
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.UnsupportedLifecycleParameterMarkerModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

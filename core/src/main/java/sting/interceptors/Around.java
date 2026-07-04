@@ -16,8 +16,6 @@ import java.lang.annotation.Target;
  * <p>The value returned by an around method is used as the intercepted service method result. Void service methods
  * ignore this value. Primitive service methods unbox the value according to the service method return type.</p>
  */
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.METHOD )
-public @interface Around
-{
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Around {}

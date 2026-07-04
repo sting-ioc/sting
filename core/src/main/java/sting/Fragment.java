@@ -18,25 +18,24 @@ import javax.annotation.Nonnull;
  * full set of service types published by that binding.</p>
  */
 @Documented
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.TYPE )
-public @interface Fragment
-{
-  /**
-   * A list of types that can contribute to the component graph.
-   * The types can be {@link Injectable}-annotated classes or {@link Fragment}-annotated interfaces.
-   * The {@link Fragment}-annotated interfaces contributions are added recursively and contributions are
-   * de-duplicated before they are resolved.
-   *
-   * @return a list of types that contribute to the fragments component graph.
-   */
-  @Nonnull
-  Class<?>[] includes() default {};
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface Fragment {
+    /**
+     * A list of types that can contribute to the component graph.
+     * The types can be {@link Injectable}-annotated classes or {@link Fragment}-annotated interfaces.
+     * The {@link Fragment}-annotated interfaces contributions are added recursively and contributions are
+     * de-duplicated before they are resolved.
+     *
+     * @return a list of types that contribute to the fragments component graph.
+     */
+    @Nonnull
+    Class<?>[] includes() default {};
 
-  /**
-   * True if all explicitly included types must be declared in the same package as the fragment.
-   *
-   * @return true to reject cross-package includes, false to permit them.
-   */
-  boolean localOnly() default true;
+    /**
+     * True if all explicitly included types must be declared in the same package as the fragment.
+     *
+     * @return true to reject cross-package includes, false to permit them.
+     */
+    boolean localOnly() default true;
 }

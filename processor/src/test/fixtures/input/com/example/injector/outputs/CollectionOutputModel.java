@@ -5,12 +5,9 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface CollectionOutputModel
-{
-  Collection<MyModel> getMyModel();
+interface CollectionOutputModel {
+    Collection<MyModel> getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-  }
+    @Injectable
+    class MyModel {}
 }

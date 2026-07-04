@@ -5,13 +5,10 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface Jsr330NamedOutputModel
-{
-  @Named( "X" )
-  MyModel getMyModel();
+interface Jsr330NamedOutputModel {
+    @Named("X")
+    MyModel getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-  }
+    @Injectable
+    class MyModel {}
 }

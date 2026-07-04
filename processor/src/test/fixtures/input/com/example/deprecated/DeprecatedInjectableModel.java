@@ -4,6 +4,4 @@ import sting.Injectable;
 
 @Deprecated
 @Injectable
-public class DeprecatedInjectableModel
-{
-}
+public class DeprecatedInjectableModel {}

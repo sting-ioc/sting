@@ -7,45 +7,35 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface OptionalCollectionDependencyInjectorModel
-{
-  MyModel getMyModel();
+interface OptionalCollectionDependencyInjectorModel {
+    MyModel getMyModel();
 
-  String getConfig();
+    String getConfig();
 
-  @Injectable
-  class MyModel
-  {
-    MyModel( Collection<Runnable> runnables )
-    {
+    @Injectable
+    class MyModel {
+        MyModel(Collection<Runnable> runnables) {}
     }
-  }
 
-  @Fragment
-  interface MyFragment1
-  {
-    default Runnable provideRunnable1()
-    {
-      return () -> { };
+    @Fragment
+    interface MyFragment1 {
+        default Runnable provideRunnable1() {
+            return () -> {};
+        }
     }
-  }
 
-  @Fragment
-  interface MyFragment2
-  {
-    @Nullable
-    default Runnable provideRunnable2()
-    {
-      return null;
+    @Fragment
+    interface MyFragment2 {
+        @Nullable
+        default Runnable provideRunnable2() {
+            return null;
+        }
     }
-  }
 
-  @Fragment
-  interface MyFragment3
-  {
-    default String provideConfig( Collection<Runnable> runnables )
-    {
-      return Integer.toString( runnables.size() );
+    @Fragment
+    interface MyFragment3 {
+        default String provideConfig(Collection<Runnable> runnables) {
+            return Integer.toString(runnables.size());
+        }
     }
-  }
 }

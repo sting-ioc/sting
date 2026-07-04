@@ -4,16 +4,11 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface DefaultMethodInInjectorModel
-{
-  default void doStuff()
-  {
-  }
+interface DefaultMethodInInjectorModel {
+    default void doStuff() {}
 
-  MyModel getMyModel();
+    MyModel getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-  }
+    @Injectable
+    class MyModel {}
 }

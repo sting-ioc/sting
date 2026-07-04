@@ -4,12 +4,8 @@ import sting.Injectable;
 import sting.Typed;
 
 @Injectable
-@Typed( AccountService.class )
-public final class AccountServiceImpl
-  implements AccountService
-{
-  @Override
-  public void updateAccount( final String accountId )
-  {
-  }
+@Typed(AccountService.class)
+public final class AccountServiceImpl implements AccountService {
+    @Override
+    public void updateAccount(final String accountId) {}
 }

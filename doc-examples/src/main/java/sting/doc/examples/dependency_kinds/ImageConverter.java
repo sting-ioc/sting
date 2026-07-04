@@ -5,14 +5,11 @@ import java.util.function.Supplier;
 import sting.Injectable;
 
 @Injectable
-public class ImageConverter
-{
-  ImageConverter( Collection<ImageReader> readers,
-                  Collection<Supplier<ImageWriter>> writers )
-  {
-    //DOC ELIDE START
-    //DOC ELIDE END
-  }
-  //DOC ELIDE START
-  //DOC ELIDE END
+public class ImageConverter {
+    ImageConverter(Collection<ImageReader> readers, Collection<Supplier<ImageWriter>> writers) {
+        // DOC ELIDE START
+        // DOC ELIDE END
+    }
+    // DOC ELIDE START
+    // DOC ELIDE END
 }

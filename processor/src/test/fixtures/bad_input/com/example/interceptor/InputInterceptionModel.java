@@ -9,36 +9,27 @@ import sting.Injector;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class InputInterceptionModel
-{
-  private InputInterceptionModel()
-  {
-  }
+public final class InputInterceptionModel {
+    private InputInterceptionModel() {}
 
-  @Injector( inputs = @Injector.Input( type = InputInterceptionModel.Service.class ) )
-  interface MyInjector
-  {
-  Service service();
-  }
-
-  @Trace
-  interface Service
-  {
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before()
-    {
+    @Injector(inputs = @Injector.Input(type = InputInterceptionModel.Service.class))
+    interface MyInjector {
+        Service service();
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.InputInterceptionModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Trace
+    interface Service {}
+
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before() {}
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.InputInterceptionModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

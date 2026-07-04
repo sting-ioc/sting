@@ -26,8 +26,6 @@ import java.lang.annotation.Target;
  * @see InjectorFragment
  */
 @Documented
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.ANNOTATION_TYPE )
-public @interface ActAsStingConsumer
-{
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.ANNOTATION_TYPE)
+public @interface ActAsStingConsumer {}

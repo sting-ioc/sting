@@ -5,66 +5,54 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface AllPrimitiveProviderBoxedDependencyModel
-{
-  MyModel getMyModel();
+interface AllPrimitiveProviderBoxedDependencyModel {
+    MyModel getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-    MyModel( final Boolean value1,
-             final Character value2,
-             final Byte value3,
-             final Short value4,
-             final Integer value5,
-             final Long value6,
-             final Float value7,
-             final Double value8 )
-    {
-    }
-  }
-
-  @Fragment
-  interface MyFragment
-  {
-    default boolean provideValue1()
-    {
-      return true;
+    @Injectable
+    class MyModel {
+        MyModel(
+                final Boolean value1,
+                final Character value2,
+                final Byte value3,
+                final Short value4,
+                final Integer value5,
+                final Long value6,
+                final Float value7,
+                final Double value8) {}
     }
 
-    default char provideValue2()
-    {
-      return 'Z';
-    }
+    @Fragment
+    interface MyFragment {
+        default boolean provideValue1() {
+            return true;
+        }
 
-    default byte provideValue3()
-    {
-      return 3;
-    }
+        default char provideValue2() {
+            return 'Z';
+        }
 
-    default short provideValue4()
-    {
-      return 4;
-    }
+        default byte provideValue3() {
+            return 3;
+        }
 
-    default int provideValue5()
-    {
-      return 5;
-    }
+        default short provideValue4() {
+            return 4;
+        }
 
-    default long provideValue6()
-    {
-      return 6L;
-    }
+        default int provideValue5() {
+            return 5;
+        }
 
-    default float provideValue7()
-    {
-      return 7.5F;
-    }
+        default long provideValue6() {
+            return 6L;
+        }
 
-    default double provideValue8()
-    {
-      return 8.5D;
+        default float provideValue7() {
+            return 7.5F;
+        }
+
+        default double provideValue8() {
+            return 8.5D;
+        }
     }
-  }
 }

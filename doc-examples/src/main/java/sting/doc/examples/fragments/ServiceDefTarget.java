@@ -1,6 +1,5 @@
 package sting.doc.examples.fragments;
 
-public interface ServiceDefTarget
-{
-  void setServiceEntryPoint( String s );
+public interface ServiceDefTarget {
+    void setServiceEntryPoint(String s);
 }

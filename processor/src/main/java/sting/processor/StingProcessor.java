@@ -60,4371 +60,3728 @@ import org.realityforge.proton.TypesUtil;
 /**
  * The annotation processor that analyzes Sting annotated source code and generates an injector and supporting artifacts.
  */
-@SuppressWarnings( "DuplicatedCode" )
-@SupportedAnnotationTypes( { Constants.INJECTOR_CLASSNAME,
-                             Constants.INJECTOR_FRAGMENT_CLASSNAME,
-                             Constants.FACTORY_CLASSNAME,
-                             Constants.INJECTABLE_CLASSNAME,
-                             Constants.FRAGMENT_CLASSNAME,
-                             Constants.EAGER_CLASSNAME,
-                             Constants.TYPED_CLASSNAME,
-                             Constants.NAMED_CLASSNAME,
-                             Constants.STING_PROVIDER_CLASSNAME,
-                             Constants.ACT_AS_STING_CONSUMER_CLASSNAME,
-                             Constants.ACT_AS_STING_PROVIDER_CLASSNAME,
-                             Constants.ACT_AS_STING_COMPONENT_CLASSNAME } )
-@SupportedSourceVersion( SourceVersion.RELEASE_17 )
-@SupportedOptions( { "sting.defer.unresolved",
-                     "sting.defer.errors",
-                     "sting.debug",
-                     "sting.format_generated_source",
-                     "sting.profile",
-                     "sting.emit_json_descriptors",
-                     "sting.emit_dot_reports",
-                     "sting.verbose_out_of_round.errors",
-                     "sting.warnings_as_errors" } )
-public final class StingProcessor
-  extends AbstractStandardProcessor
-{
-  private enum AnnotationUsageKind
-  {
-    PROCESSED,
-    SILENT_INTEGRATION_EXCEPTION,
-    INVALID
-  }
-
-  /**
-   * Extension for json descriptors.
-   */
-  static final String JSON_SUFFIX = ".sting.json";
-  /**
-   * Extension for graphviz .dot reports.
-   */
-  static final String DOT_SUFFIX = ".gv";
-  // Binary descriptor persistence removed
-  /**
-   * Extension for the computed graph descriptor.
-   */
-  static final String GRAPH_SUFFIX = "__ObjectGraph" + JSON_SUFFIX;
-  /**
-   * A local cache of bindings that is cleared on error or when processing is complete.
-   * This will probably be loaded from json cache files in the future but now we require
-   * in memory processing.
-   */
-  @Nonnull
-  private final Registry _registry = new Registry();
-  @Nonnull
-  private final DeferredElementSet _deferredInjectableTypes = new DeferredElementSet();
-  @Nonnull
-  private final DeferredElementSet _deferredFragmentTypes = new DeferredElementSet();
-  @Nonnull
-  private final DeferredElementSet _deferredFactoryTypes = new DeferredElementSet();
-  @Nonnull
-  private final DeferredElementSet _deferredInjectorTypes = new DeferredElementSet();
-  @Nonnull
-  private final DeferredElementSet _deferredInjectorFragmentTypes = new DeferredElementSet();
-  @Nonnull
-  private final StopWatch _analyzeInjectableStopWatch = new StopWatch( "Analyze Injectable" );
-  @Nonnull
-  private final StopWatch _analyzeFragmentStopWatch = new StopWatch( "Analyze Fragment" );
-  @Nonnull
-  private final StopWatch _analyzeFactoryStopWatch = new StopWatch( "Analyze Factory" );
-  @Nonnull
-  private final StopWatch _analyzeInjectorFragmentStopWatch = new StopWatch( "Analyze Injector Fragment" );
-  @Nonnull
-  private final StopWatch _analyzeInjectorStopWatch = new StopWatch( "Analyze Injector" );
-  private final StopWatch _generateInjectableStubStopWatch = new StopWatch( "Generate Injectable Stub" );
-  @Nonnull
-  private final StopWatch _generateFragmentStubStopWatch = new StopWatch( "Generate Fragment Stub" );
-  @Nonnull
-  private final StopWatch _generateFactoryImplStopWatch = new StopWatch( "Generate Factory Impl" );
-  @Nonnull
-  private final StopWatch _generateInjectorImplStopWatch = new StopWatch( "Generate Injector Impl" );
-  @Nonnull
-  private final StopWatch _isInjectorResolvedStopWatch = new StopWatch( "Is Injector Resolved" );
-  @Nonnull
-  private final StopWatch _buildAndEmitObjectGraphStopWatch = new StopWatch( "Build and Emit Object Graph" );
-  /**
-   * Flag controlling whether json descriptors are emitted.
-   * Json descriptors are primarily used during debugging and probably should not be enabled in production code.
-   */
-  private boolean _emitJsonDescriptors;
-  /**
-   * Flag controlling whether .dot formatted report is emitted.
-   * The .dot report is typically used by end users who want to explore the graph.
-   */
-  private boolean _emitDotReports;
-  /**
-   * Cache of derived fragment descriptors during a processing session.
-   */
-  @Nonnull
-  private final Map<String, FragmentDescriptor> _derivedFragmentCache = new HashMap<>();
-  /**
-   * Cache of derived injectable descriptors during a processing session.
-   */
-  @Nonnull
-  private final Map<String, InjectableDescriptor> _derivedInjectableCache = new HashMap<>();
-  /**
-   * Track fragments that are currently being resolved to break include cycles.
-   */
-  @Nonnull
-  private final Set<String> _resolvingFragmentTypes = new HashSet<>();
-
-  /**
-   * Create the annotation processor.
-   */
-  public StingProcessor()
-  {
-  }
-
-  @Nonnull
-  @Override
-  protected String getIssueTrackerURL()
-  {
-    return "https://github.com/sting-ioc/sting/issues";
-  }
-
-  @Nonnull
-  @Override
-  protected String getOptionPrefix()
-  {
-    return "sting";
-  }
-
-  @Override
-  public synchronized void init( @Nonnull final ProcessingEnvironment processingEnv )
-  {
-    super.init( processingEnv );
-    _emitJsonDescriptors = readBooleanOption( "emit_json_descriptors", false );
-    _emitDotReports = readBooleanOption( "emit_dot_reports", false );
-  }
-
-  @Override
-  protected void collectStopWatches( @Nonnull final Collection<StopWatch> stopWatches )
-  {
-    stopWatches.add( _analyzeInjectableStopWatch );
-    stopWatches.add( _analyzeFragmentStopWatch );
-    stopWatches.add( _analyzeFactoryStopWatch );
-    stopWatches.add( _analyzeInjectorFragmentStopWatch );
-    stopWatches.add( _analyzeInjectorStopWatch );
-    stopWatches.add( _generateInjectableStubStopWatch );
-    stopWatches.add( _generateFragmentStubStopWatch );
-    stopWatches.add( _generateFactoryImplStopWatch );
-    stopWatches.add( _generateInjectorImplStopWatch );
-    stopWatches.add( _isInjectorResolvedStopWatch );
-    stopWatches.add( _buildAndEmitObjectGraphStopWatch );
-  }
-
-  @Override
-  public boolean process( @Nonnull final Set<? extends TypeElement> annotations, @Nonnull final RoundEnvironment env )
-  {
-    debugAnnotationProcessingRootElements( env );
-    collectRootTypeNames( env );
-
-    processTypeElements( annotations,
-                         env,
-                         Constants.FACTORY_CLASSNAME,
-                         _deferredFactoryTypes,
-                         "Analyze Factory",
-                         this::processFactory,
-                         _analyzeFactoryStopWatch );
-
-    processTypeElements( annotations,
-                         env,
-                         Constants.INJECTABLE_CLASSNAME,
-                         _deferredInjectableTypes,
-                         "Analyze Injectable",
-                         this::processInjectable,
-                         _analyzeInjectableStopWatch );
-
-    processTypeElements( annotations,
-                         env,
-                         Constants.FRAGMENT_CLASSNAME,
-                         _deferredFragmentTypes,
-                         "Analyze Fragment",
-                         this::processFragment,
-                         _analyzeFragmentStopWatch );
-
-    annotations
-      .stream()
-      .filter( a -> a.getQualifiedName().toString().equals( Constants.NAMED_CLASSNAME ) )
-      .findAny()
-      .ifPresent( a -> verifyNamedElements( env, env.getElementsAnnotatedWith( a ) ) );
-
-    annotations
-      .stream()
-      .filter( a -> a.getQualifiedName().toString().equals( Constants.TYPED_CLASSNAME ) )
-      .findAny()
-      .ifPresent( a -> verifyTypedElements( env, env.getElementsAnnotatedWith( a ) ) );
-
-    annotations.stream()
-      .filter( a -> a.getQualifiedName().toString().equals( Constants.EAGER_CLASSNAME ) )
-      .findAny()
-      .ifPresent( a -> verifyEagerElements( env, env.getElementsAnnotatedWith( a ) ) );
-
-    processTypeElements( annotations,
-                         env,
-                         Constants.INJECTOR_FRAGMENT_CLASSNAME,
-                         _deferredInjectorFragmentTypes,
-                         "Analyze Injector Fragment",
-                         this::processInjectorFragment,
-                         _analyzeInjectorFragmentStopWatch );
-
-    processTypeElements( annotations,
-                         env,
-                         Constants.INJECTOR_CLASSNAME,
-                         _deferredInjectorTypes,
-                         "Analyze Injector",
-                         this::processInjector,
-                         _analyzeInjectorStopWatch );
-
-    processResolvedFactories( env );
-    processResolvedInjectables( env );
-    processResolvedFragments( env );
-    processResolvedInjectors( env );
-
-    errorIfProcessingOverAndInvalidTypesDetected( env );
-    errorIfProcessingOverAndUnprocessedInjectorDetected( env );
-    if ( env.processingOver() || env.errorRaised() )
-    {
-      _registry.clear();
-      _derivedFragmentCache.clear();
-      _derivedInjectableCache.clear();
+@SuppressWarnings("DuplicatedCode")
+@SupportedAnnotationTypes({
+    Constants.INJECTOR_CLASSNAME,
+    Constants.INJECTOR_FRAGMENT_CLASSNAME,
+    Constants.FACTORY_CLASSNAME,
+    Constants.INJECTABLE_CLASSNAME,
+    Constants.FRAGMENT_CLASSNAME,
+    Constants.EAGER_CLASSNAME,
+    Constants.TYPED_CLASSNAME,
+    Constants.NAMED_CLASSNAME,
+    Constants.STING_PROVIDER_CLASSNAME,
+    Constants.ACT_AS_STING_CONSUMER_CLASSNAME,
+    Constants.ACT_AS_STING_PROVIDER_CLASSNAME,
+    Constants.ACT_AS_STING_COMPONENT_CLASSNAME
+})
+@SupportedSourceVersion(SourceVersion.RELEASE_17)
+@SupportedOptions({
+    "sting.defer.unresolved",
+    "sting.defer.errors",
+    "sting.debug",
+    "sting.format_generated_source",
+    "sting.profile",
+    "sting.emit_json_descriptors",
+    "sting.emit_dot_reports",
+    "sting.verbose_out_of_round.errors",
+    "sting.warnings_as_errors"
+})
+public final class StingProcessor extends AbstractStandardProcessor {
+    private enum AnnotationUsageKind {
+        PROCESSED,
+        SILENT_INTEGRATION_EXCEPTION,
+        INVALID
     }
-    clearRootTypeNamesIfProcessingOver( env );
-    reportProfilerTimings();
-    return true;
-  }
 
-  private void errorIfProcessingOverAndUnprocessedInjectorDetected( @Nonnull final RoundEnvironment env )
-  {
-    if ( env.processingOver() && !env.errorRaised() )
-    {
-      final List<InjectorDescriptor> injectors = _registry.getInjectors();
-      if ( !injectors.isEmpty() )
-      {
-        processingEnv
-          .getMessager()
-          .printMessage( Diagnostic.Kind.ERROR,
-                         getClass().getSimpleName() + " failed to process " + injectors.size() + " injectors " +
-                         "as not all of their dependencies could be resolved. Ensure that included types are " +
-                         "present on the classpath and are valid Sting components. If the problem is not " +
-                         "obvious, consider passing the annotation option sting.debug=true" );
-        for ( final InjectorDescriptor injector : injectors )
-        {
-          processingEnv
-            .getMessager()
-            .printMessage( Diagnostic.Kind.ERROR,
-                           "Failed to process the " + injector.getElement().getQualifiedName() + " injector." );
+    /**
+     * Extension for json descriptors.
+     */
+    static final String JSON_SUFFIX = ".sting.json";
+    /**
+     * Extension for graphviz .dot reports.
+     */
+    static final String DOT_SUFFIX = ".gv";
+    // Binary descriptor persistence removed
+    /**
+     * Extension for the computed graph descriptor.
+     */
+    static final String GRAPH_SUFFIX = "__ObjectGraph" + JSON_SUFFIX;
+    /**
+     * A local cache of bindings that is cleared on error or when processing is complete.
+     * This will probably be loaded from json cache files in the future but now we require
+     * in memory processing.
+     */
+    @Nonnull
+    private final Registry _registry = new Registry();
+
+    @Nonnull
+    private final DeferredElementSet _deferredInjectableTypes = new DeferredElementSet();
+
+    @Nonnull
+    private final DeferredElementSet _deferredFragmentTypes = new DeferredElementSet();
+
+    @Nonnull
+    private final DeferredElementSet _deferredFactoryTypes = new DeferredElementSet();
+
+    @Nonnull
+    private final DeferredElementSet _deferredInjectorTypes = new DeferredElementSet();
+
+    @Nonnull
+    private final DeferredElementSet _deferredInjectorFragmentTypes = new DeferredElementSet();
+
+    @Nonnull
+    private final StopWatch _analyzeInjectableStopWatch = new StopWatch("Analyze Injectable");
+
+    @Nonnull
+    private final StopWatch _analyzeFragmentStopWatch = new StopWatch("Analyze Fragment");
+
+    @Nonnull
+    private final StopWatch _analyzeFactoryStopWatch = new StopWatch("Analyze Factory");
+
+    @Nonnull
+    private final StopWatch _analyzeInjectorFragmentStopWatch = new StopWatch("Analyze Injector Fragment");
+
+    @Nonnull
+    private final StopWatch _analyzeInjectorStopWatch = new StopWatch("Analyze Injector");
+
+    private final StopWatch _generateInjectableStubStopWatch = new StopWatch("Generate Injectable Stub");
+
+    @Nonnull
+    private final StopWatch _generateFragmentStubStopWatch = new StopWatch("Generate Fragment Stub");
+
+    @Nonnull
+    private final StopWatch _generateFactoryImplStopWatch = new StopWatch("Generate Factory Impl");
+
+    @Nonnull
+    private final StopWatch _generateInjectorImplStopWatch = new StopWatch("Generate Injector Impl");
+
+    @Nonnull
+    private final StopWatch _isInjectorResolvedStopWatch = new StopWatch("Is Injector Resolved");
+
+    @Nonnull
+    private final StopWatch _buildAndEmitObjectGraphStopWatch = new StopWatch("Build and Emit Object Graph");
+    /**
+     * Flag controlling whether json descriptors are emitted.
+     * Json descriptors are primarily used during debugging and probably should not be enabled in production code.
+     */
+    private boolean _emitJsonDescriptors;
+    /**
+     * Flag controlling whether .dot formatted report is emitted.
+     * The .dot report is typically used by end users who want to explore the graph.
+     */
+    private boolean _emitDotReports;
+    /**
+     * Cache of derived fragment descriptors during a processing session.
+     */
+    @Nonnull
+    private final Map<String, FragmentDescriptor> _derivedFragmentCache = new HashMap<>();
+    /**
+     * Cache of derived injectable descriptors during a processing session.
+     */
+    @Nonnull
+    private final Map<String, InjectableDescriptor> _derivedInjectableCache = new HashMap<>();
+    /**
+     * Track fragments that are currently being resolved to break include cycles.
+     */
+    @Nonnull
+    private final Set<String> _resolvingFragmentTypes = new HashSet<>();
+
+    /**
+     * Create the annotation processor.
+     */
+    public StingProcessor() {}
+
+    @Nonnull
+    @Override
+    protected String getIssueTrackerURL() {
+        return "https://github.com/sting-ioc/sting/issues";
+    }
+
+    @Nonnull
+    @Override
+    protected String getOptionPrefix() {
+        return "sting";
+    }
+
+    @Override
+    public synchronized void init(@Nonnull final ProcessingEnvironment processingEnv) {
+        super.init(processingEnv);
+        _emitJsonDescriptors = readBooleanOption("emit_json_descriptors", false);
+        _emitDotReports = readBooleanOption("emit_dot_reports", false);
+    }
+
+    @Override
+    protected void collectStopWatches(@Nonnull final Collection<StopWatch> stopWatches) {
+        stopWatches.add(_analyzeInjectableStopWatch);
+        stopWatches.add(_analyzeFragmentStopWatch);
+        stopWatches.add(_analyzeFactoryStopWatch);
+        stopWatches.add(_analyzeInjectorFragmentStopWatch);
+        stopWatches.add(_analyzeInjectorStopWatch);
+        stopWatches.add(_generateInjectableStubStopWatch);
+        stopWatches.add(_generateFragmentStubStopWatch);
+        stopWatches.add(_generateFactoryImplStopWatch);
+        stopWatches.add(_generateInjectorImplStopWatch);
+        stopWatches.add(_isInjectorResolvedStopWatch);
+        stopWatches.add(_buildAndEmitObjectGraphStopWatch);
+    }
+
+    @Override
+    public boolean process(@Nonnull final Set<? extends TypeElement> annotations, @Nonnull final RoundEnvironment env) {
+        debugAnnotationProcessingRootElements(env);
+        collectRootTypeNames(env);
+
+        processTypeElements(
+                annotations,
+                env,
+                Constants.FACTORY_CLASSNAME,
+                _deferredFactoryTypes,
+                "Analyze Factory",
+                this::processFactory,
+                _analyzeFactoryStopWatch);
+
+        processTypeElements(
+                annotations,
+                env,
+                Constants.INJECTABLE_CLASSNAME,
+                _deferredInjectableTypes,
+                "Analyze Injectable",
+                this::processInjectable,
+                _analyzeInjectableStopWatch);
+
+        processTypeElements(
+                annotations,
+                env,
+                Constants.FRAGMENT_CLASSNAME,
+                _deferredFragmentTypes,
+                "Analyze Fragment",
+                this::processFragment,
+                _analyzeFragmentStopWatch);
+
+        annotations.stream()
+                .filter(a -> a.getQualifiedName().toString().equals(Constants.NAMED_CLASSNAME))
+                .findAny()
+                .ifPresent(a -> verifyNamedElements(env, env.getElementsAnnotatedWith(a)));
+
+        annotations.stream()
+                .filter(a -> a.getQualifiedName().toString().equals(Constants.TYPED_CLASSNAME))
+                .findAny()
+                .ifPresent(a -> verifyTypedElements(env, env.getElementsAnnotatedWith(a)));
+
+        annotations.stream()
+                .filter(a -> a.getQualifiedName().toString().equals(Constants.EAGER_CLASSNAME))
+                .findAny()
+                .ifPresent(a -> verifyEagerElements(env, env.getElementsAnnotatedWith(a)));
+
+        processTypeElements(
+                annotations,
+                env,
+                Constants.INJECTOR_FRAGMENT_CLASSNAME,
+                _deferredInjectorFragmentTypes,
+                "Analyze Injector Fragment",
+                this::processInjectorFragment,
+                _analyzeInjectorFragmentStopWatch);
+
+        processTypeElements(
+                annotations,
+                env,
+                Constants.INJECTOR_CLASSNAME,
+                _deferredInjectorTypes,
+                "Analyze Injector",
+                this::processInjector,
+                _analyzeInjectorStopWatch);
+
+        processResolvedFactories(env);
+        processResolvedInjectables(env);
+        processResolvedFragments(env);
+        processResolvedInjectors(env);
+
+        errorIfProcessingOverAndInvalidTypesDetected(env);
+        errorIfProcessingOverAndUnprocessedInjectorDetected(env);
+        if (env.processingOver() || env.errorRaised()) {
+            _registry.clear();
+            _derivedFragmentCache.clear();
+            _derivedInjectableCache.clear();
         }
-      }
-    }
-  }
-
-  private void processResolvedInjectables( @Nonnull final RoundEnvironment env )
-  {
-    for ( final InjectableDescriptor injectable : new ArrayList<>( _registry.getInjectables() ) )
-    {
-      if ( !injectable.isJavaStubGenerated() )
-      {
-        performAction( env, "Generate Injectable Stub", e -> {
-          injectable.markJavaStubAsGenerated();
-          emitInjectableJsonDescriptor( injectable );
-          emitInjectableStub( injectable );
-        }, injectable.getElement(), _generateInjectableStubStopWatch );
-      }
-    }
-  }
-
-  private void processResolvedFactories( @Nonnull final RoundEnvironment env )
-  {
-    for ( final FactoryDescriptor factory : new ArrayList<>( _registry.getFactories() ) )
-    {
-      if ( !factory.isGenerated() )
-      {
-        performAction( env, "Generate Factory Impl", e -> {
-          factory.markGenerated();
-          emitFactoryImpl( factory );
-        }, factory.getElement(), _generateFactoryImplStopWatch );
-      }
-    }
-  }
-
-  private void emitFactoryImpl( @Nonnull final FactoryDescriptor factory )
-    throws IOException
-  {
-    debug( () -> "Emitting factory implementation for the factory " + factory.getElement().getQualifiedName() );
-    final String packageName = GeneratorUtil.getQualifiedPackageName( factory.getElement() );
-    emitTypeSpec( packageName, FactoryGenerator.buildType( processingEnv, factory ) );
-  }
-
-  private void emitInjectableStub( @Nonnull final InjectableDescriptor injectable )
-    throws IOException
-  {
-    debug( () -> "Emitting injectable stub for the injectable " + injectable.getElement().getQualifiedName() );
-    final String packageName = GeneratorUtil.getQualifiedPackageName( injectable.getElement() );
-    emitTypeSpec( packageName, InjectableGenerator.buildType( processingEnv, injectable ) );
-  }
-
-  private void processResolvedFragments( @Nonnull final RoundEnvironment env )
-  {
-    final List<FragmentDescriptor> deferred = new ArrayList<>();
-    final List<FragmentDescriptor> current = new ArrayList<>( _registry.getFragments() );
-    final AtomicBoolean resolvedType = new AtomicBoolean();
-
-    while ( !current.isEmpty() )
-    {
-      for ( final FragmentDescriptor fragment : current )
-      {
-        if ( !fragment.isJavaStubGenerated() && !fragment.containsError() )
-        {
-          performAction( env, "Generate Fragment Stub", e -> {
-            final ResolveType resolveType = isFragmentResolved( env, fragment );
-            if ( ResolveType.RESOLVED == resolveType )
-            {
-              fragment.markJavaStubAsGenerated();
-              emitFragmentJsonDescriptor( fragment );
-              emitFragmentStub( fragment );
-            }
-            else if ( ResolveType.MAYBE_UNRESOLVED == resolveType )
-            {
-              debug( () -> "The fragment " + fragment.getElement().getQualifiedName() +
-                           " has resolved java types but unresolved descriptors. Deferring processing " +
-                           "until later in the round" );
-              deferred.add( fragment );
-            }
-            else
-            {
-              debug( () -> "Defer generation for the fragment " + fragment.getElement().getQualifiedName() +
-                           " as it is not yet resolved" );
-            }
-          }, fragment.getElement(), _generateFragmentStubStopWatch );
-        }
-      }
-      current.clear();
-      if ( resolvedType.get() )
-      {
-        current.addAll( deferred );
-        deferred.clear();
-      }
-      else
-      {
-        break;
-      }
-    }
-  }
-
-  @Nonnull
-  private ResolveType isFragmentReady( @Nonnull final RoundEnvironment env,
-                                       @Nonnull final FragmentDescriptor fragment )
-  {
-    if ( fragment.containsError() )
-    {
-      return ResolveType.UNRESOLVED;
-    }
-    else
-    {
-      return isFragmentResolved( env, fragment );
-    }
-  }
-
-  private void emitFragmentStub( @Nonnull final FragmentDescriptor fragment )
-    throws IOException
-  {
-    debug( () -> "Emitting fragment stub for the fragment " + fragment.getElement().getQualifiedName() );
-    final String packageName = GeneratorUtil.getQualifiedPackageName( fragment.getElement() );
-    emitTypeSpec( packageName, FragmentGenerator.buildType( processingEnv, fragment ) );
-  }
-
-  private void processResolvedInjectors( @Nonnull final RoundEnvironment env )
-  {
-    final boolean profileEnabled = isProfileEnabled();
-
-    final List<InjectorDescriptor> deferred = new ArrayList<>();
-    final List<InjectorDescriptor> current = new ArrayList<>( _registry.getInjectors() );
-    final AtomicBoolean resolvedType = new AtomicBoolean();
-
-    while ( !current.isEmpty() )
-    {
-      for ( final InjectorDescriptor injector : current )
-      {
-        if ( !injector.containsError() )
-        {
-          performAction( env, "Generate Injector Impl", e -> {
-            if ( profileEnabled )
-            {
-              _isInjectorResolvedStopWatch.start();
-            }
-            final ResolveType resolveType = isInjectorResolved( env, injector );
-            if ( profileEnabled )
-            {
-              _isInjectorResolvedStopWatch.stop();
-            }
-            if ( ResolveType.RESOLVED == resolveType )
-            {
-              _registry.deregisterInjector( injector );
-              if ( profileEnabled )
-              {
-                _buildAndEmitObjectGraphStopWatch.start();
-              }
-              try
-              {
-                buildAndEmitObjectGraph( injector );
-              }
-              finally
-              {
-                if ( profileEnabled )
-                {
-                  _buildAndEmitObjectGraphStopWatch.stop();
-                }
-              }
-              resolvedType.set( true );
-            }
-            else if ( ResolveType.MAYBE_UNRESOLVED == resolveType )
-            {
-              debug( () -> "The injector " + injector.getElement().getQualifiedName() +
-                           " has resolved java types but unresolved descriptors. Deferring processing " +
-                           "until later in the round" );
-              deferred.add( injector );
-            }
-            else
-            {
-              debug( () -> "Defer generation for the injector " + injector.getElement().getQualifiedName() +
-                           " as it is not yet resolved" );
-            }
-          }, injector.getElement(), _generateInjectorImplStopWatch );
-        }
-      }
-      current.clear();
-      if ( resolvedType.get() )
-      {
-        resolvedType.set( false );
-        current.addAll( deferred );
-        deferred.clear();
-      }
-      else
-      {
-        break;
-      }
-    }
-  }
-
-  private void buildAndEmitObjectGraph( @Nonnull final InjectorDescriptor injector )
-    throws Exception
-  {
-    debug( () -> "Preparing to build component graph for the injector " + injector.getElement().getQualifiedName() );
-    final ComponentGraph graph = new ComponentGraph( this, injector, _registry );
-    registerIncludesComponents( graph );
-
-    registerInputs( graph );
-
-    debug( () -> "Building component graph for the injector " + injector.getElement().getQualifiedName() );
-
-    buildObjectGraphNodes( graph );
-
-    if ( graph.getNodes().isEmpty() && graph.getRootNode().getDependsOn().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " target " +
-                                    "produced an empty object graph. This means that there are no eager nodes " +
-                                    "in the includes and there are no dependencies or only unsatisfied optional " +
-                                    "dependencies defined by the injector",
-                                    graph.getInjector().getElement() );
-    }
-
-    debug( () -> "Propagating eager-ness for the injector " + injector.getElement().getQualifiedName() );
-
-    propagateEagerFlagUpstream( graph );
-
-    debug( () -> "Verifying no circular dependencies for the injector " + injector.getElement().getQualifiedName() );
-
-    CircularDependencyChecker.verifyNoCircularDependencyLoops( graph );
-
-    final Set<Binding> actualBindings =
-      graph.getNodes()
-        .stream()
-        .filter( Node::isBinding )
-        .map( Node::getBinding )
-        .collect( Collectors.toSet() );
-
-    for ( final Map.Entry<IncludeDescriptor, Set<Binding>> entry : graph.getIncludeRootToBindingMap().entrySet() )
-    {
-      if ( entry.getValue().stream().noneMatch( actualBindings::contains ) )
-      {
-        final IncludeDescriptor includeRoot = entry.getKey();
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " must not " +
-                                      "include type " + includeRoot.includedType() +
-                                      " when the type is not used within the graph",
-                                      graph.getInjector().getElement() );
-      }
-    }
-
-    emitObjectGraphJsonDescriptor( graph );
-    emitInterceptorProxies( graph );
-
-    final String packageName = GeneratorUtil.getQualifiedPackageName( graph.getInjector().getElement() );
-
-    debug( () -> "Emitting injector implementation for the injector " +
-                 graph.getInjector().getElement().getQualifiedName() );
-    emitTypeSpec( packageName, InjectorGenerator.buildType( processingEnv, graph ) );
-
-    if ( injector.isInjectable() )
-    {
-      debug( () -> "Emitting injector provider for the injector " +
-                   graph.getInjector().getElement().getQualifiedName() );
-      emitTypeSpec( packageName, InjectorProviderGenerator.buildType( processingEnv, graph ) );
-    }
-    emitDotReport( graph );
-  }
-
-  private void emitInterceptorProxies( @Nonnull final ComponentGraph graph )
-    throws IOException
-  {
-    for ( final Node node : graph.getNodes() )
-    {
-      if ( node.isProxy() )
-      {
-        final InterceptorProxyDescriptor proxy = node.getProxy();
-        if ( !proxy.isGenerated() )
-        {
-          proxy.markGenerated();
-          emitTypeSpec( proxy.getClassName().packageName(), InterceptorProxyGenerator.buildType( processingEnv, proxy ) );
-        }
-      }
-    }
-  }
-
-  private void emitDotReport( @Nonnull final ComponentGraph graph )
-    throws IOException
-  {
-    if ( _emitDotReports )
-    {
-      final TypeElement element = graph.getInjector().getElement();
-      final String filename = toFilename( element ) + DOT_SUFFIX;
-      debug( () -> "Emitting .dot report for the injector " + graph.getInjector().getElement().getQualifiedName() );
-
-      final String report = InjectorDotReportGenerator.buildDotReport( processingEnv, graph );
-      ResourceUtil.writeResource( processingEnv, filename, report, element );
-    }
-  }
-
-  private void registerInputs( @Nonnull final ComponentGraph graph )
-  {
-    for ( final InputDescriptor input : graph.getInjector().getInputs() )
-    {
-      graph.registerInput( input );
-    }
-  }
-
-  private void propagateEagerFlagUpstream( @Nonnull final ComponentGraph graph )
-  {
-    // Propagate Eager flag to all dependencies of eager nodes breaking the propagation at Supplier nodes
-    // They may not be configured as eager but they are effectively eager given that they will be created
-    // at startup, they may as well be marked as eager objects as that results in smaller code-size.
-    graph.getNodes().stream().filter( Node::isDeclaredEager ).forEach( Node::markNodeAndUpstreamAsEager );
-  }
-
-  private void registerIncludesComponents( @Nonnull final ComponentGraph graph )
-  {
-    registerIncludes( graph, null, graph.getInjector().getIncludes() );
-  }
-
-  private void registerIncludes( @Nonnull final ComponentGraph graph,
-                                 @Nullable final IncludeDescriptor includeRoot,
-                                 @Nonnull final Collection<IncludeDescriptor> includes )
-  {
-    for ( final IncludeDescriptor include : includes )
-    {
-      final String classname = include.actualTypeName();
-      if ( isDebugEnabled() && include.isProvider() )
-      {
-        debug( () -> "Registering include " + classname + " via provider " + include.includedType() +
-                     " into graph " + graph.getInjector().getElement().getQualifiedName() );
-      }
-      else
-      {
-        debug( () -> "Registering include " + classname + " into graph " +
-                     graph.getInjector().getElement().getQualifiedName() );
-      }
-      final IncludeDescriptor root = null == includeRoot ? include : includeRoot;
-      final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
-      assert null != element;
-      final String qualifiedName = element.getQualifiedName().toString();
-      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
-      {
-        final FragmentDescriptor fragment = _registry.getFragmentByClassName( qualifiedName );
-        registerIncludes( graph, root, fragment.getIncludes() );
-        graph.registerFragment( root, fragment );
-      }
-      else
-      {
-        assert AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME );
-        final InjectableDescriptor injectable = _registry.getInjectableByClassName( qualifiedName );
-        graph.registerInjectable( root, injectable );
-      }
-    }
-  }
-
-  private void buildObjectGraphNodes( @Nonnull final ComponentGraph graph )
-  {
-    final Set<Node> completed = new HashSet<>();
-    final Stack<WorkEntry> workList = new Stack<>();
-    // At this stage the "rootNode" contains dependencies for all the output methods declared on the injector
-    // and all the eager services declared in includes have already been added to the nodes list.
-    //
-    // We start at the rootNode and expand all of the dependencies. And then we take any of the eager dependencies
-    // that have yet to be added to be processed and add them to to worklist and expand all dependencies until there
-    // are no eager nodes left to process
-    final Node rootNode = graph.getRootNode();
-    rootNode.setDepth( 0 );
-    addDependsOnToWorkList( workList, rootNode, null );
-    processWorkList( graph, completed, workList );
-    List<Node> eagerNodes = graph.getRawNodeCollection().stream().filter( Node::isDeclaredEager ).toList();
-    while ( !eagerNodes.isEmpty() )
-    {
-      for ( final Node node : eagerNodes )
-      {
-        if ( node.isDepthNotSet() )
-        {
-          node.setDepth( 0 );
-          addDependsOnToWorkList( workList, node, null );
-          processWorkList( graph, completed, workList );
-        }
-      }
-      eagerNodes =
-        graph.getRawNodeCollection().stream().filter( n -> n.isDeclaredEager() && n.isDepthNotSet() ).toList();
-    }
-    graph.complete();
-  }
-
-  private void processWorkList( @Nonnull final ComponentGraph graph,
-                                @Nonnull final Set<Node> completed,
-                                @Nonnull final Stack<WorkEntry> workList )
-  {
-    while ( !workList.isEmpty() )
-    {
-      final WorkEntry workEntry = workList.pop();
-      final Edge edge = workEntry.getEntry().edge();
-      assert null != edge;
-      if ( edge.isSatisfied() )
-      {
-        for ( final Node node : edge.getSatisfiedBy() )
-        {
-          if ( !completed.contains( node ) )
-          {
-            completed.add( node );
-            addDependsOnToWorkList( workList, node, workEntry );
-          }
-        }
-        continue;
-      }
-      final ServiceRequest serviceRequest = edge.getServiceRequest();
-      final Coordinate coordinate = serviceRequest.getService().getCoordinate();
-      final List<Binding> bindings = new ArrayList<>( graph.findAllBindingsByCoordinate( coordinate ) );
-
-      if ( bindings.isEmpty() && coordinate.qualifier().isEmpty() )
-      {
-        final String typename = coordinate.type().toString();
-        final InjectableDescriptor injectable = _registry.findInjectableByClassName( typename );
-        if ( null != injectable && injectable.isAutoDiscoverable() )
-        {
-          bindings.add( injectable.getBinding() );
-        }
-        if ( bindings.isEmpty() )
-        {
-          final TypeElement typeElement = processingEnv.getElementUtils().getTypeElement( typename );
-          if ( null != typeElement )
-          {
-            final InjectableDescriptor candidate = deriveInjectableDescriptor( typeElement );
-            if ( null != candidate && candidate.isAutoDiscoverable() )
-            {
-              assert coordinate.equals( candidate.getBinding().getPublishedServices().get( 0 ).getCoordinate() );
-              _registry.registerInjectable( candidate );
-              bindings.add( candidate.getBinding() );
-            }
-            if ( bindings.isEmpty() )
-            {
-              bindings.addAll( autoDiscoverProviderBindings( graph, workEntry, typeElement ) );
-            }
-          }
-        }
-      }
-
-      final List<Binding> nullableProviders = bindings.stream()
-        .filter( b -> b.getPublishedServices().stream().anyMatch( ServiceSpec::isOptional ) )
-        .collect( Collectors.toList() );
-      if ( !serviceRequest.canConsumeOptionalBindings() && !nullableProviders.isEmpty() )
-      {
-        final String message =
-          MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                "contain an optional provider method or optional injector input and " +
-                                "a non-optional service request for the coordinate " + coordinate + "\n" +
-                                "Dependency Path:\n" + workEntry.describePathFromRoot() + "\n" +
-                                "Binding" + ( nullableProviders.size() > 1 ? "s" : "" ) + ":\n" +
-                                bindingsToString( nullableProviders ) );
-        throw new ProcessorException( message, serviceRequest.getElement() );
-      }
-      if ( bindings.isEmpty() )
-      {
-        if ( serviceRequest.canBeAbsent() )
-        {
-          edge.setSatisfiedBy( Collections.emptyList() );
-        }
-        else
-        {
-          final String message =
-            MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                  "contain a non-optional dependency " + coordinate +
-                                  " that can not be satisfied.\n" +
-                                  "Dependency Path:\n" + workEntry.describePathFromRoot() );
-          throw new ProcessorException( message, serviceRequest.getElement() );
-        }
-      }
-      else
-      {
-        final ServiceRequest.Kind kind = serviceRequest.getKind();
-        if ( 1 == bindings.size() || kind.isCollection() )
-        {
-          final List<Node> nodes = new ArrayList<>();
-          for ( final Binding binding : bindings )
-          {
-            final Node node = graph.findOrCreateProviderNode( binding, coordinate );
-            nodes.add( node );
-          }
-          edge.setSatisfiedBy( nodes );
-          for ( final Node node : nodes )
-          {
-            if ( node.isProxy() )
-            {
-              graph.attachProxyDependencies( node );
-            }
-            if ( !completed.contains( node ) )
-            {
-              completed.add( node );
-              addDependsOnToWorkList( workList, node, workEntry );
-            }
-          }
-        }
-        else
-        {
-          //noinspection ConstantConditions
-          assert bindings.size() > 1 && !kind.isCollection();
-          final String message =
-            MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                  "contain a non-collection dependency " + coordinate +
-                                  " that can be satisfied by multiple nodes.\n" +
-                                  "Dependency Path:\n" + workEntry.describePathFromRoot() + "\n" +
-                                  "Candidate Nodes:\n" + bindingsToString( bindings ) );
-          throw new ProcessorException( message, serviceRequest.getElement() );
-        }
-      }
-    }
-  }
-
-  @Nonnull
-  private String bindingsToString( @Nonnull final List<Binding> bindings )
-  {
-    return bindings
-      .stream()
-      .map( b -> "  " + b.getTypeLabel() + "    " + b.describe() )
-      .collect( Collectors.joining( "\n" ) );
-  }
-
-  private void addDependsOnToWorkList( @Nonnull final Stack<WorkEntry> workList,
-                                       @Nonnull final Node node,
-                                       @Nullable final WorkEntry parent )
-  {
-    for ( final Edge e : node.getDependsOn() )
-    {
-      final Stack<PathEntry> stack = new Stack<>();
-      if ( null != parent )
-      {
-        stack.addAll( parent.getStack() );
-      }
-      final PathEntry entry = new PathEntry( node, e );
-      stack.add( entry );
-      workList.add( new WorkEntry( entry, stack ) );
-    }
-  }
-
-  private void emitObjectGraphJsonDescriptor( @Nonnull final ComponentGraph graph )
-    throws IOException
-  {
-    if ( _emitJsonDescriptors )
-    {
-      final TypeElement element = graph.getInjector().getElement();
-      final String filename = toFilename( element ) + GRAPH_SUFFIX;
-      debug( () -> "Emitting json descriptor for the injector " + graph.getInjector().getElement().getQualifiedName() );
-      JsonUtil.writeJsonResource( processingEnv, element, filename, graph::write );
-    }
-  }
-
-  @Nonnull
-  private ResolveType isFragmentResolved( @Nonnull final RoundEnvironment env,
-                                          @Nonnull final FragmentDescriptor fragment )
-  {
-    if ( fragment.isResolved() )
-    {
-      return ResolveType.RESOLVED;
-    }
-    else
-    {
-      final String fragmentName = fragment.getElement().getQualifiedName().toString();
-      if ( _resolvingFragmentTypes.contains( fragmentName ) )
-      {
-        return ResolveType.RESOLVED;
-      }
-      _resolvingFragmentTypes.add( fragmentName );
-      try
-      {
-        final ResolveType resolveType = isResolved( env, fragment, fragment.getElement(), fragment.getIncludes() );
-        if ( resolveType == ResolveType.RESOLVED )
-        {
-          fragment.markAsResolved();
-          // Check for redundant explicit @Injectable includes that are also transitively included via fragments
-          maybeWarnOnRedundantDirectInjectableInclude( fragment.getElement(),
-                                                       Constants.FRAGMENT_CLASSNAME,
-                                                       fragment.getIncludes() );
-          // Check for include cycles between fragments
-          maybeWarnOnFragmentIncludeCycle( fragment.getElement(), fragment.getIncludes() );
-        }
-        return resolveType;
-      }
-      finally
-      {
-        _resolvingFragmentTypes.remove( fragmentName );
-      }
-    }
-  }
-
-  @Nonnull
-  private ResolveType isInjectorResolved( @Nonnull final RoundEnvironment env,
-                                          @Nonnull final InjectorDescriptor injector )
-  {
-    final ResolveType resolveType = isResolved( env, injector, injector.getElement(), injector.getIncludes() );
-    if ( ResolveType.RESOLVED == resolveType )
-    {
-      // Check for redundant explicit @Injectable includes that are also transitively included via included fragments
-      maybeWarnOnRedundantDirectInjectableInclude( injector.getElement(),
-                                                   Constants.INJECTOR_CLASSNAME,
-                                                   injector.getIncludes() );
-    }
-    return resolveType;
-  }
-
-  @Nonnull
-  private <T> ResolveType isResolved( @Nonnull final RoundEnvironment env,
-                                      @Nonnull final T descriptor,
-                                      @Nonnull final TypeElement originator,
-                                      @Nonnull final Collection<IncludeDescriptor> includes )
-  {
-    // By the time we get here we can guarantee that the java types for includes are correctly resolved
-    // but they may not have passed through annotation processor and thus the descriptors may be absent
-    // so we go through a few iterations and as long as one include is resolved in each iteration we should
-    // keep going as we may be able to resolve all includes. Also if one of the includes is a provider
-    // we need to check the associated provider type is resolved.
-    for ( final IncludeDescriptor include : includes )
-    {
-      final ResolveType resolveType = isIncludeResolved( env, descriptor, originator, include );
-      if ( ResolveType.RESOLVED != resolveType )
-      {
-        return resolveType;
-      }
-    }
-
-    return ResolveType.RESOLVED;
-  }
-
-  @Nonnull
-  private ResolveType isIncludeResolved( @Nonnull final RoundEnvironment env,
-                                         @Nonnull final Object descriptor,
-                                         @Nonnull final TypeElement originator,
-                                         @Nonnull final IncludeDescriptor include )
-  {
-    AnnotationMirror annotation =
-      AnnotationsUtil.findAnnotationByType( originator, Constants.INJECTOR_CLASSNAME );
-
-    final String annotationClassname =
-      null != annotation ? Constants.INJECTOR_CLASSNAME : Constants.FRAGMENT_CLASSNAME;
-    if ( null == annotation )
-    {
-      annotation = AnnotationsUtil.getAnnotationByType( originator, Constants.FRAGMENT_CLASSNAME );
-    }
-
-    final String classname = include.actualTypeName();
-    final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
-    if ( null == element )
-    {
-      assert include.isProvider();
-      if ( env.processingOver() )
-      {
-        if ( descriptor instanceof FragmentDescriptor )
-        {
-          ( (FragmentDescriptor) descriptor ).markAsContainsError();
-        }
-        else
-        {
-          ( (InjectorDescriptor) descriptor ).markAsContainsError();
-        }
-
-        final String message =
-          MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
-          "parameter named 'includes' containing the value " + include.includedType() +
-          " and that type is annotated by the " +
-          MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
-          " annotation. The provider annotation expects a " +
-          "provider class named " + include.actualTypeName() + " but no such class exists. The " +
-          "type needs to be removed from the includes or the provider class needs to be present.";
-        reportError( env, message, originator, annotation, null );
-      }
-      return ResolveType.UNRESOLVED;
-    }
-    final boolean isInjectable = AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME );
-    final boolean isFragment =
-      !isInjectable && AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME );
-    if ( include.isProvider() && !isInjectable && !isFragment )
-    {
-      if ( descriptor instanceof FragmentDescriptor )
-      {
-        ( (FragmentDescriptor) descriptor ).markAsContainsError();
-      }
-      else
-      {
-        ( (InjectorDescriptor) descriptor ).markAsContainsError();
-      }
-
-      final String message =
-        MemberChecks.toSimpleName( annotationClassname ) + " target has an " +
-        "parameter named 'includes' containing the value " + include.includedType() +
-        " and that type is annotated by the " +
-        MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
-        " annotation. The provider annotation expects a " +
-        "provider class named " + include.actualTypeName() + " but that class is not annotated with either " +
-        MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + ", " +
-        MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " or " +
-        MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME );
-      throw new ProcessorException( message, originator, annotation );
-    }
-    if ( descriptor instanceof final FragmentDescriptor fragmentDescriptor )
-    {
-      if ( fragmentDescriptor.isLocalOnly() && !isInSamePackage( originator, element ) )
-      {
-        fragmentDescriptor.markAsContainsError();
-        final String message =
-          MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " target has an includes parameter " +
-          "containing the value " + include.includedType() + " that is in the package " +
-          GeneratorUtil.getQualifiedPackageName( element ) + " when the fragment is in the package " +
-          GeneratorUtil.getQualifiedPackageName( originator ) + " and localOnly is true";
-        throw new ProcessorException( message, originator, annotation );
-      }
-    }
-    else if ( !include.auto() && ( (InjectorDescriptor) descriptor ).isFragmentOnly() && !isFragment )
-    {
-      final InjectorDescriptor injectorDescriptor = (InjectorDescriptor) descriptor;
-      injectorDescriptor.markAsContainsError();
-      final String message =
-        MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " target has an includes parameter containing " +
-        "the value " + include.includedType() + " that resolves to " + element.getQualifiedName() +
-        " which is not annotated by " + MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
-        " when fragmentOnly is true";
-      throw new ProcessorException( message, originator, annotation );
-    }
-    if ( isFragment )
-    {
-      FragmentDescriptor fragment = _registry.findFragmentByClassName( classname );
-      if ( null == fragment )
-      {
-        fragment = deriveFragmentDescriptor( element );
-        if ( null == fragment )
-        {
-          debug( () -> "Unable to derive descriptor for fragment " + classname +
-                       ". Marking " + originator.getQualifiedName() + " as unresolved" );
-          return ResolveType.MAYBE_UNRESOLVED;
-        }
-        _registry.registerFragment( fragment );
-      }
-      if ( ResolveType.RESOLVED != isFragmentReady( env, fragment ) )
-      {
-        debug( () -> "Fragment include " + classname + " is present but not yet resolved. " +
-                     "Marking " + originator.getQualifiedName() + " as unresolved" );
-        return ResolveType.UNRESOLVED;
-      }
-    }
-    else
-    {
-      InjectableDescriptor injectable = _registry.findInjectableByClassName( classname );
-      if ( null == injectable )
-      {
-        injectable = deriveInjectableDescriptor( element );
-        if ( null == injectable )
-        {
-          debug( () -> "Unable to derive descriptor for injectable " + classname +
-                       ". Marking " + originator.getQualifiedName() + " as unresolved" );
-          return ResolveType.MAYBE_UNRESOLVED;
-        }
-        _registry.registerInjectable( injectable );
-      }
-      if ( !SuperficialValidation.validateElement( processingEnv, injectable.getElement() ) )
-      {
-        debug( () -> "Injectable include " + classname + " is not yet resolved. " +
-                     "Marking " + originator.getQualifiedName() + " as unresolved" );
-        return ResolveType.UNRESOLVED;
-      }
-
-      if ( !include.auto() &&
-           !injectable.getBinding().isEager() &&
-           injectable.isAutoDiscoverable() &&
-           ElementsUtil.isWarningNotSuppressed( originator, Constants.WARNING_AUTO_DISCOVERABLE_INCLUDED ) )
-      {
-        final String message =
-          MemberChecks.shouldNot( annotationClassname,
-                                  "include an auto-discoverable type " + classname + ". " +
-                                  MemberChecks.suppressedBy( Constants.WARNING_AUTO_DISCOVERABLE_INCLUDED ) );
-        warning( message, originator );
-      }
-    }
-    return ResolveType.RESOLVED;
-  }
-
-  private void processInjectorFragment( @Nonnull final TypeElement element )
-  {
-    debug( () -> "Processing Injector Fragment: " + element );
-    final ElementKind kind = element.getKind();
-    if ( ElementKind.INTERFACE != kind )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.INJECTOR_FRAGMENT_CLASSNAME, "be an interface" ),
-                                    element );
-    }
-    final List<ExecutableElement> methods =
-      ElementsUtil.getMethods( element, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
-    for ( final ExecutableElement method : methods )
-    {
-      if ( method.getModifiers().contains( Modifier.DEFAULT ) )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_FRAGMENT_CLASSNAME ) +
-                                      " target must not include default methods",
-                                      method );
-      }
-      else if ( method.getModifiers().contains( Modifier.STATIC ) )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_FRAGMENT_CLASSNAME ) +
-                                      " target must not include static methods",
-                                      method );
-      }
-    }
-  }
-
-  private void processInjector( @Nonnull final TypeElement element )
-    throws Exception
-  {
-    debug( () -> "Processing Injector: " + element );
-    final ElementKind kind = element.getKind();
-    if ( ElementKind.INTERFACE != kind )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.INJECTOR_CLASSNAME, "be an interface" ),
-                                    element );
-    }
-    if ( !element.getTypeParameters().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME, "have type parameters" ),
-                                    element );
-    }
-    final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations( element );
-    if ( !scopedAnnotations.isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                                          "be annotated with an annotation that is " +
-                                                          "annotated with the " + Constants.JSR_330_SCOPE_CLASSNAME +
-                                                          " annotation such as " + scopedAnnotations ),
-                                    element );
-    }
-
-    final boolean gwt = isGwtEnabled( element );
-    final boolean injectable =
-      (boolean) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTOR_CLASSNAME, "injectable" ).getValue();
-    final boolean fragmentOnly = extractInjectorFragmentOnly( element );
-    final List<IncludeDescriptor> includes = extractIncludes( element, Constants.INJECTOR_CLASSNAME, fragmentOnly );
-    final List<InputDescriptor> inputs = extractInputs( element );
-
-    final List<ServiceRequest> outputs = new ArrayList<>();
-    final List<ExecutableElement> methods =
-      ElementsUtil.getMethods( element, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
-    for ( final ExecutableElement method : methods )
-    {
-      if ( method.getModifiers().contains( Modifier.ABSTRACT ) )
-      {
-        processInjectorOutputMethod( outputs, method );
-      }
-      else if ( method.getModifiers().contains( Modifier.DEFAULT ) )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) +
-                                      " target must not include default methods",
-                                      method );
-      }
-    }
-    for ( final Element enclosedElement : element.getEnclosedElements() )
-    {
-      final ElementKind enclosedElementKind = enclosedElement.getKind();
-      if ( ElementKind.INTERFACE == enclosedElementKind &&
-           AnnotationsUtil.hasAnnotationOfType( enclosedElement, Constants.FRAGMENT_CLASSNAME ) )
-      {
-        final DeclaredType type = (DeclaredType) enclosedElement.asType();
-        if ( includes.stream().noneMatch( d -> Objects.equals( d.includedType(), type ) ) )
-        {
-          includes.add( new IncludeDescriptor( type, type.toString(), true ) );
-        }
-        else
-        {
-          throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) +
-                                        " target must not include a " +
-                                        MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + " annotated " +
-                                        "type that is auto-included as it is enclosed within the injector type",
-                                        element );
-        }
-      }
-      else if ( ElementKind.CLASS == enclosedElementKind &&
-                AnnotationsUtil.hasAnnotationOfType( enclosedElement, Constants.INJECTABLE_CLASSNAME ) )
-      {
-        final DeclaredType type = (DeclaredType) enclosedElement.asType();
-        if ( includes.stream().noneMatch( d -> Objects.equals( d.includedType(), type ) ) )
-        {
-          includes.add( new IncludeDescriptor( type, type.toString(), true ) );
-        }
-        else
-        {
-          throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) +
-                                        " target must not include an " +
-                                        MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) + " annotated " +
-                                        "type that is auto-included as it is enclosed within the injector type",
-                                        element );
-        }
-      }
-      else if ( enclosedElementKind.isClass() || enclosedElementKind.isInterface() )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) +
-                                      " target must not contain a type that is not annotated " +
-                                      "by either " + MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                      " or " + MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ),
-                                      element );
-      }
-    }
-    final InjectorDescriptor injector =
-      new InjectorDescriptor( element, gwt, injectable, fragmentOnly, includes, inputs, outputs );
-    _registry.registerInjector( injector );
-    emitInjectorJsonDescriptor( injector );
-  }
-
-  private boolean extractInjectorFragmentOnly( @Nonnull final TypeElement element )
-  {
-    return (boolean) AnnotationsUtil.getAnnotationValue( element, Constants.INJECTOR_CLASSNAME, "fragmentOnly" )
-      .getValue();
-  }
-
-  private boolean isGwtEnabled( @Nonnull final TypeElement element )
-  {
-    final String value = AnnotationsUtil.getEnumAnnotationParameter( element, Constants.INJECTOR_CLASSNAME, "gwt" );
-    return "ENABLE".equals( value ) ||
-           ( "AUTODETECT".equals( value ) &&
-             null != processingEnv.getElementUtils().getTypeElement( "javaemul.internal.annotations.DoNotInline" ) );
-  }
-
-  private void emitInjectorJsonDescriptor( @Nonnull final InjectorDescriptor injector )
-    throws IOException
-  {
-    if ( _emitJsonDescriptors )
-    {
-      final TypeElement element = injector.getElement();
-      final String filename = toFilename( element ) + JSON_SUFFIX;
-      JsonUtil.writeJsonResource( processingEnv, element, filename, injector::write );
-    }
-  }
-
-  private void processInjectorOutputMethod( @Nonnull final List<ServiceRequest> outputs,
-                                            @Nonnull final ExecutableElement method )
-  {
-    assert method.getModifiers().contains( Modifier.ABSTRACT );
-    if ( !findInterceptorBindingAnnotations( method ).isEmpty() )
-    {
-      throw new ProcessorException( "Interceptor bindings on non-fragment methods are not supported",
-                                    method );
-    }
-    if ( TypeKind.VOID == method.getReturnType().getKind() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                                          "contain a method that has a void return value" ),
-                                    method );
-    }
-    else if ( !method.getParameters().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                                          "contain a method that has parameters" ),
-                                    method );
-    }
-    else if ( !method.getTypeParameters().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                                          "contain a method that has any type parameters" ),
-                                    method );
-    }
-    else if ( !method.getThrownTypes().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                                          "contain a method that throws any exceptions" ),
-                                    method );
-    }
-    final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations( method );
-    if ( !scopedAnnotations.isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                                          "contain a method that is annotated with an " +
-                                                          "annotation that is annotated with the " +
-                                                          Constants.JSR_330_SCOPE_CLASSNAME +
-                                                          " annotation such as " + scopedAnnotations ),
-                                    method );
-    }
-    outputs.add( processOutputMethod( method ) );
-  }
-
-  @Nonnull
-  private ServiceRequest processOutputMethod( @Nonnull final ExecutableElement method )
-  {
-    final TypeMirror type = method.getReturnType();
-    if ( TypesUtil.containsArrayType( type ) )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                                          "contain a method with a return type that contains an array type" ),
-                                    method );
-    }
-    else if ( TypesUtil.containsWildcard( type ) )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                                          "contain a method with a return type that contains a wildcard type parameter" ),
-                                    method );
-    }
-    else if ( TypesUtil.containsRawType( type ) )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                                          "contain a method with a return type that contains a raw type" ),
-                                    method );
-    }
-    else
-    {
-      TypeMirror dependencyType = null;
-      ServiceRequest.Kind kind = null;
-      for ( final ServiceRequest.Kind candidate : ServiceRequest.Kind.values() )
-      {
-        dependencyType = candidate.extractType( type );
-        if ( null != dependencyType )
-        {
-          kind = candidate;
-          break;
-        }
-      }
-      if ( null == kind )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                                            "contain a method with a return type that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" ),
-                                      method );
-      }
-      else
-      {
-        final boolean optional = AnnotationsUtil.hasNullableAnnotation( method );
-        if ( optional && ServiceRequest.Kind.INSTANCE != kind )
-        {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                                              "contain a method annotated with " +
-                                                              MemberChecks.toSimpleName( AnnotationsUtil.NULLABLE_CLASSNAME ) +
-                                                              " that is not an instance dependency kind" ),
-                                        method );
-        }
-        final String qualifier = getQualifier( method );
-        if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.JSR_330_NAMED_CLASSNAME ) )
-        {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                                              "contain a method annotated with the " +
-                                                              Constants.JSR_330_NAMED_CLASSNAME +
-                                                              " annotation. Use the " + Constants.NAMED_CLASSNAME +
-                                                              " annotation instead" ),
-                                        method );
-        }
-
-        final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
-        final ServiceSpec service = new ServiceSpec( coordinate, optional );
-        return new ServiceRequest( kind, service, method );
-      }
-    }
-  }
-
-  private void verifyNamedElements( @Nonnull final RoundEnvironment env,
-                                    @Nonnull final Set<? extends Element> elements )
-  {
-    for ( final Element element : elements )
-    {
-      final AnnotationUsageKind usageKind = classifyNamedElement( element );
-      if ( AnnotationUsageKind.INVALID == usageKind )
-      {
-        if ( ElementKind.PARAMETER == element.getKind() )
-        {
-          if ( ElementKind.CONSTRUCTOR == element.getEnclosingElement().getKind() )
-          {
-            reportError( env,
-                         MemberChecks.must( Constants.NAMED_CLASSNAME,
-                                            "only be present on a constructor parameter if the constructor " +
-                                            "is enclosed in a type annotated with " +
-                                            MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                            " or the type is annotated with an annotation annotated by " +
-                                            MemberChecks.toSimpleName( Constants.ACT_AS_STING_CONSUMER_CLASSNAME ) +
-                                            " or " +
-                                            MemberChecks.toSimpleName( Constants.ACT_AS_STING_COMPONENT_CLASSNAME ) ),
-                         element );
-          }
-          else
-          {
-            reportError( env,
-                         MemberChecks.must( Constants.NAMED_CLASSNAME,
-                                            "only be present on a method parameter if the method is enclosed in a type annotated with " +
-                                            MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
-                         element );
-          }
-        }
-        else if ( ElementKind.CLASS == element.getKind() )
-        {
-          reportError( env,
-                       MemberChecks.must( Constants.NAMED_CLASSNAME,
-                                          "only be present on a type if the type is annotated with " +
-                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                          " or the type is annotated with an annotation annotated by " +
-                                          MemberChecks.toSimpleName( Constants.ACT_AS_STING_PROVIDER_CLASSNAME ) +
-                                          " or " +
-                                          MemberChecks.toSimpleName( Constants.ACT_AS_STING_COMPONENT_CLASSNAME ) ),
-                       element );
-        }
-        else if ( ElementKind.METHOD == element.getKind() )
-        {
-          reportError( env,
-                       MemberChecks.mustNot( Constants.NAMED_CLASSNAME,
-                                             "be a method unless the method is enclosed in a type annotated with " +
-                                             MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) + ", " +
-                                             MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) + " or " +
-                                             MemberChecks.toSimpleName( Constants.INJECTOR_FRAGMENT_CLASSNAME ) ),
-                       element );
-        }
-        else
-        {
-          reportError( env,
-                       MemberChecks.toSimpleName( Constants.NAMED_CLASSNAME ) + " target is not valid",
-                       element );
-        }
-      }
-      else if ( AnnotationUsageKind.PROCESSED != usageKind &&
-                AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION != usageKind )
-      {
-        reportError( env,
-                     MemberChecks.toSimpleName( Constants.NAMED_CLASSNAME ) + " target is not valid",
-                     element );
-      }
-    }
-  }
-
-  @Nonnull
-  private AnnotationUsageKind classifyNamedElement( @Nonnull final Element element )
-  {
-    if ( ElementKind.PARAMETER == element.getKind() )
-    {
-      final Element executableElement = element.getEnclosingElement();
-      final Element enclosingType = executableElement.getEnclosingElement();
-      if ( ElementKind.CONSTRUCTOR == executableElement.getKind() )
-      {
-        if ( AnnotationsUtil.hasAnnotationOfType( enclosingType, Constants.INJECTABLE_CLASSNAME ) )
-        {
-          return AnnotationUsageKind.PROCESSED;
-        }
-        else if ( hasActAsStingConsumer( enclosingType ) )
-        {
-          return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
-        }
-        else
-        {
-          return AnnotationUsageKind.INVALID;
-        }
-      }
-      else if ( ElementKind.METHOD == executableElement.getKind() &&
-                AnnotationsUtil.hasAnnotationOfType( enclosingType, Constants.FRAGMENT_CLASSNAME ) )
-      {
-        return AnnotationUsageKind.PROCESSED;
-      }
-      else
-      {
-        return AnnotationUsageKind.INVALID;
-      }
-    }
-    else if ( ElementKind.CLASS == element.getKind() )
-    {
-      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
-      {
-        return AnnotationUsageKind.PROCESSED;
-      }
-      else if ( hasActAsStingProvider( element ) )
-      {
-        return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
-      }
-      else
-      {
-        return AnnotationUsageKind.INVALID;
-      }
-    }
-    else if ( ElementKind.METHOD == element.getKind() )
-    {
-      final Element enclosingType = element.getEnclosingElement();
-      if ( AnnotationsUtil.hasAnnotationOfType( enclosingType, Constants.FRAGMENT_CLASSNAME ) ||
-           AnnotationsUtil.hasAnnotationOfType( enclosingType, Constants.INJECTOR_CLASSNAME ) )
-      {
-        return AnnotationUsageKind.PROCESSED;
-      }
-      else if ( AnnotationsUtil.hasAnnotationOfType( enclosingType, Constants.INJECTOR_FRAGMENT_CLASSNAME ) )
-      {
-        return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
-      }
-      else
-      {
-        return AnnotationUsageKind.INVALID;
-      }
-    }
-    else
-    {
-      return AnnotationUsageKind.INVALID;
-    }
-  }
-
-  private boolean hasActAsStingConsumer( @Nonnull final Element element )
-  {
-    return hasValidationRole( element,
-                              Constants.ACT_AS_STING_CONSUMER_SIMPLE_NAME,
-                              Constants.ACT_AS_STING_COMPONENT_SIMPLE_NAME );
-  }
-
-  private boolean hasActAsStingProvider( @Nonnull final Element element )
-  {
-    return hasValidationRole( element,
-                              Constants.ACT_AS_STING_PROVIDER_SIMPLE_NAME,
-                              Constants.ACT_AS_STING_COMPONENT_SIMPLE_NAME );
-  }
-
-  private boolean hasValidationRole( @Nonnull final Element element, @Nonnull final String... annotationNames )
-  {
-    return hasAnnotationWithAnnotationMatching( element, ca -> matchesValidationRole( ca, annotationNames ) );
-  }
-
-  private boolean matchesValidationRole( @Nonnull final AnnotationMirror annotation,
-                                         @Nonnull final String... annotationNames )
-  {
-    final Element element = annotation.getAnnotationType().asElement();
-    if ( ElementKind.ANNOTATION_TYPE != element.getKind() ||
-         element.getEnclosedElements().stream().anyMatch( e -> ElementKind.METHOD == e.getKind() ) )
-    {
-      return false;
-    }
-    final String simpleName = element.getSimpleName().toString();
-    return Arrays.asList( annotationNames ).contains( simpleName );
-  }
-
-  private boolean hasAnnotationWithAnnotationMatching( @Nonnull final AnnotatedConstruct element,
-                                                       @Nonnull final Predicate<? super AnnotationMirror> predicate )
-  {
-    return element
-      .getAnnotationMirrors()
-      .stream()
-      .anyMatch( a -> a.getAnnotationType()
-        .asElement()
-        .getAnnotationMirrors()
-        .stream()
-        .anyMatch( predicate ) );
-  }
-
-  private void verifyTypedElements( @Nonnull final RoundEnvironment env,
-                                    @Nonnull final Set<? extends Element> elements )
-  {
-    for ( final Element element : elements )
-    {
-      final AnnotationUsageKind usageKind = classifyTypedElement( element );
-      if ( AnnotationUsageKind.PROCESSED != usageKind &&
-           AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION != usageKind )
-      {
-        if ( ElementKind.CLASS == element.getKind() )
-        {
-          reportError( env,
-                       MemberChecks.must( Constants.TYPED_CLASSNAME,
-                                          "only be present on a type if the type is annotated with " +
-                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                          " or the type is annotated with an annotation annotated by " +
-                                          MemberChecks.toSimpleName( Constants.ACT_AS_STING_PROVIDER_CLASSNAME ) +
-                                          " or " +
-                                          MemberChecks.toSimpleName( Constants.ACT_AS_STING_COMPONENT_CLASSNAME ) ),
-                       element );
-        }
-        else if ( ElementKind.METHOD == element.getKind() )
-        {
-          reportError( env,
-                       MemberChecks.mustNot( Constants.TYPED_CLASSNAME,
-                                             "be a method unless the method is enclosed in a type annotated with " +
-                                             MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
-                       element );
-        }
-        else
-        {
-          reportError( env,
-                       MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) + " target is not valid",
-                       element );
-        }
-      }
-    }
-  }
-
-  @Nonnull
-  private AnnotationUsageKind classifyTypedElement( @Nonnull final Element element )
-  {
-    if ( ElementKind.CLASS == element.getKind() )
-    {
-      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
-      {
-        return AnnotationUsageKind.PROCESSED;
-      }
-      else if ( hasActAsStingProvider( element ) )
-      {
-        return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
-      }
-      else
-      {
-        return AnnotationUsageKind.INVALID;
-      }
-    }
-    else if ( ElementKind.METHOD == element.getKind() )
-    {
-      final Element enclosingType = element.getEnclosingElement();
-      if ( AnnotationsUtil.hasAnnotationOfType( enclosingType, Constants.FRAGMENT_CLASSNAME ) )
-      {
-        return AnnotationUsageKind.PROCESSED;
-      }
-      else
-      {
-        return AnnotationUsageKind.INVALID;
-      }
-    }
-    else
-    {
-      return AnnotationUsageKind.INVALID;
-    }
-  }
-
-  private void verifyEagerElements( @Nonnull final RoundEnvironment env,
-                                    @Nonnull final Set<? extends Element> elements )
-  {
-    for ( final Element element : elements )
-    {
-      final AnnotationUsageKind usageKind = classifyEagerElement( element );
-      if ( AnnotationUsageKind.PROCESSED != usageKind &&
-           AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION != usageKind )
-      {
-        if ( ElementKind.CLASS == element.getKind() )
-        {
-          reportError( env,
-                       MemberChecks.must( Constants.EAGER_CLASSNAME,
-                                          "only be present on a type if the type is annotated with " +
-                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                          " or the type is annotated with an annotation annotated by " +
-                                          MemberChecks.toSimpleName( Constants.ACT_AS_STING_PROVIDER_CLASSNAME ) +
-                                          " or " +
-                                          MemberChecks.toSimpleName( Constants.ACT_AS_STING_COMPONENT_CLASSNAME ) ),
-                       element );
-        }
-        else if ( ElementKind.METHOD == element.getKind() )
-        {
-          reportError( env,
-                       MemberChecks.must( Constants.EAGER_CLASSNAME,
-                                          "only be present on a method if the method is enclosed in a type annotated with " +
-                                          MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) ),
-                       element );
-        }
-        else
-        {
-          reportError( env,
-                       MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) + " target is not valid",
-                       element );
-        }
-      }
-    }
-  }
-
-  @Nonnull
-  private AnnotationUsageKind classifyEagerElement( @Nonnull final Element element )
-  {
-    if ( ElementKind.CLASS == element.getKind() )
-    {
-      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
-      {
-        return AnnotationUsageKind.PROCESSED;
-      }
-      else if ( hasActAsStingProvider( element ) )
-      {
-        return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
-      }
-      else
-      {
-        return AnnotationUsageKind.INVALID;
-      }
-    }
-    else if ( ElementKind.METHOD == element.getKind() &&
-              AnnotationsUtil.hasAnnotationOfType( element.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME ) )
-    {
-      return AnnotationUsageKind.PROCESSED;
-    }
-    else
-    {
-      return AnnotationUsageKind.INVALID;
-    }
-  }
-
-  private void processFragment( @Nonnull final TypeElement element )
-  {
-    debug( () -> "Processing Fragment: " + element );
-    if ( ElementKind.INTERFACE != element.getKind() )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.FRAGMENT_CLASSNAME, "be an interface" ),
-                                    element );
-    }
-    else if ( !element.getTypeParameters().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME, "have type parameters" ),
-                                    element );
-    }
-    else if ( !element.getInterfaces().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME, "extend any interfaces" ),
-                                    element );
-    }
-    final boolean localOnly = extractFragmentLocalOnly( element );
-    final List<IncludeDescriptor> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME, false );
-    final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
-    for ( final Element enclosedElement : element.getEnclosedElements() )
-    {
-      final ElementKind enclosedElementKind = enclosedElement.getKind();
-      if ( ElementKind.METHOD == enclosedElementKind )
-      {
-        processProvidesMethod( element, bindings, (ExecutableElement) enclosedElement );
-      }
-      if ( enclosedElementKind.isClass() || enclosedElementKind.isInterface() )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
-                                      " target must not contain any types",
-                                      element );
-      }
-    }
-    if ( bindings.isEmpty() && includes.isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.FRAGMENT_CLASSNAME,
-                                                       "contain one or more methods or one or more includes" ),
-                                    element );
-    }
-    final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations( element );
-    if ( !scopedAnnotations.isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                          "be annotated with an annotation that is " +
-                                                          "annotated with the " + Constants.JSR_330_SCOPE_CLASSNAME +
-                                                          " annotation such as " + scopedAnnotations ),
-                                    element );
-    }
-    _registry.registerFragment( new FragmentDescriptor( element, includes, localOnly, bindings.values() ) );
-  }
-
-  private void processFactory( @Nonnull final TypeElement element )
-  {
-    debug( () -> "Processing Factory: " + element );
-    if ( ElementKind.INTERFACE != element.getKind() )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME, "be an interface" ),
-                                    element );
-    }
-    else if ( !element.getTypeParameters().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME, "have type parameters" ),
-                                    element );
-    }
-    else if ( !element.getInterfaces().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME, "extend any interfaces" ),
-                                    element );
-    }
-
-    final List<FactoryMethodDescriptor> methods = new ArrayList<>();
-    final List<FactoryDependencyDescriptor> dependencies = new ArrayList<>();
-    final Set<String> usedFieldNames = new HashSet<>();
-    for ( final Element enclosedElement : element.getEnclosedElements() )
-    {
-      if ( ElementKind.METHOD == enclosedElement.getKind() )
-      {
-        final ExecutableElement method = (ExecutableElement) enclosedElement;
-        if ( !method.getModifiers().contains( Modifier.DEFAULT ) &&
-             !method.getModifiers().contains( Modifier.STATIC ) &&
-             !method.getModifiers().contains( Modifier.PRIVATE ) )
-        {
-          methods.add( processFactoryMethod( element, method, dependencies, usedFieldNames ) );
-        }
-      }
-    }
-    if ( methods.isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
-                                                       "contain at least one abstract method that returns a value" ),
-                                    element );
-    }
-
-    _registry.registerFactory( new FactoryDescriptor( element, methods, dependencies ) );
-  }
-
-  @SuppressWarnings( "unchecked" )
-  @Nonnull
-  private List<InputDescriptor> extractInputs( @Nonnull final TypeElement element )
-  {
-    final List<InputDescriptor> results = new ArrayList<>();
-    final AnnotationMirror annotation = AnnotationsUtil.getAnnotationByType( element, Constants.INJECTOR_CLASSNAME );
-    final AnnotationValue inputsAnnotationValue = AnnotationsUtil.findAnnotationValue( annotation, "inputs" );
-    assert null != inputsAnnotationValue;
-    final List<AnnotationMirror> inputs = (List<AnnotationMirror>) inputsAnnotationValue.getValue();
-
-    final int size = inputs.size();
-    for ( int i = 0; i < size; i++ )
-    {
-      final AnnotationMirror input = inputs.get( i );
-      final String qualifier = AnnotationsUtil.getAnnotationValueValue( input, "qualifier" );
-      final AnnotationValue typeAnnotationValue = AnnotationsUtil.getAnnotationValue( input, "type" );
-      final TypeMirror type = (TypeMirror) typeAnnotationValue.getValue();
-      if ( TypeKind.ARRAY == type.getKind() )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INPUT_CLASSNAME ) +
-                                      " must not specify an array type for the type parameter",
-                                      element,
-                                      input,
-                                      typeAnnotationValue );
-      }
-      else if ( TypeKind.VOID == type.getKind() )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INPUT_CLASSNAME ) +
-                                      " must specify a non-void type for the type parameter",
-                                      element,
-                                      input,
-                                      typeAnnotationValue );
-      }
-      else if ( TypeKind.DECLARED == type.getKind() &&
-                !( (TypeElement) ( (DeclaredType) type ).asElement() ).getTypeParameters().isEmpty() )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.INPUT_CLASSNAME ) +
-                                      " must not specify a parameterized type for the type parameter",
-                                      element,
-                                      input,
-                                      typeAnnotationValue );
-      }
-      final Coordinate coordinate = new Coordinate( qualifier, type );
-      final boolean optional = AnnotationsUtil.getAnnotationValueValue( input, "optional" );
-      final ServiceSpec service = new ServiceSpec( coordinate, optional );
-      final Binding binding =
-        new Binding( Binding.Kind.INPUT,
-                     element.getQualifiedName() + "#" + i,
-                     Collections.singletonList( service ),
-                     true,
-                     element,
-                     new ServiceRequest[ 0 ] );
-      binding.setInterceptorBindingSource( element, findInterceptorBindingAnnotationValues( element ) );
-      results.add( new InputDescriptor( service, binding, "input" + ( i + 1 ) ) );
-    }
-    return results;
-  }
-
-  @Nonnull
-  private List<IncludeDescriptor> extractIncludes( @Nonnull final TypeElement element,
-                                                   @Nonnull final String annotationClassname,
-                                                   final boolean fragmentOnly )
-  {
-    final List<IncludeDescriptor> results = new ArrayList<>();
-    final List<TypeMirror> includes =
-      AnnotationsUtil.getTypeMirrorsAnnotationParameter( element, annotationClassname, "includes" );
-    final Set<String> included = new HashSet<>();
-    for ( final TypeMirror include : includes )
-    {
-      if ( processingEnv.getTypeUtils().isSameType( include, element.asType() ) )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( annotationClassname ) +
-                                      " target must not include self",
-                                      element );
-      }
-      if ( include.getKind().isPrimitive() )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( annotationClassname ) +
-                                      " target must not include a primitive in the includes parameter",
-                                      element );
-      }
-      final Element includeElement = processingEnv.getTypeUtils().asElement( include );
-      if ( AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.FRAGMENT_CLASSNAME ) ||
-           AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) )
-      {
-        if ( fragmentOnly &&
-             AnnotationsUtil.hasAnnotationOfType( includeElement, Constants.INJECTABLE_CLASSNAME ) )
-        {
-          throw new ProcessorException( MemberChecks.toSimpleName( annotationClassname ) +
-                                        " target has an includes parameter containing the value " + include +
-                                        " that is not annotated by " +
-                                        MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
-                                        " when fragmentOnly is true",
-                                        element );
-        }
-        results.add( new IncludeDescriptor( (DeclaredType) include, include.toString(), false ) );
-      }
-      else
-      {
-        final ElementKind kind = includeElement.getKind();
-        if ( ElementKind.CLASS == kind || ElementKind.INTERFACE == kind )
-        {
-          final ProviderEntry provider =
-            resolveSingleStingProvider( element,
-                                        MemberChecks.toSimpleName( annotationClassname ) +
-                                        " target has an 'includes' parameter containing the value " +
-                                        includeElement.asType(),
-                                        (TypeElement) includeElement );
-          if ( null != provider )
-          {
-            final String targetQualifiedName =
-              deriveProviderQualifiedName( (TypeElement) includeElement, provider.provider() );
-            results.add( new IncludeDescriptor( (DeclaredType) include, targetQualifiedName, false ) );
-          }
-          else
-          {
-            throw new ProcessorException( MemberChecks.toSimpleName( annotationClassname ) +
-                                          " target has an includes parameter containing the value " + include +
-                                          " that is not a type annotated by either " +
-                                          MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
-                                          " or " +
-                                          MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ) +
-                                          " and the type does not declare a provider",
-                                          element );
-          }
-        }
-      }
-      final String includedType = include.toString();
-      if ( included.contains( includedType ) )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( annotationClassname ) +
-                                      " target has an includes parameter containing duplicate " +
-                                      "includes with the type " + includedType,
-                                      element );
-      }
-      else
-      {
-        included.add( includedType );
-      }
-    }
-    return results;
-  }
-
-  @Nullable
-  private ProviderEntry resolveSingleStingProvider( @Nonnull final TypeElement element,
-                                                    @Nonnull final String targetDescription,
-                                                    @Nonnull final TypeElement annotatedType )
-  {
-    final List<ProviderEntry> providers =
-      annotatedType.getAnnotationMirrors()
-        .stream()
-        .map( a -> {
-          final AnnotationMirror provider = getStingProvider( element, targetDescription, a );
-          return null != provider ? new ProviderEntry( a, provider ) : null;
-        } )
-        .filter( Objects::nonNull )
-        .toList();
-    if ( providers.size() > 1 )
-    {
-      final String message =
-        targetDescription + " that is annotated by multiple " +
-        MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
-        " annotations. Matching annotations:\n" +
-        providers
-          .stream()
-          .map( a -> ( (TypeElement) a.annotation().getAnnotationType().asElement() ).getQualifiedName() )
-          .map( a -> "  " + a )
-          .collect( Collectors.joining( "\n" ) );
-      throw new ProcessorException( message, element );
-    }
-    return providers.isEmpty() ? null : providers.get( 0 );
-  }
-
-  @Nullable
-  private AnnotationMirror getStingProvider( @Nonnull final TypeElement element,
-                                             @Nonnull final String targetDescription,
-                                             @Nonnull final AnnotationMirror annotation )
-  {
-    return annotation.getAnnotationType()
-      .asElement()
-      .getAnnotationMirrors()
-      .stream()
-      .filter( ca -> isStingProvider( element, targetDescription, ca ) )
-      .findAny()
-      .orElse( null );
-  }
-
-  @Nonnull
-  private String deriveProviderQualifiedName( @Nonnull final TypeElement annotatedType,
-                                              @Nonnull final AnnotationMirror providerAnnotation )
-  {
-    final String namePattern = AnnotationsUtil.getAnnotationValueValue( providerAnnotation, "value" );
-    final String targetCompoundType =
-      namePattern
-        .replace( "[SimpleName]", annotatedType.getSimpleName().toString() )
-        .replace( "[CompoundName]", getComponentName( annotatedType ) )
-        .replace( "[EnclosingName]", getEnclosingName( annotatedType ) )
-        .replace( "[FlatEnclosingName]", getEnclosingName( annotatedType ).replace( '.', '_' ) );
-    return ElementsUtil.getPackageElement( annotatedType ).getQualifiedName() + "." + targetCompoundType;
-  }
-
-  @Nonnull
-  private String getComponentName( @Nonnull final TypeElement element )
-  {
-    return getEnclosingName( element ) + element.getSimpleName();
-  }
-
-  @Nonnull
-  private String getEnclosingName( @Nonnull final TypeElement element )
-  {
-    Element enclosingElement = element.getEnclosingElement();
-    final List<String> nameParts = new ArrayList<>();
-    while ( ElementKind.PACKAGE != enclosingElement.getKind() )
-    {
-      nameParts.add( enclosingElement.getSimpleName().toString() );
-      enclosingElement = enclosingElement.getEnclosingElement();
-    }
-    if ( nameParts.isEmpty() )
-    {
-      return "";
-    }
-    else
-    {
-      Collections.reverse( nameParts );
-      return String.join( ".", nameParts ) + ".";
-    }
-  }
-
-  private boolean isStingProvider( @Nonnull final TypeElement element,
-                                   @Nonnull final String targetDescription,
-                                   @Nonnull final AnnotationMirror annotation )
-  {
-    if ( !annotation.getAnnotationType().asElement().getSimpleName().contentEquals( "StingProvider" ) )
-    {
-      return false;
-    }
-    else
-    {
-      final boolean nameMatched = annotation.getElementValues()
-        .entrySet()
-        .stream()
-        .anyMatch( e -> e.getKey().getSimpleName().contentEquals( "value" ) &&
-                        e.getValue().getValue() instanceof String );
-      if ( nameMatched )
-      {
+        clearRootTypeNamesIfProcessingOver(env);
+        reportProfilerTimings();
         return true;
-      }
-      else
-      {
-        final String message = targetDescription +
-                               " that is annotated by " + annotation +
-                               " that is annotated by an invalid " +
-                               MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
-                               " annotation missing a 'value' parameter of type string.";
-        throw new ProcessorException( message, element );
-      }
-    }
-  }
-
-  @Nonnull
-  private List<Binding> autoDiscoverProviderBindings( @Nonnull final ComponentGraph graph,
-                                                      @Nonnull final WorkEntry workEntry,
-                                                      @Nonnull final TypeElement frameworkType )
-  {
-    final ProviderEntry provider =
-      resolveSingleStingProvider( graph.getInjector().getElement(),
-                                  MemberChecks.toSimpleName( Constants.INJECTOR_CLASSNAME ) +
-                                  " target is attempting to auto-discover the type " + frameworkType.asType(),
-                                  frameworkType );
-    if ( null == provider )
-    {
-      return Collections.emptyList();
     }
 
-    final String providerTypeName = deriveProviderQualifiedName( frameworkType, provider.provider() );
-    final TypeElement providerType = processingEnv.getElementUtils().getTypeElement( providerTypeName );
-    final Coordinate coordinate = new Coordinate( "", frameworkType.asType() );
-    if ( null == providerType )
-    {
-      throw new ProcessorException( buildAutoDiscoverProviderError( coordinate,
-                                                                    workEntry,
-                                                                    "the framework type " +
-                                                                    frameworkType.getQualifiedName() +
-                                                                    " expects a provider class named " +
-                                                                    providerTypeName + " but no such class exists" ),
-                                    workEntry.getEntry().edge().getServiceRequest().getElement() );
-    }
-
-    if ( AnnotationsUtil.hasAnnotationOfType( providerType, Constants.FRAGMENT_CLASSNAME ) )
-    {
-      FragmentDescriptor fragment = _registry.findFragmentByClassName( providerTypeName );
-      if ( null == fragment )
-      {
-        fragment = deriveFragmentDescriptor( providerType );
-        if ( null != fragment )
-        {
-          _registry.registerFragment( fragment );
-        }
-      }
-      if ( null == fragment )
-      {
-        return Collections.emptyList();
-      }
-      verifyAutoDiscoverProviderPublishesType( coordinate, providerType, fragment.getBindings(), workEntry );
-      registerAutoDiscoveredFragment( graph, fragment );
-      return graph.findAllBindingsByCoordinate( coordinate );
-    }
-    else if ( AnnotationsUtil.hasAnnotationOfType( providerType, Constants.INJECTABLE_CLASSNAME ) )
-    {
-      InjectableDescriptor injectable = _registry.findInjectableByClassName( providerTypeName );
-      if ( null == injectable )
-      {
-        injectable = deriveInjectableDescriptor( providerType );
-        if ( null != injectable )
-        {
-          _registry.registerInjectable( injectable );
-        }
-      }
-      if ( null == injectable )
-      {
-        return Collections.emptyList();
-      }
-      verifyAutoDiscoverProviderPublishesType( coordinate,
-                                               providerType,
-                                               Collections.singletonList( injectable.getBinding() ),
-                                               workEntry );
-      graph.registerInjectable( injectable );
-      return Collections.singletonList( injectable.getBinding() );
-    }
-    else
-    {
-      throw new ProcessorException( buildAutoDiscoverProviderError( coordinate,
-                                                                    workEntry,
-                                                                    "the framework type " +
-                                                                    frameworkType.getQualifiedName() +
-                                                                    " expects a provider class named " +
-                                                                    providerTypeName +
-                                                                    " but that class is not annotated with either " +
-                                                                    MemberChecks.toSimpleName(
-                                                                      Constants.FRAGMENT_CLASSNAME ) +
-                                                                    " or " +
-                                                                    MemberChecks.toSimpleName(
-                                                                      Constants.INJECTABLE_CLASSNAME ) ),
-                                    workEntry.getEntry().edge().getServiceRequest().getElement() );
-    }
-  }
-
-  private void registerAutoDiscoveredFragment( @Nonnull final ComponentGraph graph,
-                                               @Nonnull final FragmentDescriptor fragment )
-  {
-    registerAutoDiscoveredIncludes( graph, fragment.getIncludes() );
-    graph.registerFragment( fragment );
-  }
-
-  private void registerAutoDiscoveredIncludes( @Nonnull final ComponentGraph graph,
-                                               @Nonnull final Collection<IncludeDescriptor> includes )
-  {
-    for ( final IncludeDescriptor include : includes )
-    {
-      final String classname = include.actualTypeName();
-      final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
-      assert null != element;
-      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
-      {
-        FragmentDescriptor fragment = _registry.findFragmentByClassName( classname );
-        if ( null == fragment )
-        {
-          fragment = deriveFragmentDescriptor( element );
-          if ( null != fragment )
-          {
-            _registry.registerFragment( fragment );
-          }
-        }
-        assert null != fragment;
-        registerAutoDiscoveredFragment( graph, fragment );
-      }
-      else
-      {
-        assert AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME );
-        InjectableDescriptor injectable = _registry.findInjectableByClassName( classname );
-        if ( null == injectable )
-        {
-          injectable = deriveInjectableDescriptor( element );
-          if ( null != injectable )
-          {
-            _registry.registerInjectable( injectable );
-          }
-        }
-        assert null != injectable;
-        graph.registerInjectable( injectable );
-      }
-    }
-  }
-
-  private void verifyAutoDiscoverProviderPublishesType( @Nonnull final Coordinate coordinate,
-                                                        @Nonnull final TypeElement providerType,
-                                                        @Nonnull final Collection<Binding> bindings,
-                                                        @Nonnull final WorkEntry workEntry )
-  {
-    final boolean matches =
-      bindings.stream().flatMap( b -> b.getPublishedServices().stream() ).anyMatch( s -> coordinate.equals(
-        s.getCoordinate() ) );
-    if ( !matches )
-    {
-      throw new ProcessorException( buildAutoDiscoverProviderError( coordinate,
-                                                                    workEntry,
-                                                                    "the provider class " +
-                                                                    providerType.getQualifiedName() +
-                                                                    " does not publish the service " +
-                                                                    coordinate +
-                                                                    " for the framework type " +
-                                                                    coordinate.type() +
-                                                                    ". The provider must publish the framework type with the default qualifier" ),
-                                    workEntry.getEntry().edge().getServiceRequest().getElement() );
-    }
-  }
-
-  @Nonnull
-  private String buildAutoDiscoverProviderError( @Nonnull final Coordinate coordinate,
-                                                 @Nonnull final WorkEntry workEntry,
-                                                 @Nonnull final String detail )
-  {
-    return MemberChecks.mustNot( Constants.INJECTOR_CLASSNAME,
-                                 "contain a non-optional dependency " + coordinate +
-                                 " that can not be auto-discovered via " +
-                                 MemberChecks.toSimpleName( Constants.STING_PROVIDER_CLASSNAME ) +
-                                 " because " + detail + ".\nDependency Path:\n" + workEntry.describePathFromRoot() );
-  }
-
-  private void emitFragmentJsonDescriptor( @Nonnull final FragmentDescriptor fragment )
-    throws IOException
-  {
-    if ( _emitJsonDescriptors )
-    {
-      final TypeElement element = fragment.getElement();
-      final String filename = toFilename( element ) + JSON_SUFFIX;
-      JsonUtil.writeJsonResource( processingEnv, element, filename, fragment::write );
-    }
-  }
-
-  private void processProvidesMethod( @Nonnull final TypeElement element,
-                                      @Nonnull final Map<ExecutableElement, Binding> bindings,
-                                      @Nonnull final ExecutableElement method )
-  {
-    if ( TypeKind.VOID == method.getReturnType().getKind() )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.FRAGMENT_CLASSNAME,
-                                                       "only contain methods that return a value" ),
-                                    method );
-    }
-    if ( !method.getTypeParameters().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                          "contain methods with a type parameter" ),
-                                    method );
-    }
-    if ( !method.getModifiers().contains( Modifier.DEFAULT ) )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.FRAGMENT_CLASSNAME,
-                                                       "only contain methods with a default modifier" ),
-                                    method );
-    }
-    final boolean nullablePresent = AnnotationsUtil.hasNullableAnnotation( method );
-    if ( nullablePresent && method.getReturnType().getKind().isPrimitive() )
-    {
-      throw new ProcessorException( MemberChecks.toSimpleName( Constants.FRAGMENT_CLASSNAME ) +
-                                    " contains a method that is incorrectly annotated with " +
-                                    MemberChecks.toSimpleName( AnnotationsUtil.NULLABLE_CLASSNAME ) +
-                                    " as the return type is a primitive value",
-                                    method );
-    }
-    final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations( method );
-    if ( !scopedAnnotations.isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                          "contain a method that is annotated with an " +
-                                                          "annotation that is annotated with the " +
-                                                          Constants.JSR_330_SCOPE_CLASSNAME +
-                                                          " annotation such as " + scopedAnnotations ),
-                                    method );
-    }
-
-    final boolean eager = AnnotationsUtil.hasAnnotationOfType( method, Constants.EAGER_CLASSNAME );
-
-    final List<ServiceRequest> dependencies = new ArrayList<>();
-    int index = 0;
-    final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) method.asType() ).getParameterTypes();
-    for ( final VariableElement parameter : method.getParameters() )
-    {
-      dependencies.add( processFragmentServiceParameter( parameter, parameterTypes.get( index ) ) );
-      index++;
-    }
-
-    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( method, Constants.TYPED_CLASSNAME );
-    final AnnotationValue value =
-      null != annotation ? AnnotationsUtil.findAnnotationValue( annotation, "value" ) : null;
-
-    final String qualifier = getQualifier( method );
-    if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.JSR_330_NAMED_CLASSNAME ) )
-    {
-      final String message =
-        MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                              "contain a method annotated with the " + Constants.JSR_330_NAMED_CLASSNAME +
-                              " annotation. Use the " + Constants.NAMED_CLASSNAME + " annotation instead" );
-      throw new ProcessorException( message, method );
-    }
-    if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.CDI_TYPED_CLASSNAME ) )
-    {
-      final String message =
-        MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                              "contain a method annotated with the " + Constants.CDI_TYPED_CLASSNAME +
-                              " annotation. Use the " + Constants.TYPED_CLASSNAME + " annotation instead" );
-      throw new ProcessorException( message, method );
-    }
-
-    @SuppressWarnings( "unchecked" )
-    final List<TypeMirror> types =
-      null == value ?
-      Collections.singletonList( method.getReturnType() ) :
-      ( (List<AnnotationValue>) value.getValue() )
-        .stream()
-        .map( v -> (TypeMirror) v.getValue() )
-        .toList();
-
-    final ServiceSpec[] specs = new ServiceSpec[ types.size() ];
-    for ( int i = 0; i < specs.length; i++ )
-    {
-      final TypeMirror type = types.get( i );
-      if ( !processingEnv.getTypeUtils().isAssignable( method.getReturnType(), type ) )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                      " specified a type that is not assignable to the return type of the method",
-                                      element,
-                                      annotation,
-                                      value );
-      }
-      else if ( TypeKind.DECLARED == type.getKind() && isParameterized( (DeclaredType) type ) )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                      " specified a type that is a a parameterized type",
-                                      element,
-                                      annotation,
-                                      value );
-      }
-      specs[ i ] = new ServiceSpec( new Coordinate( qualifier, type ), nullablePresent );
-    }
-
-    if ( 0 == specs.length && !eager )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                          "contain methods that specify zero types with the " +
-                                                          MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                                          " annotation and are not annotated with the " +
-                                                          MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) +
-                                                          " annotation otherwise the component can not be created by " +
-                                                          "the injector" ),
-                                    element );
-    }
-    if ( 0 == specs.length && !qualifier.isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                          "contain methods that specify zero types with the " +
-                                                          MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                                          " annotation and specify a qualifier with the " +
-                                                          MemberChecks.toSimpleName( Constants.NAMED_CLASSNAME ) +
-                                                          " annotation as the qualifier is meaningless" ),
-                                    element );
-    }
-
-    final Binding binding =
-      new Binding( Binding.Kind.PROVIDES,
-                   element.getQualifiedName() + "#" + method.getSimpleName(),
-                   Arrays.asList( specs ),
-                   eager,
-                   method,
-                   dependencies.toArray( new ServiceRequest[ 0 ] ) );
-    binding.setInterceptorBindingSource( method, findInterceptorBindingAnnotationValues( method ) );
-    bindings.put( method, binding );
-  }
-
-  void processInterceptorBindings( @Nonnull final Binding binding )
-  {
-    if ( !binding.isInterceptorBindingsProcessed() )
-    {
-      final var bindingSource = binding.getInterceptorBindingSourceOrNull();
-      if ( null != bindingSource )
-      {
-        for ( final var service : binding.getPublishedServices() )
-        {
-          final var serviceBindings = new ArrayList<InterceptorBindingDescriptor>();
-          final var serviceType = service.getCoordinate().type();
-          TypeElement serviceElement = null;
-          if ( TypeKind.DECLARED == serviceType.getKind() )
-          {
-            serviceElement = (TypeElement) ( (DeclaredType) serviceType ).asElement();
-            for ( final var annotation : findInterceptorBindingAnnotations( serviceElement ) )
-            {
-              final var values = extractBindingValues( annotation );
-              serviceBindings.add( createInterceptorBindingDescriptor( service, annotation, serviceElement, values ) );
+    private void errorIfProcessingOverAndUnprocessedInjectorDetected(@Nonnull final RoundEnvironment env) {
+        if (env.processingOver() && !env.errorRaised()) {
+            final List<InjectorDescriptor> injectors = _registry.getInjectors();
+            if (!injectors.isEmpty()) {
+                processingEnv
+                        .getMessager()
+                        .printMessage(
+                                Diagnostic.Kind.ERROR,
+                                getClass().getSimpleName() + " failed to process " + injectors.size() + " injectors as"
+                                        + " not all of"
+                                        + " their"
+                                        + " dependencies"
+                                        + " could be"
+                                        + " resolved."
+                                        + " Ensure that"
+                                        + " included"
+                                        + " types are"
+                                        + " present on"
+                                        + " the classpath"
+                                        + " and are"
+                                        + " valid Sting"
+                                        + " components."
+                                        + " If the"
+                                        + " problem is"
+                                        + " not obvious,"
+                                        + " consider"
+                                        + " passing the"
+                                        + " annotation"
+                                        + " option"
+                                        + " sting.debug=true");
+                for (final InjectorDescriptor injector : injectors) {
+                    processingEnv
+                            .getMessager()
+                            .printMessage(
+                                    Diagnostic.Kind.ERROR,
+                                    "Failed to process the "
+                                            + injector.getElement().getQualifiedName() + " injector.");
+                }
             }
-          }
-          if ( Binding.Kind.INPUT != binding.getKind() )
-          {
-            for ( final var entry : binding.getInterceptorBindingSourceAnnotations().entrySet() )
-            {
-              serviceBindings.add( createInterceptorBindingDescriptor( service,
-                                                                       entry.getKey(),
-                                                                       bindingSource,
-                                                                       entry.getValue() ) );
+        }
+    }
+
+    private void processResolvedInjectables(@Nonnull final RoundEnvironment env) {
+        for (final InjectableDescriptor injectable : new ArrayList<>(_registry.getInjectables())) {
+            if (!injectable.isJavaStubGenerated()) {
+                performAction(
+                        env,
+                        "Generate Injectable Stub",
+                        e -> {
+                            injectable.markJavaStubAsGenerated();
+                            emitInjectableJsonDescriptor(injectable);
+                            emitInjectableStub(injectable);
+                        },
+                        injectable.getElement(),
+                        _generateInjectableStubStopWatch);
             }
-          }
-          validateNoMethodLevelInterceptorBindings( binding, serviceElement, bindingSource );
-          if ( !serviceBindings.isEmpty() )
-          {
-            validateInterceptedService( binding, service, serviceElement, serviceBindings, bindingSource );
-            resolveGenericInterceptors( serviceBindings );
-            binding.addInterceptedService( new InterceptedServiceDescriptor( binding, service, serviceBindings ) );
-          }
         }
-      }
-      binding.markInterceptorBindingsProcessed();
-    }
-  }
-
-  @Nonnull
-  private List<AnnotationMirror> findInterceptorBindingAnnotations( @Nonnull final Element element )
-  {
-    final var annotations = new ArrayList<AnnotationMirror>();
-    for ( final var annotation : element.getAnnotationMirrors() )
-    {
-      if ( null != findInterceptorBindingMetaAnnotation( annotation ) )
-      {
-        annotations.add( annotation );
-      }
-    }
-    return annotations;
-  }
-
-  @Nonnull
-  private Map<AnnotationMirror, Map<String, BindingValueModel>> findInterceptorBindingAnnotationValues(
-    @Nonnull final Element element )
-  {
-    final var values = new LinkedHashMap<AnnotationMirror, Map<String, BindingValueModel>>();
-    for ( final var annotation : findInterceptorBindingAnnotations( element ) )
-    {
-      values.put( annotation, extractBindingValues( annotation ) );
-    }
-    return values;
-  }
-
-  @Nullable
-  private AnnotationMirror findInterceptorBindingMetaAnnotation( @Nonnull final AnnotationMirror annotation )
-  {
-    return
-      annotation
-        .getAnnotationType()
-        .asElement()
-        .getAnnotationMirrors()
-        .stream()
-        .filter( a -> Constants.INTERCEPTOR_BINDING_SIMPLE_NAME.contentEquals( a.getAnnotationType()
-                                                                                 .asElement()
-                                                                                 .getSimpleName() ) )
-        .findAny()
-        .orElse( null );
-  }
-
-  @Nonnull
-  private InterceptorBindingDescriptor createInterceptorBindingDescriptor( @Nonnull final ServiceSpec service,
-                                                                           @Nonnull final AnnotationMirror annotation,
-                                                                           @Nonnull final Element usageElement,
-                                                                           @Nonnull final Map<String, BindingValueModel>
-                                                                             values )
-  {
-    final var metaAnnotation = Objects.requireNonNull( findInterceptorBindingMetaAnnotation( annotation ) );
-    validateInterceptorBindingAnnotationType( annotation, metaAnnotation, usageElement, values );
-    final var annotationType = (TypeElement) annotation.getAnnotationType().asElement();
-    final var metaValues = processingEnv.getElementUtils().getElementValuesWithDefaults( metaAnnotation );
-    final var priorityValue = findAnnotationValueByName( metaValues, "priority" );
-    final var implementedByValue = findAnnotationValueByName( metaValues, "implementedBy" );
-    final int priority = (Integer) Objects.requireNonNull( priorityValue ).getValue();
-    final var implementedBy = null == implementedByValue ? "" : (String) implementedByValue.getValue();
-    final var resolvedImplementedBy = resolveImplementedByName( implementedBy, values, usageElement, annotation );
-    return new InterceptorBindingDescriptor( annotation,
-                                             annotationType,
-                                             usageElement,
-                                             priority,
-                                             resolvedImplementedBy,
-                                             values );
-  }
-
-  private void validateInterceptorBindingAnnotationType( @Nonnull final AnnotationMirror annotation,
-                                                         @Nonnull final AnnotationMirror metaAnnotation,
-                                                         @Nonnull final Element usageElement,
-                                                         @Nonnull final Map<String, BindingValueModel> values )
-  {
-    final var annotationType = (TypeElement) annotation.getAnnotationType().asElement();
-    if ( hasSourceRetention( annotationType ) )
-    {
-      throw new ProcessorException( "Interceptor binding annotation " + annotationType.getQualifiedName() +
-                                    " must not use @Retention(SOURCE)",
-                                    usageElement,
-                                    annotation );
-    }
-    else
-    {
-      final var metaValues = processingEnv.getElementUtils().getElementValuesWithDefaults( metaAnnotation );
-      final var priorityValue = findAnnotationValueByName( metaValues, "priority" );
-      if ( null == priorityValue || !( priorityValue.getValue() instanceof Integer ) )
-      {
-        throw new ProcessorException( "Interceptor binding meta-annotation on " + annotationType.getQualifiedName() +
-                                      " must declare an int priority member",
-                                      usageElement,
-                                      annotation );
-      }
-      else
-      {
-        final var implementedByValue = findAnnotationValueByName( metaValues, "implementedBy" );
-        if ( null == implementedByValue || !( implementedByValue.getValue() instanceof String ) )
-        {
-          throw new ProcessorException( "Interceptor binding meta-annotation on " + annotationType.getQualifiedName() +
-                                        " must declare a non-empty String implementedBy member",
-                                        usageElement,
-                                        annotation );
-        }
-        else
-        {
-          final var implementedBy = (String) implementedByValue.getValue();
-          if ( implementedBy.isEmpty() )
-          {
-            throw new ProcessorException( "Interceptor binding meta-annotation on " +
-                                          annotationType.getQualifiedName() +
-                                          " must declare a non-empty String implementedBy member",
-                                          usageElement,
-                                          annotation );
-          }
-          validateImplementedByTemplate( implementedBy, values, usageElement, annotation );
-        }
-      }
-    }
-  }
-
-  private boolean hasSourceRetention( @Nonnull final TypeElement annotationType )
-  {
-    final var retention = AnnotationsUtil.findAnnotationByType( annotationType, Retention.class.getName() );
-    if ( null != retention )
-    {
-      final var value = AnnotationsUtil.findAnnotationValue( retention, "value" );
-      return null != value && "SOURCE".equals( value.getValue().toString() );
-    }
-    else
-    {
-      return false;
-    }
-  }
-
-  @Nullable
-  private AnnotationValue findAnnotationValueByName(
-    @Nonnull final Map<? extends ExecutableElement, ? extends AnnotationValue> values,
-    @Nonnull final String name )
-  {
-    return
-      values
-        .entrySet()
-        .stream()
-        .filter( e -> e.getKey().getSimpleName().contentEquals( name ) )
-        .map( Map.Entry::getValue )
-        .findAny()
-        .orElse( null );
-  }
-
-  private void validateImplementedByTemplate( @Nonnull final String implementedBy,
-                                              @Nonnull final Map<String, BindingValueModel> values,
-                                              @Nonnull final Element element,
-                                              @Nonnull final AnnotationMirror annotation )
-  {
-    if ( isImplementedByTemplate( implementedBy ) )
-    {
-      resolveImplementedByTemplate( implementedBy, values, element, annotation );
-    }
-    else
-    {
-      validateImplementedByName( implementedBy, element, annotation );
-    }
-  }
-
-  @Nonnull
-  private String resolveImplementedByName( @Nonnull final String implementedBy,
-                                           @Nonnull final Map<String, BindingValueModel> values,
-                                           @Nonnull final Element element,
-                                           @Nonnull final AnnotationMirror annotation )
-  {
-    if ( isImplementedByTemplate( implementedBy ) )
-    {
-      final var resolved = resolveImplementedByTemplate( implementedBy, values, element, annotation );
-      validateImplementedByName( resolved, element, annotation );
-      return resolved;
-    }
-    else
-    {
-      validateImplementedByName( implementedBy, element, annotation );
-      return implementedBy;
-    }
-  }
-
-  private boolean isImplementedByTemplate( @Nonnull final String implementedBy )
-  {
-    return implementedBy.indexOf( '{' ) != -1 || implementedBy.indexOf( '}' ) != -1;
-  }
-
-  @Nonnull
-  private String resolveImplementedByTemplate( @Nonnull final String implementedBy,
-                                               @Nonnull final Map<String, BindingValueModel> values,
-                                               @Nonnull final Element element,
-                                               @Nonnull final AnnotationMirror annotation )
-  {
-    final var resolved = new StringBuilder();
-    int offset = 0;
-    while ( offset < implementedBy.length() )
-    {
-      final int openIndex = implementedBy.indexOf( '{', offset );
-      final int closeIndex = implementedBy.indexOf( '}', offset );
-      if ( -1 == openIndex )
-      {
-        if ( -1 != closeIndex )
-        {
-          throw new ProcessorException( "implementedBy template contains an unmatched '}'",
-                                        element,
-                                        annotation );
-        }
-        resolved.append( implementedBy.substring( offset ) );
-        break;
-      }
-      else if ( -1 != closeIndex && closeIndex < openIndex )
-      {
-        throw new ProcessorException( "implementedBy template contains an unmatched '}'",
-                                      element,
-                                      annotation );
-      }
-      else
-      {
-        final int endIndex = implementedBy.indexOf( '}', openIndex + 1 );
-        if ( -1 == endIndex )
-        {
-          throw new ProcessorException( "implementedBy template contains an unmatched '{'",
-                                        element,
-                                        annotation );
-        }
-        resolved.append( implementedBy, offset, openIndex );
-        final var name = implementedBy.substring( openIndex + 1, endIndex );
-        if ( name.isEmpty() )
-        {
-          throw new ProcessorException( "implementedBy template contains an empty placeholder",
-                                        element,
-                                        annotation );
-        }
-        else if ( !SourceVersion.isIdentifier( name ) || SourceVersion.isKeyword( name ) )
-        {
-          throw new ProcessorException( "implementedBy template placeholder {" + name +
-                                        "} must be a Java identifier",
-                                        element,
-                                        annotation );
-        }
-        resolved.append( resolveImplementedByPlaceholder( name, values, element, annotation ) );
-        offset = endIndex + 1;
-      }
-    }
-    return resolved.toString();
-  }
-
-  @Nonnull
-  private String resolveImplementedByPlaceholder( @Nonnull final String name,
-                                                  @Nonnull final Map<String, BindingValueModel> values,
-                                                  @Nonnull final Element element,
-                                                  @Nonnull final AnnotationMirror annotation )
-  {
-    final var value = values.get( name );
-    if ( null == value )
-    {
-      throw new ProcessorException( "implementedBy template references unknown interceptor binding member " + name,
-                                    element,
-                                    annotation );
-    }
-    else if ( value.array() || BindingValueKind.ENUM != value.kind() )
-    {
-      throw new ProcessorException( "implementedBy template placeholder {" + name +
-                                    "} must reference a scalar enum interceptor binding member",
-                                    element,
-                                    annotation );
-    }
-    else
-    {
-      return enumConstantNameToPascalCase( Objects.requireNonNull( value.enumConstantName() ),
-                                           name,
-                                           element,
-                                           annotation );
-    }
-  }
-
-  @Nonnull
-  private String enumConstantNameToPascalCase( @Nonnull final String constantName,
-                                               @Nonnull final String placeholderName,
-                                               @Nonnull final Element element,
-                                               @Nonnull final AnnotationMirror annotation )
-  {
-    final var parts = constantName.split( "_", -1 );
-    final var result = new StringBuilder();
-    for ( final var part : parts )
-    {
-      if ( part.isEmpty() )
-      {
-        throw new ProcessorException( "Enum constant " + constantName + " referenced by implementedBy template " +
-                                      "placeholder {" + placeholderName +
-                                      "} must not contain leading, trailing, or repeated underscores",
-                                      element,
-                                      annotation );
-      }
-      final var lower = part.toLowerCase( Locale.ROOT );
-      result.append( lower.substring( 0, 1 ).toUpperCase( Locale.ROOT ) );
-      result.append( lower.substring( 1 ) );
-    }
-    return result.toString();
-  }
-
-  @Nonnull
-  private Map<String, BindingValueModel> extractBindingValues( @Nonnull final AnnotationMirror annotation )
-  {
-    final var values = new LinkedHashMap<String, BindingValueModel>();
-    for ( final var entry : processingEnv.getElementUtils().getElementValuesWithDefaults( annotation ).entrySet() )
-    {
-      final var name = entry.getKey().getSimpleName().toString();
-      values.put( name, toBindingValueModel( name, entry.getKey().getReturnType(), entry.getValue().getValue() ) );
-    }
-    return values;
-  }
-
-  @Nonnull
-  private BindingValueModel toBindingValueModel( @Nonnull final String name,
-                                                 @Nonnull final TypeMirror type,
-                                                 @Nullable final Object value )
-  {
-    if ( TypeKind.ARRAY == type.getKind() )
-    {
-      return toArrayBindingValueModel( name, (ArrayType) type, value );
-    }
-    else
-    {
-      return toScalarBindingValueModel( name, value );
-    }
-  }
-
-  @Nonnull
-  private BindingValueModel toArrayBindingValueModel( @Nonnull final String name,
-                                                      @Nonnull final ArrayType type,
-                                                      @Nullable final Object value )
-  {
-    final var componentKind = bindingValueKind( type.getComponentType() );
-    if ( BindingValueKind.UNSUPPORTED == componentKind || !( value instanceof final List<?> values ) )
-    {
-      return unsupportedBindingValueModel( name, true );
     }
 
-    final var javaLiteral = new StringBuilder();
-    javaLiteral.append( "new " ).append( arrayLiteralType( componentKind ) ).append( "[] {" );
-    for ( int i = 0; i < values.size(); i++ )
-    {
-      final var element = values.get( i );
-      if ( !( element instanceof final AnnotationValue annotationValue ) )
-      {
-        return unsupportedBindingValueModel( name, true );
-      }
-
-      final var component = toScalarBindingValueModel( name, annotationValue.getValue() );
-      if ( componentKind != component.kind() )
-      {
-        return unsupportedBindingValueModel( name, true );
-      }
-
-      javaLiteral.append( 0 == i ? " " : ", " ).append( component.javaLiteral() );
-    }
-    if ( !values.isEmpty() )
-    {
-      javaLiteral.append( " " );
-    }
-    javaLiteral.append( "}" );
-    return new BindingValueModel( name, componentKind, true, null, null, null, null, javaLiteral.toString() );
-  }
-
-  @Nonnull
-  private BindingValueKind bindingValueKind( @Nonnull final TypeMirror type )
-  {
-    return switch ( type.getKind() )
-    {
-      case BOOLEAN -> BindingValueKind.BOOLEAN;
-      case BYTE -> BindingValueKind.BYTE;
-      case SHORT -> BindingValueKind.SHORT;
-      case INT -> BindingValueKind.INT;
-      case LONG -> BindingValueKind.LONG;
-      case FLOAT -> BindingValueKind.FLOAT;
-      case DOUBLE -> BindingValueKind.DOUBLE;
-      case CHAR -> BindingValueKind.CHAR;
-      case DECLARED -> bindingValueDeclaredKind( (DeclaredType) type );
-      default -> BindingValueKind.UNSUPPORTED;
-    };
-  }
-
-  @Nonnull
-  private BindingValueKind bindingValueDeclaredKind( @Nonnull final DeclaredType type )
-  {
-    final var element = (TypeElement) type.asElement();
-    final var typeName = element.getQualifiedName().toString();
-    if ( String.class.getName().equals( typeName ) )
-    {
-      return BindingValueKind.STRING;
-    }
-    else if ( Class.class.getName().equals( typeName ) )
-    {
-      return BindingValueKind.CLASS;
-    }
-    else if ( ElementKind.ENUM == element.getKind() )
-    {
-      return BindingValueKind.ENUM;
-    }
-    else
-    {
-      return BindingValueKind.UNSUPPORTED;
-    }
-  }
-
-  @Nonnull
-  private String arrayLiteralType( @Nonnull final BindingValueKind kind )
-  {
-    return switch ( kind )
-    {
-      case STRING, CLASS, ENUM -> "String";
-      case BOOLEAN -> "boolean";
-      case BYTE -> "byte";
-      case SHORT -> "short";
-      case INT -> "int";
-      case LONG -> "long";
-      case FLOAT -> "float";
-      case DOUBLE -> "double";
-      case CHAR -> "char";
-      case UNSUPPORTED -> throw new IllegalArgumentException( "Unsupported binding value kind" );
-    };
-  }
-
-  @Nonnull
-  private BindingValueModel toScalarBindingValueModel( @Nonnull final String name, @Nullable final Object value )
-  {
-    if ( value instanceof String )
-    {
-      return new BindingValueModel( name,
-                                    BindingValueKind.STRING,
-                                    false,
-                                    value,
-                                    null,
-                                    null,
-                                    null,
-                                    CodeBlock.of( "$S", value ).toString() );
-    }
-    else if ( value instanceof Boolean )
-    {
-      return new BindingValueModel( name,
-                                    BindingValueKind.BOOLEAN,
-                                    false,
-                                    value,
-                                    null,
-                                    null,
-                                    null,
-                                    value.toString() );
-    }
-    else if ( value instanceof Byte )
-    {
-      return new BindingValueModel( name,
-                                    BindingValueKind.BYTE,
-                                    false,
-                                    value,
-                                    null,
-                                    null,
-                                    null,
-                                    "(byte) " + value );
-    }
-    else if ( value instanceof Short )
-    {
-      return new BindingValueModel( name,
-                                    BindingValueKind.SHORT,
-                                    false,
-                                    value,
-                                    null,
-                                    null,
-                                    null,
-                                    "(short) " + value );
-    }
-    else if ( value instanceof Integer )
-    {
-      return new BindingValueModel( name, BindingValueKind.INT, false, value, null, null, null, value.toString() );
-    }
-    else if ( value instanceof Long )
-    {
-      return new BindingValueModel( name, BindingValueKind.LONG, false, value, null, null, null, value + "L" );
-    }
-    else if ( value instanceof Float )
-    {
-      return new BindingValueModel( name, BindingValueKind.FLOAT, false, value, null, null, null, value + "F" );
-    }
-    else if ( value instanceof Double )
-    {
-      return new BindingValueModel( name, BindingValueKind.DOUBLE, false, value, null, null, null, value.toString() );
-    }
-    else if ( value instanceof Character )
-    {
-      final char c = (Character) value;
-      return new BindingValueModel( name,
-                                    BindingValueKind.CHAR,
-                                    false,
-                                    value,
-                                    null,
-                                    null,
-                                    null,
-                                    charLiteral( c ) );
-    }
-    else if ( value instanceof TypeMirror )
-    {
-      final String className = value.toString();
-      return new BindingValueModel( name,
-                                    BindingValueKind.CLASS,
-                                    false,
-                                    null,
-                                    className,
-                                    null,
-                                    null,
-                                    CodeBlock.of( "$S", className ).toString() );
-    }
-    else if ( value instanceof final VariableElement enumValue )
-    {
-      final var enumTypeName = ( (TypeElement) enumValue.getEnclosingElement() ).getQualifiedName().toString();
-      final var constantName = enumValue.getSimpleName().toString();
-      return new BindingValueModel( name,
-                                    BindingValueKind.ENUM,
-                                    false,
-                                    null,
-                                    null,
-                                    enumTypeName,
-                                    constantName,
-                                    CodeBlock.of( "$S", constantName ).toString() );
-    }
-    else
-    {
-      return unsupportedBindingValueModel( name, false );
-    }
-  }
-
-  @Nonnull
-  private BindingValueModel unsupportedBindingValueModel( @Nonnull final String name, final boolean array )
-  {
-    return new BindingValueModel( name, BindingValueKind.UNSUPPORTED, array, null, null, null, null, "<unsupported>" );
-  }
-
-  @Nonnull
-  private String charLiteral( final char c )
-  {
-    return switch ( c )
-    {
-      case '\b' -> "'\\b'";
-      case '\t' -> "'\\t'";
-      case '\n' -> "'\\n'";
-      case '\f' -> "'\\f'";
-      case '\r' -> "'\\r'";
-      case '"' -> "'\"'";
-      case '\'' -> "'\\''";
-      case '\\' -> "'\\\\'";
-      default -> Character.isISOControl( c ) ?
-                 String.format( "'\\u%04x'", (int) c ) :
-                 "'" + c + "'";
-    };
-  }
-
-  private void validateInterceptedService( @Nonnull final Binding binding,
-                                           @Nonnull final ServiceSpec service,
-                                           @Nullable final TypeElement serviceElement,
-                                           @Nonnull final List<InterceptorBindingDescriptor> interceptors,
-                                           @Nonnull final Element bindingSource )
-  {
-    if ( Binding.Kind.INPUT == binding.getKind() )
-    {
-      throw new ProcessorException( "Interceptor bindings on injector input services are not supported",
-                                    binding.getElement() );
-    }
-    else if ( service.isOptional() || binding.isOptional() )
-    {
-      throw new ProcessorException( "Interceptor bindings on nullable or optional provider bindings are not supported",
-                                    bindingSource );
-    }
-    else if ( null == serviceElement )
-    {
-      throw new ProcessorException( "Intercepted bindings must publish service interfaces only", bindingSource );
-    }
-    else if ( Object.class.getName().equals( serviceElement.getQualifiedName().toString() ) )
-    {
-      throw new ProcessorException( "Intercepted bindings must not publish java.lang.Object", bindingSource );
-    }
-    else if ( ElementKind.INTERFACE != serviceElement.getKind() )
-    {
-      throw new ProcessorException( "Intercepted bindings must publish service interfaces only", bindingSource );
-    }
-    else if ( !serviceElement.getTypeParameters().isEmpty() )
-    {
-      throw new ProcessorException( "Intercepted service interfaces must not declare type parameters", serviceElement );
-    }
-    else
-    {
-      final var methods =
-        ElementsUtil.getMethods( serviceElement, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
-      for ( final var method : methods )
-      {
-        if ( !method.getTypeParameters().isEmpty() )
-        {
-          throw new ProcessorException( "Intercepted service methods must not declare type parameters", method );
-        }
-      }
-      final var types = new HashSet<String>();
-      final var priorities = new HashSet<Integer>();
-      for ( final var interceptor : interceptors )
-      {
-        if ( !types.add( interceptor.annotationTypeName() ) )
-        {
-          throw new ProcessorException( "Duplicate interceptor binding annotation type " +
-                                        interceptor.annotationTypeName() + " for service " +
-                                        service.getCoordinate(),
-                                        interceptor.getUsageElement(),
-                                        interceptor.getAnnotation() );
-        }
-        else if ( !priorities.add( interceptor.priority() ) )
-        {
-          throw new ProcessorException( "Duplicate interceptor priority " + interceptor.priority() +
-                                        " for service " + service.getCoordinate(),
-                                        interceptor.getUsageElement(),
-                                        interceptor.getAnnotation() );
-        }
-      }
-    }
-  }
-
-  private void validateNoMethodLevelInterceptorBindings( @Nonnull final Binding binding,
-                                                         @Nullable final TypeElement serviceElement,
-                                                         @Nonnull final Element bindingSource )
-  {
-    if ( null != serviceElement )
-    {
-      final var methods =
-        ElementsUtil.getMethods( serviceElement, processingEnv.getElementUtils(), processingEnv.getTypeUtils() );
-      for ( final var method : methods )
-      {
-        if ( !findInterceptorBindingAnnotations( method ).isEmpty() )
-        {
-          throw new ProcessorException( "Interceptor bindings on service interface methods are not supported", method );
-        }
-      }
-    }
-    if ( Binding.Kind.INJECTABLE == binding.getKind() )
-    {
-      for ( final var element : bindingSource.getEnclosedElements() )
-      {
-        if ( ElementKind.METHOD == element.getKind() && !findInterceptorBindingAnnotations( element ).isEmpty() )
-        {
-          throw new ProcessorException( "Interceptor bindings on implementation methods are not supported", element );
-        }
-      }
-    }
-  }
-
-  private void resolveGenericInterceptors( @Nonnull final List<InterceptorBindingDescriptor> interceptors )
-  {
-    for ( final var interceptor : interceptors )
-    {
-      interceptor.setInterceptor( resolveGenericInterceptor( interceptor ) );
-    }
-  }
-
-  @Nonnull
-  private InterceptorDescriptor resolveGenericInterceptor( @Nonnull final InterceptorBindingDescriptor interceptor )
-  {
-    final var classname = interceptor.getImplementedBy();
-    final var existing = _registry.findInterceptorByClassName( classname );
-    if ( null == existing )
-    {
-      final var element = processingEnv.getElementUtils().getTypeElement( classname );
-      if ( null == element )
-      {
-        throw new ProcessorException( "Interceptor implementation " + classname + " does not exist",
-                                      interceptor.getUsageElement(),
-                                      interceptor.getAnnotation() );
-      }
-      else if ( !ElementsUtil.isEffectivelyPublic( element ) )
-      {
-        throw new ProcessorException( "Interceptor implementation " + classname + " must be effectively public",
-                                      element );
-      }
-      else if ( !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
-      {
-        throw new ProcessorException( "Interceptor implementation " + classname + " must be annotated with " +
-                                      MemberChecks.toSimpleName( Constants.INJECTABLE_CLASSNAME ),
-                                      element );
-      }
-      else
-      {
-        var injectable = _registry.findInjectableByClassName( classname );
-        if ( null == injectable )
-        {
-          injectable = deriveInjectableDescriptor( element );
-          if ( null == injectable )
-          {
-            throw new ProcessorException( "Unable to derive interceptor implementation " + classname, element );
-          }
-          _registry.registerInjectable( injectable );
-        }
-        final var descriptor = new InterceptorDescriptor( element,
-                                                          new EnumMap<>( validateLifecycleMethods( element,
-                                                                                                   interceptor ) ),
-                                                          injectable.getBinding() );
-        _registry.registerInterceptor( descriptor );
-        return descriptor;
-      }
-    }
-    else
-    {
-      return existing;
-    }
-  }
-
-  @Nonnull
-  private Map<InterceptorPhase, InterceptorMethodDescriptor> validateLifecycleMethods(
-    @Nonnull final TypeElement element,
-    @Nonnull final InterceptorBindingDescriptor interceptor )
-  {
-    final var methods = new EnumMap<InterceptorPhase, InterceptorMethodDescriptor>( InterceptorPhase.class );
-    for ( final var enclosedElement : element.getEnclosedElements() )
-    {
-      if ( ElementKind.METHOD == enclosedElement.getKind() )
-      {
-        final var method = (ExecutableElement) enclosedElement;
-        final var phases = lifecyclePhases( method );
-        final var phaseCount = phases.size();
-        if ( phaseCount > 1 )
-        {
-          throw new ProcessorException( "Interceptor lifecycle method must not have multiple lifecycle annotations",
-                                        method );
-        }
-        else if ( 1 == phaseCount )
-        {
-          final var phase = phases.get( 0 );
-          validateLifecycleMethodShape( method, phase );
-          final var descriptor =
-            new InterceptorMethodDescriptor( phase,
-                                             method,
-                                             List.copyOf( validateLifecycleParameters( method, phase, interceptor ) ) );
-          if ( null != methods.put( phase, descriptor ) )
-          {
-            throw new ProcessorException( "Interceptor implementation " + element.getQualifiedName() +
-                                          " must declare at most one " + phase + " lifecycle method",
-                                          method );
-          }
-        }
-      }
-    }
-    if ( methods.isEmpty() )
-    {
-      throw new ProcessorException( "Interceptor implementation " + element.getQualifiedName() +
-                                    " must declare at least one lifecycle method",
-                                    element );
-    }
-    validateNoInheritedLifecycleMethods( element );
-    return methods;
-  }
-
-  @Nonnull
-  private List<InterceptorPhase> lifecyclePhases( @Nonnull final ExecutableElement method )
-  {
-    final var phases = new ArrayList<InterceptorPhase>();
-    if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.INTERCEPTOR_BEFORE_CLASSNAME ) )
-    {
-      phases.add( InterceptorPhase.BEFORE );
-    }
-    if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.INTERCEPTOR_AROUND_CLASSNAME ) )
-    {
-      phases.add( InterceptorPhase.AROUND );
-    }
-    if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.INTERCEPTOR_AFTER_CLASSNAME ) )
-    {
-      phases.add( InterceptorPhase.AFTER );
-    }
-    if ( AnnotationsUtil.hasAnnotationOfType( method, Constants.INTERCEPTOR_AFTER_EXCEPTION_CLASSNAME ) )
-    {
-      phases.add( InterceptorPhase.AFTER_EXCEPTION );
-    }
-    return phases;
-  }
-
-  private void validateLifecycleMethodShape( @Nonnull final ExecutableElement method,
-                                             @Nonnull final InterceptorPhase phase )
-  {
-    final var modifiers = method.getModifiers();
-    if ( !modifiers.contains( Modifier.PUBLIC ) ||
-         modifiers.contains( Modifier.STATIC ) ||
-         modifiers.contains( Modifier.PRIVATE ) ||
-         modifiers.contains( Modifier.PROTECTED ) )
-    {
-      throw new ProcessorException( "Interceptor lifecycle methods must be public instance methods", method );
-    }
-    else if ( InterceptorPhase.AROUND == phase )
-    {
-      final var objectType = processingEnv.getElementUtils().getTypeElement( Object.class.getName() );
-      if ( null == objectType ||
-           !processingEnv.getTypeUtils().isSameType( method.getReturnType(), objectType.asType() ) )
-      {
-        throw new ProcessorException( "Interceptor @Around lifecycle methods must return java.lang.Object", method );
-      }
-      else if ( !method.getTypeParameters().isEmpty() )
-      {
-        throw new ProcessorException( "Interceptor lifecycle methods must not declare type parameters", method );
-      }
-    }
-    else if ( TypeKind.VOID != method.getReturnType().getKind() )
-    {
-      throw new ProcessorException( "Interceptor lifecycle methods must return void", method );
-    }
-    else if ( !method.getTypeParameters().isEmpty() )
-    {
-      throw new ProcessorException( "Interceptor lifecycle methods must not declare type parameters", method );
-    }
-    else
-    {
-      for ( final var thrownType : method.getThrownTypes() )
-      {
-        if ( !isUncheckedThrowable( thrownType ) )
-        {
-          throw new ProcessorException( "Interceptor lifecycle methods must not declare checked exceptions", method );
-        }
-      }
-    }
-  }
-
-  private boolean isUncheckedThrowable( @Nonnull final TypeMirror type )
-  {
-    final var elementUtils = processingEnv.getElementUtils();
-    final var runtimeException = elementUtils.getTypeElement( RuntimeException.class.getName() );
-    final var error = elementUtils.getTypeElement( Error.class.getName() );
-    final var typeUtils = processingEnv.getTypeUtils();
-    return typeUtils.isAssignable( type, runtimeException.asType() ) ||
-           typeUtils.isAssignable( type, error.asType() );
-  }
-
-  private void validateNoInheritedLifecycleMethods( @Nonnull final TypeElement element )
-  {
-    validateNoInheritedLifecycleMethods( element, element );
-  }
-
-  private void validateNoInheritedLifecycleMethods( @Nonnull final TypeElement element,
-                                                    @Nonnull final TypeElement type )
-  {
-    for ( final var supertype : processingEnv.getTypeUtils().directSupertypes( type.asType() ) )
-    {
-      if ( TypeKind.DECLARED == supertype.getKind() )
-      {
-        final var superElement = (TypeElement) ( (DeclaredType) supertype ).asElement();
-        if ( Object.class.getName().equals( superElement.getQualifiedName().toString() ) )
-        {
-          continue;
-        }
-        for ( final var member : superElement.getEnclosedElements() )
-        {
-          if ( ElementKind.METHOD == member.getKind() )
-          {
-            final var method = (ExecutableElement) member;
-            if ( !lifecyclePhases( method ).isEmpty() )
-            {
-              final var override = findDeclaredOverride( element, method );
-              if ( null == override || lifecyclePhases( override ).isEmpty() )
-              {
-                throw new ProcessorException( "Inherited interceptor lifecycle annotations are not supported",
-                                              element );
-              }
+    private void processResolvedFactories(@Nonnull final RoundEnvironment env) {
+        for (final FactoryDescriptor factory : new ArrayList<>(_registry.getFactories())) {
+            if (!factory.isGenerated()) {
+                performAction(
+                        env,
+                        "Generate Factory Impl",
+                        e -> {
+                            factory.markGenerated();
+                            emitFactoryImpl(factory);
+                        },
+                        factory.getElement(),
+                        _generateFactoryImplStopWatch);
             }
-          }
         }
-        validateNoInheritedLifecycleMethods( element, superElement );
-      }
     }
-  }
 
-  @Nullable
-  private ExecutableElement findDeclaredOverride( @Nonnull final TypeElement element,
-                                                  @Nonnull final ExecutableElement inheritedMethod )
-  {
-    for ( final var enclosedElement : element.getEnclosedElements() )
-    {
-      if ( ElementKind.METHOD == enclosedElement.getKind() )
-      {
-        final var method = (ExecutableElement) enclosedElement;
-        if ( processingEnv.getElementUtils().overrides( method, inheritedMethod, element ) )
-        {
-          return method;
+    private void emitFactoryImpl(@Nonnull final FactoryDescriptor factory) throws IOException {
+        debug(() -> "Emitting factory implementation for the factory "
+                + factory.getElement().getQualifiedName());
+        final String packageName = GeneratorUtil.getQualifiedPackageName(factory.getElement());
+        emitTypeSpec(packageName, FactoryGenerator.buildType(processingEnv, factory));
+    }
+
+    private void emitInjectableStub(@Nonnull final InjectableDescriptor injectable) throws IOException {
+        debug(() -> "Emitting injectable stub for the injectable "
+                + injectable.getElement().getQualifiedName());
+        final String packageName = GeneratorUtil.getQualifiedPackageName(injectable.getElement());
+        emitTypeSpec(packageName, InjectableGenerator.buildType(processingEnv, injectable));
+    }
+
+    private void processResolvedFragments(@Nonnull final RoundEnvironment env) {
+        final List<FragmentDescriptor> deferred = new ArrayList<>();
+        final List<FragmentDescriptor> current = new ArrayList<>(_registry.getFragments());
+        final AtomicBoolean resolvedType = new AtomicBoolean();
+
+        while (!current.isEmpty()) {
+            for (final FragmentDescriptor fragment : current) {
+                if (!fragment.isJavaStubGenerated() && !fragment.containsError()) {
+                    performAction(
+                            env,
+                            "Generate Fragment Stub",
+                            e -> {
+                                final ResolveType resolveType = isFragmentResolved(env, fragment);
+                                if (ResolveType.RESOLVED == resolveType) {
+                                    fragment.markJavaStubAsGenerated();
+                                    emitFragmentJsonDescriptor(fragment);
+                                    emitFragmentStub(fragment);
+                                } else if (ResolveType.MAYBE_UNRESOLVED == resolveType) {
+                                    debug(() -> "The fragment "
+                                            + fragment.getElement().getQualifiedName()
+                                            + " has resolved java types but unresolved descriptors. Deferring"
+                                            + " processing until later in the round");
+                                    deferred.add(fragment);
+                                } else {
+                                    debug(() -> "Defer generation for the fragment "
+                                            + fragment.getElement().getQualifiedName() + " as it is not yet resolved");
+                                }
+                            },
+                            fragment.getElement(),
+                            _generateFragmentStubStopWatch);
+                }
+            }
+            current.clear();
+            if (resolvedType.get()) {
+                current.addAll(deferred);
+                deferred.clear();
+            } else {
+                break;
+            }
         }
-      }
     }
-    return null;
-  }
 
-  @Nonnull
-  private List<LifecycleParameterDescriptor> validateLifecycleParameters( @Nonnull final ExecutableElement method,
-                                                                          @Nonnull final InterceptorPhase phase,
-                                                                          @Nonnull final InterceptorBindingDescriptor interceptor )
-  {
-    final var parameters = new ArrayList<LifecycleParameterDescriptor>();
-    for ( final var parameter : method.getParameters() )
-    {
-      parameters.add( validateLifecycleParameter( parameter, phase, interceptor ) );
-    }
-    if ( InterceptorPhase.AROUND == phase &&
-         1 != parameters.stream().filter( p -> LifecycleParameterDescriptor.Kind.PROCEED == p.kind() ).count() )
-    {
-      throw new ProcessorException( "Interceptor @Around lifecycle methods must declare exactly one @Proceed parameter",
-                                    method );
-    }
-    return parameters;
-  }
-
-  @Nonnull
-  private LifecycleParameterDescriptor validateLifecycleParameter( @Nonnull final VariableElement parameter,
-                                                                   @Nonnull final InterceptorPhase phase,
-                                                                   @Nonnull final InterceptorBindingDescriptor interceptor )
-  {
-    final var markers = new ArrayList<AnnotationMirror>();
-    for ( final var annotation : parameter.getAnnotationMirrors() )
-    {
-      if ( isLifecycleMarker( annotation ) )
-      {
-        markers.add( annotation );
-      }
-    }
-    if ( markers.isEmpty() )
-    {
-      throw new ProcessorException( "Interceptor lifecycle parameters must have exactly one marker annotation",
-                                    parameter );
-    }
-    else if ( markers.size() > 1 )
-    {
-      throw new ProcessorException( "Interceptor lifecycle parameters must not have multiple marker annotations",
-                                    parameter );
-    }
-    else
-    {
-      final var marker = markers.get( 0 );
-      final var markerType = ( (TypeElement) marker.getAnnotationType().asElement() ).getQualifiedName().toString();
-      final var type = parameter.asType();
-      if ( Constants.INTERCEPTOR_SERVICE_TYPE_CLASSNAME.equals( markerType ) )
-      {
-        requireType( parameter, type, String.class.getName(), "@ServiceType" );
-        return new LifecycleParameterDescriptor( LifecycleParameterDescriptor.Kind.SERVICE_TYPE, "" );
-      }
-      else if ( Constants.INTERCEPTOR_METHOD_NAME_CLASSNAME.equals( markerType ) )
-      {
-        requireType( parameter, type, String.class.getName(), "@MethodName" );
-        return new LifecycleParameterDescriptor( LifecycleParameterDescriptor.Kind.METHOD_NAME, "" );
-      }
-      else if ( Constants.INTERCEPTOR_ARGUMENTS_CLASSNAME.equals( markerType ) )
-      {
-        if ( TypeKind.ARRAY != type.getKind() || !"java.lang.Object[]".equals( type.toString() ) )
-        {
-          throw new ProcessorException( "@Arguments lifecycle parameter must have type Object[]", parameter );
+    @Nonnull
+    private ResolveType isFragmentReady(
+            @Nonnull final RoundEnvironment env, @Nonnull final FragmentDescriptor fragment) {
+        if (fragment.containsError()) {
+            return ResolveType.UNRESOLVED;
+        } else {
+            return isFragmentResolved(env, fragment);
         }
-        else
-        {
-          return new LifecycleParameterDescriptor( LifecycleParameterDescriptor.Kind.ARGUMENTS, "" );
+    }
+
+    private void emitFragmentStub(@Nonnull final FragmentDescriptor fragment) throws IOException {
+        debug(() -> "Emitting fragment stub for the fragment "
+                + fragment.getElement().getQualifiedName());
+        final String packageName = GeneratorUtil.getQualifiedPackageName(fragment.getElement());
+        emitTypeSpec(packageName, FragmentGenerator.buildType(processingEnv, fragment));
+    }
+
+    private void processResolvedInjectors(@Nonnull final RoundEnvironment env) {
+        final boolean profileEnabled = isProfileEnabled();
+
+        final List<InjectorDescriptor> deferred = new ArrayList<>();
+        final List<InjectorDescriptor> current = new ArrayList<>(_registry.getInjectors());
+        final AtomicBoolean resolvedType = new AtomicBoolean();
+
+        while (!current.isEmpty()) {
+            for (final InjectorDescriptor injector : current) {
+                if (!injector.containsError()) {
+                    performAction(
+                            env,
+                            "Generate Injector Impl",
+                            e -> {
+                                if (profileEnabled) {
+                                    _isInjectorResolvedStopWatch.start();
+                                }
+                                final ResolveType resolveType = isInjectorResolved(env, injector);
+                                if (profileEnabled) {
+                                    _isInjectorResolvedStopWatch.stop();
+                                }
+                                if (ResolveType.RESOLVED == resolveType) {
+                                    _registry.deregisterInjector(injector);
+                                    if (profileEnabled) {
+                                        _buildAndEmitObjectGraphStopWatch.start();
+                                    }
+                                    try {
+                                        buildAndEmitObjectGraph(injector);
+                                    } finally {
+                                        if (profileEnabled) {
+                                            _buildAndEmitObjectGraphStopWatch.stop();
+                                        }
+                                    }
+                                    resolvedType.set(true);
+                                } else if (ResolveType.MAYBE_UNRESOLVED == resolveType) {
+                                    debug(() -> "The injector "
+                                            + injector.getElement().getQualifiedName()
+                                            + " has resolved java types but unresolved descriptors. Deferring"
+                                            + " processing until later in the round");
+                                    deferred.add(injector);
+                                } else {
+                                    debug(() -> "Defer generation for the injector "
+                                            + injector.getElement().getQualifiedName() + " as it is not yet resolved");
+                                }
+                            },
+                            injector.getElement(),
+                            _generateInjectorImplStopWatch);
+                }
+            }
+            current.clear();
+            if (resolvedType.get()) {
+                resolvedType.set(false);
+                current.addAll(deferred);
+                deferred.clear();
+            } else {
+                break;
+            }
         }
-      }
-      else if ( Constants.INTERCEPTOR_PROCEED_CLASSNAME.equals( markerType ) )
-      {
-        if ( InterceptorPhase.AROUND != phase )
-        {
-          throw new ProcessorException( "@Proceed lifecycle parameter is only valid on @Around methods", parameter );
+    }
+
+    private void buildAndEmitObjectGraph(@Nonnull final InjectorDescriptor injector) throws Exception {
+        debug(() -> "Preparing to build component graph for the injector "
+                + injector.getElement().getQualifiedName());
+        final ComponentGraph graph = new ComponentGraph(this, injector, _registry);
+        registerIncludesComponents(graph);
+
+        registerInputs(graph);
+
+        debug(() -> "Building component graph for the injector "
+                + injector.getElement().getQualifiedName());
+
+        buildObjectGraphNodes(graph);
+
+        if (graph.getNodes().isEmpty() && graph.getRootNode().getDependsOn().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.toSimpleName(Constants.INJECTOR_CLASSNAME) + " target "
+                            + "produced an empty object graph. This means that there are no eager nodes "
+                            + "in the includes and there are no dependencies or only unsatisfied optional "
+                            + "dependencies defined by the injector",
+                    graph.getInjector().getElement());
         }
-        else
-        {
-          requireType( parameter,
-                       type,
-                       Constants.INTERCEPTOR_INVOCATION_CLASSNAME,
-                       "@Proceed" );
-          return new LifecycleParameterDescriptor( LifecycleParameterDescriptor.Kind.PROCEED, "" );
+
+        debug(() -> "Propagating eager-ness for the injector "
+                + injector.getElement().getQualifiedName());
+
+        propagateEagerFlagUpstream(graph);
+
+        debug(() -> "Verifying no circular dependencies for the injector "
+                + injector.getElement().getQualifiedName());
+
+        CircularDependencyChecker.verifyNoCircularDependencyLoops(graph);
+
+        final Set<Binding> actualBindings = graph.getNodes().stream()
+                .filter(Node::isBinding)
+                .map(Node::getBinding)
+                .collect(Collectors.toSet());
+
+        for (final Map.Entry<IncludeDescriptor, Set<Binding>> entry :
+                graph.getIncludeRootToBindingMap().entrySet()) {
+            if (entry.getValue().stream().noneMatch(actualBindings::contains)) {
+                final IncludeDescriptor includeRoot = entry.getKey();
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(Constants.INJECTOR_CLASSNAME) + " must not " + "include type "
+                                + includeRoot.includedType() + " when the type is not used within the graph",
+                        graph.getInjector().getElement());
+            }
         }
-      }
-      else if ( Constants.INTERCEPTOR_RESULT_CLASSNAME.equals( markerType ) )
-      {
-        if ( InterceptorPhase.AFTER != phase )
-        {
-          throw new ProcessorException( "@Result lifecycle parameter is only valid on @After methods", parameter );
+
+        emitObjectGraphJsonDescriptor(graph);
+        emitInterceptorProxies(graph);
+
+        final String packageName =
+                GeneratorUtil.getQualifiedPackageName(graph.getInjector().getElement());
+
+        debug(() -> "Emitting injector implementation for the injector "
+                + graph.getInjector().getElement().getQualifiedName());
+        emitTypeSpec(packageName, InjectorGenerator.buildType(processingEnv, graph));
+
+        if (injector.isInjectable()) {
+            debug(() -> "Emitting injector provider for the injector "
+                    + graph.getInjector().getElement().getQualifiedName());
+            emitTypeSpec(packageName, InjectorProviderGenerator.buildType(processingEnv, graph));
         }
-        else
-        {
-          requireType( parameter, type, Object.class.getName(), "@Result" );
-          return new LifecycleParameterDescriptor( LifecycleParameterDescriptor.Kind.RESULT, "" );
+        emitDotReport(graph);
+    }
+
+    private void emitInterceptorProxies(@Nonnull final ComponentGraph graph) throws IOException {
+        for (final Node node : graph.getNodes()) {
+            if (node.isProxy()) {
+                final InterceptorProxyDescriptor proxy = node.getProxy();
+                if (!proxy.isGenerated()) {
+                    proxy.markGenerated();
+                    emitTypeSpec(
+                            proxy.getClassName().packageName(),
+                            InterceptorProxyGenerator.buildType(processingEnv, proxy));
+                }
+            }
         }
-      }
-      else if ( Constants.INTERCEPTOR_THROWN_CLASSNAME.equals( markerType ) )
-      {
-        if ( InterceptorPhase.AFTER_EXCEPTION != phase )
-        {
-          throw new ProcessorException( "@Thrown lifecycle parameter is only valid on @AfterException methods",
-                                        parameter );
+    }
+
+    private void emitDotReport(@Nonnull final ComponentGraph graph) throws IOException {
+        if (_emitDotReports) {
+            final TypeElement element = graph.getInjector().getElement();
+            final String filename = toFilename(element) + DOT_SUFFIX;
+            debug(() -> "Emitting .dot report for the injector "
+                    + graph.getInjector().getElement().getQualifiedName());
+
+            final String report = InjectorDotReportGenerator.buildDotReport(processingEnv, graph);
+            ResourceUtil.writeResource(processingEnv, filename, report, element);
         }
-        else
-        {
-          requireType( parameter, type, Throwable.class.getName(), "@Thrown" );
-          return new LifecycleParameterDescriptor( LifecycleParameterDescriptor.Kind.THROWN, "" );
+    }
+
+    private void registerInputs(@Nonnull final ComponentGraph graph) {
+        for (final InputDescriptor input : graph.getInjector().getInputs()) {
+            graph.registerInput(input);
         }
-      }
-      else
-      {
-        assert Constants.INTERCEPTOR_BINDING_VALUE_CLASSNAME.equals( markerType );
-        final String name = AnnotationsUtil.getAnnotationValueValue( marker, "value" );
-        validateBindingValueParameter( parameter, type, interceptor, name );
-        return new LifecycleParameterDescriptor( LifecycleParameterDescriptor.Kind.BINDING_VALUE, name );
-      }
     }
-  }
 
-  private boolean isLifecycleMarker( @Nonnull final AnnotationMirror annotation )
-  {
-    final var classname = ( (TypeElement) annotation.getAnnotationType().asElement() ).getQualifiedName().toString();
-    return Constants.INTERCEPTOR_SERVICE_TYPE_CLASSNAME.equals( classname ) ||
-           Constants.INTERCEPTOR_METHOD_NAME_CLASSNAME.equals( classname ) ||
-           Constants.INTERCEPTOR_BINDING_VALUE_CLASSNAME.equals( classname ) ||
-           Constants.INTERCEPTOR_ARGUMENTS_CLASSNAME.equals( classname ) ||
-           Constants.INTERCEPTOR_PROCEED_CLASSNAME.equals( classname ) ||
-           Constants.INTERCEPTOR_RESULT_CLASSNAME.equals( classname ) ||
-           Constants.INTERCEPTOR_THROWN_CLASSNAME.equals( classname );
-  }
+    private void propagateEagerFlagUpstream(@Nonnull final ComponentGraph graph) {
+        // Propagate Eager flag to all dependencies of eager nodes breaking the propagation at Supplier nodes
+        // They may not be configured as eager but they are effectively eager given that they will be created
+        // at startup, they may as well be marked as eager objects as that results in smaller code-size.
+        graph.getNodes().stream().filter(Node::isDeclaredEager).forEach(Node::markNodeAndUpstreamAsEager);
+    }
 
-  private void requireType( @Nonnull final Element element,
-                            @Nonnull final TypeMirror actualType,
-                            @Nonnull final String expectedTypeName,
-                            @Nonnull final String markerName )
-  {
-    final var expected = processingEnv.getElementUtils().getTypeElement( expectedTypeName );
-    if ( null == expected || !processingEnv.getTypeUtils().isSameType( actualType, expected.asType() ) )
-    {
-      throw new ProcessorException( markerName + " lifecycle parameter must have type " + expectedTypeName, element );
+    private void registerIncludesComponents(@Nonnull final ComponentGraph graph) {
+        registerIncludes(graph, null, graph.getInjector().getIncludes());
     }
-  }
 
-  private void validateBindingValueParameter( @Nonnull final VariableElement parameter,
-                                              @Nonnull final TypeMirror type,
-                                              @Nonnull final InterceptorBindingDescriptor interceptor,
-                                              @Nonnull final String name )
-  {
-    final var value = interceptor.values().get( name );
-    if ( null == value )
-    {
-      throw new ProcessorException( "@BindingValue references unknown interceptor binding member " + name, parameter );
-    }
-    else if ( BindingValueKind.UNSUPPORTED == value.kind() )
-    {
-      throw new ProcessorException( "@BindingValue member " + name + " has an unsupported v1 value type", parameter );
-    }
-    else if ( value.array() )
-    {
-      if ( !isArrayMatch( type, value.kind() ) )
-      {
-        throw new ProcessorException( "@BindingValue member " + name +
-                                      " is not compatible with lifecycle parameter type " + type,
-                                      parameter );
-      }
-    }
-    else if ( BindingValueKind.STRING == value.kind() ||
-              BindingValueKind.ENUM == value.kind() ||
-              BindingValueKind.CLASS == value.kind() )
-    {
-      requireType( parameter, type, String.class.getName(), "@BindingValue" );
-    }
-    else if ( !isPrimitiveOrBoxedMatch( type, value.kind() ) )
-    {
-      throw new ProcessorException( "@BindingValue member " + name +
-                                    " is not compatible with lifecycle parameter type " + type,
-                                    parameter );
-    }
-  }
-
-  private boolean isArrayMatch( @Nonnull final TypeMirror type, @Nonnull final BindingValueKind kind )
-  {
-    final var name = type.toString();
-    return switch ( kind )
-    {
-      case STRING, ENUM, CLASS -> "java.lang.String[]".equals( name );
-      case BOOLEAN -> "boolean[]".equals( name );
-      case BYTE -> "byte[]".equals( name );
-      case SHORT -> "short[]".equals( name );
-      case INT -> "int[]".equals( name );
-      case LONG -> "long[]".equals( name );
-      case FLOAT -> "float[]".equals( name );
-      case DOUBLE -> "double[]".equals( name );
-      case CHAR -> "char[]".equals( name );
-      case UNSUPPORTED -> false;
-    };
-  }
-
-  private boolean isPrimitiveOrBoxedMatch( @Nonnull final TypeMirror type, @Nonnull final BindingValueKind kind )
-  {
-    final var name = type.toString();
-    return switch ( kind )
-    {
-      case BOOLEAN -> "boolean".equals( name ) || Boolean.class.getName().equals( name );
-      case BYTE -> "byte".equals( name ) || Byte.class.getName().equals( name );
-      case SHORT -> "short".equals( name ) || Short.class.getName().equals( name );
-      case INT -> "int".equals( name ) || Integer.class.getName().equals( name );
-      case LONG -> "long".equals( name ) || Long.class.getName().equals( name );
-      case FLOAT -> "float".equals( name ) || Float.class.getName().equals( name );
-      case DOUBLE -> "double".equals( name ) || Double.class.getName().equals( name );
-      case CHAR -> "char".equals( name ) || Character.class.getName().equals( name );
-      default -> false;
-    };
-  }
-
-  private void validateImplementedByName( @Nonnull final String name,
-                                          @Nonnull final Element element,
-                                          @Nonnull final AnnotationMirror annotation )
-  {
-    if ( name.contains( "$" ) || !isDottedJavaName( name ) )
-    {
-      throw new ProcessorException( "implementedBy must be a canonical dotted qualified Java name",
-                                    element,
-                                    annotation );
-    }
-  }
-
-  private boolean isDottedJavaName( @Nonnull final String name )
-  {
-    if ( name.isEmpty() || name.startsWith( "." ) || name.endsWith( "." ) || name.contains( ".." ) )
-    {
-      return false;
-    }
-    else
-    {
-      for ( final var part : name.split( "\\." ) )
-      {
-        if ( part.isEmpty() || !SourceVersion.isIdentifier( part ) || SourceVersion.isKeyword( part ) )
-        {
-          return false;
+    private void registerIncludes(
+            @Nonnull final ComponentGraph graph,
+            @Nullable final IncludeDescriptor includeRoot,
+            @Nonnull final Collection<IncludeDescriptor> includes) {
+        for (final IncludeDescriptor include : includes) {
+            final String classname = include.actualTypeName();
+            if (isDebugEnabled() && include.isProvider()) {
+                debug(() -> "Registering include " + classname + " via provider " + include.includedType()
+                        + " into graph " + graph.getInjector().getElement().getQualifiedName());
+            } else {
+                debug(() -> "Registering include " + classname + " into graph "
+                        + graph.getInjector().getElement().getQualifiedName());
+            }
+            final IncludeDescriptor root = null == includeRoot ? include : includeRoot;
+            final TypeElement element = processingEnv.getElementUtils().getTypeElement(classname);
+            assert null != element;
+            final String qualifiedName = element.getQualifiedName().toString();
+            if (AnnotationsUtil.hasAnnotationOfType(element, Constants.FRAGMENT_CLASSNAME)) {
+                final FragmentDescriptor fragment = _registry.getFragmentByClassName(qualifiedName);
+                registerIncludes(graph, root, fragment.getIncludes());
+                graph.registerFragment(root, fragment);
+            } else {
+                assert AnnotationsUtil.hasAnnotationOfType(element, Constants.INJECTABLE_CLASSNAME);
+                final InjectableDescriptor injectable = _registry.getInjectableByClassName(qualifiedName);
+                graph.registerInjectable(root, injectable);
+            }
         }
-      }
-      return true;
     }
-  }
 
-  @Nonnull
-  private ServiceRequest processFragmentServiceParameter( @Nonnull final VariableElement parameter,
-                                                          @Nonnull final TypeMirror type )
-  {
-    if ( TypesUtil.containsArrayType( type ) )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                          "contain a method with a parameter that contains an array type" ),
-                                    parameter );
-    }
-    else if ( TypesUtil.containsWildcard( type ) )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                          "contain a method with a parameter that contains a wildcard type parameter" ),
-                                    parameter );
-    }
-    else if ( TypesUtil.containsRawType( type ) )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                          "contain a method with a parameter that contains a raw type" ),
-                                    parameter );
-    }
-    else
-    {
-      TypeMirror dependencyType = null;
-      ServiceRequest.Kind kind = null;
-      for ( final ServiceRequest.Kind candidate : ServiceRequest.Kind.values() )
-      {
-        dependencyType = candidate.extractType( type );
-        if ( null != dependencyType )
-        {
-          kind = candidate;
-          break;
+    private void buildObjectGraphNodes(@Nonnull final ComponentGraph graph) {
+        final Set<Node> completed = new HashSet<>();
+        final Stack<WorkEntry> workList = new Stack<>();
+        // At this stage the "rootNode" contains dependencies for all the output methods declared on the injector
+        // and all the eager services declared in includes have already been added to the nodes list.
+        //
+        // We start at the rootNode and expand all of the dependencies. And then we take any of the eager dependencies
+        // that have yet to be added to be processed and add them to to worklist and expand all dependencies until there
+        // are no eager nodes left to process
+        final Node rootNode = graph.getRootNode();
+        rootNode.setDepth(0);
+        addDependsOnToWorkList(workList, rootNode, null);
+        processWorkList(graph, completed, workList);
+        List<Node> eagerNodes = graph.getRawNodeCollection().stream()
+                .filter(Node::isDeclaredEager)
+                .toList();
+        while (!eagerNodes.isEmpty()) {
+            for (final Node node : eagerNodes) {
+                if (node.isDepthNotSet()) {
+                    node.setDepth(0);
+                    addDependsOnToWorkList(workList, node, null);
+                    processWorkList(graph, completed, workList);
+                }
+            }
+            eagerNodes = graph.getRawNodeCollection().stream()
+                    .filter(n -> n.isDeclaredEager() && n.isDepthNotSet())
+                    .toList();
         }
-      }
-      if ( null == kind )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                            "contain a method with a parameter that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" ),
-                                      parameter );
-      }
-      else
-      {
-        final boolean optional = AnnotationsUtil.hasNullableAnnotation( parameter );
-        if ( optional && ServiceRequest.Kind.INSTANCE != kind )
-        {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                                              "contain a method with a parameter annotated with the " +
-                                                              MemberChecks.toSimpleName( AnnotationsUtil.NULLABLE_CLASSNAME ) +
-                                                              " annotation that is not an instance dependency kind" ),
-                                        parameter );
+        graph.complete();
+    }
+
+    private void processWorkList(
+            @Nonnull final ComponentGraph graph,
+            @Nonnull final Set<Node> completed,
+            @Nonnull final Stack<WorkEntry> workList) {
+        while (!workList.isEmpty()) {
+            final WorkEntry workEntry = workList.pop();
+            final Edge edge = workEntry.getEntry().edge();
+            assert null != edge;
+            if (edge.isSatisfied()) {
+                for (final Node node : edge.getSatisfiedBy()) {
+                    if (!completed.contains(node)) {
+                        completed.add(node);
+                        addDependsOnToWorkList(workList, node, workEntry);
+                    }
+                }
+                continue;
+            }
+            final ServiceRequest serviceRequest = edge.getServiceRequest();
+            final Coordinate coordinate = serviceRequest.getService().getCoordinate();
+            final List<Binding> bindings = new ArrayList<>(graph.findAllBindingsByCoordinate(coordinate));
+
+            if (bindings.isEmpty() && coordinate.qualifier().isEmpty()) {
+                final String typename = coordinate.type().toString();
+                final InjectableDescriptor injectable = _registry.findInjectableByClassName(typename);
+                if (null != injectable && injectable.isAutoDiscoverable()) {
+                    bindings.add(injectable.getBinding());
+                }
+                if (bindings.isEmpty()) {
+                    final TypeElement typeElement =
+                            processingEnv.getElementUtils().getTypeElement(typename);
+                    if (null != typeElement) {
+                        final InjectableDescriptor candidate = deriveInjectableDescriptor(typeElement);
+                        if (null != candidate && candidate.isAutoDiscoverable()) {
+                            assert coordinate.equals(candidate
+                                    .getBinding()
+                                    .getPublishedServices()
+                                    .get(0)
+                                    .getCoordinate());
+                            _registry.registerInjectable(candidate);
+                            bindings.add(candidate.getBinding());
+                        }
+                        if (bindings.isEmpty()) {
+                            bindings.addAll(autoDiscoverProviderBindings(graph, workEntry, typeElement));
+                        }
+                    }
+                }
+            }
+
+            final List<Binding> nullableProviders = bindings.stream()
+                    .filter(b -> b.getPublishedServices().stream().anyMatch(ServiceSpec::isOptional))
+                    .collect(Collectors.toList());
+            if (!serviceRequest.canConsumeOptionalBindings() && !nullableProviders.isEmpty()) {
+                final String message = MemberChecks.mustNot(
+                        Constants.INJECTOR_CLASSNAME,
+                        "contain an optional provider method or optional injector input and "
+                                + "a non-optional service request for the coordinate "
+                                + coordinate + "\n" + "Dependency Path:\n"
+                                + workEntry.describePathFromRoot() + "\n" + "Binding"
+                                + (nullableProviders.size() > 1 ? "s" : "") + ":\n"
+                                + bindingsToString(nullableProviders));
+                throw new ProcessorException(message, serviceRequest.getElement());
+            }
+            if (bindings.isEmpty()) {
+                if (serviceRequest.canBeAbsent()) {
+                    edge.setSatisfiedBy(Collections.emptyList());
+                } else {
+                    final String message = MemberChecks.mustNot(
+                            Constants.INJECTOR_CLASSNAME,
+                            "contain a non-optional dependency " + coordinate + " that can not be satisfied.\n"
+                                    + "Dependency Path:\n"
+                                    + workEntry.describePathFromRoot());
+                    throw new ProcessorException(message, serviceRequest.getElement());
+                }
+            } else {
+                final ServiceRequest.Kind kind = serviceRequest.getKind();
+                if (1 == bindings.size() || kind.isCollection()) {
+                    final List<Node> nodes = new ArrayList<>();
+                    for (final Binding binding : bindings) {
+                        final Node node = graph.findOrCreateProviderNode(binding, coordinate);
+                        nodes.add(node);
+                    }
+                    edge.setSatisfiedBy(nodes);
+                    for (final Node node : nodes) {
+                        if (node.isProxy()) {
+                            graph.attachProxyDependencies(node);
+                        }
+                        if (!completed.contains(node)) {
+                            completed.add(node);
+                            addDependsOnToWorkList(workList, node, workEntry);
+                        }
+                    }
+                } else {
+                    //noinspection ConstantConditions
+                    assert bindings.size() > 1 && !kind.isCollection();
+                    final String message = MemberChecks.mustNot(
+                            Constants.INJECTOR_CLASSNAME,
+                            "contain a non-collection dependency " + coordinate
+                                    + " that can be satisfied by multiple nodes.\n"
+                                    + "Dependency Path:\n"
+                                    + workEntry.describePathFromRoot() + "\n" + "Candidate Nodes:\n"
+                                    + bindingsToString(bindings));
+                    throw new ProcessorException(message, serviceRequest.getElement());
+                }
+            }
         }
-        final String qualifier = getQualifier( parameter );
-        if ( AnnotationsUtil.hasAnnotationOfType( parameter, Constants.JSR_330_NAMED_CLASSNAME ) )
-        {
-          final String message =
-            MemberChecks.mustNot( Constants.FRAGMENT_CLASSNAME,
-                                  "contain a method with a parameter annotated with the " +
-                                  Constants.JSR_330_NAMED_CLASSNAME + " annotation. Use the " +
-                                  Constants.NAMED_CLASSNAME + " annotation instead" );
-          throw new ProcessorException( message, parameter );
+    }
+
+    @Nonnull
+    private String bindingsToString(@Nonnull final List<Binding> bindings) {
+        return bindings.stream()
+                .map(b -> "  " + b.getTypeLabel() + "    " + b.describe())
+                .collect(Collectors.joining("\n"));
+    }
+
+    private void addDependsOnToWorkList(
+            @Nonnull final Stack<WorkEntry> workList, @Nonnull final Node node, @Nullable final WorkEntry parent) {
+        for (final Edge e : node.getDependsOn()) {
+            final Stack<PathEntry> stack = new Stack<>();
+            if (null != parent) {
+                stack.addAll(parent.getStack());
+            }
+            final PathEntry entry = new PathEntry(node, e);
+            stack.add(entry);
+            workList.add(new WorkEntry(entry, stack));
         }
-        final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
-        final ServiceSpec service = new ServiceSpec( coordinate, optional );
-        return new ServiceRequest( kind, service, parameter );
-      }
-    }
-  }
-
-  private void processInjectable( @Nonnull final TypeElement element )
-  {
-    debug( () -> "Processing Injectable: " + element );
-    if ( ElementKind.CLASS != element.getKind() )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.INJECTABLE_CLASSNAME, "be a class" ),
-                                    element );
-    }
-    else if ( element.getModifiers().contains( Modifier.ABSTRACT ) )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME, "be abstract" ),
-                                    element );
-    }
-    else if ( ElementsUtil.isNonStaticNestedClass( element ) )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                          "be a non-static nested class" ),
-                                    element );
-    }
-    else if ( !element.getTypeParameters().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME, "have type parameters" ),
-                                    element );
-    }
-    final List<ExecutableElement> constructors = ElementsUtil.getConstructors( element );
-    final ExecutableElement constructor = constructors.get( 0 );
-    if ( constructors.size() > 1 )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                          "have multiple constructors" ),
-                                    element );
-    }
-    injectableConstructorShouldNotBeProtected( constructor );
-    injectableConstructorShouldNotBePublic( constructor );
-    injectableShouldNotHaveScopedAnnotation( element );
-
-    final boolean eager = AnnotationsUtil.hasAnnotationOfType( element, Constants.EAGER_CLASSNAME );
-
-    final List<ServiceRequest> dependencies = new ArrayList<>();
-    int index = 0;
-    final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) constructor.asType() ).getParameterTypes();
-    for ( final VariableElement parameter : constructor.getParameters() )
-    {
-      dependencies.add( handleConstructorParameter( parameter, parameterTypes.get( index ) ) );
-      index++;
     }
 
-    final AnnotationMirror annotation =
-      AnnotationsUtil.findAnnotationByType( element, Constants.TYPED_CLASSNAME );
-    final AnnotationValue value =
-      null != annotation ? AnnotationsUtil.findAnnotationValue( annotation, "value" ) : null;
-
-    final String qualifier = getQualifier( element );
-    if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.JSR_330_NAMED_CLASSNAME ) &&
-         ElementsUtil.isWarningNotSuppressed( element, Constants.WARNING_JSR_330_NAMED ) )
-    {
-      final String message =
-        MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                              "be annotated with the " + Constants.JSR_330_NAMED_CLASSNAME + " annotation. " +
-                              "Use the " + Constants.NAMED_CLASSNAME + " annotation instead. " +
-                              MemberChecks.suppressedBy( Constants.WARNING_JSR_330_NAMED ) );
-      warning( message, element );
-    }
-    if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.CDI_TYPED_CLASSNAME ) &&
-         ElementsUtil.isWarningNotSuppressed( element, Constants.WARNING_CDI_TYPED ) )
-    {
-      final String message =
-        MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                              "be annotated with the " + Constants.CDI_TYPED_CLASSNAME + " annotation. " +
-                              "Use the " + Constants.TYPED_CLASSNAME + " annotation instead. " +
-                              MemberChecks.suppressedBy( Constants.WARNING_CDI_TYPED ) );
-      warning( message, element );
-    }
-    if ( AnnotationsUtil.hasAnnotationOfType( constructor, Constants.JSR_330_INJECT_CLASSNAME ) &&
-         ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_JSR_330_INJECT ) )
-    {
-      final String message =
-        MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                              "be annotated with the " + Constants.JSR_330_INJECT_CLASSNAME + " annotation. " +
-                              MemberChecks.suppressedBy( Constants.WARNING_JSR_330_INJECT ) );
-      warning( message, constructor );
-    }
-    @SuppressWarnings( "unchecked" )
-    final List<TypeMirror> types =
-      null == value ?
-      Collections.singletonList( element.asType() ) :
-      ( (List<AnnotationValue>) value.getValue() )
-        .stream()
-        .map( v -> (TypeMirror) v.getValue() )
-        .toList();
-
-    final ServiceSpec[] specs = new ServiceSpec[ types.size() ];
-    for ( int i = 0; i < specs.length; i++ )
-    {
-      final TypeMirror type = types.get( i );
-      if ( !processingEnv.getTypeUtils().isAssignable( element.asType(), type ) )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                      " specified a type that is not assignable to the declaring type",
-                                      element,
-                                      annotation,
-                                      value );
-      }
-      else if ( TypeKind.DECLARED == type.getKind() && isParameterized( (DeclaredType) type ) )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                      " specified a type that is a a parameterized type",
-                                      element,
-                                      annotation,
-                                      value );
-      }
-      specs[ i ] = new ServiceSpec( new Coordinate( qualifier, type ), false );
-    }
-
-    if ( 0 == specs.length && !eager )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                          "specify zero types with the " +
-                                                          MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                                          " annotation or must be annotated with the " +
-                                                          MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) +
-                                                          " annotation otherwise the component can not be created by the injector" ),
-                                    element );
-    }
-    if ( 0 == specs.length && !qualifier.isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                          "specify zero types with the " +
-                                                          MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                                          " annotation and specify a qualifier with the " +
-                                                          MemberChecks.toSimpleName( Constants.NAMED_CLASSNAME ) +
-                                                          " annotation as the qualifier is meaningless" ),
-                                    element );
-    }
-
-    final Binding binding =
-      new Binding( Binding.Kind.INJECTABLE,
-                   element.getQualifiedName().toString(),
-                   Arrays.asList( specs ),
-                   eager,
-                   constructor,
-                   dependencies.toArray( new ServiceRequest[ 0 ] ) );
-    binding.setInterceptorBindingSource( element, findInterceptorBindingAnnotationValues( element ) );
-    final InjectableDescriptor injectable = new InjectableDescriptor( binding );
-    _registry.registerInjectable( injectable );
-  }
-
-  @Nonnull
-  private FactoryMethodDescriptor processFactoryMethod( @Nonnull final TypeElement factory,
-                                                        @Nonnull final ExecutableElement method,
-                                                        @Nonnull final List<FactoryDependencyDescriptor> dependencies,
-                                                        @Nonnull final Set<String> usedFieldNames )
-  {
-    if ( !findInterceptorBindingAnnotations( method ).isEmpty() )
-    {
-      throw new ProcessorException( "Interceptor bindings on non-fragment methods are not supported",
-                                    method );
-    }
-    if ( TypeKind.VOID == method.getReturnType().getKind() )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
-                                                       "only contain abstract methods that return a value" ),
-                                    method );
-    }
-    else if ( !method.getTypeParameters().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME,
-                                                          "contain abstract methods with a type parameter" ),
-                                    method );
-    }
-    else if ( !method.getThrownTypes().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME,
-                                                          "contain abstract methods that throw exceptions" ),
-                                    method );
-    }
-    else if ( TypeKind.DECLARED != method.getReturnType().getKind() )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
-                                                       "contain abstract methods that return a class type" ),
-                                    method );
-    }
-
-    final DeclaredType returnType = (DeclaredType) method.getReturnType();
-    if ( !returnType.getTypeArguments().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME,
-                                                          "contain abstract methods that return a parameterized type" ),
-                                    method );
-    }
-
-    final TypeElement producedType = (TypeElement) returnType.asElement();
-    if ( ElementKind.CLASS != producedType.getKind() )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
-                                                       "contain abstract methods that return a class type" ),
-                                    method );
-    }
-    else if ( producedType.getModifiers().contains( Modifier.ABSTRACT ) )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME,
-                                                          "contain abstract methods that return an abstract class" ),
-                                    method );
-    }
-    else if ( ElementsUtil.isNonStaticNestedClass( producedType ) )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME,
-                                                          "contain abstract methods that return a non-static nested class" ),
-                                    method );
-    }
-    else if ( !producedType.getTypeParameters().isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME,
-                                                          "contain abstract methods that return a class with type parameters" ),
-                                    method );
-    }
-
-    final List<ExecutableElement> constructors = ElementsUtil.getConstructors( producedType );
-    if ( 1 != constructors.size() )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
-                                                       "create types with a single accessible constructor" ),
-                                    method );
-    }
-    final ExecutableElement constructor = constructors.get( 0 );
-    if ( !isFactoryAccessible( factory, constructor ) )
-    {
-      throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
-                                                       "create types with a constructor accessible from the factory interface" ),
-                                    method );
-    }
-
-    final List<? extends VariableElement> constructorParameters = constructor.getParameters();
-    final List<? extends VariableElement> methodParameters = method.getParameters();
-    final Map<Integer, VariableElement> methodParametersByConstructorIndex = new LinkedHashMap<>();
-    final Map<Integer, FactoryDependencyDescriptor> dependenciesByConstructorIndex = new LinkedHashMap<>();
-    final List<? extends TypeMirror> constructorParameterTypes =
-      ( (ExecutableType) constructor.asType() ).getParameterTypes();
-
-    for ( final VariableElement parameter : methodParameters )
-    {
-      boolean matched = false;
-      for ( int i = 0; i < constructorParameters.size(); i++ )
-      {
-        final VariableElement constructorParameter = constructorParameters.get( i );
-        if ( constructorParameter.getSimpleName().contentEquals( parameter.getSimpleName() ) )
-        {
-          matched = true;
-          if ( methodParametersByConstructorIndex.containsKey( i ) )
-          {
-            throw new ProcessorException( MemberChecks.mustNot( Constants.FACTORY_CLASSNAME,
-                                                                "contain duplicate abstract method parameters that " +
-                                                                "match the same constructor parameter" ),
-                                          parameter );
-          }
-          if ( !processingEnv.getTypeUtils().isSameType( parameter.asType(), constructorParameterTypes.get( i ) ) )
-          {
-            throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
-                                                             "contain abstract method parameters whose name and type " +
-                                                             "match the created type constructor parameter" ),
-                                          parameter );
-          }
-          methodParametersByConstructorIndex.put( i, parameter );
-          break;
+    private void emitObjectGraphJsonDescriptor(@Nonnull final ComponentGraph graph) throws IOException {
+        if (_emitJsonDescriptors) {
+            final TypeElement element = graph.getInjector().getElement();
+            final String filename = toFilename(element) + GRAPH_SUFFIX;
+            debug(() -> "Emitting json descriptor for the injector "
+                    + graph.getInjector().getElement().getQualifiedName());
+            JsonUtil.writeJsonResource(processingEnv, element, filename, graph::write);
         }
-      }
-      if ( !matched )
-      {
-        throw new ProcessorException( MemberChecks.must( Constants.FACTORY_CLASSNAME,
-                                                         "contain abstract method parameters whose name and type " +
-                                                         "match the created type constructor parameter" ),
-                                      parameter );
-      }
     }
 
-    for ( int i = 0; i < constructorParameters.size(); i++ )
-    {
-      if ( !methodParametersByConstructorIndex.containsKey( i ) )
-      {
-        final VariableElement constructorParameter = constructorParameters.get( i );
-        final ServiceRequest request =
-          handleConstructorParameter( constructorParameter, constructorParameterTypes.get( i ) );
+    @Nonnull
+    private ResolveType isFragmentResolved(
+            @Nonnull final RoundEnvironment env, @Nonnull final FragmentDescriptor fragment) {
+        if (fragment.isResolved()) {
+            return ResolveType.RESOLVED;
+        } else {
+            final String fragmentName = fragment.getElement().getQualifiedName().toString();
+            if (_resolvingFragmentTypes.contains(fragmentName)) {
+                return ResolveType.RESOLVED;
+            }
+            _resolvingFragmentTypes.add(fragmentName);
+            try {
+                final ResolveType resolveType =
+                        isResolved(env, fragment, fragment.getElement(), fragment.getIncludes());
+                if (resolveType == ResolveType.RESOLVED) {
+                    fragment.markAsResolved();
+                    // Check for redundant explicit @Injectable includes that are also transitively included via
+                    // fragments
+                    maybeWarnOnRedundantDirectInjectableInclude(
+                            fragment.getElement(), Constants.FRAGMENT_CLASSNAME, fragment.getIncludes());
+                    // Check for include cycles between fragments
+                    maybeWarnOnFragmentIncludeCycle(fragment.getElement(), fragment.getIncludes());
+                }
+                return resolveType;
+            } finally {
+                _resolvingFragmentTypes.remove(fragmentName);
+            }
+        }
+    }
+
+    @Nonnull
+    private ResolveType isInjectorResolved(
+            @Nonnull final RoundEnvironment env, @Nonnull final InjectorDescriptor injector) {
+        final ResolveType resolveType = isResolved(env, injector, injector.getElement(), injector.getIncludes());
+        if (ResolveType.RESOLVED == resolveType) {
+            // Check for redundant explicit @Injectable includes that are also transitively included via included
+            // fragments
+            maybeWarnOnRedundantDirectInjectableInclude(
+                    injector.getElement(), Constants.INJECTOR_CLASSNAME, injector.getIncludes());
+        }
+        return resolveType;
+    }
+
+    @Nonnull
+    private <T> ResolveType isResolved(
+            @Nonnull final RoundEnvironment env,
+            @Nonnull final T descriptor,
+            @Nonnull final TypeElement originator,
+            @Nonnull final Collection<IncludeDescriptor> includes) {
+        // By the time we get here we can guarantee that the java types for includes are correctly resolved
+        // but they may not have passed through annotation processor and thus the descriptors may be absent
+        // so we go through a few iterations and as long as one include is resolved in each iteration we should
+        // keep going as we may be able to resolve all includes. Also if one of the includes is a provider
+        // we need to check the associated provider type is resolved.
+        for (final IncludeDescriptor include : includes) {
+            final ResolveType resolveType = isIncludeResolved(env, descriptor, originator, include);
+            if (ResolveType.RESOLVED != resolveType) {
+                return resolveType;
+            }
+        }
+
+        return ResolveType.RESOLVED;
+    }
+
+    @Nonnull
+    private ResolveType isIncludeResolved(
+            @Nonnull final RoundEnvironment env,
+            @Nonnull final Object descriptor,
+            @Nonnull final TypeElement originator,
+            @Nonnull final IncludeDescriptor include) {
+        AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType(originator, Constants.INJECTOR_CLASSNAME);
+
+        final String annotationClassname =
+                null != annotation ? Constants.INJECTOR_CLASSNAME : Constants.FRAGMENT_CLASSNAME;
+        if (null == annotation) {
+            annotation = AnnotationsUtil.getAnnotationByType(originator, Constants.FRAGMENT_CLASSNAME);
+        }
+
+        final String classname = include.actualTypeName();
+        final TypeElement element = processingEnv.getElementUtils().getTypeElement(classname);
+        if (null == element) {
+            assert include.isProvider();
+            if (env.processingOver()) {
+                if (descriptor instanceof FragmentDescriptor) {
+                    ((FragmentDescriptor) descriptor).markAsContainsError();
+                } else {
+                    ((InjectorDescriptor) descriptor).markAsContainsError();
+                }
+
+                final String message = MemberChecks.toSimpleName(annotationClassname) + " target has an "
+                        + "parameter named 'includes' containing the value "
+                        + include.includedType() + " and that type is annotated by the "
+                        + MemberChecks.toSimpleName(Constants.STING_PROVIDER_CLASSNAME)
+                        + " annotation. The provider annotation expects a "
+                        + "provider class named "
+                        + include.actualTypeName() + " but no such class exists. The "
+                        + "type needs to be removed from the includes or the provider class needs to be present.";
+                reportError(env, message, originator, annotation, null);
+            }
+            return ResolveType.UNRESOLVED;
+        }
+        final boolean isInjectable = AnnotationsUtil.hasAnnotationOfType(element, Constants.INJECTABLE_CLASSNAME);
+        final boolean isFragment =
+                !isInjectable && AnnotationsUtil.hasAnnotationOfType(element, Constants.FRAGMENT_CLASSNAME);
+        if (include.isProvider() && !isInjectable && !isFragment) {
+            if (descriptor instanceof FragmentDescriptor) {
+                ((FragmentDescriptor) descriptor).markAsContainsError();
+            } else {
+                ((InjectorDescriptor) descriptor).markAsContainsError();
+            }
+
+            final String message = MemberChecks.toSimpleName(annotationClassname) + " target has an "
+                    + "parameter named 'includes' containing the value "
+                    + include.includedType() + " and that type is annotated by the "
+                    + MemberChecks.toSimpleName(Constants.STING_PROVIDER_CLASSNAME)
+                    + " annotation. The provider annotation expects a "
+                    + "provider class named "
+                    + include.actualTypeName() + " but that class is not annotated with either "
+                    + MemberChecks.toSimpleName(Constants.INJECTOR_CLASSNAME)
+                    + ", " + MemberChecks.toSimpleName(Constants.FRAGMENT_CLASSNAME)
+                    + " or " + MemberChecks.toSimpleName(Constants.INJECTABLE_CLASSNAME);
+            throw new ProcessorException(message, originator, annotation);
+        }
+        if (descriptor instanceof final FragmentDescriptor fragmentDescriptor) {
+            if (fragmentDescriptor.isLocalOnly() && !isInSamePackage(originator, element)) {
+                fragmentDescriptor.markAsContainsError();
+                final String message = MemberChecks.toSimpleName(Constants.FRAGMENT_CLASSNAME)
+                        + " target has an includes parameter " + "containing the value "
+                        + include.includedType() + " that is in the package "
+                        + GeneratorUtil.getQualifiedPackageName(element)
+                        + " when the fragment is in the package " + GeneratorUtil.getQualifiedPackageName(originator)
+                        + " and localOnly is true";
+                throw new ProcessorException(message, originator, annotation);
+            }
+        } else if (!include.auto() && ((InjectorDescriptor) descriptor).isFragmentOnly() && !isFragment) {
+            final InjectorDescriptor injectorDescriptor = (InjectorDescriptor) descriptor;
+            injectorDescriptor.markAsContainsError();
+            final String message = MemberChecks.toSimpleName(Constants.INJECTOR_CLASSNAME)
+                    + " target has an includes parameter containing " + "the value "
+                    + include.includedType() + " that resolves to " + element.getQualifiedName()
+                    + " which is not annotated by "
+                    + MemberChecks.toSimpleName(Constants.FRAGMENT_CLASSNAME) + " when fragmentOnly is true";
+            throw new ProcessorException(message, originator, annotation);
+        }
+        if (isFragment) {
+            FragmentDescriptor fragment = _registry.findFragmentByClassName(classname);
+            if (null == fragment) {
+                fragment = deriveFragmentDescriptor(element);
+                if (null == fragment) {
+                    debug(() -> "Unable to derive descriptor for fragment " + classname + ". Marking "
+                            + originator.getQualifiedName() + " as unresolved");
+                    return ResolveType.MAYBE_UNRESOLVED;
+                }
+                _registry.registerFragment(fragment);
+            }
+            if (ResolveType.RESOLVED != isFragmentReady(env, fragment)) {
+                debug(() -> "Fragment include " + classname + " is present but not yet resolved. " + "Marking "
+                        + originator.getQualifiedName() + " as unresolved");
+                return ResolveType.UNRESOLVED;
+            }
+        } else {
+            InjectableDescriptor injectable = _registry.findInjectableByClassName(classname);
+            if (null == injectable) {
+                injectable = deriveInjectableDescriptor(element);
+                if (null == injectable) {
+                    debug(() -> "Unable to derive descriptor for injectable " + classname + ". Marking "
+                            + originator.getQualifiedName() + " as unresolved");
+                    return ResolveType.MAYBE_UNRESOLVED;
+                }
+                _registry.registerInjectable(injectable);
+            }
+            if (!SuperficialValidation.validateElement(processingEnv, injectable.getElement())) {
+                debug(() -> "Injectable include " + classname + " is not yet resolved. " + "Marking "
+                        + originator.getQualifiedName() + " as unresolved");
+                return ResolveType.UNRESOLVED;
+            }
+
+            if (!include.auto()
+                    && !injectable.getBinding().isEager()
+                    && injectable.isAutoDiscoverable()
+                    && ElementsUtil.isWarningNotSuppressed(originator, Constants.WARNING_AUTO_DISCOVERABLE_INCLUDED)) {
+                final String message = MemberChecks.shouldNot(
+                        annotationClassname,
+                        "include an auto-discoverable type " + classname + ". "
+                                + MemberChecks.suppressedBy(Constants.WARNING_AUTO_DISCOVERABLE_INCLUDED));
+                warning(message, originator);
+            }
+        }
+        return ResolveType.RESOLVED;
+    }
+
+    private void processInjectorFragment(@Nonnull final TypeElement element) {
+        debug(() -> "Processing Injector Fragment: " + element);
+        final ElementKind kind = element.getKind();
+        if (ElementKind.INTERFACE != kind) {
+            throw new ProcessorException(
+                    MemberChecks.must(Constants.INJECTOR_FRAGMENT_CLASSNAME, "be an interface"), element);
+        }
+        final List<ExecutableElement> methods =
+                ElementsUtil.getMethods(element, processingEnv.getElementUtils(), processingEnv.getTypeUtils());
+        for (final ExecutableElement method : methods) {
+            if (method.getModifiers().contains(Modifier.DEFAULT)) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(Constants.INJECTOR_FRAGMENT_CLASSNAME)
+                                + " target must not include default methods",
+                        method);
+            } else if (method.getModifiers().contains(Modifier.STATIC)) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(Constants.INJECTOR_FRAGMENT_CLASSNAME)
+                                + " target must not include static methods",
+                        method);
+            }
+        }
+    }
+
+    private void processInjector(@Nonnull final TypeElement element) throws Exception {
+        debug(() -> "Processing Injector: " + element);
+        final ElementKind kind = element.getKind();
+        if (ElementKind.INTERFACE != kind) {
+            throw new ProcessorException(MemberChecks.must(Constants.INJECTOR_CLASSNAME, "be an interface"), element);
+        }
+        if (!element.getTypeParameters().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(Constants.INJECTOR_CLASSNAME, "have type parameters"), element);
+        }
+        final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations(element);
+        if (!scopedAnnotations.isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.INJECTOR_CLASSNAME,
+                            "be annotated with an annotation that is " + "annotated with the "
+                                    + Constants.JSR_330_SCOPE_CLASSNAME + " annotation such as "
+                                    + scopedAnnotations),
+                    element);
+        }
+
+        final boolean gwt = isGwtEnabled(element);
+        final boolean injectable =
+                (boolean) AnnotationsUtil.getAnnotationValue(element, Constants.INJECTOR_CLASSNAME, "injectable")
+                        .getValue();
+        final boolean fragmentOnly = extractInjectorFragmentOnly(element);
+        final List<IncludeDescriptor> includes = extractIncludes(element, Constants.INJECTOR_CLASSNAME, fragmentOnly);
+        final List<InputDescriptor> inputs = extractInputs(element);
+
+        final List<ServiceRequest> outputs = new ArrayList<>();
+        final List<ExecutableElement> methods =
+                ElementsUtil.getMethods(element, processingEnv.getElementUtils(), processingEnv.getTypeUtils());
+        for (final ExecutableElement method : methods) {
+            if (method.getModifiers().contains(Modifier.ABSTRACT)) {
+                processInjectorOutputMethod(outputs, method);
+            } else if (method.getModifiers().contains(Modifier.DEFAULT)) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(Constants.INJECTOR_CLASSNAME)
+                                + " target must not include default methods",
+                        method);
+            }
+        }
+        for (final Element enclosedElement : element.getEnclosedElements()) {
+            final ElementKind enclosedElementKind = enclosedElement.getKind();
+            if (ElementKind.INTERFACE == enclosedElementKind
+                    && AnnotationsUtil.hasAnnotationOfType(enclosedElement, Constants.FRAGMENT_CLASSNAME)) {
+                final DeclaredType type = (DeclaredType) enclosedElement.asType();
+                if (includes.stream().noneMatch(d -> Objects.equals(d.includedType(), type))) {
+                    includes.add(new IncludeDescriptor(type, type.toString(), true));
+                } else {
+                    throw new ProcessorException(
+                            MemberChecks.toSimpleName(Constants.INJECTOR_CLASSNAME) + " target must not include a "
+                                    + MemberChecks.toSimpleName(Constants.FRAGMENT_CLASSNAME)
+                                    + " annotated "
+                                    + "type that is auto-included as it is enclosed within the injector type",
+                            element);
+                }
+            } else if (ElementKind.CLASS == enclosedElementKind
+                    && AnnotationsUtil.hasAnnotationOfType(enclosedElement, Constants.INJECTABLE_CLASSNAME)) {
+                final DeclaredType type = (DeclaredType) enclosedElement.asType();
+                if (includes.stream().noneMatch(d -> Objects.equals(d.includedType(), type))) {
+                    includes.add(new IncludeDescriptor(type, type.toString(), true));
+                } else {
+                    throw new ProcessorException(
+                            MemberChecks.toSimpleName(Constants.INJECTOR_CLASSNAME) + " target must not include an "
+                                    + MemberChecks.toSimpleName(Constants.INJECTABLE_CLASSNAME)
+                                    + " annotated "
+                                    + "type that is auto-included as it is enclosed within the injector type",
+                            element);
+                }
+            } else if (enclosedElementKind.isClass() || enclosedElementKind.isInterface()) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(Constants.INJECTOR_CLASSNAME)
+                                + " target must not contain a type that is not annotated "
+                                + "by either "
+                                + MemberChecks.toSimpleName(Constants.INJECTABLE_CLASSNAME) + " or "
+                                + MemberChecks.toSimpleName(Constants.FRAGMENT_CLASSNAME),
+                        element);
+            }
+        }
+        final InjectorDescriptor injector =
+                new InjectorDescriptor(element, gwt, injectable, fragmentOnly, includes, inputs, outputs);
+        _registry.registerInjector(injector);
+        emitInjectorJsonDescriptor(injector);
+    }
+
+    private boolean extractInjectorFragmentOnly(@Nonnull final TypeElement element) {
+        return (boolean) AnnotationsUtil.getAnnotationValue(element, Constants.INJECTOR_CLASSNAME, "fragmentOnly")
+                .getValue();
+    }
+
+    private boolean isGwtEnabled(@Nonnull final TypeElement element) {
+        final String value = AnnotationsUtil.getEnumAnnotationParameter(element, Constants.INJECTOR_CLASSNAME, "gwt");
+        return "ENABLE".equals(value)
+                || ("AUTODETECT".equals(value)
+                        && null
+                                != processingEnv
+                                        .getElementUtils()
+                                        .getTypeElement("javaemul.internal.annotations.DoNotInline"));
+    }
+
+    private void emitInjectorJsonDescriptor(@Nonnull final InjectorDescriptor injector) throws IOException {
+        if (_emitJsonDescriptors) {
+            final TypeElement element = injector.getElement();
+            final String filename = toFilename(element) + JSON_SUFFIX;
+            JsonUtil.writeJsonResource(processingEnv, element, filename, injector::write);
+        }
+    }
+
+    private void processInjectorOutputMethod(
+            @Nonnull final List<ServiceRequest> outputs, @Nonnull final ExecutableElement method) {
+        assert method.getModifiers().contains(Modifier.ABSTRACT);
+        if (!findInterceptorBindingAnnotations(method).isEmpty()) {
+            throw new ProcessorException("Interceptor bindings on non-fragment methods are not supported", method);
+        }
+        if (TypeKind.VOID == method.getReturnType().getKind()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(Constants.INJECTOR_CLASSNAME, "contain a method that has a void return value"),
+                    method);
+        } else if (!method.getParameters().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(Constants.INJECTOR_CLASSNAME, "contain a method that has parameters"), method);
+        } else if (!method.getTypeParameters().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(Constants.INJECTOR_CLASSNAME, "contain a method that has any type parameters"),
+                    method);
+        } else if (!method.getThrownTypes().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(Constants.INJECTOR_CLASSNAME, "contain a method that throws any exceptions"),
+                    method);
+        }
+        final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations(method);
+        if (!scopedAnnotations.isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.INJECTOR_CLASSNAME,
+                            "contain a method that is annotated with an " + "annotation that is annotated with the "
+                                    + Constants.JSR_330_SCOPE_CLASSNAME
+                                    + " annotation such as "
+                                    + scopedAnnotations),
+                    method);
+        }
+        outputs.add(processOutputMethod(method));
+    }
+
+    @Nonnull
+    private ServiceRequest processOutputMethod(@Nonnull final ExecutableElement method) {
+        final TypeMirror type = method.getReturnType();
+        if (TypesUtil.containsArrayType(type)) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.INJECTOR_CLASSNAME,
+                            "contain a method with a return type that contains an array type"),
+                    method);
+        } else if (TypesUtil.containsWildcard(type)) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.INJECTOR_CLASSNAME,
+                            "contain a method with a return type that contains a wildcard type parameter"),
+                    method);
+        } else if (TypesUtil.containsRawType(type)) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.INJECTOR_CLASSNAME,
+                            "contain a method with a return type that contains a raw type"),
+                    method);
+        } else {
+            TypeMirror dependencyType = null;
+            ServiceRequest.Kind kind = null;
+            for (final ServiceRequest.Kind candidate : ServiceRequest.Kind.values()) {
+                dependencyType = candidate.extractType(type);
+                if (null != dependencyType) {
+                    kind = candidate;
+                    break;
+                }
+            }
+            if (null == kind) {
+                throw new ProcessorException(
+                        MemberChecks.mustNot(
+                                Constants.INJECTOR_CLASSNAME,
+                                "contain a method with a return type that contains an unexpected parameterized type."
+                                        + " Only parameterized types known to the framework are supported"),
+                        method);
+            } else {
+                final boolean optional = AnnotationsUtil.hasNullableAnnotation(method);
+                if (optional && ServiceRequest.Kind.INSTANCE != kind) {
+                    throw new ProcessorException(
+                            MemberChecks.mustNot(
+                                    Constants.INJECTOR_CLASSNAME,
+                                    "contain a method annotated with "
+                                            + MemberChecks.toSimpleName(AnnotationsUtil.NULLABLE_CLASSNAME)
+                                            + " that is not an instance dependency kind"),
+                            method);
+                }
+                final String qualifier = getQualifier(method);
+                if (AnnotationsUtil.hasAnnotationOfType(method, Constants.JSR_330_NAMED_CLASSNAME)) {
+                    throw new ProcessorException(
+                            MemberChecks.mustNot(
+                                    Constants.INJECTOR_CLASSNAME,
+                                    "contain a method annotated with the " + Constants.JSR_330_NAMED_CLASSNAME
+                                            + " annotation. Use the "
+                                            + Constants.NAMED_CLASSNAME + " annotation instead"),
+                            method);
+                }
+
+                final Coordinate coordinate = new Coordinate(qualifier, dependencyType);
+                final ServiceSpec service = new ServiceSpec(coordinate, optional);
+                return new ServiceRequest(kind, service, method);
+            }
+        }
+    }
+
+    private void verifyNamedElements(
+            @Nonnull final RoundEnvironment env, @Nonnull final Set<? extends Element> elements) {
+        for (final Element element : elements) {
+            final AnnotationUsageKind usageKind = classifyNamedElement(element);
+            if (AnnotationUsageKind.INVALID == usageKind) {
+                if (ElementKind.PARAMETER == element.getKind()) {
+                    if (ElementKind.CONSTRUCTOR == element.getEnclosingElement().getKind()) {
+                        reportError(
+                                env,
+                                MemberChecks.must(
+                                        Constants.NAMED_CLASSNAME,
+                                        "only be present on a constructor parameter if the constructor "
+                                                + "is enclosed in a type annotated with "
+                                                + MemberChecks.toSimpleName(Constants.INJECTABLE_CLASSNAME)
+                                                + " or the type is annotated with an annotation annotated by "
+                                                + MemberChecks.toSimpleName(Constants.ACT_AS_STING_CONSUMER_CLASSNAME)
+                                                + " or "
+                                                + MemberChecks.toSimpleName(
+                                                        Constants.ACT_AS_STING_COMPONENT_CLASSNAME)),
+                                element);
+                    } else {
+                        reportError(
+                                env,
+                                MemberChecks.must(
+                                        Constants.NAMED_CLASSNAME,
+                                        "only be present on a method parameter if the method is enclosed in a type"
+                                                + " annotated with "
+                                                + MemberChecks.toSimpleName(Constants.FRAGMENT_CLASSNAME)),
+                                element);
+                    }
+                } else if (ElementKind.CLASS == element.getKind()) {
+                    reportError(
+                            env,
+                            MemberChecks.must(
+                                    Constants.NAMED_CLASSNAME,
+                                    "only be present on a type if the type is annotated with "
+                                            + MemberChecks.toSimpleName(Constants.INJECTABLE_CLASSNAME)
+                                            + " or the type is annotated with an annotation annotated by "
+                                            + MemberChecks.toSimpleName(Constants.ACT_AS_STING_PROVIDER_CLASSNAME)
+                                            + " or "
+                                            + MemberChecks.toSimpleName(Constants.ACT_AS_STING_COMPONENT_CLASSNAME)),
+                            element);
+                } else if (ElementKind.METHOD == element.getKind()) {
+                    reportError(
+                            env,
+                            MemberChecks.mustNot(
+                                    Constants.NAMED_CLASSNAME,
+                                    "be a method unless the method is enclosed in a type annotated with "
+                                            + MemberChecks.toSimpleName(Constants.FRAGMENT_CLASSNAME)
+                                            + ", " + MemberChecks.toSimpleName(Constants.INJECTOR_CLASSNAME)
+                                            + " or "
+                                            + MemberChecks.toSimpleName(Constants.INJECTOR_FRAGMENT_CLASSNAME)),
+                            element);
+                } else {
+                    reportError(
+                            env,
+                            MemberChecks.toSimpleName(Constants.NAMED_CLASSNAME) + " target is not valid",
+                            element);
+                }
+            } else if (AnnotationUsageKind.PROCESSED != usageKind
+                    && AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION != usageKind) {
+                reportError(
+                        env, MemberChecks.toSimpleName(Constants.NAMED_CLASSNAME) + " target is not valid", element);
+            }
+        }
+    }
+
+    @Nonnull
+    private AnnotationUsageKind classifyNamedElement(@Nonnull final Element element) {
+        if (ElementKind.PARAMETER == element.getKind()) {
+            final Element executableElement = element.getEnclosingElement();
+            final Element enclosingType = executableElement.getEnclosingElement();
+            if (ElementKind.CONSTRUCTOR == executableElement.getKind()) {
+                if (AnnotationsUtil.hasAnnotationOfType(enclosingType, Constants.INJECTABLE_CLASSNAME)) {
+                    return AnnotationUsageKind.PROCESSED;
+                } else if (hasActAsStingConsumer(enclosingType)) {
+                    return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
+                } else {
+                    return AnnotationUsageKind.INVALID;
+                }
+            } else if (ElementKind.METHOD == executableElement.getKind()
+                    && AnnotationsUtil.hasAnnotationOfType(enclosingType, Constants.FRAGMENT_CLASSNAME)) {
+                return AnnotationUsageKind.PROCESSED;
+            } else {
+                return AnnotationUsageKind.INVALID;
+            }
+        } else if (ElementKind.CLASS == element.getKind()) {
+            if (AnnotationsUtil.hasAnnotationOfType(element, Constants.INJECTABLE_CLASSNAME)) {
+                return AnnotationUsageKind.PROCESSED;
+            } else if (hasActAsStingProvider(element)) {
+                return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
+            } else {
+                return AnnotationUsageKind.INVALID;
+            }
+        } else if (ElementKind.METHOD == element.getKind()) {
+            final Element enclosingType = element.getEnclosingElement();
+            if (AnnotationsUtil.hasAnnotationOfType(enclosingType, Constants.FRAGMENT_CLASSNAME)
+                    || AnnotationsUtil.hasAnnotationOfType(enclosingType, Constants.INJECTOR_CLASSNAME)) {
+                return AnnotationUsageKind.PROCESSED;
+            } else if (AnnotationsUtil.hasAnnotationOfType(enclosingType, Constants.INJECTOR_FRAGMENT_CLASSNAME)) {
+                return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
+            } else {
+                return AnnotationUsageKind.INVALID;
+            }
+        } else {
+            return AnnotationUsageKind.INVALID;
+        }
+    }
+
+    private boolean hasActAsStingConsumer(@Nonnull final Element element) {
+        return hasValidationRole(
+                element, Constants.ACT_AS_STING_CONSUMER_SIMPLE_NAME, Constants.ACT_AS_STING_COMPONENT_SIMPLE_NAME);
+    }
+
+    private boolean hasActAsStingProvider(@Nonnull final Element element) {
+        return hasValidationRole(
+                element, Constants.ACT_AS_STING_PROVIDER_SIMPLE_NAME, Constants.ACT_AS_STING_COMPONENT_SIMPLE_NAME);
+    }
+
+    private boolean hasValidationRole(@Nonnull final Element element, @Nonnull final String... annotationNames) {
+        return hasAnnotationWithAnnotationMatching(element, ca -> matchesValidationRole(ca, annotationNames));
+    }
+
+    private boolean matchesValidationRole(
+            @Nonnull final AnnotationMirror annotation, @Nonnull final String... annotationNames) {
+        final Element element = annotation.getAnnotationType().asElement();
+        if (ElementKind.ANNOTATION_TYPE != element.getKind()
+                || element.getEnclosedElements().stream().anyMatch(e -> ElementKind.METHOD == e.getKind())) {
+            return false;
+        }
+        final String simpleName = element.getSimpleName().toString();
+        return Arrays.asList(annotationNames).contains(simpleName);
+    }
+
+    private boolean hasAnnotationWithAnnotationMatching(
+            @Nonnull final AnnotatedConstruct element, @Nonnull final Predicate<? super AnnotationMirror> predicate) {
+        return element.getAnnotationMirrors().stream()
+                .anyMatch(a -> a.getAnnotationType().asElement().getAnnotationMirrors().stream()
+                        .anyMatch(predicate));
+    }
+
+    private void verifyTypedElements(
+            @Nonnull final RoundEnvironment env, @Nonnull final Set<? extends Element> elements) {
+        for (final Element element : elements) {
+            final AnnotationUsageKind usageKind = classifyTypedElement(element);
+            if (AnnotationUsageKind.PROCESSED != usageKind
+                    && AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION != usageKind) {
+                if (ElementKind.CLASS == element.getKind()) {
+                    reportError(
+                            env,
+                            MemberChecks.must(
+                                    Constants.TYPED_CLASSNAME,
+                                    "only be present on a type if the type is annotated with "
+                                            + MemberChecks.toSimpleName(Constants.INJECTABLE_CLASSNAME)
+                                            + " or the type is annotated with an annotation annotated by "
+                                            + MemberChecks.toSimpleName(Constants.ACT_AS_STING_PROVIDER_CLASSNAME)
+                                            + " or "
+                                            + MemberChecks.toSimpleName(Constants.ACT_AS_STING_COMPONENT_CLASSNAME)),
+                            element);
+                } else if (ElementKind.METHOD == element.getKind()) {
+                    reportError(
+                            env,
+                            MemberChecks.mustNot(
+                                    Constants.TYPED_CLASSNAME,
+                                    "be a method unless the method is enclosed in a type annotated with "
+                                            + MemberChecks.toSimpleName(Constants.FRAGMENT_CLASSNAME)),
+                            element);
+                } else {
+                    reportError(
+                            env,
+                            MemberChecks.toSimpleName(Constants.TYPED_CLASSNAME) + " target is not valid",
+                            element);
+                }
+            }
+        }
+    }
+
+    @Nonnull
+    private AnnotationUsageKind classifyTypedElement(@Nonnull final Element element) {
+        if (ElementKind.CLASS == element.getKind()) {
+            if (AnnotationsUtil.hasAnnotationOfType(element, Constants.INJECTABLE_CLASSNAME)) {
+                return AnnotationUsageKind.PROCESSED;
+            } else if (hasActAsStingProvider(element)) {
+                return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
+            } else {
+                return AnnotationUsageKind.INVALID;
+            }
+        } else if (ElementKind.METHOD == element.getKind()) {
+            final Element enclosingType = element.getEnclosingElement();
+            if (AnnotationsUtil.hasAnnotationOfType(enclosingType, Constants.FRAGMENT_CLASSNAME)) {
+                return AnnotationUsageKind.PROCESSED;
+            } else {
+                return AnnotationUsageKind.INVALID;
+            }
+        } else {
+            return AnnotationUsageKind.INVALID;
+        }
+    }
+
+    private void verifyEagerElements(
+            @Nonnull final RoundEnvironment env, @Nonnull final Set<? extends Element> elements) {
+        for (final Element element : elements) {
+            final AnnotationUsageKind usageKind = classifyEagerElement(element);
+            if (AnnotationUsageKind.PROCESSED != usageKind
+                    && AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION != usageKind) {
+                if (ElementKind.CLASS == element.getKind()) {
+                    reportError(
+                            env,
+                            MemberChecks.must(
+                                    Constants.EAGER_CLASSNAME,
+                                    "only be present on a type if the type is annotated with "
+                                            + MemberChecks.toSimpleName(Constants.INJECTABLE_CLASSNAME)
+                                            + " or the type is annotated with an annotation annotated by "
+                                            + MemberChecks.toSimpleName(Constants.ACT_AS_STING_PROVIDER_CLASSNAME)
+                                            + " or "
+                                            + MemberChecks.toSimpleName(Constants.ACT_AS_STING_COMPONENT_CLASSNAME)),
+                            element);
+                } else if (ElementKind.METHOD == element.getKind()) {
+                    reportError(
+                            env,
+                            MemberChecks.must(
+                                    Constants.EAGER_CLASSNAME,
+                                    "only be present on a method if the method is enclosed in a type annotated with "
+                                            + MemberChecks.toSimpleName(Constants.FRAGMENT_CLASSNAME)),
+                            element);
+                } else {
+                    reportError(
+                            env,
+                            MemberChecks.toSimpleName(Constants.EAGER_CLASSNAME) + " target is not valid",
+                            element);
+                }
+            }
+        }
+    }
+
+    @Nonnull
+    private AnnotationUsageKind classifyEagerElement(@Nonnull final Element element) {
+        if (ElementKind.CLASS == element.getKind()) {
+            if (AnnotationsUtil.hasAnnotationOfType(element, Constants.INJECTABLE_CLASSNAME)) {
+                return AnnotationUsageKind.PROCESSED;
+            } else if (hasActAsStingProvider(element)) {
+                return AnnotationUsageKind.SILENT_INTEGRATION_EXCEPTION;
+            } else {
+                return AnnotationUsageKind.INVALID;
+            }
+        } else if (ElementKind.METHOD == element.getKind()
+                && AnnotationsUtil.hasAnnotationOfType(element.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME)) {
+            return AnnotationUsageKind.PROCESSED;
+        } else {
+            return AnnotationUsageKind.INVALID;
+        }
+    }
+
+    private void processFragment(@Nonnull final TypeElement element) {
+        debug(() -> "Processing Fragment: " + element);
+        if (ElementKind.INTERFACE != element.getKind()) {
+            throw new ProcessorException(MemberChecks.must(Constants.FRAGMENT_CLASSNAME, "be an interface"), element);
+        } else if (!element.getTypeParameters().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(Constants.FRAGMENT_CLASSNAME, "have type parameters"), element);
+        } else if (!element.getInterfaces().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(Constants.FRAGMENT_CLASSNAME, "extend any interfaces"), element);
+        }
+        final boolean localOnly = extractFragmentLocalOnly(element);
+        final List<IncludeDescriptor> includes = extractIncludes(element, Constants.FRAGMENT_CLASSNAME, false);
+        final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
+        for (final Element enclosedElement : element.getEnclosedElements()) {
+            final ElementKind enclosedElementKind = enclosedElement.getKind();
+            if (ElementKind.METHOD == enclosedElementKind) {
+                processProvidesMethod(element, bindings, (ExecutableElement) enclosedElement);
+            }
+            if (enclosedElementKind.isClass() || enclosedElementKind.isInterface()) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(Constants.FRAGMENT_CLASSNAME) + " target must not contain any types",
+                        element);
+            }
+        }
+        if (bindings.isEmpty() && includes.isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.must(
+                            Constants.FRAGMENT_CLASSNAME, "contain one or more methods or one or more includes"),
+                    element);
+        }
+        final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations(element);
+        if (!scopedAnnotations.isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.FRAGMENT_CLASSNAME,
+                            "be annotated with an annotation that is " + "annotated with the "
+                                    + Constants.JSR_330_SCOPE_CLASSNAME + " annotation such as "
+                                    + scopedAnnotations),
+                    element);
+        }
+        _registry.registerFragment(new FragmentDescriptor(element, includes, localOnly, bindings.values()));
+    }
+
+    private void processFactory(@Nonnull final TypeElement element) {
+        debug(() -> "Processing Factory: " + element);
+        if (ElementKind.INTERFACE != element.getKind()) {
+            throw new ProcessorException(MemberChecks.must(Constants.FACTORY_CLASSNAME, "be an interface"), element);
+        } else if (!element.getTypeParameters().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(Constants.FACTORY_CLASSNAME, "have type parameters"), element);
+        } else if (!element.getInterfaces().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(Constants.FACTORY_CLASSNAME, "extend any interfaces"), element);
+        }
+
+        final List<FactoryMethodDescriptor> methods = new ArrayList<>();
+        final List<FactoryDependencyDescriptor> dependencies = new ArrayList<>();
+        final Set<String> usedFieldNames = new HashSet<>();
+        for (final Element enclosedElement : element.getEnclosedElements()) {
+            if (ElementKind.METHOD == enclosedElement.getKind()) {
+                final ExecutableElement method = (ExecutableElement) enclosedElement;
+                if (!method.getModifiers().contains(Modifier.DEFAULT)
+                        && !method.getModifiers().contains(Modifier.STATIC)
+                        && !method.getModifiers().contains(Modifier.PRIVATE)) {
+                    methods.add(processFactoryMethod(element, method, dependencies, usedFieldNames));
+                }
+            }
+        }
+        if (methods.isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.must(
+                            Constants.FACTORY_CLASSNAME, "contain at least one abstract method that returns a value"),
+                    element);
+        }
+
+        _registry.registerFactory(new FactoryDescriptor(element, methods, dependencies));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Nonnull
+    private List<InputDescriptor> extractInputs(@Nonnull final TypeElement element) {
+        final List<InputDescriptor> results = new ArrayList<>();
+        final AnnotationMirror annotation = AnnotationsUtil.getAnnotationByType(element, Constants.INJECTOR_CLASSNAME);
+        final AnnotationValue inputsAnnotationValue = AnnotationsUtil.findAnnotationValue(annotation, "inputs");
+        assert null != inputsAnnotationValue;
+        final List<AnnotationMirror> inputs = (List<AnnotationMirror>) inputsAnnotationValue.getValue();
+
+        final int size = inputs.size();
+        for (int i = 0; i < size; i++) {
+            final AnnotationMirror input = inputs.get(i);
+            final String qualifier = AnnotationsUtil.getAnnotationValueValue(input, "qualifier");
+            final AnnotationValue typeAnnotationValue = AnnotationsUtil.getAnnotationValue(input, "type");
+            final TypeMirror type = (TypeMirror) typeAnnotationValue.getValue();
+            if (TypeKind.ARRAY == type.getKind()) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(Constants.INPUT_CLASSNAME)
+                                + " must not specify an array type for the type parameter",
+                        element,
+                        input,
+                        typeAnnotationValue);
+            } else if (TypeKind.VOID == type.getKind()) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(Constants.INPUT_CLASSNAME)
+                                + " must specify a non-void type for the type parameter",
+                        element,
+                        input,
+                        typeAnnotationValue);
+            } else if (TypeKind.DECLARED == type.getKind()
+                    && !((TypeElement) ((DeclaredType) type).asElement())
+                            .getTypeParameters()
+                            .isEmpty()) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(Constants.INPUT_CLASSNAME)
+                                + " must not specify a parameterized type for the type parameter",
+                        element,
+                        input,
+                        typeAnnotationValue);
+            }
+            final Coordinate coordinate = new Coordinate(qualifier, type);
+            final boolean optional = AnnotationsUtil.getAnnotationValueValue(input, "optional");
+            final ServiceSpec service = new ServiceSpec(coordinate, optional);
+            final Binding binding = new Binding(
+                    Binding.Kind.INPUT,
+                    element.getQualifiedName() + "#" + i,
+                    Collections.singletonList(service),
+                    true,
+                    element,
+                    new ServiceRequest[0]);
+            binding.setInterceptorBindingSource(element, findInterceptorBindingAnnotationValues(element));
+            results.add(new InputDescriptor(service, binding, "input" + (i + 1)));
+        }
+        return results;
+    }
+
+    @Nonnull
+    private List<IncludeDescriptor> extractIncludes(
+            @Nonnull final TypeElement element, @Nonnull final String annotationClassname, final boolean fragmentOnly) {
+        final List<IncludeDescriptor> results = new ArrayList<>();
+        final List<TypeMirror> includes =
+                AnnotationsUtil.getTypeMirrorsAnnotationParameter(element, annotationClassname, "includes");
+        final Set<String> included = new HashSet<>();
+        for (final TypeMirror include : includes) {
+            if (processingEnv.getTypeUtils().isSameType(include, element.asType())) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(annotationClassname) + " target must not include self", element);
+            }
+            if (include.getKind().isPrimitive()) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(annotationClassname)
+                                + " target must not include a primitive in the includes parameter",
+                        element);
+            }
+            final Element includeElement = processingEnv.getTypeUtils().asElement(include);
+            if (AnnotationsUtil.hasAnnotationOfType(includeElement, Constants.FRAGMENT_CLASSNAME)
+                    || AnnotationsUtil.hasAnnotationOfType(includeElement, Constants.INJECTABLE_CLASSNAME)) {
+                if (fragmentOnly
+                        && AnnotationsUtil.hasAnnotationOfType(includeElement, Constants.INJECTABLE_CLASSNAME)) {
+                    throw new ProcessorException(
+                            MemberChecks.toSimpleName(annotationClassname)
+                                    + " target has an includes parameter containing the value "
+                                    + include + " that is not annotated by "
+                                    + MemberChecks.toSimpleName(Constants.FRAGMENT_CLASSNAME)
+                                    + " when fragmentOnly is true",
+                            element);
+                }
+                results.add(new IncludeDescriptor((DeclaredType) include, include.toString(), false));
+            } else {
+                final ElementKind kind = includeElement.getKind();
+                if (ElementKind.CLASS == kind || ElementKind.INTERFACE == kind) {
+                    final ProviderEntry provider = resolveSingleStingProvider(
+                            element,
+                            MemberChecks.toSimpleName(annotationClassname)
+                                    + " target has an 'includes' parameter containing the value "
+                                    + includeElement.asType(),
+                            (TypeElement) includeElement);
+                    if (null != provider) {
+                        final String targetQualifiedName =
+                                deriveProviderQualifiedName((TypeElement) includeElement, provider.provider());
+                        results.add(new IncludeDescriptor((DeclaredType) include, targetQualifiedName, false));
+                    } else {
+                        throw new ProcessorException(
+                                MemberChecks.toSimpleName(annotationClassname)
+                                        + " target has an includes parameter containing the value "
+                                        + include + " that is not a type annotated by either "
+                                        + MemberChecks.toSimpleName(Constants.FRAGMENT_CLASSNAME)
+                                        + " or "
+                                        + MemberChecks.toSimpleName(Constants.INJECTABLE_CLASSNAME)
+                                        + " and the type does not declare a provider",
+                                element);
+                    }
+                }
+            }
+            final String includedType = include.toString();
+            if (included.contains(includedType)) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(annotationClassname)
+                                + " target has an includes parameter containing duplicate "
+                                + "includes with the type "
+                                + includedType,
+                        element);
+            } else {
+                included.add(includedType);
+            }
+        }
+        return results;
+    }
+
+    @Nullable
+    private ProviderEntry resolveSingleStingProvider(
+            @Nonnull final TypeElement element,
+            @Nonnull final String targetDescription,
+            @Nonnull final TypeElement annotatedType) {
+        final List<ProviderEntry> providers = annotatedType.getAnnotationMirrors().stream()
+                .map(a -> {
+                    final AnnotationMirror provider = getStingProvider(element, targetDescription, a);
+                    return null != provider ? new ProviderEntry(a, provider) : null;
+                })
+                .filter(Objects::nonNull)
+                .toList();
+        if (providers.size() > 1) {
+            final String message = targetDescription + " that is annotated by multiple "
+                    + MemberChecks.toSimpleName(Constants.STING_PROVIDER_CLASSNAME)
+                    + " annotations. Matching annotations:\n"
+                    + providers.stream()
+                            .map(a -> ((TypeElement)
+                                            a.annotation().getAnnotationType().asElement())
+                                    .getQualifiedName())
+                            .map(a -> "  " + a)
+                            .collect(Collectors.joining("\n"));
+            throw new ProcessorException(message, element);
+        }
+        return providers.isEmpty() ? null : providers.get(0);
+    }
+
+    @Nullable
+    private AnnotationMirror getStingProvider(
+            @Nonnull final TypeElement element,
+            @Nonnull final String targetDescription,
+            @Nonnull final AnnotationMirror annotation) {
+        return annotation.getAnnotationType().asElement().getAnnotationMirrors().stream()
+                .filter(ca -> isStingProvider(element, targetDescription, ca))
+                .findAny()
+                .orElse(null);
+    }
+
+    @Nonnull
+    private String deriveProviderQualifiedName(
+            @Nonnull final TypeElement annotatedType, @Nonnull final AnnotationMirror providerAnnotation) {
+        final String namePattern = AnnotationsUtil.getAnnotationValueValue(providerAnnotation, "value");
+        final String targetCompoundType = namePattern
+                .replace("[SimpleName]", annotatedType.getSimpleName().toString())
+                .replace("[CompoundName]", getComponentName(annotatedType))
+                .replace("[EnclosingName]", getEnclosingName(annotatedType))
+                .replace("[FlatEnclosingName]", getEnclosingName(annotatedType).replace('.', '_'));
+        return ElementsUtil.getPackageElement(annotatedType).getQualifiedName() + "." + targetCompoundType;
+    }
+
+    @Nonnull
+    private String getComponentName(@Nonnull final TypeElement element) {
+        return getEnclosingName(element) + element.getSimpleName();
+    }
+
+    @Nonnull
+    private String getEnclosingName(@Nonnull final TypeElement element) {
+        Element enclosingElement = element.getEnclosingElement();
+        final List<String> nameParts = new ArrayList<>();
+        while (ElementKind.PACKAGE != enclosingElement.getKind()) {
+            nameParts.add(enclosingElement.getSimpleName().toString());
+            enclosingElement = enclosingElement.getEnclosingElement();
+        }
+        if (nameParts.isEmpty()) {
+            return "";
+        } else {
+            Collections.reverse(nameParts);
+            return String.join(".", nameParts) + ".";
+        }
+    }
+
+    private boolean isStingProvider(
+            @Nonnull final TypeElement element,
+            @Nonnull final String targetDescription,
+            @Nonnull final AnnotationMirror annotation) {
+        if (!annotation.getAnnotationType().asElement().getSimpleName().contentEquals("StingProvider")) {
+            return false;
+        } else {
+            final boolean nameMatched = annotation.getElementValues().entrySet().stream()
+                    .anyMatch(e -> e.getKey().getSimpleName().contentEquals("value")
+                            && e.getValue().getValue() instanceof String);
+            if (nameMatched) {
+                return true;
+            } else {
+                final String message = targetDescription + " that is annotated by "
+                        + annotation + " that is annotated by an invalid "
+                        + MemberChecks.toSimpleName(Constants.STING_PROVIDER_CLASSNAME)
+                        + " annotation missing a 'value' parameter of type string.";
+                throw new ProcessorException(message, element);
+            }
+        }
+    }
+
+    @Nonnull
+    private List<Binding> autoDiscoverProviderBindings(
+            @Nonnull final ComponentGraph graph,
+            @Nonnull final WorkEntry workEntry,
+            @Nonnull final TypeElement frameworkType) {
+        final ProviderEntry provider = resolveSingleStingProvider(
+                graph.getInjector().getElement(),
+                MemberChecks.toSimpleName(Constants.INJECTOR_CLASSNAME)
+                        + " target is attempting to auto-discover the type " + frameworkType.asType(),
+                frameworkType);
+        if (null == provider) {
+            return Collections.emptyList();
+        }
+
+        final String providerTypeName = deriveProviderQualifiedName(frameworkType, provider.provider());
+        final TypeElement providerType = processingEnv.getElementUtils().getTypeElement(providerTypeName);
+        final Coordinate coordinate = new Coordinate("", frameworkType.asType());
+        if (null == providerType) {
+            throw new ProcessorException(
+                    buildAutoDiscoverProviderError(
+                            coordinate,
+                            workEntry,
+                            "the framework type " + frameworkType.getQualifiedName()
+                                    + " expects a provider class named "
+                                    + providerTypeName
+                                    + " but no such class exists"),
+                    workEntry.getEntry().edge().getServiceRequest().getElement());
+        }
+
+        if (AnnotationsUtil.hasAnnotationOfType(providerType, Constants.FRAGMENT_CLASSNAME)) {
+            FragmentDescriptor fragment = _registry.findFragmentByClassName(providerTypeName);
+            if (null == fragment) {
+                fragment = deriveFragmentDescriptor(providerType);
+                if (null != fragment) {
+                    _registry.registerFragment(fragment);
+                }
+            }
+            if (null == fragment) {
+                return Collections.emptyList();
+            }
+            verifyAutoDiscoverProviderPublishesType(coordinate, providerType, fragment.getBindings(), workEntry);
+            registerAutoDiscoveredFragment(graph, fragment);
+            return graph.findAllBindingsByCoordinate(coordinate);
+        } else if (AnnotationsUtil.hasAnnotationOfType(providerType, Constants.INJECTABLE_CLASSNAME)) {
+            InjectableDescriptor injectable = _registry.findInjectableByClassName(providerTypeName);
+            if (null == injectable) {
+                injectable = deriveInjectableDescriptor(providerType);
+                if (null != injectable) {
+                    _registry.registerInjectable(injectable);
+                }
+            }
+            if (null == injectable) {
+                return Collections.emptyList();
+            }
+            verifyAutoDiscoverProviderPublishesType(
+                    coordinate, providerType, Collections.singletonList(injectable.getBinding()), workEntry);
+            graph.registerInjectable(injectable);
+            return Collections.singletonList(injectable.getBinding());
+        } else {
+            throw new ProcessorException(
+                    buildAutoDiscoverProviderError(
+                            coordinate,
+                            workEntry,
+                            "the framework type " + frameworkType.getQualifiedName()
+                                    + " expects a provider class named "
+                                    + providerTypeName
+                                    + " but that class is not annotated with either "
+                                    + MemberChecks.toSimpleName(Constants.FRAGMENT_CLASSNAME)
+                                    + " or "
+                                    + MemberChecks.toSimpleName(Constants.INJECTABLE_CLASSNAME)),
+                    workEntry.getEntry().edge().getServiceRequest().getElement());
+        }
+    }
+
+    private void registerAutoDiscoveredFragment(
+            @Nonnull final ComponentGraph graph, @Nonnull final FragmentDescriptor fragment) {
+        registerAutoDiscoveredIncludes(graph, fragment.getIncludes());
+        graph.registerFragment(fragment);
+    }
+
+    private void registerAutoDiscoveredIncludes(
+            @Nonnull final ComponentGraph graph, @Nonnull final Collection<IncludeDescriptor> includes) {
+        for (final IncludeDescriptor include : includes) {
+            final String classname = include.actualTypeName();
+            final TypeElement element = processingEnv.getElementUtils().getTypeElement(classname);
+            assert null != element;
+            if (AnnotationsUtil.hasAnnotationOfType(element, Constants.FRAGMENT_CLASSNAME)) {
+                FragmentDescriptor fragment = _registry.findFragmentByClassName(classname);
+                if (null == fragment) {
+                    fragment = deriveFragmentDescriptor(element);
+                    if (null != fragment) {
+                        _registry.registerFragment(fragment);
+                    }
+                }
+                assert null != fragment;
+                registerAutoDiscoveredFragment(graph, fragment);
+            } else {
+                assert AnnotationsUtil.hasAnnotationOfType(element, Constants.INJECTABLE_CLASSNAME);
+                InjectableDescriptor injectable = _registry.findInjectableByClassName(classname);
+                if (null == injectable) {
+                    injectable = deriveInjectableDescriptor(element);
+                    if (null != injectable) {
+                        _registry.registerInjectable(injectable);
+                    }
+                }
+                assert null != injectable;
+                graph.registerInjectable(injectable);
+            }
+        }
+    }
+
+    private void verifyAutoDiscoverProviderPublishesType(
+            @Nonnull final Coordinate coordinate,
+            @Nonnull final TypeElement providerType,
+            @Nonnull final Collection<Binding> bindings,
+            @Nonnull final WorkEntry workEntry) {
+        final boolean matches = bindings.stream()
+                .flatMap(b -> b.getPublishedServices().stream())
+                .anyMatch(s -> coordinate.equals(s.getCoordinate()));
+        if (!matches) {
+            throw new ProcessorException(
+                    buildAutoDiscoverProviderError(
+                            coordinate,
+                            workEntry,
+                            "the provider class " + providerType.getQualifiedName()
+                                    + " does not publish the service "
+                                    + coordinate
+                                    + " for the framework type "
+                                    + coordinate.type()
+                                    + ". The provider must publish the framework type with the default qualifier"),
+                    workEntry.getEntry().edge().getServiceRequest().getElement());
+        }
+    }
+
+    @Nonnull
+    private String buildAutoDiscoverProviderError(
+            @Nonnull final Coordinate coordinate, @Nonnull final WorkEntry workEntry, @Nonnull final String detail) {
+        return MemberChecks.mustNot(
+                Constants.INJECTOR_CLASSNAME,
+                "contain a non-optional dependency " + coordinate + " that can not be auto-discovered via "
+                        + MemberChecks.toSimpleName(Constants.STING_PROVIDER_CLASSNAME)
+                        + " because "
+                        + detail + ".\nDependency Path:\n" + workEntry.describePathFromRoot());
+    }
+
+    private void emitFragmentJsonDescriptor(@Nonnull final FragmentDescriptor fragment) throws IOException {
+        if (_emitJsonDescriptors) {
+            final TypeElement element = fragment.getElement();
+            final String filename = toFilename(element) + JSON_SUFFIX;
+            JsonUtil.writeJsonResource(processingEnv, element, filename, fragment::write);
+        }
+    }
+
+    private void processProvidesMethod(
+            @Nonnull final TypeElement element,
+            @Nonnull final Map<ExecutableElement, Binding> bindings,
+            @Nonnull final ExecutableElement method) {
+        if (TypeKind.VOID == method.getReturnType().getKind()) {
+            throw new ProcessorException(
+                    MemberChecks.must(Constants.FRAGMENT_CLASSNAME, "only contain methods that return a value"),
+                    method);
+        }
+        if (!method.getTypeParameters().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(Constants.FRAGMENT_CLASSNAME, "contain methods with a type parameter"),
+                    method);
+        }
+        if (!method.getModifiers().contains(Modifier.DEFAULT)) {
+            throw new ProcessorException(
+                    MemberChecks.must(Constants.FRAGMENT_CLASSNAME, "only contain methods with a default modifier"),
+                    method);
+        }
+        final boolean nullablePresent = AnnotationsUtil.hasNullableAnnotation(method);
+        if (nullablePresent && method.getReturnType().getKind().isPrimitive()) {
+            throw new ProcessorException(
+                    MemberChecks.toSimpleName(Constants.FRAGMENT_CLASSNAME)
+                            + " contains a method that is incorrectly annotated with "
+                            + MemberChecks.toSimpleName(AnnotationsUtil.NULLABLE_CLASSNAME)
+                            + " as the return type is a primitive value",
+                    method);
+        }
+        final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations(method);
+        if (!scopedAnnotations.isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.FRAGMENT_CLASSNAME,
+                            "contain a method that is annotated with an " + "annotation that is annotated with the "
+                                    + Constants.JSR_330_SCOPE_CLASSNAME
+                                    + " annotation such as "
+                                    + scopedAnnotations),
+                    method);
+        }
+
+        final boolean eager = AnnotationsUtil.hasAnnotationOfType(method, Constants.EAGER_CLASSNAME);
+
+        final List<ServiceRequest> dependencies = new ArrayList<>();
+        int index = 0;
+        final List<? extends TypeMirror> parameterTypes = ((ExecutableType) method.asType()).getParameterTypes();
+        for (final VariableElement parameter : method.getParameters()) {
+            dependencies.add(processFragmentServiceParameter(parameter, parameterTypes.get(index)));
+            index++;
+        }
+
+        final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType(method, Constants.TYPED_CLASSNAME);
+        final AnnotationValue value =
+                null != annotation ? AnnotationsUtil.findAnnotationValue(annotation, "value") : null;
+
+        final String qualifier = getQualifier(method);
+        if (AnnotationsUtil.hasAnnotationOfType(method, Constants.JSR_330_NAMED_CLASSNAME)) {
+            final String message = MemberChecks.mustNot(
+                    Constants.FRAGMENT_CLASSNAME,
+                    "contain a method annotated with the " + Constants.JSR_330_NAMED_CLASSNAME + " annotation. Use the "
+                            + Constants.NAMED_CLASSNAME + " annotation instead");
+            throw new ProcessorException(message, method);
+        }
+        if (AnnotationsUtil.hasAnnotationOfType(method, Constants.CDI_TYPED_CLASSNAME)) {
+            final String message = MemberChecks.mustNot(
+                    Constants.FRAGMENT_CLASSNAME,
+                    "contain a method annotated with the " + Constants.CDI_TYPED_CLASSNAME + " annotation. Use the "
+                            + Constants.TYPED_CLASSNAME + " annotation instead");
+            throw new ProcessorException(message, method);
+        }
+
+        @SuppressWarnings("unchecked")
+        final List<TypeMirror> types = null == value
+                ? Collections.singletonList(method.getReturnType())
+                : ((List<AnnotationValue>) value.getValue())
+                        .stream().map(v -> (TypeMirror) v.getValue()).toList();
+
+        final ServiceSpec[] specs = new ServiceSpec[types.size()];
+        for (int i = 0; i < specs.length; i++) {
+            final TypeMirror type = types.get(i);
+            if (!processingEnv.getTypeUtils().isAssignable(method.getReturnType(), type)) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(Constants.TYPED_CLASSNAME)
+                                + " specified a type that is not assignable to the return type of the method",
+                        element,
+                        annotation,
+                        value);
+            } else if (TypeKind.DECLARED == type.getKind() && isParameterized((DeclaredType) type)) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(Constants.TYPED_CLASSNAME)
+                                + " specified a type that is a a parameterized type",
+                        element,
+                        annotation,
+                        value);
+            }
+            specs[i] = new ServiceSpec(new Coordinate(qualifier, type), nullablePresent);
+        }
+
+        if (0 == specs.length && !eager) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.FRAGMENT_CLASSNAME,
+                            "contain methods that specify zero types with the "
+                                    + MemberChecks.toSimpleName(Constants.TYPED_CLASSNAME)
+                                    + " annotation and are not annotated with the "
+                                    + MemberChecks.toSimpleName(Constants.EAGER_CLASSNAME)
+                                    + " annotation otherwise the component can not be created by "
+                                    + "the injector"),
+                    element);
+        }
+        if (0 == specs.length && !qualifier.isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.FRAGMENT_CLASSNAME,
+                            "contain methods that specify zero types with the "
+                                    + MemberChecks.toSimpleName(Constants.TYPED_CLASSNAME)
+                                    + " annotation and specify a qualifier with the "
+                                    + MemberChecks.toSimpleName(Constants.NAMED_CLASSNAME)
+                                    + " annotation as the qualifier is meaningless"),
+                    element);
+        }
+
+        final Binding binding = new Binding(
+                Binding.Kind.PROVIDES,
+                element.getQualifiedName() + "#" + method.getSimpleName(),
+                Arrays.asList(specs),
+                eager,
+                method,
+                dependencies.toArray(new ServiceRequest[0]));
+        binding.setInterceptorBindingSource(method, findInterceptorBindingAnnotationValues(method));
+        bindings.put(method, binding);
+    }
+
+    void processInterceptorBindings(@Nonnull final Binding binding) {
+        if (!binding.isInterceptorBindingsProcessed()) {
+            final var bindingSource = binding.getInterceptorBindingSourceOrNull();
+            if (null != bindingSource) {
+                for (final var service : binding.getPublishedServices()) {
+                    final var serviceBindings = new ArrayList<InterceptorBindingDescriptor>();
+                    final var serviceType = service.getCoordinate().type();
+                    TypeElement serviceElement = null;
+                    if (TypeKind.DECLARED == serviceType.getKind()) {
+                        serviceElement = (TypeElement) ((DeclaredType) serviceType).asElement();
+                        for (final var annotation : findInterceptorBindingAnnotations(serviceElement)) {
+                            final var values = extractBindingValues(annotation);
+                            serviceBindings.add(
+                                    createInterceptorBindingDescriptor(service, annotation, serviceElement, values));
+                        }
+                    }
+                    if (Binding.Kind.INPUT != binding.getKind()) {
+                        for (final var entry :
+                                binding.getInterceptorBindingSourceAnnotations().entrySet()) {
+                            serviceBindings.add(createInterceptorBindingDescriptor(
+                                    service, entry.getKey(), bindingSource, entry.getValue()));
+                        }
+                    }
+                    validateNoMethodLevelInterceptorBindings(binding, serviceElement, bindingSource);
+                    if (!serviceBindings.isEmpty()) {
+                        validateInterceptedService(binding, service, serviceElement, serviceBindings, bindingSource);
+                        resolveGenericInterceptors(serviceBindings);
+                        binding.addInterceptedService(
+                                new InterceptedServiceDescriptor(binding, service, serviceBindings));
+                    }
+                }
+            }
+            binding.markInterceptorBindingsProcessed();
+        }
+    }
+
+    @Nonnull
+    private List<AnnotationMirror> findInterceptorBindingAnnotations(@Nonnull final Element element) {
+        final var annotations = new ArrayList<AnnotationMirror>();
+        for (final var annotation : element.getAnnotationMirrors()) {
+            if (null != findInterceptorBindingMetaAnnotation(annotation)) {
+                annotations.add(annotation);
+            }
+        }
+        return annotations;
+    }
+
+    @Nonnull
+    private Map<AnnotationMirror, Map<String, BindingValueModel>> findInterceptorBindingAnnotationValues(
+            @Nonnull final Element element) {
+        final var values = new LinkedHashMap<AnnotationMirror, Map<String, BindingValueModel>>();
+        for (final var annotation : findInterceptorBindingAnnotations(element)) {
+            values.put(annotation, extractBindingValues(annotation));
+        }
+        return values;
+    }
+
+    @Nullable
+    private AnnotationMirror findInterceptorBindingMetaAnnotation(@Nonnull final AnnotationMirror annotation) {
+        return annotation.getAnnotationType().asElement().getAnnotationMirrors().stream()
+                .filter(a -> Constants.INTERCEPTOR_BINDING_SIMPLE_NAME.contentEquals(
+                        a.getAnnotationType().asElement().getSimpleName()))
+                .findAny()
+                .orElse(null);
+    }
+
+    @Nonnull
+    private InterceptorBindingDescriptor createInterceptorBindingDescriptor(
+            @Nonnull final ServiceSpec service,
+            @Nonnull final AnnotationMirror annotation,
+            @Nonnull final Element usageElement,
+            @Nonnull final Map<String, BindingValueModel> values) {
+        final var metaAnnotation = Objects.requireNonNull(findInterceptorBindingMetaAnnotation(annotation));
+        validateInterceptorBindingAnnotationType(annotation, metaAnnotation, usageElement, values);
+        final var annotationType = (TypeElement) annotation.getAnnotationType().asElement();
+        final var metaValues = processingEnv.getElementUtils().getElementValuesWithDefaults(metaAnnotation);
+        final var priorityValue = findAnnotationValueByName(metaValues, "priority");
+        final var implementedByValue = findAnnotationValueByName(metaValues, "implementedBy");
+        final int priority = (Integer) Objects.requireNonNull(priorityValue).getValue();
+        final var implementedBy = null == implementedByValue ? "" : (String) implementedByValue.getValue();
+        final var resolvedImplementedBy = resolveImplementedByName(implementedBy, values, usageElement, annotation);
+        return new InterceptorBindingDescriptor(
+                annotation, annotationType, usageElement, priority, resolvedImplementedBy, values);
+    }
+
+    private void validateInterceptorBindingAnnotationType(
+            @Nonnull final AnnotationMirror annotation,
+            @Nonnull final AnnotationMirror metaAnnotation,
+            @Nonnull final Element usageElement,
+            @Nonnull final Map<String, BindingValueModel> values) {
+        final var annotationType = (TypeElement) annotation.getAnnotationType().asElement();
+        if (hasSourceRetention(annotationType)) {
+            throw new ProcessorException(
+                    "Interceptor binding annotation " + annotationType.getQualifiedName()
+                            + " must not use @Retention(SOURCE)",
+                    usageElement,
+                    annotation);
+        } else {
+            final var metaValues = processingEnv.getElementUtils().getElementValuesWithDefaults(metaAnnotation);
+            final var priorityValue = findAnnotationValueByName(metaValues, "priority");
+            if (null == priorityValue || !(priorityValue.getValue() instanceof Integer)) {
+                throw new ProcessorException(
+                        "Interceptor binding meta-annotation on " + annotationType.getQualifiedName()
+                                + " must declare an int priority member",
+                        usageElement,
+                        annotation);
+            } else {
+                final var implementedByValue = findAnnotationValueByName(metaValues, "implementedBy");
+                if (null == implementedByValue || !(implementedByValue.getValue() instanceof String)) {
+                    throw new ProcessorException(
+                            "Interceptor binding meta-annotation on " + annotationType.getQualifiedName()
+                                    + " must declare a non-empty String implementedBy member",
+                            usageElement,
+                            annotation);
+                } else {
+                    final var implementedBy = (String) implementedByValue.getValue();
+                    if (implementedBy.isEmpty()) {
+                        throw new ProcessorException(
+                                "Interceptor binding meta-annotation on " + annotationType.getQualifiedName()
+                                        + " must declare a non-empty String implementedBy member",
+                                usageElement,
+                                annotation);
+                    }
+                    validateImplementedByTemplate(implementedBy, values, usageElement, annotation);
+                }
+            }
+        }
+    }
+
+    private boolean hasSourceRetention(@Nonnull final TypeElement annotationType) {
+        final var retention = AnnotationsUtil.findAnnotationByType(annotationType, Retention.class.getName());
+        if (null != retention) {
+            final var value = AnnotationsUtil.findAnnotationValue(retention, "value");
+            return null != value && "SOURCE".equals(value.getValue().toString());
+        } else {
+            return false;
+        }
+    }
+
+    @Nullable
+    private AnnotationValue findAnnotationValueByName(
+            @Nonnull final Map<? extends ExecutableElement, ? extends AnnotationValue> values,
+            @Nonnull final String name) {
+        return values.entrySet().stream()
+                .filter(e -> e.getKey().getSimpleName().contentEquals(name))
+                .map(Map.Entry::getValue)
+                .findAny()
+                .orElse(null);
+    }
+
+    private void validateImplementedByTemplate(
+            @Nonnull final String implementedBy,
+            @Nonnull final Map<String, BindingValueModel> values,
+            @Nonnull final Element element,
+            @Nonnull final AnnotationMirror annotation) {
+        if (isImplementedByTemplate(implementedBy)) {
+            resolveImplementedByTemplate(implementedBy, values, element, annotation);
+        } else {
+            validateImplementedByName(implementedBy, element, annotation);
+        }
+    }
+
+    @Nonnull
+    private String resolveImplementedByName(
+            @Nonnull final String implementedBy,
+            @Nonnull final Map<String, BindingValueModel> values,
+            @Nonnull final Element element,
+            @Nonnull final AnnotationMirror annotation) {
+        if (isImplementedByTemplate(implementedBy)) {
+            final var resolved = resolveImplementedByTemplate(implementedBy, values, element, annotation);
+            validateImplementedByName(resolved, element, annotation);
+            return resolved;
+        } else {
+            validateImplementedByName(implementedBy, element, annotation);
+            return implementedBy;
+        }
+    }
+
+    private boolean isImplementedByTemplate(@Nonnull final String implementedBy) {
+        return implementedBy.indexOf('{') != -1 || implementedBy.indexOf('}') != -1;
+    }
+
+    @Nonnull
+    private String resolveImplementedByTemplate(
+            @Nonnull final String implementedBy,
+            @Nonnull final Map<String, BindingValueModel> values,
+            @Nonnull final Element element,
+            @Nonnull final AnnotationMirror annotation) {
+        final var resolved = new StringBuilder();
+        int offset = 0;
+        while (offset < implementedBy.length()) {
+            final int openIndex = implementedBy.indexOf('{', offset);
+            final int closeIndex = implementedBy.indexOf('}', offset);
+            if (-1 == openIndex) {
+                if (-1 != closeIndex) {
+                    throw new ProcessorException(
+                            "implementedBy template contains an unmatched '}'", element, annotation);
+                }
+                resolved.append(implementedBy.substring(offset));
+                break;
+            } else if (-1 != closeIndex && closeIndex < openIndex) {
+                throw new ProcessorException("implementedBy template contains an unmatched '}'", element, annotation);
+            } else {
+                final int endIndex = implementedBy.indexOf('}', openIndex + 1);
+                if (-1 == endIndex) {
+                    throw new ProcessorException(
+                            "implementedBy template contains an unmatched '{'", element, annotation);
+                }
+                resolved.append(implementedBy, offset, openIndex);
+                final var name = implementedBy.substring(openIndex + 1, endIndex);
+                if (name.isEmpty()) {
+                    throw new ProcessorException(
+                            "implementedBy template contains an empty placeholder", element, annotation);
+                } else if (!SourceVersion.isIdentifier(name) || SourceVersion.isKeyword(name)) {
+                    throw new ProcessorException(
+                            "implementedBy template placeholder {" + name + "} must be a Java identifier",
+                            element,
+                            annotation);
+                }
+                resolved.append(resolveImplementedByPlaceholder(name, values, element, annotation));
+                offset = endIndex + 1;
+            }
+        }
+        return resolved.toString();
+    }
+
+    @Nonnull
+    private String resolveImplementedByPlaceholder(
+            @Nonnull final String name,
+            @Nonnull final Map<String, BindingValueModel> values,
+            @Nonnull final Element element,
+            @Nonnull final AnnotationMirror annotation) {
+        final var value = values.get(name);
+        if (null == value) {
+            throw new ProcessorException(
+                    "implementedBy template references unknown interceptor binding member " + name,
+                    element,
+                    annotation);
+        } else if (value.array() || BindingValueKind.ENUM != value.kind()) {
+            throw new ProcessorException(
+                    "implementedBy template placeholder {" + name
+                            + "} must reference a scalar enum interceptor binding member",
+                    element,
+                    annotation);
+        } else {
+            return enumConstantNameToPascalCase(
+                    Objects.requireNonNull(value.enumConstantName()), name, element, annotation);
+        }
+    }
+
+    @Nonnull
+    private String enumConstantNameToPascalCase(
+            @Nonnull final String constantName,
+            @Nonnull final String placeholderName,
+            @Nonnull final Element element,
+            @Nonnull final AnnotationMirror annotation) {
+        final var parts = constantName.split("_", -1);
+        final var result = new StringBuilder();
+        for (final var part : parts) {
+            if (part.isEmpty()) {
+                throw new ProcessorException(
+                        "Enum constant " + constantName + " referenced by implementedBy template " + "placeholder {"
+                                + placeholderName + "} must not contain leading, trailing, or repeated underscores",
+                        element,
+                        annotation);
+            }
+            final var lower = part.toLowerCase(Locale.ROOT);
+            result.append(lower.substring(0, 1).toUpperCase(Locale.ROOT));
+            result.append(lower.substring(1));
+        }
+        return result.toString();
+    }
+
+    @Nonnull
+    private Map<String, BindingValueModel> extractBindingValues(@Nonnull final AnnotationMirror annotation) {
+        final var values = new LinkedHashMap<String, BindingValueModel>();
+        for (final var entry : processingEnv
+                .getElementUtils()
+                .getElementValuesWithDefaults(annotation)
+                .entrySet()) {
+            final var name = entry.getKey().getSimpleName().toString();
+            values.put(
+                    name,
+                    toBindingValueModel(
+                            name,
+                            entry.getKey().getReturnType(),
+                            entry.getValue().getValue()));
+        }
+        return values;
+    }
+
+    @Nonnull
+    private BindingValueModel toBindingValueModel(
+            @Nonnull final String name, @Nonnull final TypeMirror type, @Nullable final Object value) {
+        if (TypeKind.ARRAY == type.getKind()) {
+            return toArrayBindingValueModel(name, (ArrayType) type, value);
+        } else {
+            return toScalarBindingValueModel(name, value);
+        }
+    }
+
+    @Nonnull
+    private BindingValueModel toArrayBindingValueModel(
+            @Nonnull final String name, @Nonnull final ArrayType type, @Nullable final Object value) {
+        final var componentKind = bindingValueKind(type.getComponentType());
+        if (BindingValueKind.UNSUPPORTED == componentKind || !(value instanceof final List<?> values)) {
+            return unsupportedBindingValueModel(name, true);
+        }
+
+        final var javaLiteral = new StringBuilder();
+        javaLiteral.append("new ").append(arrayLiteralType(componentKind)).append("[] {");
+        for (int i = 0; i < values.size(); i++) {
+            final var element = values.get(i);
+            if (!(element instanceof final AnnotationValue annotationValue)) {
+                return unsupportedBindingValueModel(name, true);
+            }
+
+            final var component = toScalarBindingValueModel(name, annotationValue.getValue());
+            if (componentKind != component.kind()) {
+                return unsupportedBindingValueModel(name, true);
+            }
+
+            javaLiteral.append(0 == i ? " " : ", ").append(component.javaLiteral());
+        }
+        if (!values.isEmpty()) {
+            javaLiteral.append(" ");
+        }
+        javaLiteral.append("}");
+        return new BindingValueModel(name, componentKind, true, null, null, null, null, javaLiteral.toString());
+    }
+
+    @Nonnull
+    private BindingValueKind bindingValueKind(@Nonnull final TypeMirror type) {
+        return switch (type.getKind()) {
+            case BOOLEAN -> BindingValueKind.BOOLEAN;
+            case BYTE -> BindingValueKind.BYTE;
+            case SHORT -> BindingValueKind.SHORT;
+            case INT -> BindingValueKind.INT;
+            case LONG -> BindingValueKind.LONG;
+            case FLOAT -> BindingValueKind.FLOAT;
+            case DOUBLE -> BindingValueKind.DOUBLE;
+            case CHAR -> BindingValueKind.CHAR;
+            case DECLARED -> bindingValueDeclaredKind((DeclaredType) type);
+            default -> BindingValueKind.UNSUPPORTED;
+        };
+    }
+
+    @Nonnull
+    private BindingValueKind bindingValueDeclaredKind(@Nonnull final DeclaredType type) {
+        final var element = (TypeElement) type.asElement();
+        final var typeName = element.getQualifiedName().toString();
+        if (String.class.getName().equals(typeName)) {
+            return BindingValueKind.STRING;
+        } else if (Class.class.getName().equals(typeName)) {
+            return BindingValueKind.CLASS;
+        } else if (ElementKind.ENUM == element.getKind()) {
+            return BindingValueKind.ENUM;
+        } else {
+            return BindingValueKind.UNSUPPORTED;
+        }
+    }
+
+    @Nonnull
+    private String arrayLiteralType(@Nonnull final BindingValueKind kind) {
+        return switch (kind) {
+            case STRING, CLASS, ENUM -> "String";
+            case BOOLEAN -> "boolean";
+            case BYTE -> "byte";
+            case SHORT -> "short";
+            case INT -> "int";
+            case LONG -> "long";
+            case FLOAT -> "float";
+            case DOUBLE -> "double";
+            case CHAR -> "char";
+            case UNSUPPORTED -> throw new IllegalArgumentException("Unsupported binding value kind");
+        };
+    }
+
+    @Nonnull
+    private BindingValueModel toScalarBindingValueModel(@Nonnull final String name, @Nullable final Object value) {
+        if (value instanceof String) {
+            return new BindingValueModel(
+                    name,
+                    BindingValueKind.STRING,
+                    false,
+                    value,
+                    null,
+                    null,
+                    null,
+                    CodeBlock.of("$S", value).toString());
+        } else if (value instanceof Boolean) {
+            return new BindingValueModel(
+                    name, BindingValueKind.BOOLEAN, false, value, null, null, null, value.toString());
+        } else if (value instanceof Byte) {
+            return new BindingValueModel(
+                    name, BindingValueKind.BYTE, false, value, null, null, null, "(byte) " + value);
+        } else if (value instanceof Short) {
+            return new BindingValueModel(
+                    name, BindingValueKind.SHORT, false, value, null, null, null, "(short) " + value);
+        } else if (value instanceof Integer) {
+            return new BindingValueModel(name, BindingValueKind.INT, false, value, null, null, null, value.toString());
+        } else if (value instanceof Long) {
+            return new BindingValueModel(name, BindingValueKind.LONG, false, value, null, null, null, value + "L");
+        } else if (value instanceof Float) {
+            return new BindingValueModel(name, BindingValueKind.FLOAT, false, value, null, null, null, value + "F");
+        } else if (value instanceof Double) {
+            return new BindingValueModel(
+                    name, BindingValueKind.DOUBLE, false, value, null, null, null, value.toString());
+        } else if (value instanceof Character) {
+            final char c = (Character) value;
+            return new BindingValueModel(name, BindingValueKind.CHAR, false, value, null, null, null, charLiteral(c));
+        } else if (value instanceof TypeMirror) {
+            final String className = value.toString();
+            return new BindingValueModel(
+                    name,
+                    BindingValueKind.CLASS,
+                    false,
+                    null,
+                    className,
+                    null,
+                    null,
+                    CodeBlock.of("$S", className).toString());
+        } else if (value instanceof final VariableElement enumValue) {
+            final var enumTypeName = ((TypeElement) enumValue.getEnclosingElement())
+                    .getQualifiedName()
+                    .toString();
+            final var constantName = enumValue.getSimpleName().toString();
+            return new BindingValueModel(
+                    name,
+                    BindingValueKind.ENUM,
+                    false,
+                    null,
+                    null,
+                    enumTypeName,
+                    constantName,
+                    CodeBlock.of("$S", constantName).toString());
+        } else {
+            return unsupportedBindingValueModel(name, false);
+        }
+    }
+
+    @Nonnull
+    private BindingValueModel unsupportedBindingValueModel(@Nonnull final String name, final boolean array) {
+        return new BindingValueModel(
+                name, BindingValueKind.UNSUPPORTED, array, null, null, null, null, "<unsupported>");
+    }
+
+    @Nonnull
+    private String charLiteral(final char c) {
+        return switch (c) {
+            case '\b' -> "'\\b'";
+            case '\t' -> "'\\t'";
+            case '\n' -> "'\\n'";
+            case '\f' -> "'\\f'";
+            case '\r' -> "'\\r'";
+            case '"' -> "'\"'";
+            case '\'' -> "'\\''";
+            case '\\' -> "'\\\\'";
+            default -> Character.isISOControl(c) ? String.format("'\\u%04x'", (int) c) : "'" + c + "'";
+        };
+    }
+
+    private void validateInterceptedService(
+            @Nonnull final Binding binding,
+            @Nonnull final ServiceSpec service,
+            @Nullable final TypeElement serviceElement,
+            @Nonnull final List<InterceptorBindingDescriptor> interceptors,
+            @Nonnull final Element bindingSource) {
+        if (Binding.Kind.INPUT == binding.getKind()) {
+            throw new ProcessorException(
+                    "Interceptor bindings on injector input services are not supported", binding.getElement());
+        } else if (service.isOptional() || binding.isOptional()) {
+            throw new ProcessorException(
+                    "Interceptor bindings on nullable or optional provider bindings are not supported", bindingSource);
+        } else if (null == serviceElement) {
+            throw new ProcessorException("Intercepted bindings must publish service interfaces only", bindingSource);
+        } else if (Object.class
+                .getName()
+                .equals(serviceElement.getQualifiedName().toString())) {
+            throw new ProcessorException("Intercepted bindings must not publish java.lang.Object", bindingSource);
+        } else if (ElementKind.INTERFACE != serviceElement.getKind()) {
+            throw new ProcessorException("Intercepted bindings must publish service interfaces only", bindingSource);
+        } else if (!serviceElement.getTypeParameters().isEmpty()) {
+            throw new ProcessorException(
+                    "Intercepted service interfaces must not declare type parameters", serviceElement);
+        } else {
+            final var methods = ElementsUtil.getMethods(
+                    serviceElement, processingEnv.getElementUtils(), processingEnv.getTypeUtils());
+            for (final var method : methods) {
+                if (!method.getTypeParameters().isEmpty()) {
+                    throw new ProcessorException(
+                            "Intercepted service methods must not declare type parameters", method);
+                }
+            }
+            final var types = new HashSet<String>();
+            final var priorities = new HashSet<Integer>();
+            for (final var interceptor : interceptors) {
+                if (!types.add(interceptor.annotationTypeName())) {
+                    throw new ProcessorException(
+                            "Duplicate interceptor binding annotation type " + interceptor.annotationTypeName()
+                                    + " for service " + service.getCoordinate(),
+                            interceptor.getUsageElement(),
+                            interceptor.getAnnotation());
+                } else if (!priorities.add(interceptor.priority())) {
+                    throw new ProcessorException(
+                            "Duplicate interceptor priority " + interceptor.priority() + " for service "
+                                    + service.getCoordinate(),
+                            interceptor.getUsageElement(),
+                            interceptor.getAnnotation());
+                }
+            }
+        }
+    }
+
+    private void validateNoMethodLevelInterceptorBindings(
+            @Nonnull final Binding binding,
+            @Nullable final TypeElement serviceElement,
+            @Nonnull final Element bindingSource) {
+        if (null != serviceElement) {
+            final var methods = ElementsUtil.getMethods(
+                    serviceElement, processingEnv.getElementUtils(), processingEnv.getTypeUtils());
+            for (final var method : methods) {
+                if (!findInterceptorBindingAnnotations(method).isEmpty()) {
+                    throw new ProcessorException(
+                            "Interceptor bindings on service interface methods are not supported", method);
+                }
+            }
+        }
+        if (Binding.Kind.INJECTABLE == binding.getKind()) {
+            for (final var element : bindingSource.getEnclosedElements()) {
+                if (ElementKind.METHOD == element.getKind()
+                        && !findInterceptorBindingAnnotations(element).isEmpty()) {
+                    throw new ProcessorException(
+                            "Interceptor bindings on implementation methods are not supported", element);
+                }
+            }
+        }
+    }
+
+    private void resolveGenericInterceptors(@Nonnull final List<InterceptorBindingDescriptor> interceptors) {
+        for (final var interceptor : interceptors) {
+            interceptor.setInterceptor(resolveGenericInterceptor(interceptor));
+        }
+    }
+
+    @Nonnull
+    private InterceptorDescriptor resolveGenericInterceptor(@Nonnull final InterceptorBindingDescriptor interceptor) {
+        final var classname = interceptor.getImplementedBy();
+        final var existing = _registry.findInterceptorByClassName(classname);
+        if (null == existing) {
+            final var element = processingEnv.getElementUtils().getTypeElement(classname);
+            if (null == element) {
+                throw new ProcessorException(
+                        "Interceptor implementation " + classname + " does not exist",
+                        interceptor.getUsageElement(),
+                        interceptor.getAnnotation());
+            } else if (!ElementsUtil.isEffectivelyPublic(element)) {
+                throw new ProcessorException(
+                        "Interceptor implementation " + classname + " must be effectively public", element);
+            } else if (!AnnotationsUtil.hasAnnotationOfType(element, Constants.INJECTABLE_CLASSNAME)) {
+                throw new ProcessorException(
+                        "Interceptor implementation " + classname + " must be annotated with "
+                                + MemberChecks.toSimpleName(Constants.INJECTABLE_CLASSNAME),
+                        element);
+            } else {
+                var injectable = _registry.findInjectableByClassName(classname);
+                if (null == injectable) {
+                    injectable = deriveInjectableDescriptor(element);
+                    if (null == injectable) {
+                        throw new ProcessorException(
+                                "Unable to derive interceptor implementation " + classname, element);
+                    }
+                    _registry.registerInjectable(injectable);
+                }
+                final var descriptor = new InterceptorDescriptor(
+                        element,
+                        new EnumMap<>(validateLifecycleMethods(element, interceptor)),
+                        injectable.getBinding());
+                _registry.registerInterceptor(descriptor);
+                return descriptor;
+            }
+        } else {
+            return existing;
+        }
+    }
+
+    @Nonnull
+    private Map<InterceptorPhase, InterceptorMethodDescriptor> validateLifecycleMethods(
+            @Nonnull final TypeElement element, @Nonnull final InterceptorBindingDescriptor interceptor) {
+        final var methods = new EnumMap<InterceptorPhase, InterceptorMethodDescriptor>(InterceptorPhase.class);
+        for (final var enclosedElement : element.getEnclosedElements()) {
+            if (ElementKind.METHOD == enclosedElement.getKind()) {
+                final var method = (ExecutableElement) enclosedElement;
+                final var phases = lifecyclePhases(method);
+                final var phaseCount = phases.size();
+                if (phaseCount > 1) {
+                    throw new ProcessorException(
+                            "Interceptor lifecycle method must not have multiple lifecycle annotations", method);
+                } else if (1 == phaseCount) {
+                    final var phase = phases.get(0);
+                    validateLifecycleMethodShape(method, phase);
+                    final var descriptor = new InterceptorMethodDescriptor(
+                            phase, method, List.copyOf(validateLifecycleParameters(method, phase, interceptor)));
+                    if (null != methods.put(phase, descriptor)) {
+                        throw new ProcessorException(
+                                "Interceptor implementation " + element.getQualifiedName()
+                                        + " must declare at most one " + phase + " lifecycle method",
+                                method);
+                    }
+                }
+            }
+        }
+        if (methods.isEmpty()) {
+            throw new ProcessorException(
+                    "Interceptor implementation " + element.getQualifiedName()
+                            + " must declare at least one lifecycle method",
+                    element);
+        }
+        validateNoInheritedLifecycleMethods(element);
+        return methods;
+    }
+
+    @Nonnull
+    private List<InterceptorPhase> lifecyclePhases(@Nonnull final ExecutableElement method) {
+        final var phases = new ArrayList<InterceptorPhase>();
+        if (AnnotationsUtil.hasAnnotationOfType(method, Constants.INTERCEPTOR_BEFORE_CLASSNAME)) {
+            phases.add(InterceptorPhase.BEFORE);
+        }
+        if (AnnotationsUtil.hasAnnotationOfType(method, Constants.INTERCEPTOR_AROUND_CLASSNAME)) {
+            phases.add(InterceptorPhase.AROUND);
+        }
+        if (AnnotationsUtil.hasAnnotationOfType(method, Constants.INTERCEPTOR_AFTER_CLASSNAME)) {
+            phases.add(InterceptorPhase.AFTER);
+        }
+        if (AnnotationsUtil.hasAnnotationOfType(method, Constants.INTERCEPTOR_AFTER_EXCEPTION_CLASSNAME)) {
+            phases.add(InterceptorPhase.AFTER_EXCEPTION);
+        }
+        return phases;
+    }
+
+    private void validateLifecycleMethodShape(
+            @Nonnull final ExecutableElement method, @Nonnull final InterceptorPhase phase) {
+        final var modifiers = method.getModifiers();
+        if (!modifiers.contains(Modifier.PUBLIC)
+                || modifiers.contains(Modifier.STATIC)
+                || modifiers.contains(Modifier.PRIVATE)
+                || modifiers.contains(Modifier.PROTECTED)) {
+            throw new ProcessorException("Interceptor lifecycle methods must be public instance methods", method);
+        } else if (InterceptorPhase.AROUND == phase) {
+            final var objectType = processingEnv.getElementUtils().getTypeElement(Object.class.getName());
+            if (null == objectType
+                    || !processingEnv.getTypeUtils().isSameType(method.getReturnType(), objectType.asType())) {
+                throw new ProcessorException(
+                        "Interceptor @Around lifecycle methods must return java.lang.Object", method);
+            } else if (!method.getTypeParameters().isEmpty()) {
+                throw new ProcessorException("Interceptor lifecycle methods must not declare type parameters", method);
+            }
+        } else if (TypeKind.VOID != method.getReturnType().getKind()) {
+            throw new ProcessorException("Interceptor lifecycle methods must return void", method);
+        } else if (!method.getTypeParameters().isEmpty()) {
+            throw new ProcessorException("Interceptor lifecycle methods must not declare type parameters", method);
+        } else {
+            for (final var thrownType : method.getThrownTypes()) {
+                if (!isUncheckedThrowable(thrownType)) {
+                    throw new ProcessorException(
+                            "Interceptor lifecycle methods must not declare checked exceptions", method);
+                }
+            }
+        }
+    }
+
+    private boolean isUncheckedThrowable(@Nonnull final TypeMirror type) {
+        final var elementUtils = processingEnv.getElementUtils();
+        final var runtimeException = elementUtils.getTypeElement(RuntimeException.class.getName());
+        final var error = elementUtils.getTypeElement(Error.class.getName());
+        final var typeUtils = processingEnv.getTypeUtils();
+        return typeUtils.isAssignable(type, runtimeException.asType()) || typeUtils.isAssignable(type, error.asType());
+    }
+
+    private void validateNoInheritedLifecycleMethods(@Nonnull final TypeElement element) {
+        validateNoInheritedLifecycleMethods(element, element);
+    }
+
+    private void validateNoInheritedLifecycleMethods(
+            @Nonnull final TypeElement element, @Nonnull final TypeElement type) {
+        for (final var supertype : processingEnv.getTypeUtils().directSupertypes(type.asType())) {
+            if (TypeKind.DECLARED == supertype.getKind()) {
+                final var superElement = (TypeElement) ((DeclaredType) supertype).asElement();
+                if (Object.class
+                        .getName()
+                        .equals(superElement.getQualifiedName().toString())) {
+                    continue;
+                }
+                for (final var member : superElement.getEnclosedElements()) {
+                    if (ElementKind.METHOD == member.getKind()) {
+                        final var method = (ExecutableElement) member;
+                        if (!lifecyclePhases(method).isEmpty()) {
+                            final var override = findDeclaredOverride(element, method);
+                            if (null == override || lifecyclePhases(override).isEmpty()) {
+                                throw new ProcessorException(
+                                        "Inherited interceptor lifecycle annotations are not supported", element);
+                            }
+                        }
+                    }
+                }
+                validateNoInheritedLifecycleMethods(element, superElement);
+            }
+        }
+    }
+
+    @Nullable
+    private ExecutableElement findDeclaredOverride(
+            @Nonnull final TypeElement element, @Nonnull final ExecutableElement inheritedMethod) {
+        for (final var enclosedElement : element.getEnclosedElements()) {
+            if (ElementKind.METHOD == enclosedElement.getKind()) {
+                final var method = (ExecutableElement) enclosedElement;
+                if (processingEnv.getElementUtils().overrides(method, inheritedMethod, element)) {
+                    return method;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Nonnull
+    private List<LifecycleParameterDescriptor> validateLifecycleParameters(
+            @Nonnull final ExecutableElement method,
+            @Nonnull final InterceptorPhase phase,
+            @Nonnull final InterceptorBindingDescriptor interceptor) {
+        final var parameters = new ArrayList<LifecycleParameterDescriptor>();
+        for (final var parameter : method.getParameters()) {
+            parameters.add(validateLifecycleParameter(parameter, phase, interceptor));
+        }
+        if (InterceptorPhase.AROUND == phase
+                && 1
+                        != parameters.stream()
+                                .filter(p -> LifecycleParameterDescriptor.Kind.PROCEED == p.kind())
+                                .count()) {
+            throw new ProcessorException(
+                    "Interceptor @Around lifecycle methods must declare exactly one @Proceed parameter", method);
+        }
+        return parameters;
+    }
+
+    @Nonnull
+    private LifecycleParameterDescriptor validateLifecycleParameter(
+            @Nonnull final VariableElement parameter,
+            @Nonnull final InterceptorPhase phase,
+            @Nonnull final InterceptorBindingDescriptor interceptor) {
+        final var markers = new ArrayList<AnnotationMirror>();
+        for (final var annotation : parameter.getAnnotationMirrors()) {
+            if (isLifecycleMarker(annotation)) {
+                markers.add(annotation);
+            }
+        }
+        if (markers.isEmpty()) {
+            throw new ProcessorException(
+                    "Interceptor lifecycle parameters must have exactly one marker annotation", parameter);
+        } else if (markers.size() > 1) {
+            throw new ProcessorException(
+                    "Interceptor lifecycle parameters must not have multiple marker annotations", parameter);
+        } else {
+            final var marker = markers.get(0);
+            final var markerType = ((TypeElement) marker.getAnnotationType().asElement())
+                    .getQualifiedName()
+                    .toString();
+            final var type = parameter.asType();
+            if (Constants.INTERCEPTOR_SERVICE_TYPE_CLASSNAME.equals(markerType)) {
+                requireType(parameter, type, String.class.getName(), "@ServiceType");
+                return new LifecycleParameterDescriptor(LifecycleParameterDescriptor.Kind.SERVICE_TYPE, "");
+            } else if (Constants.INTERCEPTOR_METHOD_NAME_CLASSNAME.equals(markerType)) {
+                requireType(parameter, type, String.class.getName(), "@MethodName");
+                return new LifecycleParameterDescriptor(LifecycleParameterDescriptor.Kind.METHOD_NAME, "");
+            } else if (Constants.INTERCEPTOR_ARGUMENTS_CLASSNAME.equals(markerType)) {
+                if (TypeKind.ARRAY != type.getKind() || !"java.lang.Object[]".equals(type.toString())) {
+                    throw new ProcessorException("@Arguments lifecycle parameter must have type Object[]", parameter);
+                } else {
+                    return new LifecycleParameterDescriptor(LifecycleParameterDescriptor.Kind.ARGUMENTS, "");
+                }
+            } else if (Constants.INTERCEPTOR_PROCEED_CLASSNAME.equals(markerType)) {
+                if (InterceptorPhase.AROUND != phase) {
+                    throw new ProcessorException(
+                            "@Proceed lifecycle parameter is only valid on @Around methods", parameter);
+                } else {
+                    requireType(parameter, type, Constants.INTERCEPTOR_INVOCATION_CLASSNAME, "@Proceed");
+                    return new LifecycleParameterDescriptor(LifecycleParameterDescriptor.Kind.PROCEED, "");
+                }
+            } else if (Constants.INTERCEPTOR_RESULT_CLASSNAME.equals(markerType)) {
+                if (InterceptorPhase.AFTER != phase) {
+                    throw new ProcessorException(
+                            "@Result lifecycle parameter is only valid on @After methods", parameter);
+                } else {
+                    requireType(parameter, type, Object.class.getName(), "@Result");
+                    return new LifecycleParameterDescriptor(LifecycleParameterDescriptor.Kind.RESULT, "");
+                }
+            } else if (Constants.INTERCEPTOR_THROWN_CLASSNAME.equals(markerType)) {
+                if (InterceptorPhase.AFTER_EXCEPTION != phase) {
+                    throw new ProcessorException(
+                            "@Thrown lifecycle parameter is only valid on @AfterException methods", parameter);
+                } else {
+                    requireType(parameter, type, Throwable.class.getName(), "@Thrown");
+                    return new LifecycleParameterDescriptor(LifecycleParameterDescriptor.Kind.THROWN, "");
+                }
+            } else {
+                assert Constants.INTERCEPTOR_BINDING_VALUE_CLASSNAME.equals(markerType);
+                final String name = AnnotationsUtil.getAnnotationValueValue(marker, "value");
+                validateBindingValueParameter(parameter, type, interceptor, name);
+                return new LifecycleParameterDescriptor(LifecycleParameterDescriptor.Kind.BINDING_VALUE, name);
+            }
+        }
+    }
+
+    private boolean isLifecycleMarker(@Nonnull final AnnotationMirror annotation) {
+        final var classname = ((TypeElement) annotation.getAnnotationType().asElement())
+                .getQualifiedName()
+                .toString();
+        return Constants.INTERCEPTOR_SERVICE_TYPE_CLASSNAME.equals(classname)
+                || Constants.INTERCEPTOR_METHOD_NAME_CLASSNAME.equals(classname)
+                || Constants.INTERCEPTOR_BINDING_VALUE_CLASSNAME.equals(classname)
+                || Constants.INTERCEPTOR_ARGUMENTS_CLASSNAME.equals(classname)
+                || Constants.INTERCEPTOR_PROCEED_CLASSNAME.equals(classname)
+                || Constants.INTERCEPTOR_RESULT_CLASSNAME.equals(classname)
+                || Constants.INTERCEPTOR_THROWN_CLASSNAME.equals(classname);
+    }
+
+    private void requireType(
+            @Nonnull final Element element,
+            @Nonnull final TypeMirror actualType,
+            @Nonnull final String expectedTypeName,
+            @Nonnull final String markerName) {
+        final var expected = processingEnv.getElementUtils().getTypeElement(expectedTypeName);
+        if (null == expected || !processingEnv.getTypeUtils().isSameType(actualType, expected.asType())) {
+            throw new ProcessorException(
+                    markerName + " lifecycle parameter must have type " + expectedTypeName, element);
+        }
+    }
+
+    private void validateBindingValueParameter(
+            @Nonnull final VariableElement parameter,
+            @Nonnull final TypeMirror type,
+            @Nonnull final InterceptorBindingDescriptor interceptor,
+            @Nonnull final String name) {
+        final var value = interceptor.values().get(name);
+        if (null == value) {
+            throw new ProcessorException(
+                    "@BindingValue references unknown interceptor binding member " + name, parameter);
+        } else if (BindingValueKind.UNSUPPORTED == value.kind()) {
+            throw new ProcessorException(
+                    "@BindingValue member " + name + " has an unsupported v1 value type", parameter);
+        } else if (value.array()) {
+            if (!isArrayMatch(type, value.kind())) {
+                throw new ProcessorException(
+                        "@BindingValue member " + name + " is not compatible with lifecycle parameter type " + type,
+                        parameter);
+            }
+        } else if (BindingValueKind.STRING == value.kind()
+                || BindingValueKind.ENUM == value.kind()
+                || BindingValueKind.CLASS == value.kind()) {
+            requireType(parameter, type, String.class.getName(), "@BindingValue");
+        } else if (!isPrimitiveOrBoxedMatch(type, value.kind())) {
+            throw new ProcessorException(
+                    "@BindingValue member " + name + " is not compatible with lifecycle parameter type " + type,
+                    parameter);
+        }
+    }
+
+    private boolean isArrayMatch(@Nonnull final TypeMirror type, @Nonnull final BindingValueKind kind) {
+        final var name = type.toString();
+        return switch (kind) {
+            case STRING, ENUM, CLASS -> "java.lang.String[]".equals(name);
+            case BOOLEAN -> "boolean[]".equals(name);
+            case BYTE -> "byte[]".equals(name);
+            case SHORT -> "short[]".equals(name);
+            case INT -> "int[]".equals(name);
+            case LONG -> "long[]".equals(name);
+            case FLOAT -> "float[]".equals(name);
+            case DOUBLE -> "double[]".equals(name);
+            case CHAR -> "char[]".equals(name);
+            case UNSUPPORTED -> false;
+        };
+    }
+
+    private boolean isPrimitiveOrBoxedMatch(@Nonnull final TypeMirror type, @Nonnull final BindingValueKind kind) {
+        final var name = type.toString();
+        return switch (kind) {
+            case BOOLEAN -> "boolean".equals(name) || Boolean.class.getName().equals(name);
+            case BYTE -> "byte".equals(name) || Byte.class.getName().equals(name);
+            case SHORT -> "short".equals(name) || Short.class.getName().equals(name);
+            case INT -> "int".equals(name) || Integer.class.getName().equals(name);
+            case LONG -> "long".equals(name) || Long.class.getName().equals(name);
+            case FLOAT -> "float".equals(name) || Float.class.getName().equals(name);
+            case DOUBLE -> "double".equals(name) || Double.class.getName().equals(name);
+            case CHAR -> "char".equals(name) || Character.class.getName().equals(name);
+            default -> false;
+        };
+    }
+
+    private void validateImplementedByName(
+            @Nonnull final String name, @Nonnull final Element element, @Nonnull final AnnotationMirror annotation) {
+        if (name.contains("$") || !isDottedJavaName(name)) {
+            throw new ProcessorException(
+                    "implementedBy must be a canonical dotted qualified Java name", element, annotation);
+        }
+    }
+
+    private boolean isDottedJavaName(@Nonnull final String name) {
+        if (name.isEmpty() || name.startsWith(".") || name.endsWith(".") || name.contains("..")) {
+            return false;
+        } else {
+            for (final var part : name.split("\\.")) {
+                if (part.isEmpty() || !SourceVersion.isIdentifier(part) || SourceVersion.isKeyword(part)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
+    @Nonnull
+    private ServiceRequest processFragmentServiceParameter(
+            @Nonnull final VariableElement parameter, @Nonnull final TypeMirror type) {
+        if (TypesUtil.containsArrayType(type)) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.FRAGMENT_CLASSNAME,
+                            "contain a method with a parameter that contains an array type"),
+                    parameter);
+        } else if (TypesUtil.containsWildcard(type)) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.FRAGMENT_CLASSNAME,
+                            "contain a method with a parameter that contains a wildcard type parameter"),
+                    parameter);
+        } else if (TypesUtil.containsRawType(type)) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.FRAGMENT_CLASSNAME, "contain a method with a parameter that contains a raw type"),
+                    parameter);
+        } else {
+            TypeMirror dependencyType = null;
+            ServiceRequest.Kind kind = null;
+            for (final ServiceRequest.Kind candidate : ServiceRequest.Kind.values()) {
+                dependencyType = candidate.extractType(type);
+                if (null != dependencyType) {
+                    kind = candidate;
+                    break;
+                }
+            }
+            if (null == kind) {
+                throw new ProcessorException(
+                        MemberChecks.mustNot(
+                                Constants.FRAGMENT_CLASSNAME,
+                                "contain a method with a parameter that contains an unexpected parameterized type."
+                                        + " Only parameterized types known to the framework are supported"),
+                        parameter);
+            } else {
+                final boolean optional = AnnotationsUtil.hasNullableAnnotation(parameter);
+                if (optional && ServiceRequest.Kind.INSTANCE != kind) {
+                    throw new ProcessorException(
+                            MemberChecks.mustNot(
+                                    Constants.FRAGMENT_CLASSNAME,
+                                    "contain a method with a parameter annotated with the "
+                                            + MemberChecks.toSimpleName(AnnotationsUtil.NULLABLE_CLASSNAME)
+                                            + " annotation that is not an instance dependency kind"),
+                            parameter);
+                }
+                final String qualifier = getQualifier(parameter);
+                if (AnnotationsUtil.hasAnnotationOfType(parameter, Constants.JSR_330_NAMED_CLASSNAME)) {
+                    final String message = MemberChecks.mustNot(
+                            Constants.FRAGMENT_CLASSNAME,
+                            "contain a method with a parameter annotated with the " + Constants.JSR_330_NAMED_CLASSNAME
+                                    + " annotation. Use the " + Constants.NAMED_CLASSNAME
+                                    + " annotation instead");
+                    throw new ProcessorException(message, parameter);
+                }
+                final Coordinate coordinate = new Coordinate(qualifier, dependencyType);
+                final ServiceSpec service = new ServiceSpec(coordinate, optional);
+                return new ServiceRequest(kind, service, parameter);
+            }
+        }
+    }
+
+    private void processInjectable(@Nonnull final TypeElement element) {
+        debug(() -> "Processing Injectable: " + element);
+        if (ElementKind.CLASS != element.getKind()) {
+            throw new ProcessorException(MemberChecks.must(Constants.INJECTABLE_CLASSNAME, "be a class"), element);
+        } else if (element.getModifiers().contains(Modifier.ABSTRACT)) {
+            throw new ProcessorException(MemberChecks.mustNot(Constants.INJECTABLE_CLASSNAME, "be abstract"), element);
+        } else if (ElementsUtil.isNonStaticNestedClass(element)) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(Constants.INJECTABLE_CLASSNAME, "be a non-static nested class"), element);
+        } else if (!element.getTypeParameters().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(Constants.INJECTABLE_CLASSNAME, "have type parameters"), element);
+        }
+        final List<ExecutableElement> constructors = ElementsUtil.getConstructors(element);
+        final ExecutableElement constructor = constructors.get(0);
+        if (constructors.size() > 1) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(Constants.INJECTABLE_CLASSNAME, "have multiple constructors"), element);
+        }
+        injectableConstructorShouldNotBeProtected(constructor);
+        injectableConstructorShouldNotBePublic(constructor);
+        injectableShouldNotHaveScopedAnnotation(element);
+
+        final boolean eager = AnnotationsUtil.hasAnnotationOfType(element, Constants.EAGER_CLASSNAME);
+
+        final List<ServiceRequest> dependencies = new ArrayList<>();
+        int index = 0;
+        final List<? extends TypeMirror> parameterTypes = ((ExecutableType) constructor.asType()).getParameterTypes();
+        for (final VariableElement parameter : constructor.getParameters()) {
+            dependencies.add(handleConstructorParameter(parameter, parameterTypes.get(index)));
+            index++;
+        }
+
+        final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType(element, Constants.TYPED_CLASSNAME);
+        final AnnotationValue value =
+                null != annotation ? AnnotationsUtil.findAnnotationValue(annotation, "value") : null;
+
+        final String qualifier = getQualifier(element);
+        if (AnnotationsUtil.hasAnnotationOfType(element, Constants.JSR_330_NAMED_CLASSNAME)
+                && ElementsUtil.isWarningNotSuppressed(element, Constants.WARNING_JSR_330_NAMED)) {
+            final String message = MemberChecks.mustNot(
+                    Constants.INJECTABLE_CLASSNAME,
+                    "be annotated with the " + Constants.JSR_330_NAMED_CLASSNAME + " annotation. " + "Use the "
+                            + Constants.NAMED_CLASSNAME + " annotation instead. "
+                            + MemberChecks.suppressedBy(Constants.WARNING_JSR_330_NAMED));
+            warning(message, element);
+        }
+        if (AnnotationsUtil.hasAnnotationOfType(element, Constants.CDI_TYPED_CLASSNAME)
+                && ElementsUtil.isWarningNotSuppressed(element, Constants.WARNING_CDI_TYPED)) {
+            final String message = MemberChecks.mustNot(
+                    Constants.INJECTABLE_CLASSNAME,
+                    "be annotated with the " + Constants.CDI_TYPED_CLASSNAME + " annotation. " + "Use the "
+                            + Constants.TYPED_CLASSNAME + " annotation instead. "
+                            + MemberChecks.suppressedBy(Constants.WARNING_CDI_TYPED));
+            warning(message, element);
+        }
+        if (AnnotationsUtil.hasAnnotationOfType(constructor, Constants.JSR_330_INJECT_CLASSNAME)
+                && ElementsUtil.isWarningNotSuppressed(constructor, Constants.WARNING_JSR_330_INJECT)) {
+            final String message = MemberChecks.mustNot(
+                    Constants.INJECTABLE_CLASSNAME,
+                    "be annotated with the " + Constants.JSR_330_INJECT_CLASSNAME + " annotation. "
+                            + MemberChecks.suppressedBy(Constants.WARNING_JSR_330_INJECT));
+            warning(message, constructor);
+        }
+        @SuppressWarnings("unchecked")
+        final List<TypeMirror> types = null == value
+                ? Collections.singletonList(element.asType())
+                : ((List<AnnotationValue>) value.getValue())
+                        .stream().map(v -> (TypeMirror) v.getValue()).toList();
+
+        final ServiceSpec[] specs = new ServiceSpec[types.size()];
+        for (int i = 0; i < specs.length; i++) {
+            final TypeMirror type = types.get(i);
+            if (!processingEnv.getTypeUtils().isAssignable(element.asType(), type)) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(Constants.TYPED_CLASSNAME)
+                                + " specified a type that is not assignable to the declaring type",
+                        element,
+                        annotation,
+                        value);
+            } else if (TypeKind.DECLARED == type.getKind() && isParameterized((DeclaredType) type)) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(Constants.TYPED_CLASSNAME)
+                                + " specified a type that is a a parameterized type",
+                        element,
+                        annotation,
+                        value);
+            }
+            specs[i] = new ServiceSpec(new Coordinate(qualifier, type), false);
+        }
+
+        if (0 == specs.length && !eager) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.INJECTABLE_CLASSNAME,
+                            "specify zero types with the " + MemberChecks.toSimpleName(Constants.TYPED_CLASSNAME)
+                                    + " annotation or must be annotated with the "
+                                    + MemberChecks.toSimpleName(Constants.EAGER_CLASSNAME)
+                                    + " annotation otherwise the component can not be created by the injector"),
+                    element);
+        }
+        if (0 == specs.length && !qualifier.isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.INJECTABLE_CLASSNAME,
+                            "specify zero types with the " + MemberChecks.toSimpleName(Constants.TYPED_CLASSNAME)
+                                    + " annotation and specify a qualifier with the "
+                                    + MemberChecks.toSimpleName(Constants.NAMED_CLASSNAME)
+                                    + " annotation as the qualifier is meaningless"),
+                    element);
+        }
+
+        final Binding binding = new Binding(
+                Binding.Kind.INJECTABLE,
+                element.getQualifiedName().toString(),
+                Arrays.asList(specs),
+                eager,
+                constructor,
+                dependencies.toArray(new ServiceRequest[0]));
+        binding.setInterceptorBindingSource(element, findInterceptorBindingAnnotationValues(element));
+        final InjectableDescriptor injectable = new InjectableDescriptor(binding);
+        _registry.registerInjectable(injectable);
+    }
+
+    @Nonnull
+    private FactoryMethodDescriptor processFactoryMethod(
+            @Nonnull final TypeElement factory,
+            @Nonnull final ExecutableElement method,
+            @Nonnull final List<FactoryDependencyDescriptor> dependencies,
+            @Nonnull final Set<String> usedFieldNames) {
+        if (!findInterceptorBindingAnnotations(method).isEmpty()) {
+            throw new ProcessorException("Interceptor bindings on non-fragment methods are not supported", method);
+        }
+        if (TypeKind.VOID == method.getReturnType().getKind()) {
+            throw new ProcessorException(
+                    MemberChecks.must(Constants.FACTORY_CLASSNAME, "only contain abstract methods that return a value"),
+                    method);
+        } else if (!method.getTypeParameters().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(Constants.FACTORY_CLASSNAME, "contain abstract methods with a type parameter"),
+                    method);
+        } else if (!method.getThrownTypes().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(Constants.FACTORY_CLASSNAME, "contain abstract methods that throw exceptions"),
+                    method);
+        } else if (TypeKind.DECLARED != method.getReturnType().getKind()) {
+            throw new ProcessorException(
+                    MemberChecks.must(Constants.FACTORY_CLASSNAME, "contain abstract methods that return a class type"),
+                    method);
+        }
+
+        final DeclaredType returnType = (DeclaredType) method.getReturnType();
+        if (!returnType.getTypeArguments().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.FACTORY_CLASSNAME, "contain abstract methods that return a parameterized type"),
+                    method);
+        }
+
+        final TypeElement producedType = (TypeElement) returnType.asElement();
+        if (ElementKind.CLASS != producedType.getKind()) {
+            throw new ProcessorException(
+                    MemberChecks.must(Constants.FACTORY_CLASSNAME, "contain abstract methods that return a class type"),
+                    method);
+        } else if (producedType.getModifiers().contains(Modifier.ABSTRACT)) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.FACTORY_CLASSNAME, "contain abstract methods that return an abstract class"),
+                    method);
+        } else if (ElementsUtil.isNonStaticNestedClass(producedType)) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.FACTORY_CLASSNAME,
+                            "contain abstract methods that return a non-static nested class"),
+                    method);
+        } else if (!producedType.getTypeParameters().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.FACTORY_CLASSNAME,
+                            "contain abstract methods that return a class with type parameters"),
+                    method);
+        }
+
+        final List<ExecutableElement> constructors = ElementsUtil.getConstructors(producedType);
+        if (1 != constructors.size()) {
+            throw new ProcessorException(
+                    MemberChecks.must(Constants.FACTORY_CLASSNAME, "create types with a single accessible constructor"),
+                    method);
+        }
+        final ExecutableElement constructor = constructors.get(0);
+        if (!isFactoryAccessible(factory, constructor)) {
+            throw new ProcessorException(
+                    MemberChecks.must(
+                            Constants.FACTORY_CLASSNAME,
+                            "create types with a constructor accessible from the factory interface"),
+                    method);
+        }
+
+        final List<? extends VariableElement> constructorParameters = constructor.getParameters();
+        final List<? extends VariableElement> methodParameters = method.getParameters();
+        final Map<Integer, VariableElement> methodParametersByConstructorIndex = new LinkedHashMap<>();
+        final Map<Integer, FactoryDependencyDescriptor> dependenciesByConstructorIndex = new LinkedHashMap<>();
+        final List<? extends TypeMirror> constructorParameterTypes =
+                ((ExecutableType) constructor.asType()).getParameterTypes();
+
+        for (final VariableElement parameter : methodParameters) {
+            boolean matched = false;
+            for (int i = 0; i < constructorParameters.size(); i++) {
+                final VariableElement constructorParameter = constructorParameters.get(i);
+                if (constructorParameter.getSimpleName().contentEquals(parameter.getSimpleName())) {
+                    matched = true;
+                    if (methodParametersByConstructorIndex.containsKey(i)) {
+                        throw new ProcessorException(
+                                MemberChecks.mustNot(
+                                        Constants.FACTORY_CLASSNAME,
+                                        "contain duplicate abstract method parameters that "
+                                                + "match the same constructor parameter"),
+                                parameter);
+                    }
+                    if (!processingEnv
+                            .getTypeUtils()
+                            .isSameType(parameter.asType(), constructorParameterTypes.get(i))) {
+                        throw new ProcessorException(
+                                MemberChecks.must(
+                                        Constants.FACTORY_CLASSNAME,
+                                        "contain abstract method parameters whose name and type "
+                                                + "match the created type constructor parameter"),
+                                parameter);
+                    }
+                    methodParametersByConstructorIndex.put(i, parameter);
+                    break;
+                }
+            }
+            if (!matched) {
+                throw new ProcessorException(
+                        MemberChecks.must(
+                                Constants.FACTORY_CLASSNAME,
+                                "contain abstract method parameters whose name and type "
+                                        + "match the created type constructor parameter"),
+                        parameter);
+            }
+        }
+
+        for (int i = 0; i < constructorParameters.size(); i++) {
+            if (!methodParametersByConstructorIndex.containsKey(i)) {
+                final VariableElement constructorParameter = constructorParameters.get(i);
+                final ServiceRequest request =
+                        handleConstructorParameter(constructorParameter, constructorParameterTypes.get(i));
+                final FactoryDependencyDescriptor dependency =
+                        findOrCreateFactoryDependency(request, dependencies, usedFieldNames);
+                dependenciesByConstructorIndex.put(i, dependency);
+            }
+        }
+
+        return new FactoryMethodDescriptor(
+                method,
+                producedType.asType(),
+                constructor,
+                constructorParameters,
+                methodParametersByConstructorIndex,
+                dependenciesByConstructorIndex);
+    }
+
+    @Nonnull
+    private FactoryDependencyDescriptor findOrCreateFactoryDependency(
+            @Nonnull final ServiceRequest request,
+            @Nonnull final List<FactoryDependencyDescriptor> dependencies,
+            @Nonnull final Set<String> usedFieldNames) {
+        for (final FactoryDependencyDescriptor existing : dependencies) {
+            if (existing.matches(request)) {
+                return existing;
+            }
+        }
+
+        final VariableElement parameter = (VariableElement) request.getElement();
+        final String parameterName = parameter.getSimpleName().toString();
+        final String fieldName = uniqueFactoryFieldName(parameterName, usedFieldNames);
         final FactoryDependencyDescriptor dependency =
-          findOrCreateFactoryDependency( request, dependencies, usedFieldNames );
-        dependenciesByConstructorIndex.put( i, dependency );
-      }
+                new FactoryDependencyDescriptor(request, parameterName, fieldName);
+        dependencies.add(dependency);
+        return dependency;
     }
 
-    return new FactoryMethodDescriptor( method,
-                                        producedType.asType(),
-                                        constructor,
-                                        constructorParameters,
-                                        methodParametersByConstructorIndex,
-                                        dependenciesByConstructorIndex );
-  }
-
-  @Nonnull
-  private FactoryDependencyDescriptor findOrCreateFactoryDependency( @Nonnull final ServiceRequest request,
-                                                                     @Nonnull final List<FactoryDependencyDescriptor> dependencies,
-                                                                     @Nonnull final Set<String> usedFieldNames )
-  {
-    for ( final FactoryDependencyDescriptor existing : dependencies )
-    {
-      if ( existing.matches( request ) )
-      {
-        return existing;
-      }
-    }
-
-    final VariableElement parameter = (VariableElement) request.getElement();
-    final String parameterName = parameter.getSimpleName().toString();
-    final String fieldName = uniqueFactoryFieldName( parameterName, usedFieldNames );
-    final FactoryDependencyDescriptor dependency =
-      new FactoryDependencyDescriptor( request, parameterName, fieldName );
-    dependencies.add( dependency );
-    return dependency;
-  }
-
-  @Nonnull
-  private String uniqueFactoryFieldName( @Nonnull final String parameterName,
-                                         @Nonnull final Set<String> usedFieldNames )
-  {
-    final String baseName = StingGeneratorUtil.FRAMEWORK_PREFIX + parameterName;
-    String candidate = baseName;
-    int index = 2;
-    while ( !usedFieldNames.add( candidate ) )
-    {
-      candidate = baseName + index;
-      index++;
-    }
-    return candidate;
-  }
-
-  private boolean isFactoryAccessible( @Nonnull final TypeElement factory,
-                                       @Nonnull final ExecutableElement constructor )
-  {
-    final Set<Modifier> modifiers = constructor.getModifiers();
-    if ( modifiers.contains( Modifier.PRIVATE ) )
-    {
-      return false;
-    }
-    else if ( modifiers.contains( Modifier.PUBLIC ) )
-    {
-      return true;
-    }
-    else
-    {
-      final String factoryPackage = GeneratorUtil.getQualifiedPackageName( factory );
-      final String targetPackage =
-        GeneratorUtil.getQualifiedPackageName( (TypeElement) constructor.getEnclosingElement() );
-      return factoryPackage.equals( targetPackage );
-    }
-  }
-
-  // Binary descriptor writing and verification removed
-
-  private void emitInjectableJsonDescriptor( @Nonnull final InjectableDescriptor injectable )
-    throws IOException
-  {
-    if ( _emitJsonDescriptors )
-    {
-      final TypeElement element = injectable.getElement();
-      final String filename = toFilename( element ) + JSON_SUFFIX;
-      JsonUtil.writeJsonResource( processingEnv, element, filename, injectable::write );
-    }
-  }
-
-  @Nonnull
-  private String toFilename( @Nonnull final TypeElement typeElement )
-  {
-    return GeneratorUtil.getGeneratedClassName( typeElement, "", "" ).toString().replace( ".", "/" );
-  }
-
-  @Nonnull
-  private ServiceRequest handleConstructorParameter( @Nonnull final VariableElement parameter,
-                                                     @Nonnull final TypeMirror type )
-  {
-    if ( TypesUtil.containsArrayType( type ) )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                          "contain a constructor with a parameter that contains an array type" ),
-                                    parameter );
-    }
-    else if ( TypesUtil.containsWildcard( type ) )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                          "contain a constructor with a parameter that contains a wildcard type parameter" ),
-                                    parameter );
-    }
-    else if ( TypesUtil.containsRawType( type ) )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                          "contain a constructor with a parameter that contains a raw type" ),
-                                    parameter );
-    }
-    else
-    {
-      TypeMirror dependencyType = null;
-      ServiceRequest.Kind kind = null;
-      for ( final ServiceRequest.Kind candidate : ServiceRequest.Kind.values() )
-      {
-        dependencyType = candidate.extractType( type );
-        if ( null != dependencyType )
-        {
-          kind = candidate;
-          break;
+    @Nonnull
+    private String uniqueFactoryFieldName(
+            @Nonnull final String parameterName, @Nonnull final Set<String> usedFieldNames) {
+        final String baseName = StingGeneratorUtil.FRAMEWORK_PREFIX + parameterName;
+        String candidate = baseName;
+        int index = 2;
+        while (!usedFieldNames.add(candidate)) {
+            candidate = baseName + index;
+            index++;
         }
-      }
-      if ( null == kind )
-      {
-        throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                            "contain a constructor with a parameter that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" ),
-                                      parameter );
-      }
-      else
-      {
-        final boolean optional = AnnotationsUtil.hasNullableAnnotation( parameter );
-        if ( optional && ServiceRequest.Kind.INSTANCE != kind )
-        {
-          throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                              "contain a constructor with a parameter annotated with " +
-                                                              MemberChecks.toSimpleName( AnnotationsUtil.NULLABLE_CLASSNAME ) +
-                                                              " that is not an instance dependency kind" ),
-                                        parameter );
+        return candidate;
+    }
+
+    private boolean isFactoryAccessible(
+            @Nonnull final TypeElement factory, @Nonnull final ExecutableElement constructor) {
+        final Set<Modifier> modifiers = constructor.getModifiers();
+        if (modifiers.contains(Modifier.PRIVATE)) {
+            return false;
+        } else if (modifiers.contains(Modifier.PUBLIC)) {
+            return true;
+        } else {
+            final String factoryPackage = GeneratorUtil.getQualifiedPackageName(factory);
+            final String targetPackage =
+                    GeneratorUtil.getQualifiedPackageName((TypeElement) constructor.getEnclosingElement());
+            return factoryPackage.equals(targetPackage);
         }
-        final String qualifier = getQualifier( parameter );
-        if ( AnnotationsUtil.hasAnnotationOfType( parameter, Constants.JSR_330_NAMED_CLASSNAME ) &&
-             ElementsUtil.isWarningNotSuppressed( parameter, Constants.WARNING_JSR_330_NAMED ) )
-        {
-          final String message =
-            MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                  "contain a constructor with a parameter annotated with the " +
-                                  Constants.JSR_330_NAMED_CLASSNAME + " annotation. Use the " +
-                                  Constants.NAMED_CLASSNAME + " annotation instead. " +
-                                  MemberChecks.suppressedBy( Constants.WARNING_JSR_330_NAMED ) );
-          warning( message, parameter );
+    }
+
+    // Binary descriptor writing and verification removed
+
+    private void emitInjectableJsonDescriptor(@Nonnull final InjectableDescriptor injectable) throws IOException {
+        if (_emitJsonDescriptors) {
+            final TypeElement element = injectable.getElement();
+            final String filename = toFilename(element) + JSON_SUFFIX;
+            JsonUtil.writeJsonResource(processingEnv, element, filename, injectable::write);
         }
-        final Coordinate coordinate = new Coordinate( qualifier, dependencyType );
-        final ServiceSpec service = new ServiceSpec( coordinate, optional );
-        return new ServiceRequest( kind, service, parameter );
-      }
     }
-  }
 
-  @Nonnull
-  private String getQualifier( @Nonnull final Element element )
-  {
-    final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType( element, Constants.NAMED_CLASSNAME );
-    return null == annotation ? "" : AnnotationsUtil.getAnnotationValueValue( annotation, "value" );
-  }
-
-  private void injectableShouldNotHaveScopedAnnotation( @Nonnull final TypeElement element )
-  {
-    final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations( element );
-    if ( !scopedAnnotations.isEmpty() &&
-         ElementsUtil.isWarningNotSuppressed( element, Constants.WARNING_JSR_330_SCOPED ) )
-    {
-      final String message =
-        MemberChecks.shouldNot( Constants.INJECTABLE_CLASSNAME,
-                                "be annotated with an annotation that is annotated with the " +
-                                Constants.JSR_330_SCOPE_CLASSNAME + " annotation such as " + scopedAnnotations + ". " +
-                                MemberChecks.suppressedBy( Constants.WARNING_JSR_330_SCOPED ) );
-      warning( message, element );
+    @Nonnull
+    private String toFilename(@Nonnull final TypeElement typeElement) {
+        return GeneratorUtil.getGeneratedClassName(typeElement, "", "")
+                .toString()
+                .replace(".", "/");
     }
-  }
 
-  private void injectableConstructorShouldNotBePublic( @Nonnull final ExecutableElement constructor )
-  {
-    if ( Elements.Origin.EXPLICIT == processingEnv.getElementUtils().getOrigin( constructor ) &&
-         constructor.getModifiers().contains( Modifier.PUBLIC ) &&
-         ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_PUBLIC_CONSTRUCTOR ) )
-    {
-      final String message =
-        MemberChecks.shouldNot( Constants.INJECTABLE_CLASSNAME,
-                                "have a public constructor. The type is instantiated by the injector " +
-                                "and should have a package-access constructor. " +
-                                MemberChecks.suppressedBy( Constants.WARNING_PUBLIC_CONSTRUCTOR ) );
-      warning( message, constructor );
-    }
-  }
-
-  private void injectableConstructorShouldNotBeProtected( @Nonnull final ExecutableElement constructor )
-  {
-    if ( constructor.getModifiers().contains( Modifier.PROTECTED ) &&
-         ElementsUtil.isWarningNotSuppressed( constructor, Constants.WARNING_PROTECTED_CONSTRUCTOR ) )
-    {
-      final String message =
-        MemberChecks.shouldNot( Constants.INJECTABLE_CLASSNAME,
-                                "have a protected constructor. The type is instantiated by the " +
-                                "injector and should have a package-access constructor. " +
-                                MemberChecks.suppressedBy( Constants.WARNING_PROTECTED_CONSTRUCTOR ) );
-      warning( message, constructor );
-    }
-  }
-
-  private boolean isParameterized( @Nonnull final DeclaredType nestedParameterType )
-  {
-    return !( (TypeElement) nestedParameterType.asElement() ).getTypeParameters().isEmpty();
-  }
-
-  @Nonnull
-  private List<? extends AnnotationMirror> getScopedAnnotations( @Nonnull final Element element )
-  {
-    return element
-      .getAnnotationMirrors()
-      .stream()
-      .filter( a -> AnnotationsUtil.hasAnnotationOfType( a.getAnnotationType().asElement(),
-                                                         Constants.JSR_330_SCOPE_CLASSNAME ) )
-      .collect( Collectors.toList() );
-  }
-
-  @Nullable
-  private FragmentDescriptor deriveFragmentDescriptor( @Nonnull final TypeElement element )
-  {
-    final String classname = element.getQualifiedName().toString();
-    final FragmentDescriptor cached = _derivedFragmentCache.get( classname );
-    if ( null != cached )
-    {
-      return cached;
-    }
-    // Only derive for proper @Fragment types
-    else if ( ElementKind.INTERFACE != element.getKind() ||
-              !AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
-    {
-      return null;
-    }
-    else if ( !SuperficialValidation.validateElement( processingEnv, element ) )
-    {
-      return null;
-    }
-    else
-    {
-      final boolean localOnly = extractFragmentLocalOnly( element );
-      final List<IncludeDescriptor> includes = extractIncludes( element, Constants.FRAGMENT_CLASSNAME, false );
-      final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
-      for ( final Element enclosedElement : element.getEnclosedElements() )
-      {
-        if ( ElementKind.METHOD == enclosedElement.getKind() )
-        {
-          processProvidesMethod( element, bindings, (ExecutableElement) enclosedElement );
+    @Nonnull
+    private ServiceRequest handleConstructorParameter(
+            @Nonnull final VariableElement parameter, @Nonnull final TypeMirror type) {
+        if (TypesUtil.containsArrayType(type)) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.INJECTABLE_CLASSNAME,
+                            "contain a constructor with a parameter that contains an array type"),
+                    parameter);
+        } else if (TypesUtil.containsWildcard(type)) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.INJECTABLE_CLASSNAME,
+                            "contain a constructor with a parameter that contains a wildcard type parameter"),
+                    parameter);
+        } else if (TypesUtil.containsRawType(type)) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.INJECTABLE_CLASSNAME,
+                            "contain a constructor with a parameter that contains a raw type"),
+                    parameter);
+        } else {
+            TypeMirror dependencyType = null;
+            ServiceRequest.Kind kind = null;
+            for (final ServiceRequest.Kind candidate : ServiceRequest.Kind.values()) {
+                dependencyType = candidate.extractType(type);
+                if (null != dependencyType) {
+                    kind = candidate;
+                    break;
+                }
+            }
+            if (null == kind) {
+                throw new ProcessorException(
+                        MemberChecks.mustNot(
+                                Constants.INJECTABLE_CLASSNAME,
+                                "contain a constructor with a parameter that contains an unexpected parameterized"
+                                        + " type. Only parameterized types known to the framework are supported"),
+                        parameter);
+            } else {
+                final boolean optional = AnnotationsUtil.hasNullableAnnotation(parameter);
+                if (optional && ServiceRequest.Kind.INSTANCE != kind) {
+                    throw new ProcessorException(
+                            MemberChecks.mustNot(
+                                    Constants.INJECTABLE_CLASSNAME,
+                                    "contain a constructor with a parameter annotated with "
+                                            + MemberChecks.toSimpleName(AnnotationsUtil.NULLABLE_CLASSNAME)
+                                            + " that is not an instance dependency kind"),
+                            parameter);
+                }
+                final String qualifier = getQualifier(parameter);
+                if (AnnotationsUtil.hasAnnotationOfType(parameter, Constants.JSR_330_NAMED_CLASSNAME)
+                        && ElementsUtil.isWarningNotSuppressed(parameter, Constants.WARNING_JSR_330_NAMED)) {
+                    final String message = MemberChecks.mustNot(
+                            Constants.INJECTABLE_CLASSNAME,
+                            "contain a constructor with a parameter annotated with the "
+                                    + Constants.JSR_330_NAMED_CLASSNAME
+                                    + " annotation. Use the " + Constants.NAMED_CLASSNAME
+                                    + " annotation instead. "
+                                    + MemberChecks.suppressedBy(Constants.WARNING_JSR_330_NAMED));
+                    warning(message, parameter);
+                }
+                final Coordinate coordinate = new Coordinate(qualifier, dependencyType);
+                final ServiceSpec service = new ServiceSpec(coordinate, optional);
+                return new ServiceRequest(kind, service, parameter);
+            }
         }
-      }
-      final FragmentDescriptor fragment = new FragmentDescriptor( element, includes, localOnly, bindings.values() );
-      fragment.markJavaStubAsGenerated();
-      _derivedFragmentCache.put( classname, fragment );
-      return fragment;
-    }
-  }
-
-  private boolean extractFragmentLocalOnly( @Nonnull final TypeElement element )
-  {
-    return (boolean) AnnotationsUtil.getAnnotationValue( element, Constants.FRAGMENT_CLASSNAME, "localOnly" )
-      .getValue();
-  }
-
-  private boolean isInSamePackage( @Nonnull final TypeElement type1, @Nonnull final TypeElement type2 )
-  {
-    return GeneratorUtil.getQualifiedPackageName( type1 ).equals( GeneratorUtil.getQualifiedPackageName( type2 ) );
-  }
-
-  @Nullable
-  private InjectableDescriptor deriveInjectableDescriptor( @Nonnull final TypeElement element )
-  {
-    final String classname = element.getQualifiedName().toString();
-    final InjectableDescriptor cached = _derivedInjectableCache.get( classname );
-    if ( null != cached )
-    {
-      return cached;
-    }
-    // Only derive for proper @Injectable types
-    if ( ElementKind.CLASS != element.getKind() ||
-         !AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
-    {
-      return null;
     }
 
-    if ( element.getModifiers().contains( Modifier.ABSTRACT ) ||
-         ElementsUtil.isNonStaticNestedClass( element ) ||
-         !element.getTypeParameters().isEmpty() )
-    {
-      // Invalid injectable; let normal processing flag this if encountered as source.
-      return null;
+    @Nonnull
+    private String getQualifier(@Nonnull final Element element) {
+        final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType(element, Constants.NAMED_CLASSNAME);
+        return null == annotation ? "" : AnnotationsUtil.getAnnotationValueValue(annotation, "value");
     }
 
-    final List<ExecutableElement> constructors = ElementsUtil.getConstructors( element );
-    if ( constructors.isEmpty() )
-    {
-      return null;
-    }
-    final ExecutableElement constructor = constructors.get( 0 );
-    if ( constructors.size() > 1 )
-    {
-      return null;
-    }
-
-    final boolean eager = AnnotationsUtil.hasAnnotationOfType( element, Constants.EAGER_CLASSNAME );
-
-    final List<ServiceRequest> dependencies = new ArrayList<>();
-    int index = 0;
-    final List<? extends TypeMirror> parameterTypes = ( (ExecutableType) constructor.asType() ).getParameterTypes();
-    for ( final VariableElement parameter : constructor.getParameters() )
-    {
-      dependencies.add( handleConstructorParameter( parameter, parameterTypes.get( index ) ) );
-      index++;
-    }
-
-    final AnnotationMirror annotation =
-      AnnotationsUtil.findAnnotationByType( element, Constants.TYPED_CLASSNAME );
-    final AnnotationValue value =
-      null != annotation ? AnnotationsUtil.findAnnotationValue( annotation, "value" ) : null;
-
-    final String qualifier = getQualifier( element );
-
-    @SuppressWarnings( "unchecked" )
-    final List<TypeMirror> types =
-      null == value ?
-      Collections.singletonList( element.asType() ) :
-      ( (List<AnnotationValue>) value.getValue() )
-        .stream()
-        .map( v -> (TypeMirror) v.getValue() )
-        .toList();
-
-    final ServiceSpec[] specs = new ServiceSpec[ types.size() ];
-    for ( int i = 0; i < specs.length; i++ )
-    {
-      final TypeMirror type = types.get( i );
-      if ( !processingEnv.getTypeUtils().isAssignable( element.asType(), type ) )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                      " specified a type that is not assignable to the declaring type",
-                                      element,
-                                      annotation,
-                                      value );
-      }
-      else if ( TypeKind.DECLARED == type.getKind() && isParameterized( (DeclaredType) type ) )
-      {
-        throw new ProcessorException( MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                      " specified a type that is a a parameterized type",
-                                      element,
-                                      annotation,
-                                      value );
-      }
-      specs[ i ] = new ServiceSpec( new Coordinate( qualifier, type ), false );
-    }
-
-    if ( 0 == specs.length && !eager )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                          "specify zero types with the " +
-                                                          MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                                          " annotation or must be annotated with the " +
-                                                          MemberChecks.toSimpleName( Constants.EAGER_CLASSNAME ) +
-                                                          " annotation otherwise the component can not be created by the injector" ),
-                                    element );
-    }
-    if ( 0 == specs.length && !qualifier.isEmpty() )
-    {
-      throw new ProcessorException( MemberChecks.mustNot( Constants.INJECTABLE_CLASSNAME,
-                                                          "specify zero types with the " +
-                                                          MemberChecks.toSimpleName( Constants.TYPED_CLASSNAME ) +
-                                                          " annotation and specify a qualifier with the " +
-                                                          MemberChecks.toSimpleName( Constants.NAMED_CLASSNAME ) +
-                                                          " annotation as the qualifier is meaningless" ),
-                                    element );
-    }
-
-    final Binding binding =
-      new Binding( Binding.Kind.INJECTABLE,
-                   element.getQualifiedName().toString(),
-                   Arrays.asList( specs ),
-                   eager,
-                   constructor,
-                   dependencies.toArray( new ServiceRequest[ 0 ] ) );
-    final InjectableDescriptor injectable = new InjectableDescriptor( binding );
-    injectable.markJavaStubAsGenerated();
-    _derivedInjectableCache.put( classname, injectable );
-    return injectable;
-  }
-
-  private void maybeWarnOnRedundantDirectInjectableInclude( @Nonnull final TypeElement originator,
-                                                            @Nonnull final String annotationClassname,
-                                                            @Nonnull final Collection<IncludeDescriptor> includes )
-  {
-    if ( !ElementsUtil.isWarningNotSuppressed( originator,
-                                               Constants.WARNING_REDUNDANT_DIRECT_INJECTABLE_INCLUDE ) )
-    {
-      return;
-    }
-
-    final Set<String> directInjectables = new HashSet<>();
-    final Set<String> transitiveInjectables = new HashSet<>();
-
-    for ( final IncludeDescriptor include : includes )
-    {
-      final String classname = include.actualTypeName();
-      final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
-      if ( null == element )
-      {
-        continue;
-      }
-      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
-      {
-        // Only consider explicit direct includes as candidates (for Injector, auto-includes are not considered direct)
-        if ( !include.auto() )
-        {
-          directInjectables.add( classname );
+    private void injectableShouldNotHaveScopedAnnotation(@Nonnull final TypeElement element) {
+        final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations(element);
+        if (!scopedAnnotations.isEmpty()
+                && ElementsUtil.isWarningNotSuppressed(element, Constants.WARNING_JSR_330_SCOPED)) {
+            final String message = MemberChecks.shouldNot(
+                    Constants.INJECTABLE_CLASSNAME,
+                    "be annotated with an annotation that is annotated with the " + Constants.JSR_330_SCOPE_CLASSNAME
+                            + " annotation such as " + scopedAnnotations + ". "
+                            + MemberChecks.suppressedBy(Constants.WARNING_JSR_330_SCOPED));
+            warning(message, element);
         }
-      }
-      else if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
-      {
-        collectTransitiveInjectablesFromFragment( classname, transitiveInjectables, new HashSet<>() );
-      }
     }
 
-    directInjectables.retainAll( transitiveInjectables );
-    if ( !directInjectables.isEmpty() )
-    {
-      for ( final String classname : directInjectables )
-      {
-        final String message =
-          MemberChecks.shouldNot( annotationClassname,
-                                  "include type " + classname +
-                                  " as it is already transitively included via included fragments. " +
-                                  MemberChecks.suppressedBy( Constants.WARNING_REDUNDANT_DIRECT_INJECTABLE_INCLUDE ) );
-        warning( message, originator );
-      }
-    }
-  }
-
-  private void collectTransitiveInjectablesFromFragment( @Nonnull final String fragmentClassname,
-                                                         @Nonnull final Set<String> collector,
-                                                         @Nonnull final Set<String> visitedFragments )
-  {
-    if ( !visitedFragments.add( fragmentClassname ) )
-    {
-      return;
-    }
-    final FragmentDescriptor fragment = _registry.findFragmentByClassName( fragmentClassname );
-    if ( null == fragment )
-    {
-      return;
-    }
-    for ( final IncludeDescriptor include : fragment.getIncludes() )
-    {
-      final String classname = include.actualTypeName();
-      final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
-      if ( null == element )
-      {
-        continue;
-      }
-      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.INJECTABLE_CLASSNAME ) )
-      {
-        collector.add( classname );
-      }
-      else if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
-      {
-        collectTransitiveInjectablesFromFragment( classname, collector, visitedFragments );
-      }
-    }
-  }
-
-  private void maybeWarnOnFragmentIncludeCycle( @Nonnull final TypeElement originator,
-                                                @Nonnull final Collection<IncludeDescriptor> includes )
-  {
-    if ( !ElementsUtil.isWarningNotSuppressed( originator, Constants.WARNING_FRAGMENT_INCLUDE_CYCLE ) )
-    {
-      return;
-    }
-    final String originClassname = originator.getQualifiedName().toString();
-    for ( final IncludeDescriptor include : includes )
-    {
-      final String classname = include.actualTypeName();
-      final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
-      if ( null == element )
-      {
-        continue;
-      }
-      if ( AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
-      {
-        if ( fragmentTransitivelyIncludes( classname, originClassname, new HashSet<>() ) )
-        {
-          final String message =
-            MemberChecks.shouldNot( Constants.FRAGMENT_CLASSNAME,
-                                    "include a fragment " + classname +
-                                    " that transitively includes " + originClassname + ". " +
-                                    MemberChecks.suppressedBy( Constants.WARNING_FRAGMENT_INCLUDE_CYCLE ) );
-          warning( message, originator );
-          return;
+    private void injectableConstructorShouldNotBePublic(@Nonnull final ExecutableElement constructor) {
+        if (Elements.Origin.EXPLICIT == processingEnv.getElementUtils().getOrigin(constructor)
+                && constructor.getModifiers().contains(Modifier.PUBLIC)
+                && ElementsUtil.isWarningNotSuppressed(constructor, Constants.WARNING_PUBLIC_CONSTRUCTOR)) {
+            final String message = MemberChecks.shouldNot(
+                    Constants.INJECTABLE_CLASSNAME,
+                    "have a public constructor. The type is instantiated by the injector "
+                            + "and should have a package-access constructor. "
+                            + MemberChecks.suppressedBy(Constants.WARNING_PUBLIC_CONSTRUCTOR));
+            warning(message, constructor);
         }
-      }
     }
-  }
 
-  private boolean fragmentTransitivelyIncludes( @Nonnull final String fragmentClassname,
-                                                @Nonnull final String targetFragmentClassname,
-                                                @Nonnull final Set<String> visited )
-  {
-    if ( !visited.add( fragmentClassname ) )
-    {
-      return false;
-    }
-    if ( fragmentClassname.equals( targetFragmentClassname ) )
-    {
-      return true;
-    }
-    final FragmentDescriptor fragment = _registry.findFragmentByClassName( fragmentClassname );
-    if ( null == fragment )
-    {
-      return false;
-    }
-    for ( final IncludeDescriptor include : fragment.getIncludes() )
-    {
-      final String classname = include.actualTypeName();
-      final TypeElement element = processingEnv.getElementUtils().getTypeElement( classname );
-      if ( null != element && AnnotationsUtil.hasAnnotationOfType( element, Constants.FRAGMENT_CLASSNAME ) )
-      {
-        if ( fragmentTransitivelyIncludes( classname, targetFragmentClassname, visited ) )
-        {
-          return true;
+    private void injectableConstructorShouldNotBeProtected(@Nonnull final ExecutableElement constructor) {
+        if (constructor.getModifiers().contains(Modifier.PROTECTED)
+                && ElementsUtil.isWarningNotSuppressed(constructor, Constants.WARNING_PROTECTED_CONSTRUCTOR)) {
+            final String message = MemberChecks.shouldNot(
+                    Constants.INJECTABLE_CLASSNAME,
+                    "have a protected constructor. The type is instantiated by the "
+                            + "injector and should have a package-access constructor. "
+                            + MemberChecks.suppressedBy(Constants.WARNING_PROTECTED_CONSTRUCTOR));
+            warning(message, constructor);
         }
-      }
     }
-    return false;
-  }
+
+    private boolean isParameterized(@Nonnull final DeclaredType nestedParameterType) {
+        return !((TypeElement) nestedParameterType.asElement())
+                .getTypeParameters()
+                .isEmpty();
+    }
+
+    @Nonnull
+    private List<? extends AnnotationMirror> getScopedAnnotations(@Nonnull final Element element) {
+        return element.getAnnotationMirrors().stream()
+                .filter(a -> AnnotationsUtil.hasAnnotationOfType(
+                        a.getAnnotationType().asElement(), Constants.JSR_330_SCOPE_CLASSNAME))
+                .collect(Collectors.toList());
+    }
+
+    @Nullable
+    private FragmentDescriptor deriveFragmentDescriptor(@Nonnull final TypeElement element) {
+        final String classname = element.getQualifiedName().toString();
+        final FragmentDescriptor cached = _derivedFragmentCache.get(classname);
+        if (null != cached) {
+            return cached;
+        }
+        // Only derive for proper @Fragment types
+        else if (ElementKind.INTERFACE != element.getKind()
+                || !AnnotationsUtil.hasAnnotationOfType(element, Constants.FRAGMENT_CLASSNAME)) {
+            return null;
+        } else if (!SuperficialValidation.validateElement(processingEnv, element)) {
+            return null;
+        } else {
+            final boolean localOnly = extractFragmentLocalOnly(element);
+            final List<IncludeDescriptor> includes = extractIncludes(element, Constants.FRAGMENT_CLASSNAME, false);
+            final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
+            for (final Element enclosedElement : element.getEnclosedElements()) {
+                if (ElementKind.METHOD == enclosedElement.getKind()) {
+                    processProvidesMethod(element, bindings, (ExecutableElement) enclosedElement);
+                }
+            }
+            final FragmentDescriptor fragment = new FragmentDescriptor(element, includes, localOnly, bindings.values());
+            fragment.markJavaStubAsGenerated();
+            _derivedFragmentCache.put(classname, fragment);
+            return fragment;
+        }
+    }
+
+    private boolean extractFragmentLocalOnly(@Nonnull final TypeElement element) {
+        return (boolean) AnnotationsUtil.getAnnotationValue(element, Constants.FRAGMENT_CLASSNAME, "localOnly")
+                .getValue();
+    }
+
+    private boolean isInSamePackage(@Nonnull final TypeElement type1, @Nonnull final TypeElement type2) {
+        return GeneratorUtil.getQualifiedPackageName(type1).equals(GeneratorUtil.getQualifiedPackageName(type2));
+    }
+
+    @Nullable
+    private InjectableDescriptor deriveInjectableDescriptor(@Nonnull final TypeElement element) {
+        final String classname = element.getQualifiedName().toString();
+        final InjectableDescriptor cached = _derivedInjectableCache.get(classname);
+        if (null != cached) {
+            return cached;
+        }
+        // Only derive for proper @Injectable types
+        if (ElementKind.CLASS != element.getKind()
+                || !AnnotationsUtil.hasAnnotationOfType(element, Constants.INJECTABLE_CLASSNAME)) {
+            return null;
+        }
+
+        if (element.getModifiers().contains(Modifier.ABSTRACT)
+                || ElementsUtil.isNonStaticNestedClass(element)
+                || !element.getTypeParameters().isEmpty()) {
+            // Invalid injectable; let normal processing flag this if encountered as source.
+            return null;
+        }
+
+        final List<ExecutableElement> constructors = ElementsUtil.getConstructors(element);
+        if (constructors.isEmpty()) {
+            return null;
+        }
+        final ExecutableElement constructor = constructors.get(0);
+        if (constructors.size() > 1) {
+            return null;
+        }
+
+        final boolean eager = AnnotationsUtil.hasAnnotationOfType(element, Constants.EAGER_CLASSNAME);
+
+        final List<ServiceRequest> dependencies = new ArrayList<>();
+        int index = 0;
+        final List<? extends TypeMirror> parameterTypes = ((ExecutableType) constructor.asType()).getParameterTypes();
+        for (final VariableElement parameter : constructor.getParameters()) {
+            dependencies.add(handleConstructorParameter(parameter, parameterTypes.get(index)));
+            index++;
+        }
+
+        final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType(element, Constants.TYPED_CLASSNAME);
+        final AnnotationValue value =
+                null != annotation ? AnnotationsUtil.findAnnotationValue(annotation, "value") : null;
+
+        final String qualifier = getQualifier(element);
+
+        @SuppressWarnings("unchecked")
+        final List<TypeMirror> types = null == value
+                ? Collections.singletonList(element.asType())
+                : ((List<AnnotationValue>) value.getValue())
+                        .stream().map(v -> (TypeMirror) v.getValue()).toList();
+
+        final ServiceSpec[] specs = new ServiceSpec[types.size()];
+        for (int i = 0; i < specs.length; i++) {
+            final TypeMirror type = types.get(i);
+            if (!processingEnv.getTypeUtils().isAssignable(element.asType(), type)) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(Constants.TYPED_CLASSNAME)
+                                + " specified a type that is not assignable to the declaring type",
+                        element,
+                        annotation,
+                        value);
+            } else if (TypeKind.DECLARED == type.getKind() && isParameterized((DeclaredType) type)) {
+                throw new ProcessorException(
+                        MemberChecks.toSimpleName(Constants.TYPED_CLASSNAME)
+                                + " specified a type that is a a parameterized type",
+                        element,
+                        annotation,
+                        value);
+            }
+            specs[i] = new ServiceSpec(new Coordinate(qualifier, type), false);
+        }
+
+        if (0 == specs.length && !eager) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.INJECTABLE_CLASSNAME,
+                            "specify zero types with the " + MemberChecks.toSimpleName(Constants.TYPED_CLASSNAME)
+                                    + " annotation or must be annotated with the "
+                                    + MemberChecks.toSimpleName(Constants.EAGER_CLASSNAME)
+                                    + " annotation otherwise the component can not be created by the injector"),
+                    element);
+        }
+        if (0 == specs.length && !qualifier.isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.INJECTABLE_CLASSNAME,
+                            "specify zero types with the " + MemberChecks.toSimpleName(Constants.TYPED_CLASSNAME)
+                                    + " annotation and specify a qualifier with the "
+                                    + MemberChecks.toSimpleName(Constants.NAMED_CLASSNAME)
+                                    + " annotation as the qualifier is meaningless"),
+                    element);
+        }
+
+        final Binding binding = new Binding(
+                Binding.Kind.INJECTABLE,
+                element.getQualifiedName().toString(),
+                Arrays.asList(specs),
+                eager,
+                constructor,
+                dependencies.toArray(new ServiceRequest[0]));
+        final InjectableDescriptor injectable = new InjectableDescriptor(binding);
+        injectable.markJavaStubAsGenerated();
+        _derivedInjectableCache.put(classname, injectable);
+        return injectable;
+    }
+
+    private void maybeWarnOnRedundantDirectInjectableInclude(
+            @Nonnull final TypeElement originator,
+            @Nonnull final String annotationClassname,
+            @Nonnull final Collection<IncludeDescriptor> includes) {
+        if (!ElementsUtil.isWarningNotSuppressed(originator, Constants.WARNING_REDUNDANT_DIRECT_INJECTABLE_INCLUDE)) {
+            return;
+        }
+
+        final Set<String> directInjectables = new HashSet<>();
+        final Set<String> transitiveInjectables = new HashSet<>();
+
+        for (final IncludeDescriptor include : includes) {
+            final String classname = include.actualTypeName();
+            final TypeElement element = processingEnv.getElementUtils().getTypeElement(classname);
+            if (null == element) {
+                continue;
+            }
+            if (AnnotationsUtil.hasAnnotationOfType(element, Constants.INJECTABLE_CLASSNAME)) {
+                // Only consider explicit direct includes as candidates (for Injector, auto-includes are not considered
+                // direct)
+                if (!include.auto()) {
+                    directInjectables.add(classname);
+                }
+            } else if (AnnotationsUtil.hasAnnotationOfType(element, Constants.FRAGMENT_CLASSNAME)) {
+                collectTransitiveInjectablesFromFragment(classname, transitiveInjectables, new HashSet<>());
+            }
+        }
+
+        directInjectables.retainAll(transitiveInjectables);
+        if (!directInjectables.isEmpty()) {
+            for (final String classname : directInjectables) {
+                final String message = MemberChecks.shouldNot(
+                        annotationClassname,
+                        "include type " + classname + " as it is already transitively included via included fragments. "
+                                + MemberChecks.suppressedBy(Constants.WARNING_REDUNDANT_DIRECT_INJECTABLE_INCLUDE));
+                warning(message, originator);
+            }
+        }
+    }
+
+    private void collectTransitiveInjectablesFromFragment(
+            @Nonnull final String fragmentClassname,
+            @Nonnull final Set<String> collector,
+            @Nonnull final Set<String> visitedFragments) {
+        if (!visitedFragments.add(fragmentClassname)) {
+            return;
+        }
+        final FragmentDescriptor fragment = _registry.findFragmentByClassName(fragmentClassname);
+        if (null == fragment) {
+            return;
+        }
+        for (final IncludeDescriptor include : fragment.getIncludes()) {
+            final String classname = include.actualTypeName();
+            final TypeElement element = processingEnv.getElementUtils().getTypeElement(classname);
+            if (null == element) {
+                continue;
+            }
+            if (AnnotationsUtil.hasAnnotationOfType(element, Constants.INJECTABLE_CLASSNAME)) {
+                collector.add(classname);
+            } else if (AnnotationsUtil.hasAnnotationOfType(element, Constants.FRAGMENT_CLASSNAME)) {
+                collectTransitiveInjectablesFromFragment(classname, collector, visitedFragments);
+            }
+        }
+    }
+
+    private void maybeWarnOnFragmentIncludeCycle(
+            @Nonnull final TypeElement originator, @Nonnull final Collection<IncludeDescriptor> includes) {
+        if (!ElementsUtil.isWarningNotSuppressed(originator, Constants.WARNING_FRAGMENT_INCLUDE_CYCLE)) {
+            return;
+        }
+        final String originClassname = originator.getQualifiedName().toString();
+        for (final IncludeDescriptor include : includes) {
+            final String classname = include.actualTypeName();
+            final TypeElement element = processingEnv.getElementUtils().getTypeElement(classname);
+            if (null == element) {
+                continue;
+            }
+            if (AnnotationsUtil.hasAnnotationOfType(element, Constants.FRAGMENT_CLASSNAME)) {
+                if (fragmentTransitivelyIncludes(classname, originClassname, new HashSet<>())) {
+                    final String message = MemberChecks.shouldNot(
+                            Constants.FRAGMENT_CLASSNAME,
+                            "include a fragment " + classname + " that transitively includes "
+                                    + originClassname + ". "
+                                    + MemberChecks.suppressedBy(Constants.WARNING_FRAGMENT_INCLUDE_CYCLE));
+                    warning(message, originator);
+                    return;
+                }
+            }
+        }
+    }
+
+    private boolean fragmentTransitivelyIncludes(
+            @Nonnull final String fragmentClassname,
+            @Nonnull final String targetFragmentClassname,
+            @Nonnull final Set<String> visited) {
+        if (!visited.add(fragmentClassname)) {
+            return false;
+        }
+        if (fragmentClassname.equals(targetFragmentClassname)) {
+            return true;
+        }
+        final FragmentDescriptor fragment = _registry.findFragmentByClassName(fragmentClassname);
+        if (null == fragment) {
+            return false;
+        }
+        for (final IncludeDescriptor include : fragment.getIncludes()) {
+            final String classname = include.actualTypeName();
+            final TypeElement element = processingEnv.getElementUtils().getTypeElement(classname);
+            if (null != element && AnnotationsUtil.hasAnnotationOfType(element, Constants.FRAGMENT_CLASSNAME)) {
+                if (fragmentTransitivelyIncludes(classname, targetFragmentClassname, visited)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

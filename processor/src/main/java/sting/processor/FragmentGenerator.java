@@ -19,65 +19,53 @@ import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
 
-final class FragmentGenerator
-{
-  @Nonnull
-  private static final ClassName OBJECT = ClassName.get( "java.lang", "Object" );
+final class FragmentGenerator {
+    @Nonnull
+    private static final ClassName OBJECT = ClassName.get("java.lang", "Object");
 
-  private FragmentGenerator()
-  {
-  }
+    private FragmentGenerator() {}
 
-  @Nonnull
-  static TypeSpec buildType( @Nonnull final ProcessingEnvironment processingEnv,
-                             @Nonnull final FragmentDescriptor fragment )
-  {
-    final TypeElement element = fragment.getElement();
-    final TypeSpec.Builder builder =
-      TypeSpec
-        .classBuilder( StingGeneratorUtil.getGeneratedClassName( element ) )
-        .addModifiers( Modifier.PUBLIC, Modifier.FINAL );
-    GeneratorUtil.addOriginatingTypes( element, builder );
-    GeneratorUtil.copyWhitelistedAnnotations( element, builder );
-    final TypeMirror type = element.asType();
-    builder.addSuperinterface( TypeName.get( type ) );
+    @Nonnull
+    static TypeSpec buildType(
+            @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final FragmentDescriptor fragment) {
+        final TypeElement element = fragment.getElement();
+        final TypeSpec.Builder builder = TypeSpec.classBuilder(StingGeneratorUtil.getGeneratedClassName(element))
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
+        GeneratorUtil.addOriginatingTypes(element, builder);
+        GeneratorUtil.copyWhitelistedAnnotations(element, builder);
+        final TypeMirror type = element.asType();
+        builder.addSuperinterface(TypeName.get(type));
 
-    GeneratorUtil.addGeneratedAnnotation( processingEnv, builder, StingProcessor.class.getName() );
-    SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv,
-                                                        builder,
-                                                        Collections.emptyList(),
-                                                        Collections.singletonList( type ) );
+        GeneratorUtil.addGeneratedAnnotation(processingEnv, builder, StingProcessor.class.getName());
+        SuppressWarningsUtil.addSuppressWarningsIfRequired(
+                processingEnv, builder, Collections.emptyList(), Collections.singletonList(type));
 
-    for ( final Binding binding : fragment.getBindings() )
-    {
-      builder.addMethod( buildProvidesStub( processingEnv, binding ) );
+        for (final Binding binding : fragment.getBindings()) {
+            builder.addMethod(buildProvidesStub(processingEnv, binding));
+        }
+
+        return builder.build();
     }
 
-    return builder.build();
-  }
+    @Nonnull
+    private static MethodSpec buildProvidesStub(
+            @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final Binding binding) {
+        final ExecutableElement element = (ExecutableElement) binding.getElement();
+        final TypeMirror returnType = element.getReturnType();
+        final boolean isPublic = TypeKind.DECLARED != returnType.getKind()
+                || ElementsUtil.isEffectivelyPublic((TypeElement) ((DeclaredType) returnType).asElement());
 
-  @Nonnull
-  private static MethodSpec buildProvidesStub( @Nonnull final ProcessingEnvironment processingEnv,
-                                               @Nonnull final Binding binding )
-  {
-    final ExecutableElement element = (ExecutableElement) binding.getElement();
-    final TypeMirror returnType = element.getReturnType();
-    final boolean isPublic =
-      TypeKind.DECLARED != returnType.getKind() ||
-      ElementsUtil.isEffectivelyPublic( (TypeElement) ( (DeclaredType) returnType ).asElement() );
+        final MethodSpec.Builder method = MethodSpec.methodBuilder(
+                        StingGeneratorUtil.getFragmentProvidesStubName(element))
+                .addModifiers(Modifier.PUBLIC)
+                .returns(isPublic ? TypeName.get(returnType) : OBJECT);
+        GeneratorUtil.copyWhitelistedAnnotations(element, method);
 
-    final MethodSpec.Builder method =
-      MethodSpec
-        .methodBuilder( StingGeneratorUtil.getFragmentProvidesStubName( element ) )
-        .addModifiers( Modifier.PUBLIC )
-        .returns( isPublic ? TypeName.get( returnType ) : OBJECT );
-    GeneratorUtil.copyWhitelistedAnnotations( element, method );
+        final StringBuilder code = new StringBuilder();
+        final List<Object> args = new ArrayList<>();
+        code.append("return $N");
+        args.add(element.getSimpleName().toString());
 
-    final StringBuilder code = new StringBuilder();
-    final List<Object> args = new ArrayList<>();
-    code.append( "return $N" );
-    args.add( element.getSimpleName().toString() );
-
-    return StingGeneratorUtil.buildBindingCreator( processingEnv, method, code, args, returnType, binding );
-  }
+        return StingGeneratorUtil.buildBindingCreator(processingEnv, method, code, args, returnType, binding);
+    }
 }

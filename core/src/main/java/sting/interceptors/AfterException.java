@@ -12,8 +12,6 @@ import java.lang.annotation.Target;
  * {@link Around} method, but not failures from that same interceptor's {@link Before} or {@link After} methods.
  * Outer interceptors observe failures from inner interceptors and the target service method.</p>
  */
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.METHOD )
-public @interface AfterException
-{
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface AfterException {}

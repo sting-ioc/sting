@@ -4,17 +4,14 @@ import sting.Fragment;
 import sting.Injector;
 
 @Injector
-public interface DeprecatedProvidesNodeInjectorModel
-{
-  Runnable getRunnable();
+public interface DeprecatedProvidesNodeInjectorModel {
+    Runnable getRunnable();
 
-  @Fragment
-  interface MyFragment
-  {
-    @Deprecated
-    default Runnable provideRunnable()
-    {
-      return null;
+    @Fragment
+    interface MyFragment {
+        @Deprecated
+        default Runnable provideRunnable() {
+            return null;
+        }
     }
-  }
 }

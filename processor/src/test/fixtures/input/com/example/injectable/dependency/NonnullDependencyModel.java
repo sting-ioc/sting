@@ -4,9 +4,6 @@ import javax.annotation.Nonnull;
 import sting.Injectable;
 
 @Injectable
-public class NonnullDependencyModel
-{
-  NonnullDependencyModel( @Nonnull Runnable runnable )
-  {
-  }
+public class NonnullDependencyModel {
+    NonnullDependencyModel(@Nonnull Runnable runnable) {}
 }

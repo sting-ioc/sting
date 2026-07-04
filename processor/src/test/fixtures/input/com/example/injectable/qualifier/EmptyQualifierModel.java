@@ -4,7 +4,5 @@ import sting.Injectable;
 import sting.Named;
 
 @Injectable
-@Named( "" )
-public class EmptyQualifierModel
-{
-}
+@Named("")
+public class EmptyQualifierModel {}

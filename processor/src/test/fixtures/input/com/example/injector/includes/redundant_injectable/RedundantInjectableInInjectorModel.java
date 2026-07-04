@@ -2,9 +2,10 @@ package com.example.injector.includes.redundant_injectable;
 
 import sting.Injector;
 
-@SuppressWarnings( "Sting:AutoDiscoverableIncluded" )
-@Injector( fragmentOnly = false, includes = { MyFragment.class, MyModel.class } )
-interface RedundantInjectableInInjectorModel
-{
-  MyModel getMyModel();
+@SuppressWarnings("Sting:AutoDiscoverableIncluded")
+@Injector(
+        fragmentOnly = false,
+        includes = {MyFragment.class, MyModel.class})
+interface RedundantInjectableInInjectorModel {
+    MyModel getMyModel();
 }

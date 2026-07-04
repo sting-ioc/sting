@@ -9,68 +9,65 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import org.realityforge.proton.GeneratorUtil;
 
-final class InterceptorProxyDescriptor
-{
-  @Nonnull
-  private final InterceptedServiceDescriptor _service;
-  @Nonnull
-  private final String _id;
-  @Nonnull
-  private final ClassName _className;
-  private boolean _generated;
+final class InterceptorProxyDescriptor {
+    @Nonnull
+    private final InterceptedServiceDescriptor _service;
 
-  InterceptorProxyDescriptor( @Nonnull final InterceptedServiceDescriptor service )
-  {
-    _service = Objects.requireNonNull( service );
-    final var coordinateKey =
-      service.service().getCoordinate().toString().replaceAll( "[^A-Za-z0-9]+", "_" ).replaceAll( "^_+|_+$", "" );
-    _id = "proxy:" + service.binding().getId() + ":" + coordinateKey;
-    final var serviceElement = (TypeElement) ( (DeclaredType) service.service().getCoordinate().type() ).asElement();
-    final var ownerName = service.binding().getId().replace( '$', '_' ).replace( '.', '_' ).replace( '#', '_' );
-    final var qualifierName = service.service().getCoordinate().qualifier().isEmpty() ?
-                              "" :
-                              "_" + service.service().getCoordinate().qualifier().replaceAll( "[^A-Za-z0-9]", "_" );
-    final var simpleName =
-      "Sting_" + ownerName + "_" + serviceElement.getSimpleName() + qualifierName + "_InterceptorProxy";
-    _className = ClassName.get( GeneratorUtil.getQualifiedPackageName( serviceElement ), simpleName );
-  }
+    @Nonnull
+    private final String _id;
 
-  @Nonnull
-  InterceptedServiceDescriptor getService()
-  {
-    return _service;
-  }
+    @Nonnull
+    private final ClassName _className;
 
-  @Nonnull
-  String getId()
-  {
-    return _id;
-  }
+    private boolean _generated;
 
-  @Nonnull
-  ClassName getClassName()
-  {
-    return _className;
-  }
+    InterceptorProxyDescriptor(@Nonnull final InterceptedServiceDescriptor service) {
+        _service = Objects.requireNonNull(service);
+        final var coordinateKey = service.service()
+                .getCoordinate()
+                .toString()
+                .replaceAll("[^A-Za-z0-9]+", "_")
+                .replaceAll("^_+|_+$", "");
+        _id = "proxy:" + service.binding().getId() + ":" + coordinateKey;
+        final var serviceElement =
+                (TypeElement) ((DeclaredType) service.service().getCoordinate().type()).asElement();
+        final var ownerName =
+                service.binding().getId().replace('$', '_').replace('.', '_').replace('#', '_');
+        final var qualifierName = service.service().getCoordinate().qualifier().isEmpty()
+                ? ""
+                : "_" + service.service().getCoordinate().qualifier().replaceAll("[^A-Za-z0-9]", "_");
+        final var simpleName =
+                "Sting_" + ownerName + "_" + serviceElement.getSimpleName() + qualifierName + "_InterceptorProxy";
+        _className = ClassName.get(GeneratorUtil.getQualifiedPackageName(serviceElement), simpleName);
+    }
 
-  boolean isGenerated()
-  {
-    return _generated;
-  }
+    @Nonnull
+    InterceptedServiceDescriptor getService() {
+        return _service;
+    }
 
-  void markGenerated()
-  {
-    _generated = true;
-  }
+    @Nonnull
+    String getId() {
+        return _id;
+    }
 
-  @Nonnull
-  List<Binding> getGenericInterceptorBindings()
-  {
-    return
-      _service
-        .interceptors()
-        .stream()
-        .map( i -> i.getInterceptor().binding() )
-        .collect( Collectors.toList() );
-  }
+    @Nonnull
+    ClassName getClassName() {
+        return _className;
+    }
+
+    boolean isGenerated() {
+        return _generated;
+    }
+
+    void markGenerated() {
+        _generated = true;
+    }
+
+    @Nonnull
+    List<Binding> getGenericInterceptorBindings() {
+        return _service.interceptors().stream()
+                .map(i -> i.getInterceptor().binding())
+                .collect(Collectors.toList());
+    }
 }

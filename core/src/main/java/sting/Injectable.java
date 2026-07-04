@@ -19,9 +19,7 @@ import java.lang.annotation.Target;
  * <p>When this annotation is present, Sting also actively processes {@link Named}, {@link Typed},
  * and {@link Eager} on the annotated type.</p>
  */
-@Target( ElementType.TYPE )
-@Retention( RetentionPolicy.RUNTIME )
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Injectable
-{
-}
+public @interface Injectable {}

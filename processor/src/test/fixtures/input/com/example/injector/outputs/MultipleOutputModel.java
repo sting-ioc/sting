@@ -5,19 +5,14 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface MultipleOutputModel
-{
-  MyModel1 getMyModel();
+interface MultipleOutputModel {
+    MyModel1 getMyModel();
 
-  Supplier<MyModel2> getMyModelSupplier();
+    Supplier<MyModel2> getMyModelSupplier();
 
-  @Injectable
-  class MyModel1
-  {
-  }
+    @Injectable
+    class MyModel1 {}
 
-  @Injectable
-  class MyModel2
-  {
-  }
+    @Injectable
+    class MyModel2 {}
 }

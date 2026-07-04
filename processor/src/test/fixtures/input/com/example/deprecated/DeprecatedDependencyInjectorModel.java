@@ -4,13 +4,10 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-public interface DeprecatedDependencyInjectorModel
-{
-  @Deprecated
-  MyModel getMyModel();
+public interface DeprecatedDependencyInjectorModel {
+    @Deprecated
+    MyModel getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-  }
+    @Injectable
+    class MyModel {}
 }

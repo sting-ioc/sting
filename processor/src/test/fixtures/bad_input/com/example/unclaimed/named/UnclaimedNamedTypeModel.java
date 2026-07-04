@@ -2,7 +2,5 @@ package com.example.unclaimed.named;
 
 import sting.Named;
 
-@Named( "blah" )
-public class UnclaimedNamedTypeModel
-{
-}
+@Named("blah")
+public class UnclaimedNamedTypeModel {}

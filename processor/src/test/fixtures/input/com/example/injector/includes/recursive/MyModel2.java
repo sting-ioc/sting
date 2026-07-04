@@ -5,6 +5,4 @@ import sting.Injectable;
 
 @Injectable
 @Eager
-class MyModel2
-{
-}
+class MyModel2 {}

@@ -10,58 +10,43 @@ import sting.Typed;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class MultiServiceBindingModel
-{
-  private MultiServiceBindingModel()
-  {
-  }
+public final class MultiServiceBindingModel {
+    private MultiServiceBindingModel() {}
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    ServiceA serviceA();
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        ServiceA serviceA();
 
-    ServiceB serviceB();
-  }
-
-  interface ServiceA
-  {
-    void runA();
-  }
-
-  interface ServiceB
-  {
-    void runB();
-  }
-
-  @Trace
-  @Injectable
-  @Typed( { ServiceA.class, ServiceB.class } )
-  static class Model
-    implements ServiceA, ServiceB
-  {
-    public void runA()
-    {
+        ServiceB serviceB();
     }
 
-    public void runB()
-    {
+    interface ServiceA {
+        void runA();
     }
-  }
 
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before()
-    {
+    interface ServiceB {
+        void runB();
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.MultiServiceBindingModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Trace
+    @Injectable
+    @Typed({ServiceA.class, ServiceB.class})
+    static class Model implements ServiceA, ServiceB {
+        public void runA() {}
+
+        public void runB() {}
+    }
+
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before() {}
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.MultiServiceBindingModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

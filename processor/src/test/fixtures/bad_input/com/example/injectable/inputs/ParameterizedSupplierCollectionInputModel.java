@@ -6,9 +6,6 @@ import java.util.function.Supplier;
 import sting.Injectable;
 
 @Injectable
-public class ParameterizedSupplierCollectionInputModel
-{
-  ParameterizedSupplierCollectionInputModel( Collection<Supplier<List<String>>> someValue )
-  {
-  }
+public class ParameterizedSupplierCollectionInputModel {
+    ParameterizedSupplierCollectionInputModel(Collection<Supplier<List<String>>> someValue) {}
 }

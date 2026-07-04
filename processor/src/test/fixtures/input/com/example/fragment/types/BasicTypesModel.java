@@ -6,12 +6,10 @@ import sting.Fragment;
 import sting.Typed;
 
 @Fragment
-public interface BasicTypesModel
-{
-  // Does not expose BasicTypesModel or AutoCloseable nor Hashtable and related
-  @Typed( { Runnable.class, EventListener.class, Object.class, Properties.class } )
-  default MyModel provideMyModel()
-  {
-    return null;
-  }
+public interface BasicTypesModel {
+    // Does not expose BasicTypesModel or AutoCloseable nor Hashtable and related
+    @Typed({Runnable.class, EventListener.class, Object.class, Properties.class})
+    default MyModel provideMyModel() {
+        return null;
+    }
 }

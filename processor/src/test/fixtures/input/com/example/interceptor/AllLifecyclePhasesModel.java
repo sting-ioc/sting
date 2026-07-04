@@ -12,57 +12,41 @@ import sting.interceptors.AfterException;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class AllLifecyclePhasesModel
-{
-  private AllLifecyclePhasesModel()
-  {
-  }
+public final class AllLifecyclePhasesModel {
+    private AllLifecyclePhasesModel() {}
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Trace
-  interface Service
-  {
-    void run();
-  }
-
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-    public void run()
-    {
-    }
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before()
-    {
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
     }
 
-    @After
-    public void after()
-    {
+    @Trace
+    interface Service {
+        void run();
     }
 
-    @AfterException
-    public void afterException()
-    {
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {
+        public void run() {}
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.AllLifecyclePhasesModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before() {}
+
+        @After
+        public void after() {}
+
+        @AfterException
+        public void afterException() {}
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.AllLifecyclePhasesModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

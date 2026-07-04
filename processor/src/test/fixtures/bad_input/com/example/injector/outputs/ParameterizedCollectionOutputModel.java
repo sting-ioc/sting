@@ -5,7 +5,6 @@ import java.util.List;
 import sting.Injector;
 
 @Injector
-public interface ParameterizedCollectionOutputModel
-{
-  Collection<List<String>> getMyThing();
+public interface ParameterizedCollectionOutputModel {
+    Collection<List<String>> getMyThing();
 }

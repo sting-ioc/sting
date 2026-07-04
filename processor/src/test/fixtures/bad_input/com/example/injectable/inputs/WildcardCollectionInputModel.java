@@ -4,9 +4,6 @@ import java.util.Collection;
 import sting.Injectable;
 
 @Injectable
-public class WildcardCollectionInputModel
-{
-  WildcardCollectionInputModel( Collection<?> someValue )
-  {
-  }
+public class WildcardCollectionInputModel {
+    WildcardCollectionInputModel(Collection<?> someValue) {}
 }

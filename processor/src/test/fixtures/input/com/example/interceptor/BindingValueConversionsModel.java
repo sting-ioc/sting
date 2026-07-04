@@ -12,120 +12,109 @@ import sting.interceptors.Before;
 import sting.interceptors.BindingValue;
 import sting.interceptors.InterceptorBinding;
 
-public final class BindingValueConversionsModel
-{
-  private BindingValueConversionsModel()
-  {
-  }
+public final class BindingValueConversionsModel {
+    private BindingValueConversionsModel() {}
 
-  enum Mode
-  {
-    On,
-    Off
-  }
-
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Trace
-  interface Service
-  {
-    void run();
-  }
-
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-    public void run()
-    {
+    enum Mode {
+        On,
+        Off
     }
-  }
 
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before( @BindingValue( "text" ) final String text,
-                        @BindingValue( "flag" ) final boolean flag,
-                        @BindingValue( "byteValue" ) final byte byteValue,
-                        @BindingValue( "shortValue" ) final Short shortValue,
-                        @BindingValue( "count" ) final int count,
-                        @BindingValue( "longValue" ) final Long longValue,
-                        @BindingValue( "floatValue" ) final float floatValue,
-                        @BindingValue( "doubleValue" ) final Double doubleValue,
-                        @BindingValue( "charValue" ) final char charValue,
-                        @BindingValue( "mode" ) final String mode,
-                        @BindingValue( "type" ) final String type,
-                        @BindingValue( "texts" ) final String[] texts,
-                        @BindingValue( "flags" ) final boolean[] flags,
-                        @BindingValue( "bytes" ) final byte[] bytes,
-                        @BindingValue( "shorts" ) final short[] shorts,
-                        @BindingValue( "counts" ) final int[] counts,
-                        @BindingValue( "longs" ) final long[] longs,
-                        @BindingValue( "floats" ) final float[] floats,
-                        @BindingValue( "doubles" ) final double[] doubles,
-                        @BindingValue( "chars" ) final char[] chars,
-                        @BindingValue( "modes" ) final String[] modes,
-                        @BindingValue( "rollbackOn" ) final String[] rollbackOn,
-                        @BindingValue( "dontRollbackOn" ) final String[] dontRollbackOn )
-    {
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.BindingValueConversionsModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-    String text() default "alpha";
+    @Trace
+    interface Service {
+        void run();
+    }
 
-    boolean flag() default true;
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {
+        public void run() {}
+    }
 
-    byte byteValue() default 1;
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before(
+                @BindingValue("text") final String text,
+                @BindingValue("flag") final boolean flag,
+                @BindingValue("byteValue") final byte byteValue,
+                @BindingValue("shortValue") final Short shortValue,
+                @BindingValue("count") final int count,
+                @BindingValue("longValue") final Long longValue,
+                @BindingValue("floatValue") final float floatValue,
+                @BindingValue("doubleValue") final Double doubleValue,
+                @BindingValue("charValue") final char charValue,
+                @BindingValue("mode") final String mode,
+                @BindingValue("type") final String type,
+                @BindingValue("texts") final String[] texts,
+                @BindingValue("flags") final boolean[] flags,
+                @BindingValue("bytes") final byte[] bytes,
+                @BindingValue("shorts") final short[] shorts,
+                @BindingValue("counts") final int[] counts,
+                @BindingValue("longs") final long[] longs,
+                @BindingValue("floats") final float[] floats,
+                @BindingValue("doubles") final double[] doubles,
+                @BindingValue("chars") final char[] chars,
+                @BindingValue("modes") final String[] modes,
+                @BindingValue("rollbackOn") final String[] rollbackOn,
+                @BindingValue("dontRollbackOn") final String[] dontRollbackOn) {}
+    }
 
-    short shortValue() default 2;
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.BindingValueConversionsModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {
+        String text() default "alpha";
 
-    int count() default 3;
+        boolean flag() default true;
 
-    long longValue() default 4L;
+        byte byteValue() default 1;
 
-    float floatValue() default 5.0F;
+        short shortValue() default 2;
 
-    double doubleValue() default 6.0;
+        int count() default 3;
 
-    char charValue() default '\n';
+        long longValue() default 4L;
 
-    Mode mode() default Mode.On;
+        float floatValue() default 5.0F;
 
-    Class<?> type() default String.class;
+        double doubleValue() default 6.0;
 
-    String[] texts() default { "alpha", "beta" };
+        char charValue() default '\n';
 
-    boolean[] flags() default { true, false };
+        Mode mode() default Mode.On;
 
-    byte[] bytes() default { 1 };
+        Class<?> type() default String.class;
 
-    short[] shorts() default { 2 };
+        String[] texts() default {"alpha", "beta"};
 
-    int[] counts() default { 3 };
+        boolean[] flags() default {true, false};
 
-    long[] longs() default { 4L };
+        byte[] bytes() default {1};
 
-    float[] floats() default { 5.0F };
+        short[] shorts() default {2};
 
-    double[] doubles() default { 6.0 };
+        int[] counts() default {3};
 
-    char[] chars() default { '\n', '\'' };
+        long[] longs() default {4L};
 
-    Mode[] modes() default { Mode.On, Mode.Off };
+        float[] floats() default {5.0F};
 
-    Class<?>[] rollbackOn() default { IOException.class };
+        double[] doubles() default {6.0};
 
-    Class[] dontRollbackOn() default {};
-  }
+        char[] chars() default {'\n', '\''};
+
+        Mode[] modes() default {Mode.On, Mode.Off};
+
+        Class<?>[] rollbackOn() default {IOException.class};
+
+        Class[] dontRollbackOn() default {};
+    }
 }

@@ -5,13 +5,10 @@ import sting.Injector;
 import sting.Typed;
 
 @Injector
-interface TypedOutputModel
-{
-  @Typed( MyModel.class )
-  MyModel getMyModel();
+interface TypedOutputModel {
+    @Typed(MyModel.class)
+    MyModel getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-  }
+    @Injectable
+    class MyModel {}
 }

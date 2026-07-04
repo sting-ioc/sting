@@ -27,74 +27,72 @@ import sting.interceptors.InterceptorBinding;
  * <p>This annotation is type-level only. Method-level transaction policies and Jakarta Transactions method override
  * rules are not supported.</p>
  */
-@InterceptorBinding( implementedBy = "sting.server.interceptors.{value}TransactionInterceptor", priority = 200 )
-@Retention( RetentionPolicy.CLASS )
-@Target( ElementType.TYPE )
-public @interface Transactional
-{
-  /**
-   * Selects the transaction policy to use when a caller invokes the intercepted service boundary.
-   *
-   * @return the transaction policy.
-   */
-  TxType value() default TxType.REQUIRED;
-
-  /**
-   * Transaction policies supported by the Sting server interceptor binding.
-   */
-  enum TxType
-  {
+@InterceptorBinding(implementedBy = "sting.server.interceptors.{value}TransactionInterceptor", priority = 200)
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.TYPE)
+public @interface Transactional {
     /**
-     * Run the service call in a transaction.
+     * Selects the transaction policy to use when a caller invokes the intercepted service boundary.
      *
-     * <p>If the caller already has an active transaction, the service call runs in that transaction. If the caller has
-     * no active transaction, Sting starts a new JTA transaction and completes it when the service call returns or
-     * fails.</p>
+     * @return the transaction policy.
      */
-    REQUIRED,
+    TxType value() default TxType.REQUIRED;
 
     /**
-     * Run the service call in its own new transaction.
-     *
-     * <p>If the caller already has an active transaction, that transaction is suspended for the duration of the service
-     * call and resumed after the new transaction completes. If the caller has no active transaction, Sting simply
-     * starts and completes a new transaction for the service call.</p>
+     * Transaction policies supported by the Sting server interceptor binding.
      */
-    REQUIRES_NEW,
+    enum TxType {
+        /**
+         * Run the service call in a transaction.
+         *
+         * <p>If the caller already has an active transaction, the service call runs in that transaction. If the caller has
+         * no active transaction, Sting starts a new JTA transaction and completes it when the service call returns or
+         * fails.</p>
+         */
+        REQUIRED,
 
-    /**
-     * Require the caller to already have an active transaction.
-     *
-     * <p>The service call runs in the caller's transaction. If there is no active transaction, the call fails with a
-     * {@link jakarta.transaction.TransactionalException} whose cause is a
-     * {@link jakarta.transaction.TransactionRequiredException}.</p>
-     */
-    MANDATORY,
+        /**
+         * Run the service call in its own new transaction.
+         *
+         * <p>If the caller already has an active transaction, that transaction is suspended for the duration of the service
+         * call and resumed after the new transaction completes. If the caller has no active transaction, Sting simply
+         * starts and completes a new transaction for the service call.</p>
+         */
+        REQUIRES_NEW,
 
-    /**
-     * Run with the caller's transaction state unchanged.
-     *
-     * <p>If the caller has an active transaction, the service call runs in that transaction. If the caller has no active
-     * transaction, the service call runs without one. Choose this policy only for services that behave correctly in both
-     * modes.</p>
-     */
-    SUPPORTS,
+        /**
+         * Require the caller to already have an active transaction.
+         *
+         * <p>The service call runs in the caller's transaction. If there is no active transaction, the call fails with a
+         * {@link jakarta.transaction.TransactionalException} whose cause is a
+         * {@link jakarta.transaction.TransactionRequiredException}.</p>
+         */
+        MANDATORY,
 
-    /**
-     * Run the service call without an active transaction.
-     *
-     * <p>If the caller has an active transaction, that transaction is suspended while the service call runs and then
-     * resumed afterwards. If the caller has no active transaction, the service call proceeds without starting one.</p>
-     */
-    NOT_SUPPORTED,
+        /**
+         * Run with the caller's transaction state unchanged.
+         *
+         * <p>If the caller has an active transaction, the service call runs in that transaction. If the caller has no active
+         * transaction, the service call runs without one. Choose this policy only for services that behave correctly in both
+         * modes.</p>
+         */
+        SUPPORTS,
 
-    /**
-     * Require the caller to have no active transaction.
-     *
-     * <p>The service call runs without a transaction. If there is an active transaction, the call fails with a
-     * {@link jakarta.transaction.TransactionalException} whose cause is a
-     * {@link jakarta.transaction.InvalidTransactionException}.</p>
-     */
-    NEVER
-  }
+        /**
+         * Run the service call without an active transaction.
+         *
+         * <p>If the caller has an active transaction, that transaction is suspended while the service call runs and then
+         * resumed afterwards. If the caller has no active transaction, the service call proceeds without starting one.</p>
+         */
+        NOT_SUPPORTED,
+
+        /**
+         * Require the caller to have no active transaction.
+         *
+         * <p>The service call runs without a transaction. If there is an active transaction, the call fails with a
+         * {@link jakarta.transaction.TransactionalException} whose cause is a
+         * {@link jakarta.transaction.InvalidTransactionException}.</p>
+         */
+        NEVER
+    }
 }

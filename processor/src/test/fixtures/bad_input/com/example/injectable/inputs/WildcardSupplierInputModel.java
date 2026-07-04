@@ -4,9 +4,6 @@ import java.util.function.Supplier;
 import sting.Injectable;
 
 @Injectable
-public class WildcardSupplierInputModel
-{
-  WildcardSupplierInputModel( Supplier<?> someValue )
-  {
-  }
+public class WildcardSupplierInputModel {
+    WildcardSupplierInputModel(Supplier<?> someValue) {}
 }

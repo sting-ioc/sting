@@ -17,384 +17,339 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
 
-final class ComponentGraph
-{
-  /**
-   * The processor building the graph.
-   */
-  @Nonnull
-  private final StingProcessor _processor;
-  /**
-   * The injector that defines the graph.
-   */
-  @Nonnull
-  private final InjectorDescriptor _injector;
-  @Nonnull
-  private final Registry _registry;
-  /**
-   * The list of types included in the graph.
-   * This is used to skip registers for types that are already present.
-   * This can occur when we have diamond dependency chains.
-   */
-  @Nonnull
-  private final Set<String> _includedTypes = new HashSet<>();
-  /**
-   * A mapping of the root include element to the bindings.
-   * It is used to verify that a particular include root is used within an injector.
-   */
-  @Nonnull
-  private final Map<IncludeDescriptor, Set<Binding>> _includeRootToBindingMap = new HashMap<>();
-  /**
-   * The types that are published in the component graph.
-   */
-  @Nonnull
-  private final Map<ServiceKey, List<Binding>> _publishedTypes = new LinkedHashMap<>();
-  /**
-   * The index of ids to Node.
-   */
-  @Nonnull
-  private final Map<String, Node> _nodesById = new HashMap<>();
-  /**
-   * The node that represents the Injector.
-   */
-  @Nonnull
-  private final Node _rootNode;
-  /**
-   * true when the graph has been completely built.
-   */
-  private boolean _complete;
-  /**
-   * The list of nodes included in graph in stable order based on depth in graph and node id.
-   * The ordering guarantees that non-supplier dependencies occur earlier than the components
-   * that consume the dependencies.
-   */
-  @Nullable
-  private List<Node> _orderedNodes;
-  /**
-   * The list of fragment nodes included in graph in stable order based on name.
-   */
-  @Nullable
-  private List<FragmentNode> _fragmentNodes;
+final class ComponentGraph {
+    /**
+     * The processor building the graph.
+     */
+    @Nonnull
+    private final StingProcessor _processor;
+    /**
+     * The injector that defines the graph.
+     */
+    @Nonnull
+    private final InjectorDescriptor _injector;
 
-  ComponentGraph( @Nonnull final StingProcessor processor,
-                  @Nonnull final InjectorDescriptor injector,
-                  @Nonnull final Registry registry )
-  {
-    _processor = Objects.requireNonNull( processor );
-    _injector = Objects.requireNonNull( injector );
-    _registry = Objects.requireNonNull( registry );
-    _rootNode = new Node( this );
-  }
+    @Nonnull
+    private final Registry _registry;
+    /**
+     * The list of types included in the graph.
+     * This is used to skip registers for types that are already present.
+     * This can occur when we have diamond dependency chains.
+     */
+    @Nonnull
+    private final Set<String> _includedTypes = new HashSet<>();
+    /**
+     * A mapping of the root include element to the bindings.
+     * It is used to verify that a particular include root is used within an injector.
+     */
+    @Nonnull
+    private final Map<IncludeDescriptor, Set<Binding>> _includeRootToBindingMap = new HashMap<>();
+    /**
+     * The types that are published in the component graph.
+     */
+    @Nonnull
+    private final Map<ServiceKey, List<Binding>> _publishedTypes = new LinkedHashMap<>();
+    /**
+     * The index of ids to Node.
+     */
+    @Nonnull
+    private final Map<String, Node> _nodesById = new HashMap<>();
+    /**
+     * The node that represents the Injector.
+     */
+    @Nonnull
+    private final Node _rootNode;
+    /**
+     * true when the graph has been completely built.
+     */
+    private boolean _complete;
+    /**
+     * The list of nodes included in graph in stable order based on depth in graph and node id.
+     * The ordering guarantees that non-supplier dependencies occur earlier than the components
+     * that consume the dependencies.
+     */
+    @Nullable
+    private List<Node> _orderedNodes;
+    /**
+     * The list of fragment nodes included in graph in stable order based on name.
+     */
+    @Nullable
+    private List<FragmentNode> _fragmentNodes;
 
-  @Nonnull
-  InjectorDescriptor getInjector()
-  {
-    return _injector;
-  }
-
-  @Nonnull
-  Node getRootNode()
-  {
-    return _rootNode;
-  }
-
-  @Nonnull
-  Collection<Node> getRawNodeCollection()
-  {
-    return _nodesById.values();
-  }
-
-  @Nonnull
-  Node findOrCreateNode( @Nonnull final Binding binding )
-  {
-    assert !_complete;
-    final String id = binding.getId();
-    final Node node = _nodesById.get( id );
-    if ( null == node )
-    {
-      final Node newNode = createNode( binding );
-      _nodesById.put( id, newNode );
-      return newNode;
+    ComponentGraph(
+            @Nonnull final StingProcessor processor,
+            @Nonnull final InjectorDescriptor injector,
+            @Nonnull final Registry registry) {
+        _processor = Objects.requireNonNull(processor);
+        _injector = Objects.requireNonNull(injector);
+        _registry = Objects.requireNonNull(registry);
+        _rootNode = new Node(this);
     }
-    else
-    {
-      return node;
+
+    @Nonnull
+    InjectorDescriptor getInjector() {
+        return _injector;
     }
-  }
 
-  @Nonnull
-  private Node createNode( @Nonnull final Binding binding )
-  {
-    final String id = binding.getId();
-    assert !_nodesById.containsKey( id );
-    final Node node = new Node( this, binding );
-    _nodesById.put( id, node );
-    return node;
-  }
-
-  @Nonnull
-  List<Node> getNodes()
-  {
-    assert null != _orderedNodes;
-    return _orderedNodes;
-  }
-
-  @Nonnull
-  List<FragmentNode> getFragments()
-  {
-    assert null != _fragmentNodes;
-    return _fragmentNodes;
-  }
-
-  void complete()
-  {
-    assert !_complete;
-    _complete = true;
-    final AtomicInteger index = new AtomicInteger();
-    final Map<FragmentDescriptor, FragmentNode> fragmentMap = new HashMap<>();
-    _fragmentNodes = _nodesById
-      .values()
-      .stream()
-      .filter( Node::isFromProvides )
-      .map( n -> (FragmentDescriptor) n.getBinding().getOwner() )
-      .sorted( Comparator.comparing( FragmentDescriptor::getQualifiedTypeName ) )
-      .map( f -> new FragmentNode( f, "fragment" + index.incrementAndGet() ) )
-      .peek( f -> fragmentMap.put( f.fragment(), f ) )
-      .collect( Collectors.toList() );
-    index.set( 0 );
-    _orderedNodes = sortNodes( _nodesById.values() );
-    for ( final Node node : _orderedNodes )
-    {
-      node.setName( "node" + index.incrementAndGet() );
-      if ( node.isFromProvides() )
-      {
-        //noinspection SuspiciousMethodCalls
-        node.setFragment( fragmentMap.get( node.getBinding().getOwner() ) );
-      }
+    @Nonnull
+    Node getRootNode() {
+        return _rootNode;
     }
-  }
 
-  @Nonnull
-  private List<Node> sortNodes( @Nonnull final Collection<Node> nodes )
-  {
-    final List<Node> results = new ArrayList<>( nodes.size() );
-    final List<Node> workList = new ArrayList<>( nodes );
-    final Set<Node> done = new HashSet<>();
-    while ( !workList.isEmpty() )
-    {
-      final Node node = workList.remove( workList.size() - 1 );
-      processNode( node, results, done );
+    @Nonnull
+    Collection<Node> getRawNodeCollection() {
+        return _nodesById.values();
     }
-    return results;
-  }
 
-  private void processNode( @Nonnull final Node node, @Nonnull final List<Node> results, @Nonnull final Set<Node> done )
-  {
-    if ( !done.contains( node ) )
-    {
-      done.add( node );
-      for ( final Edge edge : node.getDependsOn() )
-      {
-        for ( final Node other : edge.getSatisfiedBy() )
-        {
-          processNode( other, results, done );
+    @Nonnull
+    Node findOrCreateNode(@Nonnull final Binding binding) {
+        assert !_complete;
+        final String id = binding.getId();
+        final Node node = _nodesById.get(id);
+        if (null == node) {
+            final Node newNode = createNode(binding);
+            _nodesById.put(id, newNode);
+            return newNode;
+        } else {
+            return node;
         }
-      }
-      results.add( node );
     }
-  }
 
-  /**
-   * Register the binding in the component graph.
-   *
-   * @param binding the binding.
-   */
-  private void registerBinding( @Nonnull final Binding binding )
-  {
-    for ( final var service : binding.getPublishedServices() )
-    {
-      _publishedTypes
-        .computeIfAbsent( new ServiceKey( service.getCoordinate() ), c -> new ArrayList<>() )
-        .add( binding );
+    @Nonnull
+    private Node createNode(@Nonnull final Binding binding) {
+        final String id = binding.getId();
+        assert !_nodesById.containsKey(id);
+        final Node node = new Node(this, binding);
+        _nodesById.put(id, node);
+        return node;
     }
-  }
 
-  private void registerEagerBinding( @Nonnull final Binding binding )
-  {
-    _processor.processInterceptorBindings( binding );
-    var proxiedService = false;
-    for ( final var service : binding.getPublishedServices() )
-    {
-      final var interceptedService = binding.findInterceptedService( service.getCoordinate() );
-      if ( null != interceptedService )
-      {
-        findOrCreateNode( binding );
-        final var proxyNode = findOrCreateNode( _registry.findOrCreateInterceptorProxy( interceptedService ) );
-        attachProxyDependencies( proxyNode );
-        proxiedService = true;
-      }
+    @Nonnull
+    List<Node> getNodes() {
+        assert null != _orderedNodes;
+        return _orderedNodes;
     }
-    if ( !proxiedService )
-    {
-      findOrCreateNode( binding );
+
+    @Nonnull
+    List<FragmentNode> getFragments() {
+        assert null != _fragmentNodes;
+        return _fragmentNodes;
     }
-  }
 
-  @Nonnull
-  Map<IncludeDescriptor, Set<Binding>> getIncludeRootToBindingMap()
-  {
-    return _includeRootToBindingMap;
-  }
-
-  @Nonnull
-  List<Binding> findAllBindingsByCoordinate( @Nonnull final Coordinate coordinate )
-  {
-    return _publishedTypes.getOrDefault( new ServiceKey( coordinate ), Collections.emptyList() );
-  }
-
-  @Nonnull
-  Node findOrCreateProviderNode( @Nonnull final Binding binding, @Nonnull final Coordinate coordinate )
-  {
-    _processor.processInterceptorBindings( binding );
-    final var interceptedService = binding.findInterceptedService( coordinate );
-    return null == interceptedService ?
-           findOrCreateNode( binding ) :
-           findOrCreateNode( _registry.findOrCreateInterceptorProxy( interceptedService ) );
-  }
-
-  @Nonnull
-  Node findOrCreateNode( @Nonnull final InterceptorProxyDescriptor proxy )
-  {
-    assert !_complete;
-    final var id = proxy.getId();
-    final var node = _nodesById.get( id );
-    if ( null == node )
-    {
-      final var newNode = new Node( this, proxy );
-      _nodesById.put( id, newNode );
-      return newNode;
-    }
-    else
-    {
-      return node;
-    }
-  }
-
-  void attachProxyDependencies( @Nonnull final Node proxyNode )
-  {
-    assert proxyNode.isProxy();
-    if ( proxyNode.getDependsOn().isEmpty() )
-    {
-      final var proxy = proxyNode.getProxy();
-      final var service = proxy.getService();
-      final var targetNode = findOrCreateNode( service.binding() );
-      proxyNode.addResolvedDependency( new ServiceRequest( ServiceRequest.Kind.INSTANCE,
-                                                           service.service(),
-                                                           service.binding().getElement() ),
-                                       targetNode );
-      for ( final var binding : proxy.getGenericInterceptorBindings() )
-      {
-        final var interceptorService = binding.getPublishedServices().get( 0 );
-        final var interceptorNode = findOrCreateNode( binding );
-        proxyNode.addResolvedDependency( new ServiceRequest( ServiceRequest.Kind.INSTANCE,
-                                                             interceptorService,
-                                                             binding.getElement() ),
-                                         interceptorNode );
-      }
-    }
-  }
-
-  /**
-   * Include the input in the component graph.
-   *
-   * @param input the input.
-   */
-  void registerInput( @Nonnull final InputDescriptor input )
-  {
-    final Binding binding = input.binding();
-    registerBinding( binding );
-    findOrCreateNode( binding );
-  }
-
-  /**
-   * Include the injectable in the component graph.
-   *
-   * @param includeRoot the root include that included the injectable.
-   * @param injectable  the injectable.
-   */
-  void registerInjectable( @Nonnull final IncludeDescriptor includeRoot,
-                           @Nonnull final InjectableDescriptor injectable )
-  {
-    _includeRootToBindingMap.computeIfAbsent( includeRoot, r -> new HashSet<>() ).add( injectable.getBinding() );
-    doRegisterInjectable( injectable );
-  }
-
-  void registerInjectable( @Nonnull final InjectableDescriptor injectable )
-  {
-    doRegisterInjectable( injectable );
-  }
-
-  private void doRegisterInjectable( @Nonnull final InjectableDescriptor injectable )
-  {
-    final String typeName = injectable.getElement().getQualifiedName().toString();
-    if ( _includedTypes.add( typeName ) )
-    {
-      final Binding binding = injectable.getBinding();
-      registerBinding( binding );
-      if ( binding.isEager() )
-      {
-        registerEagerBinding( binding );
-      }
-    }
-  }
-
-  /**
-   * Include the fragment in the component graph.
-   * It is assumed that the types included by the fragment have already been included in the ObjectGraph.
-   *
-   * @param includeRoot the root include that ultimately included the fragment.
-   * @param fragment    the fragment.
-   */
-  void registerFragment( @Nonnull final IncludeDescriptor includeRoot, @Nonnull final FragmentDescriptor fragment )
-  {
-    _includeRootToBindingMap.computeIfAbsent( includeRoot, r -> new HashSet<>() ).addAll( fragment.getBindings() );
-    doRegisterFragment( fragment );
-  }
-
-  void registerFragment( @Nonnull final FragmentDescriptor fragment )
-  {
-    doRegisterFragment( fragment );
-  }
-
-  private void doRegisterFragment( @Nonnull final FragmentDescriptor fragment )
-  {
-    final String typeName = fragment.getElement().getQualifiedName().toString();
-    if ( _includedTypes.add( typeName ) )
-    {
-      for ( final Binding binding : fragment.getBindings() )
-      {
-        registerBinding( binding );
-        if ( binding.isEager() )
-        {
-          registerEagerBinding( binding );
+    void complete() {
+        assert !_complete;
+        _complete = true;
+        final AtomicInteger index = new AtomicInteger();
+        final Map<FragmentDescriptor, FragmentNode> fragmentMap = new HashMap<>();
+        _fragmentNodes = _nodesById.values().stream()
+                .filter(Node::isFromProvides)
+                .map(n -> (FragmentDescriptor) n.getBinding().getOwner())
+                .sorted(Comparator.comparing(FragmentDescriptor::getQualifiedTypeName))
+                .map(f -> new FragmentNode(f, "fragment" + index.incrementAndGet()))
+                .peek(f -> fragmentMap.put(f.fragment(), f))
+                .collect(Collectors.toList());
+        index.set(0);
+        _orderedNodes = sortNodes(_nodesById.values());
+        for (final Node node : _orderedNodes) {
+            node.setName("node" + index.incrementAndGet());
+            if (node.isFromProvides()) {
+                //noinspection SuspiciousMethodCalls
+                node.setFragment(fragmentMap.get(node.getBinding().getOwner()));
+            }
         }
-      }
     }
-  }
 
-  void write( final JsonGenerator g )
-  {
-    g.writeStartObject();
-    g.write( "schema", "graph/1" );
-
-    g.writeStartArray( "nodes" );
-
-    for ( final Node node : getNodes() )
-    {
-      node.write( g );
+    @Nonnull
+    private List<Node> sortNodes(@Nonnull final Collection<Node> nodes) {
+        final List<Node> results = new ArrayList<>(nodes.size());
+        final List<Node> workList = new ArrayList<>(nodes);
+        final Set<Node> done = new HashSet<>();
+        while (!workList.isEmpty()) {
+            final Node node = workList.remove(workList.size() - 1);
+            processNode(node, results, done);
+        }
+        return results;
     }
-    g.writeEnd();
 
-    g.writeEnd();
-  }
+    private void processNode(
+            @Nonnull final Node node, @Nonnull final List<Node> results, @Nonnull final Set<Node> done) {
+        if (!done.contains(node)) {
+            done.add(node);
+            for (final Edge edge : node.getDependsOn()) {
+                for (final Node other : edge.getSatisfiedBy()) {
+                    processNode(other, results, done);
+                }
+            }
+            results.add(node);
+        }
+    }
+
+    /**
+     * Register the binding in the component graph.
+     *
+     * @param binding the binding.
+     */
+    private void registerBinding(@Nonnull final Binding binding) {
+        for (final var service : binding.getPublishedServices()) {
+            _publishedTypes
+                    .computeIfAbsent(new ServiceKey(service.getCoordinate()), c -> new ArrayList<>())
+                    .add(binding);
+        }
+    }
+
+    private void registerEagerBinding(@Nonnull final Binding binding) {
+        _processor.processInterceptorBindings(binding);
+        var proxiedService = false;
+        for (final var service : binding.getPublishedServices()) {
+            final var interceptedService = binding.findInterceptedService(service.getCoordinate());
+            if (null != interceptedService) {
+                findOrCreateNode(binding);
+                final var proxyNode = findOrCreateNode(_registry.findOrCreateInterceptorProxy(interceptedService));
+                attachProxyDependencies(proxyNode);
+                proxiedService = true;
+            }
+        }
+        if (!proxiedService) {
+            findOrCreateNode(binding);
+        }
+    }
+
+    @Nonnull
+    Map<IncludeDescriptor, Set<Binding>> getIncludeRootToBindingMap() {
+        return _includeRootToBindingMap;
+    }
+
+    @Nonnull
+    List<Binding> findAllBindingsByCoordinate(@Nonnull final Coordinate coordinate) {
+        return _publishedTypes.getOrDefault(new ServiceKey(coordinate), Collections.emptyList());
+    }
+
+    @Nonnull
+    Node findOrCreateProviderNode(@Nonnull final Binding binding, @Nonnull final Coordinate coordinate) {
+        _processor.processInterceptorBindings(binding);
+        final var interceptedService = binding.findInterceptedService(coordinate);
+        return null == interceptedService
+                ? findOrCreateNode(binding)
+                : findOrCreateNode(_registry.findOrCreateInterceptorProxy(interceptedService));
+    }
+
+    @Nonnull
+    Node findOrCreateNode(@Nonnull final InterceptorProxyDescriptor proxy) {
+        assert !_complete;
+        final var id = proxy.getId();
+        final var node = _nodesById.get(id);
+        if (null == node) {
+            final var newNode = new Node(this, proxy);
+            _nodesById.put(id, newNode);
+            return newNode;
+        } else {
+            return node;
+        }
+    }
+
+    void attachProxyDependencies(@Nonnull final Node proxyNode) {
+        assert proxyNode.isProxy();
+        if (proxyNode.getDependsOn().isEmpty()) {
+            final var proxy = proxyNode.getProxy();
+            final var service = proxy.getService();
+            final var targetNode = findOrCreateNode(service.binding());
+            proxyNode.addResolvedDependency(
+                    new ServiceRequest(
+                            ServiceRequest.Kind.INSTANCE,
+                            service.service(),
+                            service.binding().getElement()),
+                    targetNode);
+            for (final var binding : proxy.getGenericInterceptorBindings()) {
+                final var interceptorService = binding.getPublishedServices().get(0);
+                final var interceptorNode = findOrCreateNode(binding);
+                proxyNode.addResolvedDependency(
+                        new ServiceRequest(ServiceRequest.Kind.INSTANCE, interceptorService, binding.getElement()),
+                        interceptorNode);
+            }
+        }
+    }
+
+    /**
+     * Include the input in the component graph.
+     *
+     * @param input the input.
+     */
+    void registerInput(@Nonnull final InputDescriptor input) {
+        final Binding binding = input.binding();
+        registerBinding(binding);
+        findOrCreateNode(binding);
+    }
+
+    /**
+     * Include the injectable in the component graph.
+     *
+     * @param includeRoot the root include that included the injectable.
+     * @param injectable  the injectable.
+     */
+    void registerInjectable(
+            @Nonnull final IncludeDescriptor includeRoot, @Nonnull final InjectableDescriptor injectable) {
+        _includeRootToBindingMap
+                .computeIfAbsent(includeRoot, r -> new HashSet<>())
+                .add(injectable.getBinding());
+        doRegisterInjectable(injectable);
+    }
+
+    void registerInjectable(@Nonnull final InjectableDescriptor injectable) {
+        doRegisterInjectable(injectable);
+    }
+
+    private void doRegisterInjectable(@Nonnull final InjectableDescriptor injectable) {
+        final String typeName = injectable.getElement().getQualifiedName().toString();
+        if (_includedTypes.add(typeName)) {
+            final Binding binding = injectable.getBinding();
+            registerBinding(binding);
+            if (binding.isEager()) {
+                registerEagerBinding(binding);
+            }
+        }
+    }
+
+    /**
+     * Include the fragment in the component graph.
+     * It is assumed that the types included by the fragment have already been included in the ObjectGraph.
+     *
+     * @param includeRoot the root include that ultimately included the fragment.
+     * @param fragment    the fragment.
+     */
+    void registerFragment(@Nonnull final IncludeDescriptor includeRoot, @Nonnull final FragmentDescriptor fragment) {
+        _includeRootToBindingMap
+                .computeIfAbsent(includeRoot, r -> new HashSet<>())
+                .addAll(fragment.getBindings());
+        doRegisterFragment(fragment);
+    }
+
+    void registerFragment(@Nonnull final FragmentDescriptor fragment) {
+        doRegisterFragment(fragment);
+    }
+
+    private void doRegisterFragment(@Nonnull final FragmentDescriptor fragment) {
+        final String typeName = fragment.getElement().getQualifiedName().toString();
+        if (_includedTypes.add(typeName)) {
+            for (final Binding binding : fragment.getBindings()) {
+                registerBinding(binding);
+                if (binding.isEager()) {
+                    registerEagerBinding(binding);
+                }
+            }
+        }
+    }
+
+    void write(final JsonGenerator g) {
+        g.writeStartObject();
+        g.write("schema", "graph/1");
+
+        g.writeStartArray("nodes");
+
+        for (final Node node : getNodes()) {
+            node.write(g);
+        }
+        g.writeEnd();
+
+        g.writeEnd();
+    }
 }

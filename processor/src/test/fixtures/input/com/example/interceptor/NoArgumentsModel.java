@@ -10,47 +10,33 @@ import sting.Typed;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class NoArgumentsModel
-{
-  private NoArgumentsModel()
-  {
-  }
+public final class NoArgumentsModel {
+    private NoArgumentsModel() {}
 
-  @Trace
-  interface Service
-  {
-    void run( String value );
-  }
-
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-    public void run( final String value )
-    {
+    @Trace
+    interface Service {
+        void run(String value);
     }
-  }
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before()
-    {
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {
+        public void run(final String value) {}
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.NoArgumentsModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
+    }
+
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before() {}
+    }
+
+    @InterceptorBinding(implementedBy = "com.example.interceptor.NoArgumentsModel.TraceInterceptor", priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

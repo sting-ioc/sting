@@ -22,188 +22,151 @@ import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
 
-final class StingGeneratorUtil
-{
-  @Nonnull
-  static final String FRAMEWORK_PREFIX = "$sting$_";
-  @Nonnull
-  private static final ClassName OBJECT = ClassName.get( "java.lang", "Object" );
-  @Nonnull
-  private static final ClassName COLLECTION = ClassName.get( Collection.class );
-  @Nonnull
-  private static final ClassName OPTIONAL = ClassName.get( Optional.class );
-  @Nonnull
-  private static final ClassName SUPPLIER = ClassName.get( Supplier.class );
+final class StingGeneratorUtil {
+    @Nonnull
+    static final String FRAMEWORK_PREFIX = "$sting$_";
 
-  private StingGeneratorUtil()
-  {
-  }
+    @Nonnull
+    private static final ClassName OBJECT = ClassName.get("java.lang", "Object");
 
-  static TypeName getServiceType( @Nonnull final ServiceRequest serviceRequest )
-  {
-    final ServiceRequest.Kind kind = serviceRequest.getKind();
-    final TypeName baseType = TypeName.get( serviceRequest.getService().getCoordinate().type() );
-    if ( ServiceRequest.Kind.INSTANCE == kind )
-    {
-      return baseType;
-    }
-    else if ( ServiceRequest.Kind.OPTIONAL == kind )
-    {
-      return ParameterizedTypeName.get( OPTIONAL, baseType );
-    }
-    else if ( ServiceRequest.Kind.SUPPLIER == kind )
-    {
-      return ParameterizedTypeName.get( SUPPLIER, baseType );
-    }
-    else if ( ServiceRequest.Kind.SUPPLIER_OPTIONAL == kind )
-    {
-      return ParameterizedTypeName.get( SUPPLIER, ParameterizedTypeName.get( OPTIONAL, baseType ) );
-    }
-    else if ( ServiceRequest.Kind.COLLECTION == kind )
-    {
-      return ParameterizedTypeName.get( COLLECTION, baseType );
-    }
-    else if ( ServiceRequest.Kind.SUPPLIER_COLLECTION == kind )
-    {
-      return ParameterizedTypeName.get( COLLECTION,
-                                        ParameterizedTypeName.get( SUPPLIER, baseType ) );
-    }
-    else
-    {
-      assert ServiceRequest.Kind.SUPPLIER_OPTIONAL_COLLECTION == kind;
-      return ParameterizedTypeName.get( COLLECTION,
-                                        ParameterizedTypeName.get( SUPPLIER,
-                                                                   ParameterizedTypeName.get( OPTIONAL, baseType ) ) );
-    }
-  }
+    @Nonnull
+    private static final ClassName COLLECTION = ClassName.get(Collection.class);
 
-  @Nonnull
-  static MethodSpec buildBindingCreator( @Nonnull final ProcessingEnvironment processingEnv,
-                                         @Nonnull final MethodSpec.Builder method,
-                                         @Nonnull final StringBuilder code,
-                                         @Nonnull final List<Object> args,
-                                         @Nonnull final TypeMirror typeProduced,
-                                         @Nonnull final Binding binding )
-  {
-    final ServiceRequest[] dependencies = binding.getDependencies();
+    @Nonnull
+    private static final ClassName OPTIONAL = ClassName.get(Optional.class);
 
-    final List<TypeMirror> typesProcessed = new ArrayList<>();
-    typesProcessed.add( typeProduced );
+    @Nonnull
+    private static final ClassName SUPPLIER = ClassName.get(Supplier.class);
 
-    code.append( "(" );
-    if ( 0 != dependencies.length )
-    {
-      code.append( ' ' );
+    private StingGeneratorUtil() {}
+
+    static TypeName getServiceType(@Nonnull final ServiceRequest serviceRequest) {
+        final ServiceRequest.Kind kind = serviceRequest.getKind();
+        final TypeName baseType =
+                TypeName.get(serviceRequest.getService().getCoordinate().type());
+        if (ServiceRequest.Kind.INSTANCE == kind) {
+            return baseType;
+        } else if (ServiceRequest.Kind.OPTIONAL == kind) {
+            return ParameterizedTypeName.get(OPTIONAL, baseType);
+        } else if (ServiceRequest.Kind.SUPPLIER == kind) {
+            return ParameterizedTypeName.get(SUPPLIER, baseType);
+        } else if (ServiceRequest.Kind.SUPPLIER_OPTIONAL == kind) {
+            return ParameterizedTypeName.get(SUPPLIER, ParameterizedTypeName.get(OPTIONAL, baseType));
+        } else if (ServiceRequest.Kind.COLLECTION == kind) {
+            return ParameterizedTypeName.get(COLLECTION, baseType);
+        } else if (ServiceRequest.Kind.SUPPLIER_COLLECTION == kind) {
+            return ParameterizedTypeName.get(COLLECTION, ParameterizedTypeName.get(SUPPLIER, baseType));
+        } else {
+            assert ServiceRequest.Kind.SUPPLIER_OPTIONAL_COLLECTION == kind;
+            return ParameterizedTypeName.get(
+                    COLLECTION, ParameterizedTypeName.get(SUPPLIER, ParameterizedTypeName.get(OPTIONAL, baseType)));
+        }
     }
-    boolean allPublic = true;
-    boolean anyNonPublicNonInstance = false;
-    boolean firstParam = true;
-    for ( final ServiceRequest service : dependencies )
-    {
-      final VariableElement parameter = (VariableElement) service.getElement();
-      final String paramName = parameter.getSimpleName().toString();
 
-      typesProcessed.add( service.getService().getCoordinate().type() );
-      final boolean isPublic = service.getService().isPublic();
-      allPublic &= isPublic;
+    @Nonnull
+    static MethodSpec buildBindingCreator(
+            @Nonnull final ProcessingEnvironment processingEnv,
+            @Nonnull final MethodSpec.Builder method,
+            @Nonnull final StringBuilder code,
+            @Nonnull final List<Object> args,
+            @Nonnull final TypeMirror typeProduced,
+            @Nonnull final Binding binding) {
+        final ServiceRequest[] dependencies = binding.getDependencies();
 
-      final TypeName actualTypeName = getServiceType( service );
+        final List<TypeMirror> typesProcessed = new ArrayList<>();
+        typesProcessed.add(typeProduced);
 
-      final ServiceRequest.Kind kind = service.getKind();
-      final TypeName paramType;
-      if ( isPublic )
-      {
-        paramType = actualTypeName;
-      }
-      else if ( ServiceRequest.Kind.INSTANCE == kind )
-      {
-        paramType = OBJECT;
-      }
-      else if ( ServiceRequest.Kind.OPTIONAL == kind )
-      {
-        anyNonPublicNonInstance = true;
-        paramType = OPTIONAL;
-      }
-      else if ( ServiceRequest.Kind.SUPPLIER == kind )
-      {
-        anyNonPublicNonInstance = true;
-        paramType = SUPPLIER;
-      }
-      else if ( ServiceRequest.Kind.SUPPLIER_OPTIONAL == kind )
-      {
-        anyNonPublicNonInstance = true;
-        paramType = SUPPLIER;
-      }
-      else if ( ServiceRequest.Kind.COLLECTION == kind )
-      {
-        anyNonPublicNonInstance = true;
-        paramType = COLLECTION;
-      }
-      else
-      {
-        assert ServiceRequest.Kind.SUPPLIER_COLLECTION == kind ||
-               ServiceRequest.Kind.SUPPLIER_OPTIONAL_COLLECTION == kind;
-        anyNonPublicNonInstance = true;
-        paramType = COLLECTION;
-      }
-      final ParameterSpec.Builder param = ParameterSpec.builder( paramType, paramName, Modifier.FINAL );
-      GeneratorUtil.copyWhitelistedAnnotations( parameter, param );
-      method.addParameter( param.build() );
-      if ( !firstParam )
-      {
-        code.append( ", " );
-      }
-      firstParam = false;
-      final boolean requireNonNull = !service.getService().isOptional() && !typeProduced.getKind().isPrimitive();
-      if ( requireNonNull )
-      {
-        code.append( "$T.requireNonNull( " );
-        args.add( Objects.class );
-      }
-      if ( !isPublic )
-      {
-        code.append( "($T) " );
-        args.add( actualTypeName );
-      }
-      code.append( "$N" );
-      args.add( paramName );
-      if ( requireNonNull )
-      {
-        code.append( " )" );
-      }
-    }
-    if ( 0 != dependencies.length )
-    {
-      code.append( ' ' );
-    }
-    code.append( ")" );
-    method.addStatement( code.toString(), args.toArray() );
-    final List<String> additionalSuppressions = new ArrayList<>();
-    if ( !allPublic )
-    {
-      additionalSuppressions.add( "unchecked" );
-    }
-    if ( anyNonPublicNonInstance )
-    {
-      additionalSuppressions.add( "rawtypes" );
-    }
-    if ( ElementsUtil.isDeprecated( binding.getElement() ) )
-    {
-      additionalSuppressions.add( "deprecation" );
-    }
-    SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv, method, additionalSuppressions, typesProcessed );
-    return method.build();
-  }
+        code.append("(");
+        if (0 != dependencies.length) {
+            code.append(' ');
+        }
+        boolean allPublic = true;
+        boolean anyNonPublicNonInstance = false;
+        boolean firstParam = true;
+        for (final ServiceRequest service : dependencies) {
+            final VariableElement parameter = (VariableElement) service.getElement();
+            final String paramName = parameter.getSimpleName().toString();
 
-  @Nonnull
-  static ClassName getGeneratedClassName( @Nonnull final TypeElement element )
-  {
-    return GeneratorUtil.getGeneratedClassName( element, "Sting_", "" );
-  }
+            typesProcessed.add(service.getService().getCoordinate().type());
+            final boolean isPublic = service.getService().isPublic();
+            allPublic &= isPublic;
 
-  @Nonnull
-  static String getFragmentProvidesStubName( @Nonnull final ExecutableElement element )
-  {
-    return FRAMEWORK_PREFIX + element.getSimpleName().toString();
-  }
+            final TypeName actualTypeName = getServiceType(service);
+
+            final ServiceRequest.Kind kind = service.getKind();
+            final TypeName paramType;
+            if (isPublic) {
+                paramType = actualTypeName;
+            } else if (ServiceRequest.Kind.INSTANCE == kind) {
+                paramType = OBJECT;
+            } else if (ServiceRequest.Kind.OPTIONAL == kind) {
+                anyNonPublicNonInstance = true;
+                paramType = OPTIONAL;
+            } else if (ServiceRequest.Kind.SUPPLIER == kind) {
+                anyNonPublicNonInstance = true;
+                paramType = SUPPLIER;
+            } else if (ServiceRequest.Kind.SUPPLIER_OPTIONAL == kind) {
+                anyNonPublicNonInstance = true;
+                paramType = SUPPLIER;
+            } else if (ServiceRequest.Kind.COLLECTION == kind) {
+                anyNonPublicNonInstance = true;
+                paramType = COLLECTION;
+            } else {
+                assert ServiceRequest.Kind.SUPPLIER_COLLECTION == kind
+                        || ServiceRequest.Kind.SUPPLIER_OPTIONAL_COLLECTION == kind;
+                anyNonPublicNonInstance = true;
+                paramType = COLLECTION;
+            }
+            final ParameterSpec.Builder param = ParameterSpec.builder(paramType, paramName, Modifier.FINAL);
+            GeneratorUtil.copyWhitelistedAnnotations(parameter, param);
+            method.addParameter(param.build());
+            if (!firstParam) {
+                code.append(", ");
+            }
+            firstParam = false;
+            final boolean requireNonNull = !service.getService().isOptional()
+                    && !typeProduced.getKind().isPrimitive();
+            if (requireNonNull) {
+                code.append("$T.requireNonNull( ");
+                args.add(Objects.class);
+            }
+            if (!isPublic) {
+                code.append("($T) ");
+                args.add(actualTypeName);
+            }
+            code.append("$N");
+            args.add(paramName);
+            if (requireNonNull) {
+                code.append(" )");
+            }
+        }
+        if (0 != dependencies.length) {
+            code.append(' ');
+        }
+        code.append(")");
+        method.addStatement(code.toString(), args.toArray());
+        final List<String> additionalSuppressions = new ArrayList<>();
+        if (!allPublic) {
+            additionalSuppressions.add("unchecked");
+        }
+        if (anyNonPublicNonInstance) {
+            additionalSuppressions.add("rawtypes");
+        }
+        if (ElementsUtil.isDeprecated(binding.getElement())) {
+            additionalSuppressions.add("deprecation");
+        }
+        SuppressWarningsUtil.addSuppressWarningsIfRequired(
+                processingEnv, method, additionalSuppressions, typesProcessed);
+        return method.build();
+    }
+
+    @Nonnull
+    static ClassName getGeneratedClassName(@Nonnull final TypeElement element) {
+        return GeneratorUtil.getGeneratedClassName(element, "Sting_", "");
+    }
+
+    @Nonnull
+    static String getFragmentProvidesStubName(@Nonnull final ExecutableElement element) {
+        return FRAMEWORK_PREFIX + element.getSimpleName().toString();
+    }
 }

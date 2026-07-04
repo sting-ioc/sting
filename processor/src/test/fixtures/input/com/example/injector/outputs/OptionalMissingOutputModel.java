@@ -5,15 +5,12 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-public interface OptionalMissingOutputModel
-{
-  @Nullable
-  Runnable getRunnable();
+public interface OptionalMissingOutputModel {
+    @Nullable
+    Runnable getRunnable();
 
-  MyModel2 getMyModel2();
+    MyModel2 getMyModel2();
 
-  @Injectable
-  class MyModel2
-  {
-  }
+    @Injectable
+    class MyModel2 {}
 }

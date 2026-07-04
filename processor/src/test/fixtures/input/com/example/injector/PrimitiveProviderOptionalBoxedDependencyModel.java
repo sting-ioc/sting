@@ -6,24 +6,18 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface PrimitiveProviderOptionalBoxedDependencyModel
-{
-  MyModel getMyModel();
+interface PrimitiveProviderOptionalBoxedDependencyModel {
+    MyModel getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-    MyModel( @Nullable final Integer value )
-    {
+    @Injectable
+    class MyModel {
+        MyModel(@Nullable final Integer value) {}
     }
-  }
 
-  @Fragment
-  interface MyFragment
-  {
-    default int provideValue()
-    {
-      return 23;
+    @Fragment
+    interface MyFragment {
+        default int provideValue() {
+            return 23;
+        }
     }
-  }
 }

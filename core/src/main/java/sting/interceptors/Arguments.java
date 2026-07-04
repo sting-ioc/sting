@@ -9,8 +9,6 @@ import java.lang.annotation.Target;
  * Marks a lifecycle method parameter that receives the active service method arguments for this interceptor boundary
  * as a read-only array.
  */
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.PARAMETER )
-public @interface Arguments
-{
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+public @interface Arguments {}

@@ -5,28 +5,19 @@ import sting.Injector;
 import sting.StingProvider;
 import sting.Typed;
 
-public interface WrongPublishedTypeModel
-{
-  @Injector
-  interface MyInjector
-  {
-    MyModel1 getMyModel1();
-  }
+public interface WrongPublishedTypeModel {
+    @Injector
+    interface MyInjector {
+        MyModel1 getMyModel1();
+    }
 
-  @StingProvider( "[CompoundName]Impl" )
-  @interface MyFrameworkComponent
-  {
-  }
+    @StingProvider("[CompoundName]Impl")
+    @interface MyFrameworkComponent {}
 
-  @MyFrameworkComponent
-  class MyModel1
-  {
-  }
+    @MyFrameworkComponent
+    class MyModel1 {}
 
-  @Injectable
-  @Typed( Object.class )
-  class MyModel1Impl
-    extends MyModel1
-  {
-  }
+    @Injectable
+    @Typed(Object.class)
+    class MyModel1Impl extends MyModel1 {}
 }

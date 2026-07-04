@@ -10,55 +10,43 @@ import sting.Typed;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class DuplicatePriorityModel
-{
-  private DuplicatePriorityModel()
-  {
-  }
+public final class DuplicatePriorityModel {
+    private DuplicatePriorityModel() {}
 
-  @Injector( includes = DuplicatePriorityModel.Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-  Service service();
-  }
-
-  @Trace
-  @Audit
-  interface Service
-  {
-    void run();
-  }
-
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-    public void run()
-    {
+    @Injector(includes = DuplicatePriorityModel.Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
     }
-  }
 
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before()
-    {
+    @Trace
+    @Audit
+    interface Service {
+        void run();
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.DuplicatePriorityModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {
+        public void run() {}
+    }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.DuplicatePriorityModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Audit
-  {
-  }
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before() {}
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.DuplicatePriorityModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.DuplicatePriorityModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Audit {}
 }

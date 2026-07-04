@@ -4,7 +4,5 @@ import sting.Injectable;
 import sting.Typed;
 
 @Injectable
-@Typed( {} )
-public class NoTypesAndLazyModel
-{
-}
+@Typed({})
+public class NoTypesAndLazyModel {}

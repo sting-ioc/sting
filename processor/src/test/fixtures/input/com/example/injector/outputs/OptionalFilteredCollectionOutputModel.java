@@ -6,26 +6,21 @@ import sting.Fragment;
 import sting.Injector;
 
 @Injector
-interface OptionalFilteredCollectionOutputModel
-{
-  Collection<Runnable> getRunnables();
+interface OptionalFilteredCollectionOutputModel {
+    Collection<Runnable> getRunnables();
 
-  @Fragment
-  interface MyFragment1
-  {
-    default Runnable provideRunnable1()
-    {
-      return () -> { };
+    @Fragment
+    interface MyFragment1 {
+        default Runnable provideRunnable1() {
+            return () -> {};
+        }
     }
-  }
 
-  @Fragment
-  interface MyFragment2
-  {
-    @Nullable
-    default Runnable provideRunnable2()
-    {
-      return null;
+    @Fragment
+    interface MyFragment2 {
+        @Nullable
+        default Runnable provideRunnable2() {
+            return null;
+        }
     }
-  }
 }

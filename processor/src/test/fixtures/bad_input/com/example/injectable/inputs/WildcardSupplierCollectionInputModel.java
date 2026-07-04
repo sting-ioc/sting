@@ -5,9 +5,6 @@ import java.util.function.Supplier;
 import sting.Injectable;
 
 @Injectable
-public class WildcardSupplierCollectionInputModel
-{
-  WildcardSupplierCollectionInputModel( Collection<Supplier<?>> someValue )
-  {
-  }
+public class WildcardSupplierCollectionInputModel {
+    WildcardSupplierCollectionInputModel(Collection<Supplier<?>> someValue) {}
 }

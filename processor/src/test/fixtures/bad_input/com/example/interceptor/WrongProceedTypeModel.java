@@ -11,44 +11,35 @@ import sting.interceptors.Around;
 import sting.interceptors.InterceptorBinding;
 import sting.interceptors.Proceed;
 
-public final class WrongProceedTypeModel
-{
-  @Trace
-  interface Service
-  {
-    void run();
-  }
-
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-    public void run()
-    {
+public final class WrongProceedTypeModel {
+    @Trace
+    interface Service {
+        void run();
     }
-  }
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Around
-    public Object around( @Proceed final Object invocation )
-    {
-      return null;
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {
+        public void run() {}
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.WrongProceedTypeModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
+    }
+
+    @Injectable
+    public static class TraceInterceptor {
+        @Around
+        public Object around(@Proceed final Object invocation) {
+            return null;
+        }
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.WrongProceedTypeModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

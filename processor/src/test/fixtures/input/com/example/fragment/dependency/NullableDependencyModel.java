@@ -4,10 +4,8 @@ import javax.annotation.Nullable;
 import sting.Fragment;
 
 @Fragment
-public interface NullableDependencyModel
-{
-  default Runnable provideRunnable( @Nullable String name )
-  {
-    return null;
-  }
+public interface NullableDependencyModel {
+    default Runnable provideRunnable(@Nullable String name) {
+        return null;
+    }
 }

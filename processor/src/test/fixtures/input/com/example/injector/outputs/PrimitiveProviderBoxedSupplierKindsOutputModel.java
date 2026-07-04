@@ -6,20 +6,17 @@ import sting.Fragment;
 import sting.Injector;
 
 @Injector
-interface PrimitiveProviderBoxedSupplierKindsOutputModel
-{
-  Collection<Integer> getValues();
+interface PrimitiveProviderBoxedSupplierKindsOutputModel {
+    Collection<Integer> getValues();
 
-  Supplier<Integer> getValueSupplier();
+    Supplier<Integer> getValueSupplier();
 
-  Collection<Supplier<Integer>> getValueSuppliers();
+    Collection<Supplier<Integer>> getValueSuppliers();
 
-  @Fragment
-  interface MyFragment
-  {
-    default int provideValue()
-    {
-      return 7;
+    @Fragment
+    interface MyFragment {
+        default int provideValue() {
+            return 7;
+        }
     }
-  }
 }

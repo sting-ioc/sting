@@ -5,8 +5,7 @@ import java.util.function.Supplier;
 import sting.Injector;
 
 @Injector
-public interface RawSupplierCollectionOutputModel
-{
-  @SuppressWarnings( "rawtypes" )
-  Collection<Supplier> getMyThing();
+public interface RawSupplierCollectionOutputModel {
+    @SuppressWarnings("rawtypes")
+    Collection<Supplier> getMyThing();
 }

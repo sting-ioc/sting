@@ -5,12 +5,10 @@ import sting.Fragment;
 import sting.Typed;
 
 @Fragment
-public interface NoTypesModel
-{
-  @Eager
-  @Typed( {} )
-  default String provideConfig()
-  {
-    return null;
-  }
+public interface NoTypesModel {
+    @Eager
+    @Typed({})
+    default String provideConfig() {
+        return null;
+    }
 }

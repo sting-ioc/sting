@@ -3,14 +3,10 @@ package com.example.fragment;
 import sting.Fragment;
 
 @Fragment
-public interface EnclosedEnumFragmentModel
-{
-  default Runnable provideRunnable()
-  {
-    return null;
-  }
+public interface EnclosedEnumFragmentModel {
+    default Runnable provideRunnable() {
+        return null;
+    }
 
-  enum Foo
-  {
-  }
+    enum Foo {}
 }

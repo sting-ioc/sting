@@ -9,39 +9,28 @@ import sting.Injector;
 import sting.Typed;
 import sting.interceptors.InterceptorBinding;
 
-public final class NoLifecycleMethodModel
-{
-  private NoLifecycleMethodModel()
-  {
-  }
+public final class NoLifecycleMethodModel {
+    private NoLifecycleMethodModel() {}
 
-  @Injector( includes = NoLifecycleMethodModel.Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-  Service service();
-  }
+    @Injector(includes = NoLifecycleMethodModel.Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
+    }
 
-  @Trace
-  interface Service
-  {
-  }
+    @Trace
+    interface Service {}
 
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-  }
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {}
 
-  @Injectable
-  public static class TraceInterceptor
-  {
-  }
+    @Injectable
+    public static class TraceInterceptor {}
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.NoLifecycleMethodModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.NoLifecycleMethodModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

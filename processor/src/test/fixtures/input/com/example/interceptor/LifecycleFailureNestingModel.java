@@ -13,86 +13,61 @@ import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 import sting.interceptors.Thrown;
 
-public final class LifecycleFailureNestingModel
-{
-  private LifecycleFailureNestingModel()
-  {
-  }
+public final class LifecycleFailureNestingModel {
+    private LifecycleFailureNestingModel() {}
 
-  @OuterTrace
-  @InnerTrace
-  interface Service
-  {
-    void run();
-  }
-
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-    public void run()
-    {
-    }
-  }
-
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Injectable
-  public static class OuterInterceptor
-  {
-    @Before
-    public void before()
-    {
+    @OuterTrace
+    @InnerTrace
+    interface Service {
+        void run();
     }
 
-    @After
-    public void after()
-    {
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {
+        public void run() {}
     }
 
-    @AfterException
-    public void afterException( @Thrown final Throwable throwable )
-    {
-    }
-  }
-
-  @Injectable
-  public static class InnerInterceptor
-  {
-    @Before
-    public void before()
-    {
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
     }
 
-    @After
-    public void after()
-    {
+    @Injectable
+    public static class OuterInterceptor {
+        @Before
+        public void before() {}
+
+        @After
+        public void after() {}
+
+        @AfterException
+        public void afterException(@Thrown final Throwable throwable) {}
     }
 
-    @AfterException
-    public void afterException( @Thrown final Throwable throwable )
-    {
+    @Injectable
+    public static class InnerInterceptor {
+        @Before
+        public void before() {}
+
+        @After
+        public void after() {}
+
+        @AfterException
+        public void afterException(@Thrown final Throwable throwable) {}
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.LifecycleFailureNestingModel.OuterInterceptor",
-                       priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface OuterTrace
-  {
-  }
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.LifecycleFailureNestingModel.OuterInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface OuterTrace {}
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.LifecycleFailureNestingModel.InnerInterceptor",
-                       priority = 200 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface InnerTrace
-  {
-  }
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.LifecycleFailureNestingModel.InnerInterceptor",
+            priority = 200)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface InnerTrace {}
 }

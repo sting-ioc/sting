@@ -11,43 +11,31 @@ import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 import sting.interceptors.Result;
 
-public final class ResultWrongPhaseModel
-{
-  private ResultWrongPhaseModel()
-  {
-  }
+public final class ResultWrongPhaseModel {
+    private ResultWrongPhaseModel() {}
 
-  @Injector( includes = ResultWrongPhaseModel.Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-  Service service();
-  }
-
-  @Trace
-  interface Service
-  {
-  }
-
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before( @Result Object result )
-    {
+    @Injector(includes = ResultWrongPhaseModel.Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.ResultWrongPhaseModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Trace
+    interface Service {}
+
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {}
+
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before(@Result Object result) {}
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.ResultWrongPhaseModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

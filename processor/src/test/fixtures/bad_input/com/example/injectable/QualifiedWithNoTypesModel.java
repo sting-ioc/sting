@@ -6,9 +6,7 @@ import sting.Named;
 import sting.Typed;
 
 @Injectable
-@Named( "X" )
-@Typed( {} )
+@Named("X")
+@Typed({})
 @Eager
-class QualifiedWithNoTypesModel
-{
-}
+class QualifiedWithNoTypesModel {}

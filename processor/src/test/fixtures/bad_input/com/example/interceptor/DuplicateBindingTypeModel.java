@@ -10,48 +10,36 @@ import sting.Typed;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class DuplicateBindingTypeModel
-{
-  private DuplicateBindingTypeModel()
-  {
-  }
+public final class DuplicateBindingTypeModel {
+    private DuplicateBindingTypeModel() {}
 
-  @Injector( includes = DuplicateBindingTypeModel.Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-  Service service();
-  }
-
-  @Trace
-  interface Service
-  {
-    void run();
-  }
-
-  @Trace
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-    public void run()
-    {
+    @Injector(includes = DuplicateBindingTypeModel.Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
     }
-  }
 
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before()
-    {
+    @Trace
+    interface Service {
+        void run();
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.DuplicateBindingTypeModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Trace
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {
+        public void run() {}
+    }
+
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before() {}
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.DuplicateBindingTypeModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

@@ -4,10 +4,8 @@ import sting.Fragment;
 
 @Fragment
 @Deprecated
-public interface DeprecatedFragmentModel
-{
-  default Runnable provideRunnable()
-  {
-    return null;
-  }
+public interface DeprecatedFragmentModel {
+    default Runnable provideRunnable() {
+        return null;
+    }
 }

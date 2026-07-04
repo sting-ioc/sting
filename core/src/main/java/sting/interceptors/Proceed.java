@@ -8,8 +8,6 @@ import java.lang.annotation.Target;
 /**
  * Marks an {@link Around} lifecycle method parameter that receives the invocation.
  */
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.PARAMETER )
-public @interface Proceed
-{
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+public @interface Proceed {}

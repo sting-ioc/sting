@@ -8,8 +8,6 @@ import java.lang.annotation.Target;
 /**
  * Marks a lifecycle method parameter that receives the intercepted service method name.
  */
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.PARAMETER )
-public @interface MethodName
-{
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.PARAMETER)
+public @interface MethodName {}

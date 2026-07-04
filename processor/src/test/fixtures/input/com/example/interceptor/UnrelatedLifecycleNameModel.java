@@ -9,60 +9,44 @@ import sting.Injector;
 import sting.Typed;
 import sting.interceptors.InterceptorBinding;
 
-public final class UnrelatedLifecycleNameModel
-{
-  private UnrelatedLifecycleNameModel()
-  {
-  }
+public final class UnrelatedLifecycleNameModel {
+    private UnrelatedLifecycleNameModel() {}
 
-  @Trace
-  interface Service
-  {
-    void run();
-  }
-
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-    public void run()
-    {
-    }
-  }
-
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public static int ignored()
-    {
-      return 0;
+    @Trace
+    interface Service {
+        void run();
     }
 
-    @sting.interceptors.Before
-    public void before()
-    {
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {
+        public void run() {}
     }
-  }
 
-  @Retention( RetentionPolicy.CLASS )
-  @Target( ElementType.METHOD )
-  @interface Before
-  {
-  }
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
+    }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.UnrelatedLifecycleNameModel.TraceInterceptor",
-                       priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public static int ignored() {
+            return 0;
+        }
+
+        @sting.interceptors.Before
+        public void before() {}
+    }
+
+    @Retention(RetentionPolicy.CLASS)
+    @Target(ElementType.METHOD)
+    @interface Before {}
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.UnrelatedLifecycleNameModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

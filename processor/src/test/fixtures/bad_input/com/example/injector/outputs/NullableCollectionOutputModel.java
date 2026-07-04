@@ -5,8 +5,7 @@ import javax.annotation.Nullable;
 import sting.Injector;
 
 @Injector
-public interface NullableCollectionOutputModel
-{
-  @Nullable
-  Collection<String> getMyThing();
+public interface NullableCollectionOutputModel {
+    @Nullable
+    Collection<String> getMyThing();
 }

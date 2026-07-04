@@ -2,13 +2,13 @@ package sting.doc.examples.getting_started.step3;
 
 import sting.Injector;
 
-@Injector( fragmentOnly = false, includes = { AuthenticationService.class, WelcomePage.class } )
-public interface WebApplication
-{
-  static WebApplication create()
-  {
-    return new Sting_WebApplication();
-  }
+@Injector(
+        fragmentOnly = false,
+        includes = {AuthenticationService.class, WelcomePage.class})
+public interface WebApplication {
+    static WebApplication create() {
+        return new Sting_WebApplication();
+    }
 
-  WelcomePage getWelcomePage();
+    WelcomePage getWelcomePage();
 }

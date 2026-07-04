@@ -6,29 +6,20 @@ import sting.Named;
 import sting.StingProvider;
 import sting.Typed;
 
-public interface QualifiedPublishedTypeModel
-{
-  @Injector
-  interface MyInjector
-  {
-    MyModel1 getMyModel1();
-  }
+public interface QualifiedPublishedTypeModel {
+    @Injector
+    interface MyInjector {
+        MyModel1 getMyModel1();
+    }
 
-  @StingProvider( "[CompoundName]Impl" )
-  @interface MyFrameworkComponent
-  {
-  }
+    @StingProvider("[CompoundName]Impl")
+    @interface MyFrameworkComponent {}
 
-  @MyFrameworkComponent
-  class MyModel1
-  {
-  }
+    @MyFrameworkComponent
+    class MyModel1 {}
 
-  @Injectable
-  @Named( "framework" )
-  @Typed( MyModel1.class )
-  class MyModel1Impl
-    extends MyModel1
-  {
-  }
+    @Injectable
+    @Named("framework")
+    @Typed(MyModel1.class)
+    class MyModel1Impl extends MyModel1 {}
 }

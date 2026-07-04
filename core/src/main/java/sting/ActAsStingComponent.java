@@ -28,8 +28,6 @@ import java.lang.annotation.Target;
  * @see InjectorFragment
  */
 @Documented
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.ANNOTATION_TYPE )
-public @interface ActAsStingComponent
-{
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.ANNOTATION_TYPE)
+public @interface ActAsStingComponent {}

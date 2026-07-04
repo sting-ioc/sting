@@ -6,10 +6,7 @@ import sting.interceptors.Before;
 import sting.interceptors.BindingValue;
 
 @Injectable
-public final class AuditInterceptor
-{
-  @Before
-  public void before( @BindingValue( "action" ) final String action, @Arguments final Object[] arguments )
-  {
-  }
+public final class AuditInterceptor {
+    @Before
+    public void before(@BindingValue("action") final String action, @Arguments final Object[] arguments) {}
 }

@@ -5,9 +5,6 @@ import java.util.function.Supplier;
 import sting.Injectable;
 
 @Injectable
-public class SupplierCollectionDependencyModel
-{
-  SupplierCollectionDependencyModel( Collection<Supplier<Runnable>> runnable )
-  {
-  }
+public class SupplierCollectionDependencyModel {
+    SupplierCollectionDependencyModel(Collection<Supplier<Runnable>> runnable) {}
 }

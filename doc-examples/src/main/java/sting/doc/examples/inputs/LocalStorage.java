@@ -1,5 +1,3 @@
 package sting.doc.examples.inputs;
 
-public interface LocalStorage
-{
-}
+public interface LocalStorage {}

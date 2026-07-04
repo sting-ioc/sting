@@ -10,44 +10,35 @@ import sting.Typed;
 import sting.interceptors.Around;
 import sting.interceptors.InterceptorBinding;
 
-public final class MissingProceedAroundMethodModel
-{
-  @Trace
-  interface Service
-  {
-    void run();
-  }
-
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-    public void run()
-    {
+public final class MissingProceedAroundMethodModel {
+    @Trace
+    interface Service {
+        void run();
     }
-  }
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Around
-    public Object around()
-    {
-      return null;
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {
+        public void run() {}
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.MissingProceedAroundMethodModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
+    }
+
+    @Injectable
+    public static class TraceInterceptor {
+        @Around
+        public Object around() {
+            return null;
+        }
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.MissingProceedAroundMethodModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

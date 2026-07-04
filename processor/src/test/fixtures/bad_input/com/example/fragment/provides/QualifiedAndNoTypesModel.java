@@ -6,13 +6,11 @@ import sting.Named;
 import sting.Typed;
 
 @Fragment
-public interface QualifiedAndNoTypesModel
-{
-  @Eager
-  @Typed( {} )
-  @Named( "X" )
-  default String provideX()
-  {
-    return "";
-  }
+public interface QualifiedAndNoTypesModel {
+    @Eager
+    @Typed({})
+    @Named("X")
+    default String provideX() {
+        return "";
+    }
 }

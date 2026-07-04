@@ -4,14 +4,11 @@ import sting.Fragment;
 import sting.Injector;
 
 @Injector
-interface NoDirectDependenciesAndNoEagerInIncludesModel
-{
-  @Fragment
-  interface MyFragment
-  {
-    default Runnable provideRunnable()
-    {
-      return null;
+interface NoDirectDependenciesAndNoEagerInIncludesModel {
+    @Fragment
+    interface MyFragment {
+        default Runnable provideRunnable() {
+            return null;
+        }
     }
-  }
 }

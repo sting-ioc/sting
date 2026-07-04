@@ -6,12 +6,9 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface SupplierOptionalOutputModel
-{
-  Supplier<Optional<MyModel>> getMyModel();
+interface SupplierOptionalOutputModel {
+    Supplier<Optional<MyModel>> getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-  }
+    @Injectable
+    class MyModel {}
 }

@@ -6,10 +6,7 @@ import java.util.function.Supplier;
 import sting.Injectable;
 
 @Injectable
-public class RawParameterizedSupplierCollectionInputModel
-{
-  @SuppressWarnings( "rawtypes" )
-  RawParameterizedSupplierCollectionInputModel( Collection<Supplier<List>> someValue )
-  {
-  }
+public class RawParameterizedSupplierCollectionInputModel {
+    @SuppressWarnings("rawtypes")
+    RawParameterizedSupplierCollectionInputModel(Collection<Supplier<List>> someValue) {}
 }

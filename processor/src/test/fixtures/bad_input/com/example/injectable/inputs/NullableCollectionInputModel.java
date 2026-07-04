@@ -5,9 +5,6 @@ import javax.annotation.Nullable;
 import sting.Injectable;
 
 @Injectable
-public class NullableCollectionInputModel
-{
-  NullableCollectionInputModel( @Nullable Collection<String> someValue )
-  {
-  }
+public class NullableCollectionInputModel {
+    NullableCollectionInputModel(@Nullable Collection<String> someValue) {}
 }

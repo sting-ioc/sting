@@ -1,5 +1,7 @@
 package sting.processor;
 
+import static org.testng.Assert.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -19,2041 +21,2747 @@ import org.realityforge.proton.qa.Compilation;
 import org.realityforge.proton.qa.CompileTestUtil;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
-import static org.testng.Assert.*;
 
-@SuppressWarnings( "TextBlockMigration" )
-public final class StingProcessorTest
-  extends AbstractStingProcessorTest
-{
-  @Nonnull
-  @DataProvider( name = "successfulCompiles" )
-  public Object[][] successfulCompiles()
-  {
-    return new Object[][]
-      {
-        new Object[]{ "com.example.fragment.BasicModel" },
-        new Object[]{ "com.example.fragment.MultiProvideModel" },
-        new Object[]{ "com.example.fragment.NullableProvidesModel" },
-
-        new Object[]{ "com.example.fragment.dependency.BasicDependencyModel" },
-        new Object[]{ "com.example.fragment.dependency.CollectionDependencyModel" },
-        new Object[]{ "com.example.fragment.dependency.ComplexDependencyModel" },
-        new Object[]{ "com.example.fragment.dependency.MultipleDependencyModel" },
-        new Object[]{ "com.example.fragment.dependency.NullableDependencyModel" },
-        new Object[]{ "com.example.fragment.dependency.NonnullDependencyModel" },
-        new Object[]{ "com.example.fragment.dependency.OptionalDependencyModel" },
-        new Object[]{ "com.example.fragment.dependency.PrimitiveDependencyModel" },
-        new Object[]{ "com.example.fragment.dependency.QualifiedDependencyModel" },
-        new Object[]{ "com.example.fragment.dependency.SupplierDependencyModel" },
-        new Object[]{ "com.example.fragment.dependency.SupplierOptionalCollectionDependencyModel" },
-        new Object[]{ "com.example.fragment.dependency.SupplierOptionalDependencyModel" },
-        new Object[]{ "com.example.fragment.dependency.SupplierCollectionDependencyModel" },
-
-        new Object[]{ "com.example.fragment.eager.EagerModel" },
-        new Object[]{ "com.example.fragment.eager.LazyModel" },
-
-        new Object[]{ "com.example.fragment.qualifier.BasicQualifierModel" },
-        new Object[]{ "com.example.fragment.qualifier.EmptyQualifierModel" },
-        new Object[]{ "com.example.fragment.qualifier.NonStandardQualifierModel" },
-
-        new Object[]{ "com.example.fragment.types.NoTypesModel" },
-
-        new Object[]{ "com.example.injectable.BasicModel" },
-
-        new Object[]{ "com.example.injectable.dependency.BasicDependencyModel" },
-        new Object[]{ "com.example.injectable.dependency.CollectionDependencyModel" },
-        new Object[]{ "com.example.injectable.dependency.ComplexDependencyModel" },
-        new Object[]{ "com.example.injectable.dependency.MultipleDependencyModel" },
-        new Object[]{ "com.example.injectable.dependency.NullableDependencyModel" },
-        new Object[]{ "com.example.injectable.dependency.NonnullDependencyModel" },
-        new Object[]{ "com.example.injectable.dependency.OptionalDependencyModel" },
-        new Object[]{ "com.example.injectable.dependency.PackageAccessDependencyModel" },
-        new Object[]{ "com.example.injectable.dependency.PrimitiveDependencyModel" },
-        new Object[]{ "com.example.injectable.dependency.PublicAccessDependencyModel" },
-        new Object[]{ "com.example.injectable.dependency.QualifiedDependencyModel" },
-        new Object[]{ "com.example.injectable.dependency.SupplierCollectionDependencyModel" },
-        new Object[]{ "com.example.injectable.dependency.SupplierOptionalCollectionDependencyModel" },
-        new Object[]{ "com.example.injectable.dependency.SupplierOptionalDependencyModel" },
-        new Object[]{ "com.example.injectable.dependency.SupplierDependencyModel" },
-
-        new Object[]{ "com.example.injectable.eager.EagerModel" },
-        new Object[]{ "com.example.injectable.eager.LazyModel" },
-
-        new Object[]{ "com.example.injectable.qualifier.BasicQualifierModel" },
-        new Object[]{ "com.example.injectable.qualifier.EmptyQualifierModel" },
-        new Object[]{ "com.example.injectable.qualifier.NonStandardQualifierModel" },
-
-        new Object[]{ "com.example.injectable.types.BasicTypesModel" },
-        new Object[]{ "com.example.injectable.types.DefaultTypesModel" },
-        new Object[]{ "com.example.injectable.types.NoTypesModel" }
-      };
-  }
-
-  @Test( dataProvider = "successfulCompiles" )
-  public void processSuccessfulCompile( @Nonnull final String classname )
-    throws Exception
-  {
-    assertSuccessfulCompile( classname, jsonOutput( classname ) );
-  }
-
-  @Nonnull
-  @DataProvider( name = "successfulFactoryCompiles" )
-  public Object[][] successfulFactoryCompiles()
-  {
-    return new Object[][]
-      {
-        new Object[]{ "com.example.factory.BasicFactoryModel",
-                      "com.example.factory.BasicFactoryModel_Sting_MyComponentFactory" },
-        new Object[]{ "com.example.factory.ParameterAnnotationsFactoryModel",
-                      "com.example.factory.ParameterAnnotationsFactoryModel_Sting_MyComponentFactory" },
-        new Object[]{ "com.example.factory.MultiMethodFactoryModel",
-                      "com.example.factory.MultiMethodFactoryModel_Sting_ModelFactory" }
-      };
-  }
-
-  @Test( dataProvider = "successfulFactoryCompiles" )
-  public void processSuccessfulFactoryCompile( @Nonnull final String classname,
-                                               @Nonnull final String generatedClassname )
-    throws Exception
-  {
-    final List<String> expectedOutputs = new ArrayList<>();
-    expectedOutputs.add( javaOutput( generatedClassname ) );
-    expectedOutputs.add( javaOutput( generatedClassname ) );
-    expectedOutputs.add( jsonOutput( generatedClassname ) );
-    assertSuccessfulCompile( inputs( classname ),
-                             expectedOutputs,
-                             t -> emitFactoryGeneratedFile( generatedClassname, t ) );
-  }
-
-  private boolean emitFactoryGeneratedFile( @Nonnull final String generatedClassname,
-                                            @Nonnull final String target )
-  {
-    return target.endsWith( toFilename( generatedClassname, "", ".sting.json" ) ) ||
-           target.endsWith( toFilename( generatedClassname, "", ".java" ) ) ||
-           target.endsWith( toFilename( generatedClassname, "Sting_", ".java" ) );
-  }
-
-  @DataProvider( name = "successfulInjectorCompiles" )
-  @Nonnull
-  public Object[][] successfulInjectorCompiles()
-  {
-    return new Object[][]
-      {
-        new Object[]{ "com.example.injector.BasicInjectorModel" },
-        new Object[]{ "com.example.injector.PrimitiveProviderOptionalBoxedDependencyModel" },
-
-        new Object[]{ "com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel" },
-        new Object[]{ "com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel" },
-        new Object[]{ "com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel" },
-
-        new Object[]{ "com.example.injector.gwt.DisableGwtInjectorModel" },
-        new Object[]{ "com.example.injector.gwt.EnableGwtInjectorModel" },
-
-        new Object[]{ "com.example.injector.outputs.BasicOutputModel" },
-        new Object[]{ "com.example.injector.outputs.BoxedProviderPrimitiveOutputModel" },
-        new Object[]{ "com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel" },
-        new Object[]{ "com.example.injector.outputs.CollectionOutputModel" },
-        new Object[]{ "com.example.injector.outputs.ComplexOutputModel" },
-        new Object[]{ "com.example.injector.outputs.EmptyCollectionOutputModel" },
-        new Object[]{ "com.example.injector.outputs.JavaOptionalOutputModel" },
-        new Object[]{ "com.example.injector.outputs.MultipleOutputModel" },
-        new Object[]{ "com.example.injector.outputs.OptionalOutputModel" },
-        new Object[]{ "com.example.injector.outputs.OptionalMissingOutputModel" },
-        new Object[]{ "com.example.injector.outputs.OptionalProvidesOutputModel" },
-        new Object[]{ "com.example.injector.outputs.PrimitiveAndBoxedCollectionOutputModel" },
-        new Object[]{ "com.example.injector.outputs.PrimitiveProviderBoxedOutputModel" },
-        new Object[]{ "com.example.injector.outputs.PrimitiveProviderBoxedSupplierKindsOutputModel" },
-        new Object[]{ "com.example.injector.outputs.PrimitiveOutputModel" },
-        new Object[]{ "com.example.injector.outputs.QualifiedOutputModel" },
-        new Object[]{ "com.example.injector.outputs.SupplierCollectionOutputModel" },
-        new Object[]{ "com.example.injector.outputs.SupplierOptionalCollectionOutputModel" },
-        new Object[]{ "com.example.injector.outputs.SupplierOptionalOutputModel" },
-        new Object[]{ "com.example.injector.outputs.SupplierOutputModel" },
-
-        new Object[]{ "com.example.injector.inputs.MultipleInputInjectorModel" },
-        new Object[]{ "com.example.injector.inputs.OptionalInputInjectorModel" },
-        new Object[]{ "com.example.injector.inputs.PrimitiveInputBoxedDependencyInjectorModel" },
-        new Object[]{ "com.example.injector.inputs.PrimitiveInputInjectorModel" },
-        new Object[]{ "com.example.injector.inputs.SingleInputInjectorModel" }
-      };
-  }
-
-  // These tests save less fixtures to the filesystem
-  @Test( dataProvider = "successfulInjectorCompiles" )
-  public void processSuccessfulInjectorCompile( @Nonnull final String classname )
-    throws Exception
-  {
-    final List<String> expectedOutputs = Arrays.asList( jsonOutput( classname ), jsonGraphOutput( classname ) );
-    assertSuccessfulCompile( inputs( classname ), expectedOutputs, t -> emitInjectorGeneratedFile( classname, t ) );
-  }
-
-  @DataProvider( name = "successfulPrimitiveInteropCompiles" )
-  @Nonnull
-  public Object[][] successfulPrimitiveInteropCompiles()
-  {
-    return new Object[][]
-      {
-        new Object[]{ "com.example.injector.AllPrimitiveProviderBoxedDependencyModel" },
-        new Object[]{ "com.example.injector.AllPrimitiveProviderOptionalBoxedDependencyModel" },
-        new Object[]{ "com.example.injector.inputs.AllPrimitiveInputBoxedDependencyInjectorModel" },
-        new Object[]{ "com.example.injector.outputs.AllBoxedProviderPrimitiveOutputModel" },
-        new Object[]{ "com.example.injector.outputs.AllPrimitiveProviderBoxedCollectionKindsOutputModel" },
-        new Object[]{ "com.example.injector.outputs.AllPrimitiveProviderBoxedOutputModel" }
-      };
-  }
-
-  @Test( dataProvider = "successfulPrimitiveInteropCompiles" )
-  public void processSuccessfulPrimitiveInteropCompile( @Nonnull final String classname )
-  {
-    final Compilation compilation = compile( Collections.singletonList( input( "input", classname ) ) );
-    assertCompilationSuccessful( compilation );
-  }
-
-  @DataProvider( name = "successfulOptionalRequestInjectorCompiles" )
-  @Nonnull
-  public Object[][] successfulOptionalRequestInjectorCompiles()
-  {
-    return new Object[][]
-      {
-        new Object[]{ "com.example.injector.OptionalCollectionDependencyInjectorModel" },
-        new Object[]{ "com.example.injector.outputs.OptionalFilteredCollectionOutputModel" }
-      };
-  }
-
-  @Test( dataProvider = "successfulOptionalRequestInjectorCompiles" )
-  public void processSuccessfulOptionalRequestInjectorCompile( @Nonnull final String classname )
-  {
-    final Compilation compilation = compile( Collections.singletonList( input( "input", classname ) ) );
-    assertCompilationSuccessful( compilation );
-  }
-
-  @DataProvider( name = "successfulInterceptorCompiles" )
-  @Nonnull
-  public Object[][] successfulInterceptorCompiles()
-  {
-    return new Object[][]
-      {
-        new Object[]{ "public interceptor annotations", "com.example.interceptor.BasicInterceptorModel" },
-        new Object[]{ "service-interface binding", "com.example.interceptor.BasicInterceptorModel" },
-        new Object[]{ "third-party simple-name binding", "com.example.interceptor.ThirdPartyBindingModel" },
-        new Object[]{ "implementation binding source", "com.example.interceptor.ImplementationBindingSourceModel" },
-        new Object[]{ "provider binding source", "com.example.interceptor.ProviderBindingSourceModel" },
-        new Object[]{ "combined service and binding-source annotations",
-                      "com.example.interceptor.CombinedBindingModel" },
-        new Object[]{ "multiple published service interfaces", "com.example.interceptor.MultiServiceBindingModel" },
-        new Object[]{ "qualified service proxies", "com.example.interceptor.QualifiedBindingModel" },
-        new Object[]{ "factory-generated service interface", "com.example.interceptor.FactoryBindingModel" },
-        new Object[]{ "before-only interceptor", "com.example.interceptor.BasicInterceptorModel" },
-        new Object[]{ "after-only interceptor", "com.example.interceptor.VoidResultModel" },
-        new Object[]{ "afterException-only interceptor", "com.example.interceptor.ResultAndThrownModel" },
-        new Object[]{ "all lifecycle phases", "com.example.interceptor.AllLifecyclePhasesModel" },
-        new Object[]{ "around metadata", "com.example.interceptor.AroundMetadataModel" },
-        new Object[]{ "around nullability", "com.example.interceptor.AroundNullabilityModel" },
-        new Object[]{ "void around", "com.example.interceptor.VoidAroundModel" },
-        new Object[]{ "service type marker", "com.example.interceptor.LifecycleMetadataModel" },
-        new Object[]{ "method name marker", "com.example.interceptor.LifecycleMetadataModel" },
-        new Object[]{ "arguments marker before", "com.example.interceptor.LifecycleMetadataModel" },
-        new Object[]{ "arguments marker after", "com.example.interceptor.LifecycleMetadataModel" },
-        new Object[]{ "arguments marker afterException", "com.example.interceptor.LifecycleMetadataModel" },
-        new Object[]{ "proxy method whitelist annotation copying", "com.example.interceptor.AnnotationCopyModel" },
-        new Object[]{ "binding value string", "com.example.interceptor.BindingValueConversionsModel" },
-        new Object[]{ "binding value primitive", "com.example.interceptor.BindingValueConversionsModel" },
-        new Object[]{ "binding value enum", "com.example.interceptor.BindingValueConversionsModel" },
-        new Object[]{ "enum template binding", "com.example.interceptor.EnumTemplateBindingModel" },
-        new Object[]{ "binding value class", "com.example.interceptor.BindingValueConversionsModel" },
-        new Object[]{ "binding value arrays", "com.example.interceptor.BindingValueConversionsModel" },
-        new Object[]{ "binding value defaults", "com.example.interceptor.BindingValueConversionsModel" },
-        new Object[]{ "arguments requested", "com.example.interceptor.ArgumentsRequestedModel" },
-        new Object[]{ "result reference", "com.example.interceptor.ResultAndThrownModel" },
-        new Object[]{ "result primitive", "com.example.interceptor.PrimitiveResultModel" },
-        new Object[]{ "result void", "com.example.interceptor.VoidResultModel" },
-        new Object[]{ "thrown checked", "com.example.interceptor.ResultAndThrownModel" },
-        new Object[]{ "thrown runtime", "com.example.interceptor.ResultAndThrownModel" },
-        new Object[]{ "default and inherited interface methods",
-                      "com.example.interceptor.DefaultInheritedMethodsModel" },
-        new Object[]{ "all service request kinds", "com.example.interceptor.RequestKindsModel" },
-        new Object[]{ "overloaded methods", "com.example.interceptor.OverloadedVarargsObjectModel" },
-        new Object[]{ "varargs methods", "com.example.interceptor.OverloadedVarargsObjectModel" },
-        new Object[]{ "redeclared Object methods", "com.example.interceptor.OverloadedVarargsObjectModel" },
-        new Object[]{ "redeclared lifecycle override", "com.example.interceptor.RedeclaredLifecycleOverrideModel" },
-        new Object[]{ "unrelated simple-name lifecycle annotations ignored",
-                      "com.example.interceptor.UnrelatedLifecycleNameModel" },
-        new Object[]{ "unreachable invalid interceptor binding deferred",
-                      "com.example.interceptor.UnreachableInvalidInterceptorModel" },
-        new Object[]{ "eager unrequested interceptor proxy dependencies",
-                      "com.example.interceptor.EagerUnrequestedInterceptorModel" },
-        new Object[]{ "supplier cycle boundary", "com.example.interceptor.SupplierCycleBoundaryModel" },
-        new Object[]{ "proxy emission dedupe", "com.example.interceptor.TwoInjectorsProxyDedupeModel" }
-      };
-  }
-
-  @Test( dataProvider = "successfulInterceptorCompiles" )
-  public void processSuccessfulInterceptorCompile( @SuppressWarnings( "unused" ) @Nonnull final String label,
-                                                   @Nonnull final String classname )
-  {
-    final Compilation compilation = compile( Collections.singletonList( input( "input", classname ) ) );
-    assertCompilationSuccessful( compilation );
-  }
-
-  @DataProvider( name = "failedInterceptorCompiles" )
-  @Nonnull
-  public Object[][] failedInterceptorCompiles()
-  {
-    return new Object[][]
-      {
-        new Object[]{ "service method binding", "com.example.interceptor.MethodLevelServiceBindingModel",
-                      "Interceptor bindings on service interface methods are not supported" },
-        new Object[]{ "implementation method binding", "com.example.interceptor.MethodLevelImplementationBindingModel",
-                      "Interceptor bindings on implementation methods are not supported" },
-        new Object[]{ "standalone service method binding",
-                      "com.example.interceptor.StandaloneMethodLevelServiceBindingModel",
-                      "Interceptor bindings on service interface methods are not supported" },
-        new Object[]{ "standalone implementation method binding",
-                      "com.example.interceptor.StandaloneMethodLevelImplementationBindingModel",
-                      "Interceptor bindings on implementation methods are not supported" },
-        new Object[]{ "non-fragment method binding", "com.example.interceptor.NonFragmentMethodBindingModel",
-                      "Interceptor bindings on non-fragment methods are not supported" },
-        new Object[]{ "duplicate binding type",
-                      "com.example.interceptor.DuplicateBindingTypeModel",
-                      "Duplicate interceptor binding annotation type com.example.interceptor.DuplicateBindingTypeModel.Trace" },
-        new Object[]{ "duplicate priority", "com.example.interceptor.DuplicatePriorityModel",
-                      "Duplicate interceptor priority 100" },
-        new Object[]{ "concrete published type", "com.example.interceptor.ConcretePublishedTypeModel",
-                      "Intercepted bindings must publish service interfaces only" },
-        new Object[]{ "Object published type", "com.example.interceptor.ObjectPublishedTypeModel",
-                      "Intercepted bindings must not publish java.lang.Object" },
-        new Object[]{ "empty implementedBy", "com.example.interceptor.EmptyImplementedByModel",
-                      "must declare a non-empty String implementedBy member" },
-        new Object[]{ "input interception", "com.example.interceptor.InputInterceptionModel",
-                      "Interceptor bindings on injector input services are not supported" },
-        new Object[]{ "nullable provider interception", "com.example.interceptor.NullableProviderModel",
-                      "Interceptor bindings on nullable or optional provider bindings are not supported" },
-        new Object[]{ "generic service", "com.example.interceptor.GenericServiceModel",
-                      "@Typed specified a type that is a a parameterized type" },
-        new Object[]{ "generic service method", "com.example.interceptor.GenericMethodModel",
-                      "Intercepted service methods must not declare type parameters" },
-        new Object[]{ "source retention", "com.example.interceptor.SourceRetentionModel",
-                      "must not use @Retention(SOURCE)" },
-        new Object[]{ "third-party missing priority", "com.example.interceptor.ThirdPartyMissingPriorityModel",
-                      "must declare an int priority member" },
-        new Object[]{ "third-party bad implementedBy", "com.example.interceptor.ThirdPartyBadImplementedByModel",
-                      "must declare a non-empty String implementedBy member" },
-        new Object[]{ "missing implementedBy class", "com.example.interceptor.MissingImplementedByClassModel",
-                      "does not exist" },
-        new Object[]{ "binary implementedBy", "com.example.interceptor.BinaryImplementedByModel",
-                      "implementedBy must be a canonical dotted qualified Java name" },
-        new Object[]{ "unknown template placeholder", "com.example.interceptor.UnknownTemplatePlaceholderModel",
-                      "implementedBy template references unknown interceptor binding member missing" },
-        new Object[]{ "non-enum template placeholder", "com.example.interceptor.NonEnumTemplatePlaceholderModel",
-                      "implementedBy template placeholder {value} must reference a scalar enum " +
-                      "interceptor binding member" },
-        new Object[]{ "enum array template placeholder", "com.example.interceptor.EnumArrayTemplatePlaceholderModel",
-                      "implementedBy template placeholder {value} must reference a scalar enum " +
-                      "interceptor binding member" },
-        new Object[]{ "malformed implementedBy template", "com.example.interceptor.MalformedTemplateModel",
-                      "implementedBy template contains an unmatched '{'" },
-        new Object[]{ "template resolves to non-canonical classname",
-                      "com.example.interceptor.NonCanonicalTemplateClassnameModel",
-                      "implementedBy must be a canonical dotted qualified Java name" },
-        new Object[]{ "missing template interceptor", "com.example.interceptor.MissingTemplateInterceptorModel",
-                      "Interceptor implementation " +
-                      "com.example.interceptor.MissingTemplateInterceptorModel.MissingTraceInterceptor " +
-                      "does not exist" },
-        new Object[]{ "invalid enum constant template", "com.example.interceptor.InvalidEnumConstantTemplateModel",
-                      "must not contain leading, trailing, or repeated underscores" },
-        new Object[]{ "non-injectable interceptor", "com.example.interceptor.NonInjectableInterceptorModel",
-                      "must be annotated with @Injectable" },
-        new Object[]{ "non-public interceptor", "com.example.interceptor.NonPublicInterceptorModel",
-                      "must be effectively public" },
-        new Object[]{ "private lifecycle method", "com.example.interceptor.PrivateLifecycleMethodModel",
-                      "Interceptor lifecycle methods must be public instance methods" },
-        new Object[]{ "protected lifecycle method", "com.example.interceptor.ProtectedLifecycleMethodModel",
-                      "Interceptor lifecycle methods must be public instance methods" },
-        new Object[]{ "package lifecycle method", "com.example.interceptor.PackageAccessLifecycleMethodModel",
-                      "Interceptor lifecycle methods must be public instance methods" },
-        new Object[]{ "static lifecycle method", "com.example.interceptor.StaticLifecycleMethodModel",
-                      "Interceptor lifecycle methods must be public instance methods" },
-        new Object[]{ "inherited lifecycle method", "com.example.interceptor.InheritedLifecycleMethodModel",
-                      "Inherited interceptor lifecycle annotations are not supported" },
-        new Object[]{ "unannotated lifecycle override", "com.example.interceptor.UnannotatedOverrideLifecycleModel",
-                      "Inherited interceptor lifecycle annotations are not supported" },
-        new Object[]{ "inherited duplicate lifecycle phase", "com.example.interceptor.InheritedDuplicateLifecycleModel",
-                      "Inherited interceptor lifecycle annotations are not supported" },
-        new Object[]{ "non-void lifecycle method", "com.example.interceptor.NonVoidLifecycleMethodModel",
-                      "Interceptor lifecycle methods must return void" },
-        new Object[]{ "generic lifecycle method", "com.example.interceptor.TypeParameterLifecycleMethodModel",
-                      "Interceptor lifecycle methods must not declare type parameters" },
-        new Object[]{ "multiple lifecycle annotations", "com.example.interceptor.MultipleLifecycleAnnotationsModel",
-                      "Interceptor lifecycle method must not have multiple lifecycle annotations" },
-        new Object[]{ "checked lifecycle exception", "com.example.interceptor.CheckedExceptionLifecycleMethodModel",
-                      "Interceptor lifecycle methods must not declare checked exceptions" },
-        new Object[]{ "duplicate lifecycle phase", "com.example.interceptor.DuplicateLifecyclePhaseModel",
-                      "must declare at most one BEFORE lifecycle method" },
-        new Object[]{ "duplicate around phase", "com.example.interceptor.DuplicateAroundMethodModel",
-                      "must declare at most one AROUND lifecycle method" },
-        new Object[]{ "multiple around lifecycle annotations",
-                      "com.example.interceptor.MultipleAroundLifecycleAnnotationsModel",
-                      "Interceptor lifecycle method must not have multiple lifecycle annotations" },
-        new Object[]{ "private around method", "com.example.interceptor.PrivateAroundMethodModel",
-                      "Interceptor lifecycle methods must be public instance methods" },
-        new Object[]{ "static around method", "com.example.interceptor.StaticAroundMethodModel",
-                      "Interceptor lifecycle methods must be public instance methods" },
-        new Object[]{ "generic around method", "com.example.interceptor.TypeParameterAroundMethodModel",
-                      "Interceptor lifecycle methods must not declare type parameters" },
-        new Object[]{ "wrong around return type", "com.example.interceptor.WrongReturnAroundMethodModel",
-                      "Interceptor @Around lifecycle methods must return java.lang.Object" },
-        new Object[]{ "missing proceed parameter", "com.example.interceptor.MissingProceedAroundMethodModel",
-                      "Interceptor @Around lifecycle methods must declare exactly one @Proceed parameter" },
-        new Object[]{ "duplicate proceed parameters", "com.example.interceptor.DuplicateProceedAroundMethodModel",
-                      "Interceptor @Around lifecycle methods must declare exactly one @Proceed parameter" },
-        new Object[]{ "wrong proceed type", "com.example.interceptor.WrongProceedTypeModel",
-                      "@Proceed lifecycle parameter must have type sting.interceptors.Invocation" },
-        new Object[]{ "proceed wrong phase", "com.example.interceptor.ProceedWrongPhaseModel",
-                      "@Proceed lifecycle parameter is only valid on @Around methods" },
-        new Object[]{ "Result on around", "com.example.interceptor.ResultAroundMethodModel",
-                      "@Result lifecycle parameter is only valid on @After methods" },
-        new Object[]{ "Thrown on around", "com.example.interceptor.ThrownAroundMethodModel",
-                      "@Thrown lifecycle parameter is only valid on @AfterException methods" },
-        new Object[]{ "empty interceptor", "com.example.interceptor.NoLifecycleMethodModel",
-                      "must declare at least one lifecycle method" },
-        new Object[]{ "unsupported lifecycle parameter marker",
-                      "com.example.interceptor.UnsupportedLifecycleParameterMarkerModel",
-                      "Interceptor lifecycle parameters must have exactly one marker annotation" },
-        new Object[]{ "unannotated lifecycle parameter", "com.example.interceptor.UnannotatedLifecycleParameterModel",
-                      "Interceptor lifecycle parameters must have exactly one marker annotation" },
-        new Object[]{ "multiple lifecycle parameter markers",
-                      "com.example.interceptor.MultipleMarkerLifecycleParameterModel",
-                      "Interceptor lifecycle parameters must not have multiple marker annotations" },
-        new Object[]{ "ServiceType wrong type", "com.example.interceptor.ServiceTypeWrongTypeModel",
-                      "@ServiceType lifecycle parameter must have type java.lang.String" },
-        new Object[]{ "MethodName wrong type", "com.example.interceptor.MethodNameWrongTypeModel",
-                      "@MethodName lifecycle parameter must have type java.lang.String" },
-        new Object[]{ "Arguments wrong type", "com.example.interceptor.ArgumentsWrongTypeModel",
-                      "@Arguments lifecycle parameter must have type Object[]" },
-        new Object[]{ "Result wrong type", "com.example.interceptor.ResultWrongTypeModel",
-                      "@Result lifecycle parameter must have type java.lang.Object" },
-        new Object[]{ "Thrown wrong type", "com.example.interceptor.ThrownWrongTypeModel",
-                      "@Thrown lifecycle parameter must have type java.lang.Throwable" },
-        new Object[]{ "Result wrong phase", "com.example.interceptor.ResultWrongPhaseModel",
-                      "@Result lifecycle parameter is only valid on @After methods" },
-        new Object[]{ "Thrown wrong phase", "com.example.interceptor.ThrownWrongPhaseModel",
-                      "@Thrown lifecycle parameter is only valid on @AfterException methods" },
-        new Object[]{ "unknown binding value", "com.example.interceptor.UnknownBindingValueModel",
-                      "@BindingValue references unknown interceptor binding member missing" },
-        new Object[]{ "binding value wrong type", "com.example.interceptor.BindingValueWrongTypeModel",
-                      "is not compatible with lifecycle parameter type java.lang.String" },
-        new Object[]{ "binding value array", "com.example.interceptor.BindingValueArrayModel",
-                      "is not compatible with lifecycle parameter type java.lang.Object[]" },
-        new Object[]{ "binding value annotation", "com.example.interceptor.BindingValueAnnotationModel",
-                      "has an unsupported v1 value type" },
-        new Object[]{ "binding value annotation array", "com.example.interceptor.BindingValueAnnotationArrayModel",
-                      "has an unsupported v1 value type" },
-        new Object[]{ "interceptor proxy cycle", "com.example.interceptor.InterceptorCycleModel",
-                      "Injector contains a circular dependency" }
-      };
-  }
-
-  @Test( dataProvider = "failedInterceptorCompiles" )
-  public void processFailedInterceptorCompile( @SuppressWarnings( "unused" ) @Nonnull final String label,
-                                               @Nonnull final String classname,
-                                               @Nonnull final String message )
-  {
-    final Compilation compilation = compile( Collections.singletonList( input( "bad_input", classname ) ) );
-    assertFalse( compilation.success() );
-    assertErrorDiagnostic( compilation, message );
-  }
-
-  @DataProvider( name = "generatedInterceptorSourceAssertions" )
-  @Nonnull
-  public Object[][] generatedInterceptorSourceAssertions()
-  {
-    return new Object[][]
-      {
-        new Object[]{ "no arguments allocation when not requested",
-                      "com.example.interceptor.NoArgumentsModel",
-                      "NoArgumentsModel",
-                      "new Object[]",
-                      false },
-        new Object[]{ "arguments allocation emitted when requested",
-                      "com.example.interceptor.ArgumentsRequestedModel",
-                      "ArgumentsRequestedModel",
-                      "arguments = new Object[] {value}",
-                      true },
-        new Object[]{ "primitive result local is primitive",
-                      "com.example.interceptor.PrimitiveResultModel",
-                      "PrimitiveResultModel",
-                      "int result",
-                      true },
-        new Object[]{ "primitive result reaches lifecycle",
-                      "com.example.interceptor.PrimitiveResultModel",
-                      "PrimitiveResultModel",
-                      "after(result)",
-                      true },
-        new Object[]{ "void result passes null",
-                      "com.example.interceptor.VoidResultModel",
-                      "VoidResultModel",
-                      "after(null)",
-                      true },
-        new Object[]{ "target field uses service interface type",
-                      "com.example.interceptor.NoArgumentsModel",
-                      "NoArgumentsModel",
-                      "NoArgumentsModel.Service _target",
-                      true },
-        new Object[]{ "bridge create method returns Object",
-                      "com.example.interceptor.NoArgumentsModel",
-                      "NoArgumentsModel",
-                      "public static Object create(",
-                      true },
-        new Object[]{ "deterministic proxy class name",
-                      "com.example.interceptor.NoArgumentsModel",
-                      "NoArgumentsModel",
-                      "Sting_com_example_interceptor_NoArgumentsModel_Model_Service_InterceptorProxy",
-                      true },
-        new Object[]{ "deprecated method annotation copied",
-                      "com.example.interceptor.AnnotationCopyModel",
-                      "AnnotationCopyModel",
-                      "@Deprecated",
-                      true },
-        new Object[]{ "nonnull method annotation copied",
-                      "com.example.interceptor.AnnotationCopyModel",
-                      "AnnotationCopyModel",
-                      "@Nonnull\n  public String run",
-                      true },
-        new Object[]{ "nullable parameter annotation copied",
-                      "com.example.interceptor.AnnotationCopyModel",
-                      "AnnotationCopyModel",
-                      "@Nullable final String value",
-                      true },
-        new Object[]{ "qualified proxy name includes qualifier",
-                      "com.example.interceptor.QualifiedBindingModel",
-                      "left",
-                      "_left_InterceptorProxy",
-                      true },
-        new Object[]{ "checked exception catch block",
-                      "com.example.interceptor.ResultAndThrownModel",
-                      "ResultAndThrownModel",
-                      "catch (IOException t)",
-                      true },
-        new Object[]{ "runtime exception catch block",
-                      "com.example.interceptor.ResultAndThrownModel",
-                      "ResultAndThrownModel",
-                      "catch (RuntimeException t)",
-                      true },
-        new Object[]{ "error catch block",
-                      "com.example.interceptor.ResultAndThrownModel",
-                      "ResultAndThrownModel",
-                      "catch (Error t)",
-                      true },
-        new Object[]{ "lifecycle nesting try block",
-                      "com.example.interceptor.ResultAndThrownModel",
-                      "ResultAndThrownModel",
-                      "try {",
-                      true },
-        new Object[]{ "own before failure observed by outer interceptor only",
-                      "com.example.interceptor.LifecycleFailureNestingModel",
-                      "LifecycleFailureNestingModel",
-                      "_interceptor1.before();\n" +
-                      "    try {\n" +
-                      "      _interceptor2.before();",
-                      true },
-        new Object[]{ "own after failure observed by outer interceptor only",
-                      "com.example.interceptor.LifecycleFailureNestingModel",
-                      "LifecycleFailureNestingModel",
-                      "      _interceptor2.after();\n" +
-                      "    } catch (RuntimeException t) {\n" +
-                      "      _interceptor1.afterException(t);",
-                      true },
-        new Object[]{ "binding value escaped char",
-                      "com.example.interceptor.BindingValueConversionsModel",
-                      "BindingValueConversionsModel",
-                      "'\\n'",
-                      true },
-        new Object[]{ "binding value string array literal",
-                      "com.example.interceptor.BindingValueConversionsModel",
-                      "BindingValueConversionsModel",
-                      "new String[] {\"alpha\", \"beta\"}",
-                      true },
-        new Object[]{ "binding value byte array literal casts",
-                      "com.example.interceptor.BindingValueConversionsModel",
-                      "BindingValueConversionsModel",
-                      "new byte[] {(byte) 1}",
-                      true },
-        new Object[]{ "binding value short array literal casts",
-                      "com.example.interceptor.BindingValueConversionsModel",
-                      "BindingValueConversionsModel",
-                      "new short[] {(short) 2}",
-                      true },
-        new Object[]{ "binding value escaped char array literal",
-                      "com.example.interceptor.BindingValueConversionsModel",
-                      "BindingValueConversionsModel",
-                      "new char[] {'\\n', '\\''}",
-                      true },
-        new Object[]{ "binding value enum array maps to string array",
-                      "com.example.interceptor.BindingValueConversionsModel",
-                      "BindingValueConversionsModel",
-                      "new String[] {\"On\", \"Off\"}",
-                      true },
-        new Object[]{ "binding value class array maps to string array",
-                      "com.example.interceptor.BindingValueConversionsModel",
-                      "BindingValueConversionsModel",
-                      "new String[] {\"java.io.IOException\"}",
-                      true },
-        new Object[]{ "binding value empty class array literal",
-                      "com.example.interceptor.BindingValueConversionsModel",
-                      "BindingValueConversionsModel",
-                      "new String[] {}",
-                      true },
-        new Object[]{ "proxy generated in service package",
-                      "com.example.interceptor.NoArgumentsModel",
-                      "NoArgumentsModel",
-                      "package com.example.interceptor;",
-                      true },
-        new Object[]{ "default enum template resolved interceptor",
-                      "com.example.interceptor.EnumTemplateBindingModel",
-                      "DefaultService",
-                      "EnumTemplateBindingModel.DefaultTraceInterceptor _interceptor1",
-                      true },
-        new Object[]{ "explicit enum template resolved interceptor",
-                      "com.example.interceptor.EnumTemplateBindingModel",
-                      "OtherService",
-                      "EnumTemplateBindingModel.OtherTraceInterceptor _interceptor1",
-                      true },
-        new Object[]{ "underscore enum template resolved interceptor",
-                      "com.example.interceptor.EnumTemplateBindingModel",
-                      "RequiresNewService",
-                      "EnumTemplateBindingModel.RequiresNewTraceInterceptor _interceptor1",
-                      true },
-        new Object[]{ "third-party enum template resolved interceptor",
-                      "com.example.interceptor.EnumTemplateBindingModel",
-                      "ThirdPartyService",
-                      "EnumTemplateBindingModel.ThirdPartyTraceInterceptor _interceptor1",
-                      true },
-        new Object[]{ "around proxy creates invocation instance",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "new Invocation(",
-                      true },
-        new Object[]{ "around proxy invokes next method from invocation lambda",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "nextArguments -> invoke_run_target(nextArguments)",
-                      true },
-        new Object[]{ "around proxy omits per-method invocation type",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "$Sting$_Invocation",
-                      false },
-        new Object[]{ "around proxy passes proceed parameter",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "invocation,",
-                      true },
-        new Object[]{ "around proxy assigns around result directly",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "result = (String) _interceptor1.around(",
-                      true },
-        new Object[]{ "around proxy omits raw result local",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "rawResult",
-                      false },
-        new Object[]{ "around proxy omits metadata argument clone",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "arguments.clone()",
-                      false },
-        new Object[]{ "around proxy wraps undeclared checked throwables",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "throw new UndeclaredThrowableException(t)",
-                      true },
-        new Object[]{ "around proxy invoke arguments are nonnull",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "private Object invoke_run_interceptor2(@Nonnull final Object[] arguments)",
-                      true },
-        new Object[]{ "around proxy invoke argument shape asserted",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "assert null != arguments && 2 == arguments.length;",
-                      true },
-        new Object[]{ "invocation omits replacement argument clone",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "arguments.clone()",
-                      false },
-        new Object[]{ "invocation omits explicit null replacement check",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "throw new NullPointerException()",
-                      false },
-        new Object[]{ "invocation omits explicit replacement count check",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "throw new IllegalArgumentException()",
-                      false },
-        new Object[]{ "invocation omits validity field",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "$sting$_valid",
-                      false },
-        new Object[]{ "invocation omits invalidate method",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "$sting$_invalidate",
-                      false },
-        new Object[]{ "invocation omits used field",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "$sting$_used",
-                      false },
-        new Object[]{ "invocation omits single-use failure",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "AroundMetadataModel",
-                      "throw new IllegalStateException()",
-                      false },
-        new Object[]{ "around proxy nonnull helper entry",
-                      "com.example.interceptor.AroundNullabilityModel",
-                      "NonnullService",
-                      "@Nonnull\n  private Object invoke_run_interceptor2",
-                      true },
-        new Object[]{ "around proxy nonnull helper target",
-                      "com.example.interceptor.AroundNullabilityModel",
-                      "NonnullService",
-                      "@Nonnull\n  private Object invoke_run_target",
-                      true },
-        new Object[]{ "around proxy nullable helper entry",
-                      "com.example.interceptor.AroundNullabilityModel",
-                      "NullableService",
-                      "@Nullable\n  private Object invoke_run_interceptor2",
-                      true },
-        new Object[]{ "around proxy nullable helper target",
-                      "com.example.interceptor.AroundNullabilityModel",
-                      "NullableService",
-                      "@Nullable\n  private Object invoke_run_target",
-                      true },
-        new Object[]{ "around proxy primitive helper entry is nonnull",
-                      "com.example.interceptor.AroundNullabilityModel",
-                      "PrimitiveService",
-                      "@Nonnull\n  private Object invoke_run_interceptor2",
-                      true },
-        new Object[]{ "around proxy primitive helper target is nonnull",
-                      "com.example.interceptor.AroundNullabilityModel",
-                      "PrimitiveService",
-                      "@Nonnull\n  private Object invoke_run_target",
-                      true },
-        new Object[]{ "around proxy primitive result casts directly",
-                      "com.example.interceptor.AroundNullabilityModel",
-                      "PrimitiveService",
-                      "result = (int) _interceptor1.around(",
-                      true },
-        new Object[]{ "around proxy omits primitive typed result local",
-                      "com.example.interceptor.AroundNullabilityModel",
-                      "PrimitiveService",
-                      "typedResult",
-                      false },
-        new Object[]{ "void around helper entry returns void",
-                      "com.example.interceptor.VoidAroundModel",
-                      "VoidAroundModel",
-                      "private void invoke_run_interceptor2(@Nonnull final Object[] arguments)",
-                      true },
-        new Object[]{ "void around helper target returns void",
-                      "com.example.interceptor.VoidAroundModel",
-                      "VoidAroundModel",
-                      "private void invoke_run_target(@Nonnull final Object[] arguments)",
-                      true },
-        new Object[]{ "void around omits result local",
-                      "com.example.interceptor.VoidAroundModel",
-                      "VoidAroundModel",
-                      "final Object result",
-                      false }
-      };
-  }
-
-  @Test( dataProvider = "generatedInterceptorSourceAssertions" )
-  public void generatedInterceptorSourceAssertion( @Nonnull final String label,
-                                                   @Nonnull final String classname,
-                                                   @Nonnull final String filenamePart,
-                                                   @Nonnull final String sourceFragment,
-                                                   final boolean present )
-    throws Exception
-  {
-    final Compilation compilation = compile( Collections.singletonList( input( "input", classname ) ) );
-    assertCompilationSuccessful( compilation );
-    final String source = readGeneratedInterceptorProxy( compilation, filenamePart );
-    if ( present )
-    {
-      assertTrue( source.contains( sourceFragment ), label + "\nSource:\n" + source );
+@SuppressWarnings("TextBlockMigration")
+public final class StingProcessorTest extends AbstractStingProcessorTest {
+    @Nonnull
+    @DataProvider(name = "successfulCompiles")
+    public Object[][] successfulCompiles() {
+        return new Object[][] {
+            new Object[] {"com.example.fragment.BasicModel"},
+            new Object[] {"com.example.fragment.MultiProvideModel"},
+            new Object[] {"com.example.fragment.NullableProvidesModel"},
+            new Object[] {"com.example.fragment.dependency.BasicDependencyModel"},
+            new Object[] {"com.example.fragment.dependency.CollectionDependencyModel"},
+            new Object[] {"com.example.fragment.dependency.ComplexDependencyModel"},
+            new Object[] {"com.example.fragment.dependency.MultipleDependencyModel"},
+            new Object[] {"com.example.fragment.dependency.NullableDependencyModel"},
+            new Object[] {"com.example.fragment.dependency.NonnullDependencyModel"},
+            new Object[] {"com.example.fragment.dependency.OptionalDependencyModel"},
+            new Object[] {"com.example.fragment.dependency.PrimitiveDependencyModel"},
+            new Object[] {"com.example.fragment.dependency.QualifiedDependencyModel"},
+            new Object[] {"com.example.fragment.dependency.SupplierDependencyModel"},
+            new Object[] {"com.example.fragment.dependency.SupplierOptionalCollectionDependencyModel"},
+            new Object[] {"com.example.fragment.dependency.SupplierOptionalDependencyModel"},
+            new Object[] {"com.example.fragment.dependency.SupplierCollectionDependencyModel"},
+            new Object[] {"com.example.fragment.eager.EagerModel"},
+            new Object[] {"com.example.fragment.eager.LazyModel"},
+            new Object[] {"com.example.fragment.qualifier.BasicQualifierModel"},
+            new Object[] {"com.example.fragment.qualifier.EmptyQualifierModel"},
+            new Object[] {"com.example.fragment.qualifier.NonStandardQualifierModel"},
+            new Object[] {"com.example.fragment.types.NoTypesModel"},
+            new Object[] {"com.example.injectable.BasicModel"},
+            new Object[] {"com.example.injectable.dependency.BasicDependencyModel"},
+            new Object[] {"com.example.injectable.dependency.CollectionDependencyModel"},
+            new Object[] {"com.example.injectable.dependency.ComplexDependencyModel"},
+            new Object[] {"com.example.injectable.dependency.MultipleDependencyModel"},
+            new Object[] {"com.example.injectable.dependency.NullableDependencyModel"},
+            new Object[] {"com.example.injectable.dependency.NonnullDependencyModel"},
+            new Object[] {"com.example.injectable.dependency.OptionalDependencyModel"},
+            new Object[] {"com.example.injectable.dependency.PackageAccessDependencyModel"},
+            new Object[] {"com.example.injectable.dependency.PrimitiveDependencyModel"},
+            new Object[] {"com.example.injectable.dependency.PublicAccessDependencyModel"},
+            new Object[] {"com.example.injectable.dependency.QualifiedDependencyModel"},
+            new Object[] {"com.example.injectable.dependency.SupplierCollectionDependencyModel"},
+            new Object[] {"com.example.injectable.dependency.SupplierOptionalCollectionDependencyModel"},
+            new Object[] {"com.example.injectable.dependency.SupplierOptionalDependencyModel"},
+            new Object[] {"com.example.injectable.dependency.SupplierDependencyModel"},
+            new Object[] {"com.example.injectable.eager.EagerModel"},
+            new Object[] {"com.example.injectable.eager.LazyModel"},
+            new Object[] {"com.example.injectable.qualifier.BasicQualifierModel"},
+            new Object[] {"com.example.injectable.qualifier.EmptyQualifierModel"},
+            new Object[] {"com.example.injectable.qualifier.NonStandardQualifierModel"},
+            new Object[] {"com.example.injectable.types.BasicTypesModel"},
+            new Object[] {"com.example.injectable.types.DefaultTypesModel"},
+            new Object[] {"com.example.injectable.types.NoTypesModel"}
+        };
     }
-    else
-    {
-      assertFalse( source.contains( sourceFragment ), label + "\nSource:\n" + source );
+
+    @Test(dataProvider = "successfulCompiles")
+    public void processSuccessfulCompile(@Nonnull final String classname) throws Exception {
+        assertSuccessfulCompile(classname, jsonOutput(classname));
     }
-  }
 
-  @Test
-  public void aroundInvocationUsesUnmodifiableWhenJetbrainsAnnotationsPresent()
-    throws Exception
-  {
-    final Compilation compilation =
-      compile( inputs( "com.example.interceptor.AroundNullabilityModel", "org.jetbrains.annotations.Unmodifiable" ) );
-    assertCompilationSuccessful( compilation );
-    final String source = readGeneratedInterceptorProxy( compilation, "NonnullService" );
-    assertTrue( source.contains( "import org.jetbrains.annotations.Unmodifiable;" ), source );
-    assertTrue( source.contains( "@Nonnull\n" +
-                                 "  private @Unmodifiable Object invoke_run_interceptor2(\n" +
-                                 "      " +
-                                 "@Nonnull final @Unmodifiable Object[] arguments)" ),
-                source );
-    assertTrue( source.contains( "@Nonnull\n" +
-                                 "  private @Unmodifiable Object invoke_run_target(" +
-                                 "@Nonnull final @Unmodifiable Object[] arguments)" ),
-                source );
-  }
-
-  @DataProvider( name = "generatedInterceptorProxyFixtures" )
-  @Nonnull
-  public Object[][] generatedInterceptorProxyFixtures()
-  {
-    return new Object[][]
-      {
-        new Object[]{ "no arguments proxy",
-                      "com.example.interceptor.NoArgumentsModel",
-                      "com/example/interceptor/" +
-                      "Sting_com_example_interceptor_NoArgumentsModel_Model_Service_InterceptorProxy.java" },
-        new Object[]{ "arguments metadata proxy",
-                      "com.example.interceptor.ArgumentsRequestedModel",
-                      "com/example/interceptor/" +
-                      "Sting_com_example_interceptor_ArgumentsRequestedModel_Model_Service_InterceptorProxy.java" },
-        new Object[]{ "after-exception nesting proxy",
-                      "com.example.interceptor.ResultAndThrownModel",
-                      "com/example/interceptor/" +
-                      "Sting_com_example_interceptor_ResultAndThrownModel_Model_Service_InterceptorProxy.java" },
-        new Object[]{ "own-before and own-after failure nesting proxy",
-                      "com.example.interceptor.LifecycleFailureNestingModel",
-                      "com/example/interceptor/" +
-                      "Sting_com_example_interceptor_LifecycleFailureNestingModel_Model_Service_InterceptorProxy.java" },
-        new Object[]{ "around metadata proxy",
-                      "com.example.interceptor.AroundMetadataModel",
-                      "com/example/interceptor/" +
-                      "Sting_com_example_interceptor_AroundMetadataModel_Model_Service_InterceptorProxy.java" }
-      };
-  }
-
-  @Test( dataProvider = "generatedInterceptorProxyFixtures" )
-  public void generatedInterceptorProxyFixture( @SuppressWarnings( "unused" ) @Nonnull final String label,
-                                                @Nonnull final String classname,
-                                                @Nonnull final String output )
-    throws Exception
-  {
-    assertSuccessfulCompile( inputs( classname ),
-                             Collections.singletonList( output ),
-                             target -> target.endsWith( output ) );
-  }
-
-  @Test
-  public void interceptorProxyGraphDescriptorContainsProxyMetadata()
-    throws Exception
-  {
-    final Compilation compilation =
-      compile( Collections.singletonList( input( "input", "com.example.interceptor.QualifiedBindingModel" ) ) );
-    assertCompilationSuccessful( compilation );
-    final String graph = readClassOutput( compilation, "__ObjectGraph.sting.json" ).replaceAll( "\\s+", "" );
-    assertTrue( graph.contains( "\"kind\":\"PROXY\"" ), graph );
-    assertTrue( graph.contains( "\"service\"" ), graph );
-    assertTrue( graph.contains( "\"target\":\"com.example.interceptor.QualifiedBindingModel.LeftModel\"" ), graph );
-    assertTrue( graph.contains( "\"interceptors\":[\"com.example.interceptor.QualifiedBindingModel.TraceInterceptor\"]" ),
-                graph );
-  }
-
-  @Test
-  public void interceptorProxyGraphDescriptorUsesProviderNodeIdsForProxyDependencies()
-    throws Exception
-  {
-    final Compilation compilation =
-      compile( Collections.singletonList( input( "input", "com.example.interceptor.SupplierCycleBoundaryModel" ) ) );
-    assertCompilationSuccessful( compilation );
-    final String graph = readClassOutput( compilation, "__ObjectGraph.sting.json" ).replaceAll( "\\s+", "" );
-    assertTrue( graph.contains( "\"supportedBy\":[\"proxy:" ), graph );
-  }
-
-  @Test
-  public void interceptorProxyDotReportContainsProxyLabels()
-    throws Exception
-  {
-    final Compilation compilation =
-      compile( Collections.singletonList( input( "input", "com.example.interceptor.QualifiedBindingModel" ) ) );
-    assertCompilationSuccessful( compilation );
-    final String dot = readClassOutput( compilation, ".gv" );
-    assertTrue( dot.contains( "Proxy Service/right" ), dot );
-    assertTrue( dot.contains( "proxy:com.example.interceptor.QualifiedBindingModel.LeftModel" ), dot );
-    assertTrue( dot.contains( "TraceInterceptor" ), dot );
-  }
-
-  private boolean emitInjectorGeneratedFile( @Nonnull final String classname, @Nonnull final String target )
-  {
-    final int index = classname.lastIndexOf( "." );
-    final String simpleClassName = -1 == index ? classname : classname.substring( index + 1 );
-    return target.endsWith( ".java" ) ||
-           target.endsWith( simpleClassName + StingProcessor.JSON_SUFFIX ) ||
-           target.endsWith( simpleClassName + StingProcessor.DOT_SUFFIX ) ||
-           target.endsWith( simpleClassName + StingProcessor.GRAPH_SUFFIX );
-  }
-
-  @Test
-  public void nestedInjectable()
-    throws Exception
-  {
-    assertSuccessfulCompile( "com.example.injectable.NestedModel",
-                             jsonOutput( "com.example.injectable.NestedModel_MyModel" ) );
-  }
-
-  @Test
-  public void nestedNestedInjectable()
-    throws Exception
-  {
-    assertSuccessfulCompile( "com.example.injectable.NestedNestedModel",
-                             jsonOutput( "com.example.injectable.NestedNestedModel_Middle_MyModel" ) );
-  }
-
-  @Test
-  public void nestedFragment()
-    throws Exception
-  {
-    assertSuccessfulCompile( "com.example.fragment.NestedModel",
-                             jsonOutput( "com.example.fragment.NestedModel_MyModel" ) );
-  }
-
-  @Test
-  public void nestedNestedFragment()
-    throws Exception
-  {
-    assertSuccessfulCompile( "com.example.fragment.NestedNestedModel",
-                             jsonOutput( "com.example.fragment.NestedNestedModel_Middle_MyModel" ) );
-  }
-
-  @Test
-  public void typedProviderMethodSupportsMultiplePublishedServiceTypes()
-    throws Exception
-  {
-    final String pkg = "com.example.fragment.types";
-    final String classname = pkg + ".BasicTypesModel";
-    assertSuccessfulCompile( inputs( classname, pkg + ".MyModel" ),
-                             Arrays.asList( javaOutput( classname ), jsonOutput( classname ) ) );
-  }
-
-  @Test
-  public void typedProviderMethodPublishesOnlyDeclaredServiceTypes()
-    throws Exception
-  {
-    final String pkg = "com.example.fragment.types";
-    final String classname = pkg + ".TypedProviderMethodModel";
-    assertSuccessfulCompile( inputs( classname, pkg + ".MyModel" ),
-                             Arrays.asList( javaOutput( classname ), jsonOutput( classname ) ) );
-  }
-
-  @Test
-  public void packageAccessFragmentDependency()
-    throws Exception
-  {
-    final String pkg = "com.example.fragment.dependency.access.package_access";
-    final String classname = pkg + ".PackageAccessDependencyModel";
-    assertSuccessfulCompile( inputs( classname,
-                                     pkg + ".MyType1",
-                                     pkg + ".MyType2",
-                                     pkg + ".MyType3",
-                                     pkg + ".MyType4",
-                                     pkg + ".MyType5" ),
-                             Arrays.asList( javaOutput( classname ),
-                                            jsonOutput( classname ) ) );
-  }
-
-  @Test
-  public void publicAccessFragmentDependency()
-    throws Exception
-  {
-    final String pkg = "com.example.fragment.dependency.access.public_access";
-    final String classname = pkg + ".PublicAccessDependencyModel";
-    assertSuccessfulCompile( inputs( classname,
-                                     pkg + ".MyType1",
-                                     pkg + ".MyType2",
-                                     pkg + ".MyType3",
-                                     pkg + ".MyType4",
-                                     pkg + ".MyType5" ),
-                             Arrays.asList( javaOutput( classname ),
-                                            jsonOutput( classname ) ) );
-  }
-
-  @Test
-  public void basicIncludesFragment()
-    throws Exception
-  {
-    final String classname = "com.example.fragment.includes.BasicIncludesModel";
-    assertSuccessfulCompile( inputs( classname, "com.example.fragment.includes.Included1Model" ),
-                             Collections.singletonList( jsonOutput( classname ) ) );
-  }
-
-  @Test
-  public void multipleIncludesFragment()
-    throws Exception
-  {
-    final String classname = "com.example.fragment.includes.MultipleIncludesModel";
-    assertSuccessfulCompile( inputs( classname,
-                                     "com.example.fragment.includes.Included1Model",
-                                     "com.example.fragment.includes.Included2Model" ),
-                             Collections.singletonList( jsonOutput( classname ) ) );
-  }
-
-  @Test
-  public void crossPackageIncludeFailsWhenFragmentIsLocalOnly()
-  {
-    final Compilation compilation =
-      compile( Arrays.asList( input( "bad_input",
-                                     "com.example.fragment.includes.local_only.CrossPackageIncludesModel" ),
-                              input( "bad_input",
-                                     "com.example.fragment.includes.local_only.other.MyModel" ) ) );
-
-    assertFalse( compilation.success() );
-    assertErrorDiagnostic( compilation,
-                           "@Fragment target has an includes parameter containing the value " +
-                           "com.example.fragment.includes.local_only.other.MyModel that is in the package " +
-                           "com.example.fragment.includes.local_only.other when the fragment is in the package " +
-                           "com.example.fragment.includes.local_only and localOnly is true" );
-  }
-
-  @Test
-  public void crossPackageIncludeAllowedWhenFragmentIsNotLocalOnly()
-  {
-    final Compilation compilation =
-      compile( Arrays.asList( input( "input",
-                                     "com.example.fragment.includes.local_only_disabled.CrossPackageIncludesModel" ),
-                              input( "input",
-                                     "com.example.fragment.includes.local_only_disabled.other.MyModel" ) ) );
-
-    assertCompilationSuccessful( compilation );
-  }
-
-  @Test
-  public void singleIncludesInjector()
-    throws Exception
-  {
-    final String pkg = "com.example.injector.includes.single";
-    assertSuccessfulCompile( inputs( pkg + ".SingleIncludesModel",
-                                     pkg + ".MyFragment" ),
-                             Arrays.asList( jsonOutput( pkg + ".SingleIncludesModel" ),
-                                            javaOutput( pkg + ".SingleIncludesModel" ),
-                                            jsonOutput( pkg + ".MyFragment" ),
-                                            javaOutput( pkg + ".MyFragment" ) ) );
-  }
-
-  @Test
-  public void multipleIncludesInjector()
-    throws Exception
-  {
-    final String pkg = "com.example.injector.includes.multiple";
-    assertSuccessfulCompile( inputs( pkg + ".MultipleIncludesModel",
-                                     pkg + ".MyFragment",
-                                     pkg + ".MyModel" ),
-                             Arrays.asList( jsonOutput( pkg + ".MultipleIncludesModel" ),
-                                            javaOutput( pkg + ".MultipleIncludesModel" ),
-                                            jsonOutput( pkg + ".MyFragment" ),
-                                            javaOutput( pkg + ".MyFragment" ),
-                                            jsonOutput( pkg + ".MyModel" ),
-                                            javaOutput( pkg + ".MyModel" ) ) );
-  }
-
-  @Test
-  public void diamondIncludesInjector()
-    throws Exception
-  {
-    final String pkg = "com.example.injector.includes.diamond";
-    assertSuccessfulCompile( inputs( pkg + ".DiamondDependencyIncludesModel",
-                                     pkg + ".MyFragment1",
-                                     pkg + ".MyFragment2",
-                                     pkg + ".MyFragment3",
-                                     pkg + ".MyModel" ),
-                             Arrays.asList( jsonOutput( pkg + ".DiamondDependencyIncludesModel" ),
-                                            javaOutput( pkg + ".DiamondDependencyIncludesModel" ),
-                                            jsonOutput( pkg + ".MyFragment1" ),
-                                            javaOutput( pkg + ".MyFragment1" ),
-                                            jsonOutput( pkg + ".MyFragment2" ),
-                                            javaOutput( pkg + ".MyFragment2" ),
-                                            jsonOutput( pkg + ".MyFragment3" ),
-                                            javaOutput( pkg + ".MyFragment3" ),
-                                            jsonOutput( pkg + ".MyModel" ),
-                                            javaOutput( pkg + ".MyModel" ) ) );
-  }
-
-  @Test
-  public void graphvizNameCollision()
-    throws Exception
-  {
-    final String pkg = "com.example.injector.graphviz";
-    assertSuccessfulCompile( inputs( pkg + ".NameCollisionInjectorModel",
-                                     pkg + ".pkg1.MyModel",
-                                     pkg + ".pkg2.MyModel" ),
-                             Arrays.asList( jsonOutput( pkg + ".NameCollisionInjectorModel" ),
-                                            javaOutput( pkg + ".NameCollisionInjectorModel" ),
-                                            graphvizOutput( pkg + ".NameCollisionInjectorModel" ),
-                                            jsonOutput( pkg + ".pkg1.MyModel" ),
-                                            javaOutput( pkg + ".pkg1.MyModel" ),
-                                            jsonOutput( pkg + ".pkg2.MyModel" ),
-                                            javaOutput( pkg + ".pkg2.MyModel" ) ) );
-  }
-
-  @Test
-  public void InjectorIncludesInjector()
-    throws Exception
-  {
-    final String pkg = "com.example.injector.includes.injector";
-    assertSuccessfulCompile( inputs( pkg + ".MyInjector",
-                                     pkg + ".MyOtherInjectorModel",
-                                     pkg + ".MyFragment",
-                                     pkg + ".MyModel" ),
-                             Arrays.asList( jsonOutput( pkg + ".MyInjector" ),
-                                            javaOutput( pkg + ".MyInjector" ),
-                                            jsonOutput( pkg + ".MyOtherInjectorModel" ),
-                                            javaOutput( pkg + ".MyOtherInjectorModel" ),
-                                            jsonOutput( pkg + ".MyFragment" ),
-                                            javaOutput( pkg + ".MyFragment" ) ) );
-  }
-
-  @Test
-  public void todomvcIntegrationTest()
-    throws Exception
-  {
-    final String pkg = "com.example.integration.todomvc";
-    assertSuccessfulCompile( inputs( pkg + ".ArezComponent",
-                                     pkg + ".ioc.TodoInjector",
-                                     pkg + ".model.Arez_BrowserLocation",
-                                     pkg + ".model.Arez_TodoRepository",
-                                     pkg + ".model.Arez_TodoService",
-                                     pkg + ".model.Arez_ViewService",
-                                     pkg + ".model.BrowserLocation",
-                                     pkg + ".model.BrowserLocationFragment",
-                                     pkg + ".model.TodoRepository",
-                                     pkg + ".model.TodoService",
-                                     pkg + ".model.ViewService" ),
-                             Arrays.asList( jsonOutput( pkg + ".ioc.TodoInjector" ),
-                                            javaOutput( pkg + ".ioc.TodoInjector" ),
-                                            javaOutput( pkg + ".model.Arez_TodoRepository" ),
-                                            jsonOutput( pkg + ".model.Arez_TodoRepository" ),
-                                            javaOutput( pkg + ".model.Arez_TodoService" ),
-                                            jsonOutput( pkg + ".model.Arez_TodoService" ),
-                                            javaOutput( pkg + ".model.Arez_ViewService" ),
-                                            jsonOutput( pkg + ".model.Arez_ViewService" ),
-                                            javaOutput( pkg + ".model.BrowserLocationFragment" ),
-                                            jsonOutput( pkg + ".model.BrowserLocationFragment" ) ) );
-  }
-
-  @DataProvider( name = "failedCompiles" )
-  public Object[][] failedCompiles()
-  {
-    return new Object[][]
-      {
-        new Object[]{ "com.example.fragment.ClassModel", "@Fragment target must be an interface" },
-        new Object[]{ "com.example.fragment.EnclosedAnnotationFragmentModel",
-                      "@Fragment target must not contain any types" },
-        new Object[]{ "com.example.fragment.EnclosedClassFragmentModel",
-                      "@Fragment target must not contain any types" },
-        new Object[]{ "com.example.fragment.EnclosedEnumFragmentModel", "@Fragment target must not contain any types" },
-        new Object[]{ "com.example.fragment.EnclosedInterfaceFragmentModel",
-                      "@Fragment target must not contain any types" },
-        new Object[]{ "com.example.fragment.FragmentExtendsSuperinterfaceModel",
-                      "@Fragment target must not extend any interfaces" },
-        new Object[]{ "com.example.fragment.Jsr330ScopedFragmentModel",
-                      "@Fragment target must not be annotated with an annotation that is annotated with the javax.inject.Scope annotation such as [@javax.inject.Singleton]" },
-        new Object[]{ "com.example.fragment.NoProvidesOrIncludesModel",
-                      "@Fragment target must contain one or more methods or one or more includes" },
-        new Object[]{ "com.example.fragment.ParameterizedModel", "@Fragment target must not have type parameters" },
-
-        new Object[]{ "com.example.fragment.includes.BadTypesInIncludesModel",
-                      "@Fragment target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment or @Injectable" },
-        new Object[]{ "com.example.fragment.includes.DuplicateIncludesModel",
-                      "@Fragment target has an includes parameter containing duplicate includes with the type com.example.fragment.includes.DuplicateIncludesModel.MyComponent" },
-        new Object[]{ "com.example.fragment.includes.InvalidProvider1IncludesModel",
-                      "@Fragment target has an 'includes' parameter containing the value com.example.fragment.includes.InvalidProvider1IncludesModel.MyComponent that is annotated by @com.example.fragment.includes.InvalidProvider1IncludesModel.StingProvider(name=\"[FlatEnclosingName]MF1_[SimpleName]_Provider\") that is annotated by an invalid @StingProvider annotation missing a 'value' parameter of type string." },
-        new Object[]{ "com.example.fragment.includes.InvalidProvider2IncludesModel",
-                      "@Fragment target has an 'includes' parameter containing the value com.example.fragment.includes.InvalidProvider2IncludesModel.MyComponent that is annotated by @com.example.fragment.includes.InvalidProvider2IncludesModel.StingProvider(23) that is annotated by an invalid @StingProvider annotation missing a 'value' parameter of type string." },
-        new Object[]{ "com.example.fragment.includes.MissingProviderIncludesModel",
-                      "@Fragment target has an parameter named 'includes' containing the value com.example.fragment.includes.MissingProviderIncludesModel.MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.fragment.includes.MissingProviderIncludesModel_MF1_MyComponent_Provider but no such class exists. The type needs to be removed from the includes or the provider class needs to be present." },
-        new Object[]{ "com.example.fragment.includes.MultipleProvidersIncludesModel",
-                      "@Fragment target has an 'includes' parameter containing the value com.example.fragment.includes.MultipleProvidersIncludesModel.MyComponent that is annotated by multiple @StingProvider annotations. Matching annotations:\n" +
-                      "    com.example.fragment.includes.MultipleProvidersIncludesModel.MyFrameworkComponent1\n" +
-                      "    com.example.fragment.includes.MultipleProvidersIncludesModel.MyFrameworkComponent2" },
-        new Object[]{ "com.example.fragment.includes.PrimitiveInIncludesModel",
-                      "@Fragment target must not include a primitive in the includes parameter" },
-        new Object[]{ "com.example.fragment.includes.SelfIncludesModel",
-                      "@Fragment target must not include self" },
-        new Object[]{ "com.example.fragment.includes.UnannotatedProviderIncludesModel",
-                      "@Fragment target has an parameter named 'includes' containing the value com.example.fragment.includes.UnannotatedProviderIncludesModel.MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.fragment.includes.UnannotatedProviderIncludesModel.MyComponent_Provider but that class is not annotated with either @Injector, @Fragment or @Injectable" },
-
-        new Object[]{ "com.example.fragment.inputs.ArrayTypeInputModel",
-                      "@Fragment target must not contain a method with a parameter that contains an array type" },
-        new Object[]{ "com.example.fragment.inputs.NullableCollectionInputModel",
-                      "@Fragment target must not contain a method with a parameter annotated with the @Nullable annotation that is not an instance dependency kind" },
-        new Object[]{ "com.example.fragment.inputs.NullableOptionalInputModel",
-                      "@Fragment target must not contain a method with a parameter annotated with the @Nullable annotation that is not an instance dependency kind" },
-        new Object[]{ "com.example.fragment.inputs.NullableSupplierCollectionInputModel",
-                      "@Fragment target must not contain a method with a parameter annotated with the @Nullable annotation that is not an instance dependency kind" },
-        new Object[]{ "com.example.fragment.inputs.ParameterizedCollectionInputModel",
-                      "@Fragment target must not contain a method with a parameter that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
-        new Object[]{ "com.example.fragment.inputs.ParameterizedInputModel",
-                      "@Fragment target must not contain a method with a parameter that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
-        new Object[]{ "com.example.fragment.inputs.ParameterizedSupplierCollectionInputModel",
-                      "@Fragment target must not contain a method with a parameter that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
-        new Object[]{ "com.example.fragment.inputs.RawCollectionInputModel",
-                      "@Fragment target must not contain a method with a parameter that contains a raw type" },
-        new Object[]{ "com.example.fragment.inputs.RawParameterizedCollectionInputModel",
-                      "@Fragment target must not contain a method with a parameter that contains a raw type" },
-        new Object[]{ "com.example.fragment.inputs.RawParameterizedInputModel",
-                      "@Fragment target must not contain a method with a parameter that contains a raw type" },
-        new Object[]{ "com.example.fragment.inputs.RawParameterizedSupplierCollectionInputModel",
-                      "@Fragment target must not contain a method with a parameter that contains a raw type" },
-        new Object[]{ "com.example.fragment.inputs.RawSupplierCollectionInputModel",
-                      "@Fragment target must not contain a method with a parameter that contains a raw type" },
-        new Object[]{ "com.example.fragment.inputs.RawSupplierInputModel",
-                      "@Fragment target must not contain a method with a parameter that contains a raw type" },
-        new Object[]{ "com.example.fragment.inputs.WildcardCollectionInputModel",
-                      "@Fragment target must not contain a method with a parameter that contains a wildcard type parameter" },
-        new Object[]{ "com.example.fragment.inputs.WildcardSupplierCollectionInputModel",
-                      "@Fragment target must not contain a method with a parameter that contains a wildcard type parameter" },
-        new Object[]{ "com.example.fragment.inputs.WildcardSupplierInputModel",
-                      "@Fragment target must not contain a method with a parameter that contains a wildcard type parameter" },
-
-        new Object[]{ "com.example.fragment.provides.AbstractMethodProvidesModel",
-                      "@Fragment target must only contain methods with a default modifier" },
-        new Object[]{ "com.example.fragment.provides.CdiTypedProvidesModel",
-                      "@Fragment target must not contain a method annotated with the javax.enterprise.inject.Typed annotation. Use the sting.Typed annotation instead" },
-        new Object[]{ "com.example.fragment.provides.Jsr330ScopedProvidesModel",
-                      "@Fragment target must not contain a method that is annotated with an annotation that is annotated with the javax.inject.Scope annotation such as [@javax.inject.Singleton]" },
-        new Object[]{ "com.example.fragment.provides.NullablePrimitiveReturnTypeProvidesModel",
-                      "@Fragment contains a method that is incorrectly annotated with @Nullable as the return type is a primitive value" },
-        new Object[]{ "com.example.fragment.provides.ParameterizedProvidesModel",
-                      "@Fragment target must not contain methods with a type parameter" },
-        new Object[]{ "com.example.fragment.provides.QualifiedAndNoTypesModel",
-                      "@Fragment target must not contain methods that specify zero types with the @Typed annotation and specify a qualifier with the @Named annotation as the qualifier is meaningless" },
-        new Object[]{ "com.example.fragment.provides.StaticMethodProvidesModel",
-                      "@Fragment target must only contain methods with a default modifier" },
-        new Object[]{ "com.example.fragment.provides.VoidReturnTypeProvidesModel",
-                      "@Fragment target must only contain methods that return a value" },
-
-        new Object[]{ "com.example.fragment.named.Jsr330NamedInputModel",
-                      "@Fragment target must not contain a method with a parameter annotated with the javax.inject.Named annotation. Use the sting.Named annotation instead" },
-        new Object[]{ "com.example.fragment.named.Jsr330NamedProvidesModel",
-                      "@Fragment target must not contain a method annotated with the javax.inject.Named annotation. Use the sting.Named annotation instead" },
-
-        new Object[]{ "com.example.fragment.provides.types.BadType1Model",
-                      "@Typed specified a type that is not assignable to the return type of the method" },
-        new Object[]{ "com.example.fragment.provides.types.BadType2Model",
-                      "@Typed specified a type that is not assignable to the return type of the method" },
-        new Object[]{ "com.example.fragment.provides.types.BadType3Model",
-                      "@Typed specified a type that is not assignable to the return type of the method" },
-        new Object[]{ "com.example.fragment.provides.types.NoTypesAndLazyModel",
-                      "@Fragment target must not contain methods that specify zero types with the @Typed annotation and are not annotated with the @Eager annotation otherwise the component can not be created by the injector" },
-        new Object[]{ "com.example.fragment.provides.types.ParameterizedServiceModel",
-                      "@Typed specified a type that is a a parameterized type" },
-
-        new Object[]{ "com.example.injectable.AbstractModel", "@Injectable target must not be abstract" },
-        new Object[]{ "com.example.injectable.InterfaceModel", "@Injectable target must be a class" },
-        new Object[]{ "com.example.injectable.MultipleConstructorModel",
-                      "@Injectable target must not have multiple constructors" },
-        new Object[]{ "com.example.injectable.NonStaticNestedModel",
-                      "@Injectable target must not be a non-static nested class" },
-        new Object[]{ "com.example.injectable.ParameterizedModel", "@Injectable target must not have type parameters" },
-        new Object[]{ "com.example.injectable.QualifiedWithNoTypesModel",
-                      "@Injectable target must not specify zero types with the @Typed annotation and specify a qualifier with the @Named annotation as the qualifier is meaningless" },
-
-        new Object[]{ "com.example.injectable.inputs.ArrayTypeInputModel",
-                      "@Injectable target must not contain a constructor with a parameter that contains an array type" },
-        new Object[]{ "com.example.injectable.inputs.NullableCollectionInputModel",
-                      "@Injectable target must not contain a constructor with a parameter annotated with @Nullable that is not an instance dependency kind" },
-        new Object[]{ "com.example.injectable.inputs.NullableOptionalInputModel",
-                      "@Injectable target must not contain a constructor with a parameter annotated with @Nullable that is not an instance dependency kind" },
-        new Object[]{ "com.example.injectable.inputs.NullableSupplierCollectionInputModel",
-                      "@Injectable target must not contain a constructor with a parameter annotated with @Nullable that is not an instance dependency kind" },
-        new Object[]{ "com.example.injectable.inputs.ParameterizedCollectionInputModel",
-                      "@Injectable target must not contain a constructor with a parameter that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
-        new Object[]{ "com.example.injectable.inputs.ParameterizedSupplierCollectionInputModel",
-                      "@Injectable target must not contain a constructor with a parameter that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
-        new Object[]{ "com.example.injectable.inputs.ParameterizedInputModel",
-                      "@Injectable target must not contain a constructor with a parameter that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
-        new Object[]{ "com.example.injectable.inputs.RawCollectionInputModel",
-                      "@Injectable target must not contain a constructor with a parameter that contains a raw type" },
-        new Object[]{ "com.example.injectable.inputs.RawParameterizedCollectionInputModel",
-                      "@Injectable target must not contain a constructor with a parameter that contains a raw type" },
-        new Object[]{ "com.example.injectable.inputs.RawParameterizedInputModel",
-                      "@Injectable target must not contain a constructor with a parameter that contains a raw type" },
-        new Object[]{ "com.example.injectable.inputs.RawParameterizedSupplierCollectionInputModel",
-                      "@Injectable target must not contain a constructor with a parameter that contains a raw type" },
-        new Object[]{ "com.example.injectable.inputs.RawSupplierCollectionInputModel",
-                      "@Injectable target must not contain a constructor with a parameter that contains a raw type" },
-        new Object[]{ "com.example.injectable.inputs.RawSupplierInputModel",
-                      "@Injectable target must not contain a constructor with a parameter that contains a raw type" },
-        new Object[]{ "com.example.injectable.inputs.WildcardCollectionInputModel",
-                      "@Injectable target must not contain a constructor with a parameter that contains a wildcard type parameter" },
-        new Object[]{ "com.example.injectable.inputs.WildcardSupplierCollectionInputModel",
-                      "@Injectable target must not contain a constructor with a parameter that contains a wildcard type parameter" },
-        new Object[]{ "com.example.injectable.inputs.WildcardSupplierInputModel",
-                      "@Injectable target must not contain a constructor with a parameter that contains a wildcard type parameter" },
-
-        new Object[]{ "com.example.injectable.types.BadType1Model",
-                      "@Typed specified a type that is not assignable to the declaring type" },
-        new Object[]{ "com.example.injectable.types.BadType2Model",
-                      "@Typed specified a type that is not assignable to the declaring type" },
-        new Object[]{ "com.example.injectable.types.BadType3Model",
-                      "@Typed specified a type that is not assignable to the declaring type" },
-        new Object[]{ "com.example.injectable.types.NoTypesAndLazyModel",
-                      "@Injectable target must not specify zero types with the @Typed annotation or must be annotated with the @Eager annotation otherwise the component can not be created by the injector" },
-        new Object[]{ "com.example.injectable.types.ParameterizedTypeServiceModel",
-                      "@Typed specified a type that is a a parameterized type" },
-
-        new Object[]{ "com.example.injector.ClassInjector", "@Injector target must be an interface" },
-        new Object[]{ "com.example.injector.DefaultMethodInInjectorModel",
-                      "@Injector target must not include default methods" },
-        new Object[]{ "com.example.injector.EnclosingAnnotationInjectorModel",
-                      "@Injector target must not contain a type that is not annotated by either @Injectable or @Fragment" },
-        new Object[]{ "com.example.injector.EnclosingClassInjectorModel",
-                      "@Injector target must not contain a type that is not annotated by either @Injectable or @Fragment" },
-        new Object[]{ "com.example.injector.EnclosingEnumInjectorModel",
-                      "@Injector target must not contain a type that is not annotated by either @Injectable or @Fragment" },
-        new Object[]{ "com.example.injector.EnclosingInterfaceInjectorModel",
-                      "@Injector target must not contain a type that is not annotated by either @Injectable or @Fragment" },
-        new Object[]{ "com.example.injector.EnumInjector", "@Injector target must be an interface" },
-        new Object[]{ "com.example.injector.Jsr330ScopedInjectorModel",
-                      "@Injector target must not be annotated with an annotation that is annotated with the javax.inject.Scope annotation such as [@javax.inject.Singleton]" },
-        new Object[]{ "com.example.injector.MissingPrimitiveDependencyModel",
-                      "@Injector target must not contain a non-optional dependency [int] that can not be satisfied.\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.MissingPrimitiveDependencyModel\n" +
-                      "    [Injectable]     com.example.injector.MissingPrimitiveDependencyModel.MyModel1\n" +
-                      "    [Provides]    *  com.example.injector.MissingPrimitiveDependencyModel.MyFragment.provideConfig" },
-        new Object[]{ "com.example.injector.MultipleCandidatesForSingularDependencyModel",
-                      "@Injector target must not contain a non-collection dependency [java.lang.Runnable] that can be satisfied by multiple nodes.\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.MultipleCandidatesForSingularDependencyModel\n" +
-                      "  \n" +
-                      "  Candidate Nodes:\n" +
-                      "    [Provides]       com.example.injector.MultipleCandidatesForSingularDependencyModel.MyFragment1.provideRunnable1\n" +
-                      "    [Provides]       com.example.injector.MultipleCandidatesForSingularDependencyModel.MyFragment2.provideRunnable2" },
-        new Object[]{ "com.example.injector.OptionalOutputMultipleMatchesModel",
-                      "@Injector target must not contain a non-collection dependency [java.lang.Runnable] that can be satisfied by multiple nodes.\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.OptionalOutputMultipleMatchesModel\n" +
-                      "  \n" +
-                      "  Candidate Nodes:\n" +
-                      "    [Provides]       com.example.injector.OptionalOutputMultipleMatchesModel.MyFragment1.provideRunnable1\n" +
-                      "    [Provides]       com.example.injector.OptionalOutputMultipleMatchesModel.MyFragment2.provideRunnable2" },
-        new Object[]{ "com.example.injector.NoDirectDependenciesAndNoEagerInIncludesModel",
-                      "@Injector target produced an empty object graph. This means that there are no eager nodes in the includes and there are no dependencies or only unsatisfied optional dependencies defined by the injector" },
-        new Object[]{ "com.example.injector.NullableBoxedProviderPrimitiveOutputModel",
-                      "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [int]\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.NullableBoxedProviderPrimitiveOutputModel\n" +
-                      "  \n" +
-                      "  Binding:\n" +
-                      "    [Provides]       com.example.injector.NullableBoxedProviderPrimitiveOutputModel.MyFragment.provideValue" },
-        new Object[]{ "com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel",
-                      "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [java.lang.String]\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel\n" +
-                      "    [Injectable]     com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyModel1\n" +
-                      "    [Provides]    *  com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment1.provideRunnable\n" +
-                      "  \n" +
-                      "  Binding:\n" +
-                      "    [Provides]       com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment2.provideConfig" },
-        new Object[]{ "com.example.injector.SupplierOptionalOutputMultipleMatchesModel",
-                      "@Injector target must not contain a non-collection dependency [java.lang.Runnable] that can be satisfied by multiple nodes.\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.SupplierOptionalOutputMultipleMatchesModel\n" +
-                      "  \n" +
-                      "  Candidate Nodes:\n" +
-                      "    [Provides]       com.example.injector.SupplierOptionalOutputMultipleMatchesModel.MyFragment1.provideRunnable1\n" +
-                      "    [Provides]       com.example.injector.SupplierOptionalOutputMultipleMatchesModel.MyFragment2.provideRunnable2" },
-        new Object[]{ "com.example.factory.NoFactoryMethodsModel",
-                      "@Factory target must contain at least one abstract method that returns a value" },
-        new Object[]{ "com.example.factory.ParameterMismatchFactoryModel",
-                      "@Factory target must contain abstract method parameters whose name and type match the created type constructor parameter" },
-        new Object[]{ "com.example.factory.MultipleConstructorsFactoryModel",
-                      "@Factory target must create types with a single accessible constructor" },
-        new Object[]{ "com.example.injector.TypeParametersInjectorModel",
-                      "@Injector target must not have type parameters" },
-        new Object[]{ "com.example.injector.NamedInjectablesAreNotAutoDiscoverableInjectorModel",
-                      "@Injector target must not contain a non-optional dependency [com.example.injector.NamedInjectablesAreNotAutoDiscoverableInjectorModel.MyModel] that can not be satisfied.\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.NamedInjectablesAreNotAutoDiscoverableInjectorModel.MyInjector" },
-        new Object[]{ "com.example.injector.TypedInjectablesAreNotAutoDiscoverableInjectorModel",
-                      "@Injector target must not contain a non-optional dependency [com.example.injector.TypedInjectablesAreNotAutoDiscoverableInjectorModel.MyModel] that can not be satisfied.\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.TypedInjectablesAreNotAutoDiscoverableInjectorModel.MyInjector" },
-        new Object[]{ "com.example.injector.autodetect.provider.MissingProviderModel",
-                      "@Injector target must not contain a non-optional dependency [com.example.injector.autodetect.provider.MissingProviderModel.MyModel1] that can not be auto-discovered via @StingProvider because the framework type com.example.injector.autodetect.provider.MissingProviderModel.MyModel1 expects a provider class named com.example.injector.autodetect.provider.MissingProviderModel.MyModel1Impl but no such class exists.\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.autodetect.provider.MissingProviderModel.MyInjector" },
-        new Object[]{ "com.example.injector.autodetect.provider.MultipleProvidersModel",
-                      "@Injector target is attempting to auto-discover the type com.example.injector.autodetect.provider.MultipleProvidersModel.MyModel1 that is annotated by multiple @StingProvider annotations. Matching annotations:\n" +
-                      "    com.example.injector.autodetect.provider.MultipleProvidersModel.MyFrameworkComponent1\n" +
-                      "    com.example.injector.autodetect.provider.MultipleProvidersModel.MyFrameworkComponent2" },
-        new Object[]{ "com.example.injector.autodetect.provider.QualifiedPublishedTypeModel",
-                      "@Injector target must not contain a non-optional dependency [com.example.injector.autodetect.provider.QualifiedPublishedTypeModel.MyModel1] that can not be auto-discovered via @StingProvider because the provider class com.example.injector.autodetect.provider.QualifiedPublishedTypeModel.MyModel1Impl does not publish the service [com.example.injector.autodetect.provider.QualifiedPublishedTypeModel.MyModel1] for the framework type com.example.injector.autodetect.provider.QualifiedPublishedTypeModel.MyModel1. The provider must publish the framework type with the default qualifier.\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.autodetect.provider.QualifiedPublishedTypeModel.MyInjector" },
-        new Object[]{ "com.example.injector.autodetect.provider.WrongPublishedTypeModel",
-                      "@Injector target must not contain a non-optional dependency [com.example.injector.autodetect.provider.WrongPublishedTypeModel.MyModel1] that can not be auto-discovered via @StingProvider because the provider class com.example.injector.autodetect.provider.WrongPublishedTypeModel.MyModel1Impl does not publish the service [com.example.injector.autodetect.provider.WrongPublishedTypeModel.MyModel1] for the framework type com.example.injector.autodetect.provider.WrongPublishedTypeModel.MyModel1. The provider must publish the framework type with the default qualifier.\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.autodetect.provider.WrongPublishedTypeModel.MyInjector" },
-
-        new Object[]{ "com.example.injector.circular.ChainedCircularDependencyModel",
-                      "Injector contains a circular dependency.\n" +
-                      "  Path:\n" +
-                      "    [Injector]       com.example.injector.circular.ChainedCircularDependencyModel\n" +
-                      "    [Injectable] +-< com.example.injector.circular.ChainedCircularDependencyModel.MyModel1\n" +
-                      "    [Provides]   |   com.example.injector.circular.ChainedCircularDependencyModel.MyFragment1.provideConfig\n" +
-                      "    [Provides]   |   com.example.injector.circular.ChainedCircularDependencyModel.MyFragment2.provideInteger\n" +
-                      "    [Injectable] |   com.example.injector.circular.ChainedCircularDependencyModel.MyModel4\n" +
-                      "    [Injectable] +-> com.example.injector.circular.ChainedCircularDependencyModel.MyModel1" },
-        new Object[]{ "com.example.injector.circular.DirectlyCircularDependencyModel",
-                      "Injector contains a circular dependency.\n" +
-                      "  Path:\n" +
-                      "    [Injector]       com.example.injector.circular.DirectlyCircularDependencyModel\n" +
-                      "    [Injectable] +-< com.example.injector.circular.DirectlyCircularDependencyModel.MyModel1\n" +
-                      "    [Injectable] |   com.example.injector.circular.DirectlyCircularDependencyModel.MyModel2\n" +
-                      "    [Injectable] +-> com.example.injector.circular.DirectlyCircularDependencyModel.MyModel1" },
-
-        new Object[]{ "com.example.injector.includes.BadTypesInIncludesModel",
-                      "@Injector target has an includes parameter containing the value java.util.EventListener that is not a type annotated by either @Fragment or @Injectable" },
-        new Object[]{ "com.example.injector.includes.DuplicateIncludesModel",
-                      "@Injector target has an includes parameter containing duplicate includes with the type com.example.injector.includes.DuplicateIncludesModel.MyComponent" },
-        new Object[]{ "com.example.injector.includes.ExplicitIncludesOfEnclosedFragmentModel",
-                      "@Injector target must not include a @Fragment annotated type that is auto-included as it is enclosed within the injector type" },
-        new Object[]{ "com.example.injector.includes.ExplicitIncludesOfEnclosedInjectableModel",
-                      "@Injector target must not include an @Injectable annotated type that is auto-included as it is enclosed within the injector type" },
-        new Object[]{ "com.example.injector.includes.FragmentOnlyIncludesModel",
-                      "@Injector target has an includes parameter containing the value " +
-                      "com.example.injector.includes.FragmentOnlyIncludesModel.MyModel that is not annotated by " +
-                      "@Fragment when fragmentOnly is true" },
-        new Object[]{ "com.example.injector.includes.InvalidProvider1IncludesModel",
-                      "@Injector target has an 'includes' parameter containing the value com.example.injector.includes.InvalidProvider1IncludesModel.MyComponent that is annotated by @com.example.injector.includes.InvalidProvider1IncludesModel.StingProvider(name=\"[FlatEnclosingName]MF1_[SimpleName]_Provider\") that is annotated by an invalid @StingProvider annotation missing a 'value' parameter of type string." },
-        new Object[]{ "com.example.injector.includes.InvalidProvider2IncludesModel",
-                      "@Injector target has an 'includes' parameter containing the value com.example.injector.includes.InvalidProvider2IncludesModel.MyComponent that is annotated by @com.example.injector.includes.InvalidProvider2IncludesModel.StingProvider(42) that is annotated by an invalid @StingProvider annotation missing a 'value' parameter of type string." },
-        new Object[]{ "com.example.injector.includes.MissingProviderIncludesModel",
-                      "@Injector target has an parameter named 'includes' containing the value com.example.injector.includes.MissingProviderIncludesModel_MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.injector.includes.MF1_MissingProviderIncludesModel_MyComponent_Provider but no such class exists. The type needs to be removed from the includes or the provider class needs to be present." },
-        new Object[]{ "com.example.injector.includes.MultipleProvidersIncludesModel",
-                      "@Injector target has an 'includes' parameter containing the value com.example.injector.includes.MultipleProvidersIncludesModel.MyComponent that is annotated by multiple @StingProvider annotations. Matching annotations:\n" +
-                      "    com.example.injector.includes.MultipleProvidersIncludesModel.MyFrameworkComponent1\n" +
-                      "    com.example.injector.includes.MultipleProvidersIncludesModel.MyFrameworkComponent2" },
-        new Object[]{ "com.example.injector.includes.PrimitiveInIncludesModel",
-                      "@Injector target must not include a primitive in the includes parameter" },
-        new Object[]{ "com.example.injector.includes.SelfIncludesModel",
-                      "@Injector target must not include self" },
-        new Object[]{ "com.example.injector.includes.UnannotatedProviderIncludesModel",
-                      "@Injector target has an parameter named 'includes' containing the value com.example.injector.includes.UnannotatedProviderIncludesModel.MyComponent and that type is annotated by the @StingProvider annotation. The provider annotation expects a provider class named com.example.injector.includes.UnannotatedProviderIncludesModel.MyComponent_Provider but that class is not annotated with either @Injector, @Fragment or @Injectable" },
-        new Object[]{ "com.example.injector.includes.UnusedFragmentIncludesModel",
-                      "@Injector must not include type com.example.injector.includes.UnusedFragmentIncludesModel.MyFragment when the type is not used within the graph" },
-        new Object[]{ "com.example.injector.includes.UnusedInjectableIncludesModel",
-                      "@Injector must not include type com.example.injector.includes.UnusedInjectableIncludesModel.MyModel1 when the type is not used within the graph" },
-        new Object[]{ "com.example.injector.includes.UnusedStingProviderIncludesModel",
-                      "@Injector must not include type com.example.injector.includes.UnusedStingProviderIncludesModel.MyModel1 when the type is not used within the graph" },
-
-        new Object[]{ "com.example.injector.inputs.ArrayTypeInputModel",
-                      "@Input must not specify an array type for the type parameter" },
-        new Object[]{ "com.example.injector.inputs.MismatchOptionalityInputInjectorModel",
-                      "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [java.lang.Runnable]\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.inputs.MismatchOptionalityInputInjectorModel\n" +
-                      "    [Injectable]  *  com.example.injector.inputs.MismatchOptionalityInputInjectorModel.MyModel\n" +
-                      "  \n" +
-                      "  Binding:\n" +
-                      "    [Input]          com.example.injector.inputs.MismatchOptionalityInputInjectorModel.input1/[java.lang.Runnable]?" },
-        new Object[]{ "com.example.injector.inputs.RawParameterizedTypeInputModel",
-                      "@Input must not specify a parameterized type for the type parameter" },
-        new Object[]{ "com.example.injector.inputs.VoidTypeInputModel",
-                      "@Input must specify a non-void type for the type parameter" },
-
-        new Object[]{ "com.example.injector.named.Jsr330NamedOutputModel",
-                      "@Injector target must not contain a method annotated with the javax.inject.Named annotation. Use the sting.Named annotation instead" },
-
-        new Object[]{ "com.example.injector.outputs.ArrayTypeOutputModel",
-                      "@Injector target must not contain a method with a return type that contains an array type" },
-        new Object[]{ "com.example.injector.outputs.Jsr330ScopedOutputModel",
-                      "@Injector target must not contain a method that is annotated with an annotation that is annotated with the javax.inject.Scope annotation such as [@javax.inject.Singleton]" },
-        new Object[]{ "com.example.injector.outputs.NullableCollectionOutputModel",
-                      "@Injector target must not contain a method annotated with @Nullable that is not an instance dependency kind" },
-        new Object[]{ "com.example.injector.outputs.NullableOptionalOutputModel",
-                      "@Injector target must not contain a method annotated with @Nullable that is not an instance dependency kind" },
-        new Object[]{ "com.example.injector.outputs.NullableSupplierCollectionOutputModel",
-                      "@Injector target must not contain a method annotated with @Nullable that is not an instance dependency kind" },
-        new Object[]{ "com.example.injector.outputs.MethodReturningVoidOutputModel",
-                      "@Injector target must not contain a method that has a void return value" },
-        new Object[]{ "com.example.injector.outputs.MethodThrowsExceptionOutputModel",
-                      "@Injector target must not contain a method that throws any exceptions" },
-        new Object[]{ "com.example.injector.outputs.MethodWithParametersOutputModel",
-                      "@Injector target must not contain a method that has parameters" },
-        new Object[]{ "com.example.injector.outputs.MethodWithTypeParametersOutputModel",
-                      "@Injector target must not contain a method that has any type parameters" },
-        new Object[]{ "com.example.injector.outputs.MissingOutputModel",
-                      "@Injector target must not contain a non-optional dependency [java.lang.Integer] that can not be satisfied.\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.outputs.MissingOutputModel\n" +
-                      "    [Injectable]     com.example.injector.outputs.MissingOutputModel.MyModel1\n" +
-                      "    [Provides]       com.example.injector.outputs.MissingOutputModel.MyFragment1.provideRunnable\n" +
-                      "    [Provides]    *  com.example.injector.outputs.MissingOutputModel.MyFragment2.provideConfig" },
-        new Object[]{ "com.example.injector.outputs.NullableBoxedProviderBoxedOutputModel",
-                      "@Injector target must not contain an optional provider method or optional injector input and a non-optional service request for the coordinate [java.lang.Integer]\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.outputs.NullableBoxedProviderBoxedOutputModel\n" +
-                      "  \n" +
-                      "  Binding:\n" +
-                      "    [Provides]       com.example.injector.outputs.NullableBoxedProviderBoxedOutputModel.MyFragment.provideValue" },
-        new Object[]{ "com.example.injector.outputs.OptionalCollectionOutputModel",
-                      "@Injector target must not contain a method with a return type that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
-        new Object[]{ "com.example.injector.outputs.ParameterizedCollectionOutputModel",
-                      "@Injector target must not contain a method with a return type that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
-        new Object[]{ "com.example.injector.outputs.ParameterizedOutputModel",
-                      "@Injector target must not contain a method with a return type that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
-        new Object[]{ "com.example.injector.outputs.PrimitiveAndBoxedAmbiguousOutputModel",
-                      "@Injector target must not contain a non-collection dependency [java.lang.Integer] that can be satisfied by multiple nodes.\n" +
-                      "  Dependency Path:\n" +
-                      "    [Injector]       com.example.injector.outputs.PrimitiveAndBoxedAmbiguousOutputModel\n" +
-                      "  \n" +
-                      "  Candidate Nodes:\n" +
-                      "    [Provides]       com.example.injector.outputs.PrimitiveAndBoxedAmbiguousOutputModel.MyFragment1.provideValue\n" +
-                      "    [Provides]       com.example.injector.outputs.PrimitiveAndBoxedAmbiguousOutputModel.MyFragment2.provideValue" },
-        new Object[]{ "com.example.injector.outputs.ParameterizedSupplierCollectionOutputModel",
-                      "@Injector target must not contain a method with a return type that contains an unexpected parameterized type. Only parameterized types known to the framework are supported" },
-        new Object[]{ "com.example.injector.outputs.RawCollectionOutputModel",
-                      "@Injector target must not contain a method with a return type that contains a raw type" },
-        new Object[]{ "com.example.injector.outputs.RawParameterizedCollectionOutputModel",
-                      "@Injector target must not contain a method with a return type that contains a raw type" },
-        new Object[]{ "com.example.injector.outputs.RawParameterizedOutputModel",
-                      "@Injector target must not contain a method with a return type that contains a raw type" },
-        new Object[]{ "com.example.injector.outputs.RawParameterizedSupplierCollectionOutputModel",
-                      "@Injector target must not contain a method with a return type that contains a raw type" },
-        new Object[]{ "com.example.injector.outputs.RawSupplierCollectionOutputModel",
-                      "@Injector target must not contain a method with a return type that contains a raw type" },
-        new Object[]{ "com.example.injector.outputs.RawSupplierOutputModel",
-                      "@Injector target must not contain a method with a return type that contains a raw type" },
-        new Object[]{ "com.example.injector.outputs.WildcardCollectionOutputModel",
-                      "@Injector target must not contain a method with a return type that contains a wildcard type parameter" },
-        new Object[]{ "com.example.injector.outputs.WildcardSupplierCollectionOutputModel",
-                      "@Injector target must not contain a method with a return type that contains a wildcard type parameter" },
-        new Object[]{ "com.example.injector.outputs.WildcardSupplierOutputModel",
-                      "@Injector target must not contain a method with a return type that contains a wildcard type parameter" },
-
-        new Object[]{ "com.example.injector_fragment.AnnotationInjectorFragment",
-                      "@InjectorFragment target must be an interface" },
-        new Object[]{ "com.example.injector_fragment.ClassInjectorFragment",
-                      "@InjectorFragment target must be an interface" },
-        new Object[]{ "com.example.injector_fragment.DefaultMethodInInjectorFragment",
-                      "@InjectorFragment target must not include default methods" },
-        new Object[]{ "com.example.injector_fragment.EnumInjectorFragment",
-                      "@InjectorFragment target must be an interface" },
-        new Object[]{ "com.example.injector_fragment.StaticMethodInInjectorFragment",
-                      "@InjectorFragment target must not include static methods" },
-
-        new Object[]{ "com.example.unclaimed.named.UnclaimedNamedAnnotationModel", "@Named target is not valid" },
-        new Object[]{ "com.example.unclaimed.named.UnclaimedNamedConstructorParameterModel",
-                      "@Named target must only be present on a constructor parameter if the constructor is enclosed in a type annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStingConsumer or @ActAsStingComponent" },
-        new Object[]{ "com.example.unclaimed.named.UnclaimedNamedEnumModel", "@Named target is not valid" },
-        new Object[]{ "com.example.unclaimed.named.UnclaimedNamedMethodModel",
-                      "@Named target must not be a method unless the method is enclosed in a type annotated with @Fragment, @Injector or @InjectorFragment" },
-        new Object[]{ "com.example.unclaimed.named.UnclaimedNamedMethodParameterModel",
-                      "@Named target must only be present on a method parameter if the method is enclosed in a type annotated with @Fragment" },
-        new Object[]{ "com.example.unclaimed.named.UnclaimedNamedTypeModel",
-                      "@Named target must only be present on a type if the type is annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStingProvider or @ActAsStingComponent" },
-        new Object[]{ "com.example.named.NamedOnCtorParamInActAsStingProviderModel",
-                      "@Named target must only be present on a constructor parameter if the constructor is enclosed in a type annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStingConsumer or @ActAsStingComponent" },
-        new Object[]{ "com.example.named.NamedOnTypeInActAsStingConsumerModel",
-                      "@Named target must only be present on a type if the type is annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStingProvider or @ActAsStingComponent" },
-        new Object[]{ "com.example.provider_backed.named.NamedOnProviderBackedCtorParamModel",
-                      "@Named target must only be present on a constructor parameter if the constructor is enclosed in a type annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStingConsumer or @ActAsStingComponent" },
-        new Object[]{ "com.example.provider_backed.named.NamedOnProviderBackedTypeModel",
-                      "@Named target must only be present on a type if the type is annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStingProvider or @ActAsStingComponent" },
-
-        new Object[]{ "com.example.unclaimed.typed.UnclaimedTypedAnnotationModel", "@Typed target is not valid" },
-        new Object[]{ "com.example.unclaimed.typed.UnclaimedTypedEnumModel", "@Typed target is not valid" },
-        new Object[]{ "com.example.unclaimed.typed.UnclaimedTypedMethodModel",
-                      "@Typed target must not be a method unless the method is enclosed in a type annotated with @Fragment" },
-        new Object[]{ "com.example.injector.outputs.TypedOutputModel",
-                      "@Typed target must not be a method unless the method is enclosed in a type annotated with @Fragment" },
-        new Object[]{ "com.example.unclaimed.typed.UnclaimedTypedTypeModel",
-                      "@Typed target must only be present on a type if the type is annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStingProvider or @ActAsStingComponent" },
-        new Object[]{ "com.example.provider_backed.typed.TypedOnProviderBackedTypeModel",
-                      "@Typed target must only be present on a type if the type is annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStingProvider or @ActAsStingComponent" },
-
-        new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerAnnotationModel", "@Eager target is not valid" },
-        new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerEnumModel", "@Eager target is not valid" },
-        new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerMethodModel",
-                      "@Eager target must only be present on a method if the method is enclosed in a type annotated with @Fragment" },
-        new Object[]{ "com.example.unclaimed.eager.UnclaimedEagerTypeModel",
-                      "@Eager target must only be present on a type if the type is annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStingProvider or @ActAsStingComponent" },
-        new Object[]{ "com.example.provider_backed.eager.EagerOnProviderBackedTypeModel",
-                      "@Eager target must only be present on a type if the type is annotated with @Injectable or the type is annotated with an annotation annotated by @ActAsStingProvider or @ActAsStingComponent" }
-      };
-  }
-
-  @Test( dataProvider = "failedCompiles" )
-  public void processFailedCompile( @Nonnull final String classname, @Nonnull final String errorMessageFragment )
-  {
-    assertFailedCompile( classname, errorMessageFragment );
-  }
-
-  @DataProvider( name = "compileWithWarnings" )
-  @Nonnull
-  public Object[][] compileWithWarnings()
-  {
-    return new Object[][]
-      {
-        new Object[]{ "com.example.fragment.includes.IncludeAutoDiscoverableModel",
-                      "@Fragment target should not include an auto-discoverable type com.example.fragment.includes.IncludeAutoDiscoverableModel.MyAutoDiscoverableModel. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:AutoDiscoverableIncluded\" )" },
-
-        new Object[]{ "com.example.injectable.CdiTypedModel",
-                      "@Injectable target must not be annotated with the javax.enterprise.inject.Typed annotation. Use the sting.Typed annotation instead. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:CdiTypedPresent\" )" },
-        new Object[]{ "com.example.injectable.Jsr330InjectModel",
-                      "@Injectable target must not be annotated with the javax.inject.Inject annotation. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:Jsr330InjectPresent\" )" },
-        new Object[]{ "com.example.injectable.Jsr330ScopedModel",
-                      "@Injectable target should not be annotated with an annotation that is annotated with the javax.inject.Scope annotation such as [@javax.inject.Singleton]. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:Jsr330ScopedPresent\" )" },
-
-        new Object[]{ "com.example.injectable.ProtectedConstructorModel",
-                      "@Injectable target should not have a protected constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:ProtectedConstructor\" )" },
-        new Object[]{ "com.example.injectable.PublicConstructorModel",
-                      "@Injectable target should not have a public constructor. The type is instantiated by the injector and should have a package-access constructor. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:PublicConstructor\" )" },
-
-        new Object[]{ "com.example.injectable.named.Jsr330NamedInputModel",
-                      "@Injectable target must not contain a constructor with a parameter annotated with the javax.inject.Named annotation. Use the sting.Named annotation instead. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:Jsr330NamedPresent\" )" },
-        new Object[]{ "com.example.injectable.named.Jsr330NamedInjectableModel",
-                      "@Injectable target must not be annotated with the javax.inject.Named annotation. Use the sting.Named annotation instead. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:Jsr330NamedPresent\" )" }
-      };
-  }
-
-  @Test( dataProvider = "compileWithWarnings" )
-  public void processCompileWithWarnings( @Nonnull final String classname, @Nonnull final String messageFragment )
-  {
-    assertCompilesWithSingleWarningThatCanBeUpgradedToError( classname, messageFragment );
-  }
-
-  @DataProvider( name = "compileWithoutWarnings" )
-  @Nonnull
-  public Object[][] compileWithoutWarnings()
-  {
-    return new Object[][]
-      {
-        new Object[]{ "NoPackageModel" },
-
-        new Object[]{ "com.example.deprecated.DeprecatedConstructorInjectableModel" },
-        new Object[]{ "com.example.deprecated.DeprecatedDependencyInjectableModel" },
-        new Object[]{ "com.example.deprecated.DeprecatedDependencyInjectorModel" },
-        new Object[]{ "com.example.deprecated.DeprecatedFragmentModel" },
-        new Object[]{ "com.example.deprecated.DeprecatedFragmentNodeInjectorModel" },
-        new Object[]{ "com.example.deprecated.DeprecatedInjectableModel" },
-        new Object[]{ "com.example.deprecated.DeprecatedInjectableNodeInjectorModel" },
-        new Object[]{ "com.example.deprecated.DeprecatedInjectorModel" },
-        new Object[]{ "com.example.deprecated.DeprecatedProvidesDependencyModel" },
-        new Object[]{ "com.example.deprecated.DeprecatedProvidesDependencyNodeInjectorModel" },
-        new Object[]{ "com.example.deprecated.DeprecatedProvidesModel" },
-        new Object[]{ "com.example.deprecated.DeprecatedProvidesNodeInjectorModel" },
-
-        new Object[]{ "com.example.fragment.PackageAccessModel" },
-
-        new Object[]{ "com.example.fragment.includes.SuppressedIncludeAutoDiscoverableModel" },
-
-        new Object[]{ "com.example.injectable.ExposeTypesModel" },
-        new Object[]{ "com.example.injectable.FinalModel" },
-        new Object[]{ "com.example.injectable.PackageAccessModel" },
-        new Object[]{ "com.example.injectable.SuppressedCdiTypedModel" },
-        new Object[]{ "com.example.injectable.SuppressedJsr330InjectModel" },
-        new Object[]{ "com.example.injectable.SuppressedJsr330ScopedModel" },
-        new Object[]{ "com.example.injectable.SuppressedProtectedConstructorModel" },
-        new Object[]{ "com.example.injectable.SuppressedPublicConstructorModel" },
-
-        new Object[]{ "com.example.injectable.named.SuppressedJsr330NamedInputModel" },
-        new Object[]{ "com.example.injectable.named.SuppressedJsr330NamedInjectableModel" },
-
-        new Object[]{ "com.example.injector.AutodetectInjectableModel" },
-        new Object[]{ "com.example.injector.AutodetectProviderFragmentModel" },
-        new Object[]{ "com.example.injector.AutodetectProviderInjectableModel" },
-        new Object[]{ "com.example.injector.AutodetectProviderNestedModel" },
-
-        new Object[]{ "com.example.meta.ActAsStingConsumerOnlyModel" },
-        new Object[]{ "com.example.meta.ActAsStingProviderOnlyModel" },
-        new Object[]{ "com.example.meta.ActAsStingComponentOnlyModel" },
-        new Object[]{ "com.example.meta.StingProviderOnlyModel" },
-
-        new Object[]{ "com.example.named.NamedOnActAsStingComponentModel" },
-        new Object[]{ "com.example.named.NamedOnCtorParamInActAsStingComponentModel" },
-        new Object[]{ "com.example.named.NamedOnCtorParamInActAsStingConsumerModel" },
-        new Object[]{ "com.example.named.NamedOnInjectorFragment" },
-        new Object[]{ "com.example.named.NamedOnTypeInActAsStingProviderModel" },
-
-        new Object[]{ "com.example.provider_backed.eager.EagerOnActAsStingProviderBackedTypeModel" },
-        new Object[]{ "com.example.provider_backed.eager.EagerOnActAsStingComponentBackedTypeModel" },
-        new Object[]{ "com.example.provider_backed.named.NamedOnActAsStingProviderBackedTypeModel" },
-        new Object[]{ "com.example.provider_backed.named.NamedOnCtorParamInActAsStingConsumerBackedTypeModel" },
-        new Object[]{ "com.example.provider_backed.named.NamedOnCtorParamInThirdPartyActAsStingConsumerBackedTypeModel" },
-        new Object[]{ "com.example.provider_backed.named.NamedOnTypeInThirdPartyActAsStingProviderBackedTypeModel" },
-        new Object[]{ "com.example.provider_backed.typed.TypedOnActAsStingComponentBackedTypeModel" },
-        new Object[]{ "com.example.provider_backed.typed.TypedOnActAsStingProviderBackedTypeModel" }
-      };
-  }
-
-  @Test
-  public void supportedAnnotationTypesIncludeMetaAnnotations()
-  {
-    final Set<String> supportedAnnotationTypes = new StingProcessor().getSupportedAnnotationTypes();
-    assertTrue( supportedAnnotationTypes.contains( "sting.StingProvider" ) );
-    assertTrue( supportedAnnotationTypes.contains( "sting.ActAsStingConsumer" ) );
-    assertTrue( supportedAnnotationTypes.contains( "sting.ActAsStingProvider" ) );
-    assertTrue( supportedAnnotationTypes.contains( "sting.ActAsStingComponent" ) );
-  }
-
-  @Test
-  public void processRedundantInjectableInFragmentModel()
-  {
-    final Compilation compilation =
-      compile( Arrays.asList( input( "input",
-                                     "com.example.fragment.includes.redundant_injectable.RedundantInjectableInFragmentModel" ),
-                              input( "input", "com.example.fragment.includes.redundant_injectable.MyModel" ),
-                              input( "input", "com.example.fragment.includes.redundant_injectable.MyFragment" ) ) );
-    assertCompilationSuccessful( compilation );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
-    assertWarningDiagnostic( compilation,
-                             "@Fragment target should not include type com.example.fragment.includes.redundant_injectable.MyModel as it is already transitively included via included fragments. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:RedundantExplicitInjectableInclude\" )" );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 1 );
-  }
-
-  @Test
-  public void processSuppressedRedundantInjectableInFragmentModel()
-  {
-    final Compilation compilation =
-      compile( Arrays.asList( input( "input",
-                                     "com.example.fragment.includes.redundant_injectable.SuppressedRedundantInjectableInFragmentModel" ),
-                              input( "input", "com.example.fragment.includes.redundant_injectable.MyModel" ),
-                              input( "input", "com.example.fragment.includes.redundant_injectable.MyFragment" ) ) );
-    assertCompilationSuccessful( compilation );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 0 );
-  }
-
-  @Test
-  public void processRedundantInjectableInInjectorModel()
-  {
-    final Compilation compilation =
-      compile( Arrays.asList( input( "input",
-                                     "com.example.injector.includes.redundant_injectable.RedundantInjectableInInjectorModel" ),
-                              input( "input", "com.example.injector.includes.redundant_injectable.MyModel" ),
-                              input( "input", "com.example.injector.includes.redundant_injectable.MyFragment" ) ) );
-    assertCompilationSuccessful( compilation );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
-    assertWarningDiagnostic( compilation,
-                             "@Injector target should not include type com.example.injector.includes.redundant_injectable.MyModel as it is already transitively included via included fragments. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:RedundantExplicitInjectableInclude\" )" );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 1 );
-  }
-
-  @Test
-  public void processSuppressedRedundantInjectableInInjectorModel()
-  {
-    final Compilation compilation =
-      compile( Arrays.asList( input( "input",
-                                     "com.example.injector.includes.redundant_injectable.SuppressedRedundantInjectableInInjectorModel" ),
-                              input( "input", "com.example.injector.includes.redundant_injectable.MyModel" ),
-                              input( "input", "com.example.injector.includes.redundant_injectable.MyFragment" ) ) );
-    assertCompilationSuccessful( compilation );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 0 );
-  }
-
-  @Test
-  public void processFragmentIncludeCycleModel()
-  {
-    final Compilation compilation =
-      compile( Collections.singletonList( input( "input",
-                                                 "com.example.fragment.includes.cycle.IncludeCycleModel" ) ) );
-    assertCompilationSuccessful( compilation );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
-    assertWarningDiagnostic( compilation,
-                             "@Fragment target should not include a fragment com.example.fragment.includes.cycle.IncludeCycleModel.B that transitively includes com.example.fragment.includes.cycle.IncludeCycleModel.A. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:FragmentIncludeCycle\" )" );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 1 );
-  }
-
-  @Test
-  public void processSuppressedFragmentIncludeCycleModel()
-  {
-    final Compilation compilation =
-      compile( Collections.singletonList( input( "input",
-                                                 "com.example.fragment.includes.cycle.SuppressedIncludeCycleModel" ) ) );
-    assertCompilationSuccessful( compilation );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 0 );
-  }
-
-  @Test
-  public void processFragmentIncludeLongerCycleModel()
-  {
-    final Compilation compilation =
-      compile( Collections.singletonList( input( "input",
-                                                 "com.example.fragment.includes.cycle.IncludeLongerCycleModel" ) ) );
-    assertCompilationSuccessful( compilation );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
-    // Expect 3 warnings (one for each of A, B, C origins)
-    assertWarningDiagnostic( compilation,
-                             "@Fragment target should not include a fragment com.example.fragment.includes.cycle.IncludeLongerCycleModel.B that transitively includes com.example.fragment.includes.cycle.IncludeLongerCycleModel.A. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:FragmentIncludeCycle\" )" );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 3 );
-  }
-
-  @Test
-  public void processProviderFragmentIncludeCycleModel()
-  {
-    final Compilation compilation =
-      compile( Arrays.asList( input( "input", "com.example.fragment.includes.provider_cycle.MyFrameworkFragment" ),
-                              input( "input", "com.example.fragment.includes.provider_cycle.A" ),
-                              input( "input", "com.example.fragment.includes.provider_cycle.B" ),
-                              input( "input", "com.example.fragment.includes.provider_cycle.C" ),
-                              input( "input", "com.example.fragment.includes.provider_cycle.AImpl" ),
-                              input( "input", "com.example.fragment.includes.provider_cycle.BImpl" ),
-                              input( "input", "com.example.fragment.includes.provider_cycle.CImpl" ) ) );
-    assertCompilationSuccessful( compilation );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
-    // Expect 3 warnings (one for each of AImpl, BImpl, CImpl origins)
-    assertWarningDiagnostic( compilation,
-                             "@Fragment target should not include a fragment com.example.fragment.includes.provider_cycle.BImpl that transitively includes com.example.fragment.includes.provider_cycle.AImpl. This warning can be suppressed by annotating the element with @SuppressWarnings( \"Sting:FragmentIncludeCycle\" )" );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 3 );
-  }
-
-  @Test
-  public void processSuppressedProviderFragmentIncludeCycleModel()
-  {
-    final Compilation compilation =
-      compile( Arrays.asList( input( "input",
-                                     "com.example.fragment.includes.provider_cycle_suppressed.MyFrameworkFragment" ),
-                              input( "input", "com.example.fragment.includes.provider_cycle_suppressed.A" ),
-                              input( "input", "com.example.fragment.includes.provider_cycle_suppressed.B" ),
-                              input( "input", "com.example.fragment.includes.provider_cycle_suppressed.C" ),
-                              input( "input", "com.example.fragment.includes.provider_cycle_suppressed.AImpl" ),
-                              input( "input", "com.example.fragment.includes.provider_cycle_suppressed.BImpl" ),
-                              input( "input", "com.example.fragment.includes.provider_cycle_suppressed.CImpl" ) ) );
-    assertCompilationSuccessful( compilation );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.ERROR, 0 );
-    assertDiagnosticCount( compilation, Diagnostic.Kind.WARNING, 0 );
-  }
-
-  @Test( dataProvider = "compileWithoutWarnings" )
-  public void processCompileWithoutWarnings( @Nonnull final String classname )
-  {
-    assertCompilesWithoutWarnings( classname );
-  }
-
-  @Test
-  public void autodetectInjectableHasNonMatchingQualifier()
-    throws IOException
-  {
-    final Compilation stage1 =
-      compile( Collections.singletonList( input( "bad_input", "com.example.injector.autodetect.MyModel1" ) ) );
-
-    final Path targetDir = Files.createTempDirectory( "sting" );
-    CompileTestUtil.outputFiles( stage1.classOutputFilenames(), stage1.classOutput(), targetDir );
-
-    final List<File> classPath = buildClasspath( targetDir.toFile() );
-    final Compilation stage2 =
-      CompileTestUtil.compile( Collections.singletonList( input( "bad_input",
-                                                                 "com.example.injector.autodetect.MyInjector" ) ),
-                               getOptions(),
-                               processors(),
-                               classPath );
-
-    assertFalse( stage2.success() );
-
-    assertErrorDiagnostic( stage2,
-                           "@Injector target must not contain a non-optional dependency [com.example.injector.autodetect.MyModel1;qualifier='BadQualifier'] that can not be satisfied.\n" +
-                           "  Dependency Path:\n" +
-                           "    [Injector]       com.example.injector.autodetect.MyInjector" );
-    assertErrorDiagnostic( stage2,
-                           "StingProcessor failed to process 1 types. See earlier warnings for further details." );
-  }
-
-  @Test
-  public void unresolvedInjector()
-  {
-    // This occurs when the actual class itself is unresolved
-    final String classname = "com.example.injector.UnresolvedInjectorModel";
-    final JavaFileObject source1 = input( "unresolved", classname );
-    assertFailedCompileResource( Collections.singletonList( source1 ),
-                                 "StingProcessor unable to process com.example.injector.UnresolvedInjectorModel because not all of its dependencies could be resolved. Check for compilation errors or a circular dependency with generated code." );
-  }
-
-  @Test
-  public void fragmentCreatedInLaterRound()
-    throws Exception
-  {
-    // This verifies that a fragment created by another annotation processor will be
-    // incorporated into the at the component graph without causing failures
-    final Processor synthesizingProcessor =
-      newSynthesizingProcessor( "com.example.multiround.fragment.MyGeneratedFragment", 0 );
-    final Compilation compilation =
-      CompileTestUtil.compile( inputs( "com.example.multiround.fragment.MyInjector",
-                                       "com.example.multiround.fragment.MyFragment",
-                                 // The following inputs exist so that the synthesizing processor has types to "process"
-                                       "com.example.multiround.fragment.MyFramework",
-                                       "com.example.multiround.fragment.SomeType" ),
-                               getOptions(),
-                               Arrays.asList( synthesizingProcessor, processor() ),
-                               Collections.emptyList() );
-
-    assertCompilationSuccessful( compilation );
-
-    compilation.assertJavaClassPresent( "com.example.multiround.fragment.MyInjector" );
-    compilation.assertJavaSourcePresent( "com.example.multiround.fragment.Sting_MyInjector" );
-    compilation.assertJavaClassPresent( "com.example.multiround.fragment.Sting_MyInjector" );
-    compilation.assertJavaClassPresent( "com.example.multiround.fragment.MyFragment" );
-    compilation.assertJavaSourcePresent( "com.example.multiround.fragment.Sting_MyFragment" );
-    compilation.assertJavaClassPresent( "com.example.multiround.fragment.Sting_MyFragment" );
-    compilation.assertJavaClassPresent( "com.example.multiround.fragment.MyFramework" );
-    compilation.assertJavaClassPresent( "com.example.multiround.fragment.SomeType" );
-    compilation.assertJavaSourcePresent( "com.example.multiround.fragment.MyGeneratedFragment" );
-    compilation.assertJavaClassPresent( "com.example.multiround.fragment.MyGeneratedFragment" );
-    compilation.assertJavaSourcePresent( "com.example.multiround.fragment.Sting_MyGeneratedFragment" );
-    compilation.assertJavaClassPresent( "com.example.multiround.fragment.Sting_MyGeneratedFragment" );
-  }
-
-  @Test
-  public void injectableCreatedInLaterRound()
-    throws Exception
-  {
-    // This verifies that a fragment created by another annotation processor will be
-    // incorporated into the at the component graph without causing failures
-    final Processor synthesizingProcessor =
-      newSynthesizingProcessor( "com.example.multiround.injectable.MyGeneratedInjectable", 0 );
-    final Compilation compilation =
-      CompileTestUtil.compile( inputs( "com.example.multiround.injectable.MyInjector",
-                                       "com.example.multiround.injectable.MyFragment",
-                                 // The following inputs exist so that the synthesizing processor has types to "process"
-                                       "com.example.multiround.fragment.MyFramework",
-                                       "com.example.multiround.fragment.SomeType" ),
-                               getOptions(),
-                               Arrays.asList( processor(), synthesizingProcessor ),
-                               Collections.emptyList() );
-
-    assertCompilationSuccessful( compilation );
-
-    compilation.assertJavaClassPresent( "com.example.multiround.injectable.MyInjector" );
-    compilation.assertJavaSourcePresent( "com.example.multiround.injectable.Sting_MyInjector" );
-    compilation.assertJavaClassPresent( "com.example.multiround.injectable.Sting_MyInjector" );
-    compilation.assertJavaClassPresent( "com.example.multiround.injectable.MyFragment" );
-    compilation.assertJavaSourcePresent( "com.example.multiround.injectable.Sting_MyFragment" );
-    compilation.assertJavaClassPresent( "com.example.multiround.injectable.Sting_MyFragment" );
-    compilation.assertJavaSourcePresent( "com.example.multiround.injectable.MyGeneratedInjectable" );
-    compilation.assertJavaClassPresent( "com.example.multiround.injectable.MyGeneratedInjectable" );
-    compilation.assertJavaSourcePresent( "com.example.multiround.injectable.Sting_MyGeneratedInjectable" );
-    compilation.assertJavaClassPresent( "com.example.multiround.injectable.Sting_MyGeneratedInjectable" );
-  }
-
-  @Test
-  public void formatGeneratedSourceFailsClearlyWithoutJdkExports()
-    throws Exception
-  {
-    final Path source =
-      fixtureDir().resolve( "input" ).resolve( toFilename( "com.example.injectable.BasicModel" ) );
-    assertTrue( Files.exists( source ), "Expected smoke source to exist at " + source );
-
-    final Path classOutput = Files.createTempDirectory( "sting-format-no-exports-classes" );
-    final Path sourceOutput = Files.createTempDirectory( "sting-format-no-exports-sources" );
-    try
-    {
-      final Path javac = Path.of( System.getProperty( "java.home" ), "bin", "javac" );
-      assertTrue( Files.exists( javac ), "Expected javac to exist at " + javac );
-
-      final List<String> command = new ArrayList<>();
-      command.add( javac.toString() );
-      command.add( "-cp" );
-      command.add( System.getProperty( "java.class.path" ) );
-      command.add( "-processorpath" );
-      command.add( System.getProperty( "java.class.path" ) );
-      command.add( "-processor" );
-      command.add( StingProcessor.class.getName() );
-      command.add( "-d" );
-      command.add( classOutput.toString() );
-      command.add( "-s" );
-      command.add( sourceOutput.toString() );
-      command.addAll( getOptions() );
-      command.add( "-Asting.format_generated_source=true" );
-      command.add( source.toString() );
-
-      final Process process =
-        new ProcessBuilder( command ).
-          redirectErrorStream( true ).
-          start();
-      final String output = new String( process.getInputStream().readAllBytes(), StandardCharsets.UTF_8 );
-      final int exitCode = process.waitFor();
-
-      assertNotEquals( exitCode, 0, "Expected javac to fail without formatter JDK exports. Output:\n" + output );
-      assertTrue( output.contains( "sting.format_generated_source" ),
-                  "Expected diagnostic to mention sting.format_generated_source. Output:\n" + output );
-      for ( final String export : formatterJdkExports() )
-      {
-        assertTrue( output.contains( export ),
-                    "Expected diagnostic to mention required export " + export + ". Output:\n" + output );
-      }
+    @Nonnull
+    @DataProvider(name = "successfulFactoryCompiles")
+    public Object[][] successfulFactoryCompiles() {
+        return new Object[][] {
+            new Object[] {
+                "com.example.factory.BasicFactoryModel",
+                "com.example.factory.BasicFactoryModel_Sting_MyComponentFactory"
+            },
+            new Object[] {
+                "com.example.factory.ParameterAnnotationsFactoryModel",
+                "com.example.factory.ParameterAnnotationsFactoryModel_Sting_MyComponentFactory"
+            },
+            new Object[] {
+                "com.example.factory.MultiMethodFactoryModel",
+                "com.example.factory.MultiMethodFactoryModel_Sting_ModelFactory"
+            }
+        };
     }
-    finally
-    {
-      deleteDir( sourceOutput );
-      deleteDir( classOutput );
+
+    @Test(dataProvider = "successfulFactoryCompiles")
+    public void processSuccessfulFactoryCompile(
+            @Nonnull final String classname, @Nonnull final String generatedClassname) throws Exception {
+        final List<String> expectedOutputs = new ArrayList<>();
+        expectedOutputs.add(javaOutput(generatedClassname));
+        expectedOutputs.add(javaOutput(generatedClassname));
+        expectedOutputs.add(jsonOutput(generatedClassname));
+        assertSuccessfulCompile(
+                inputs(classname), expectedOutputs, t -> emitFactoryGeneratedFile(generatedClassname, t));
     }
-  }
 
-  @Nonnull
-  private String readGeneratedInterceptorProxy( @Nonnull final Compilation compilation,
-                                                @Nonnull final String filenamePart )
-    throws IOException
-  {
-    final String filename =
-      compilation
-        .sourceOutputFilenames()
-        .stream()
-        .filter( f -> f.endsWith( "_InterceptorProxy.java" ) )
-        .filter( f -> f.contains( filenamePart ) )
-        .findFirst()
-        .orElseThrow( () -> new AssertionError( "Unable to find interceptor proxy containing " + filenamePart +
-                                                " in " + compilation.sourceOutputFilenames() ) );
-    return Files.readString( compilation.sourceOutput().resolve( filename ), StandardCharsets.UTF_8 );
-  }
-
-  @Nonnull
-  private String readClassOutput( @Nonnull final Compilation compilation, @Nonnull final String suffix )
-    throws IOException
-  {
-    final String filename =
-      compilation
-        .classOutputFilenames()
-        .stream()
-        .filter( f -> f.endsWith( suffix ) )
-        .findFirst()
-        .orElseThrow( () -> new AssertionError( "Unable to find class output ending in " + suffix +
-                                                " in " + compilation.classOutputFilenames() ) );
-    return Files.readString( compilation.classOutput().resolve( filename ), StandardCharsets.UTF_8 );
-  }
-
-  @SuppressWarnings( "ResultOfMethodCallIgnored" )
-  private void deleteDir( @Nonnull final Path directory )
-  {
-    try ( var paths = Files.walk( directory ) )
-    {
-      paths.sorted( Comparator.reverseOrder() ).map( Path::toFile ).forEach( File::delete );
+    private boolean emitFactoryGeneratedFile(@Nonnull final String generatedClassname, @Nonnull final String target) {
+        return target.endsWith(toFilename(generatedClassname, "", ".sting.json"))
+                || target.endsWith(toFilename(generatedClassname, "", ".java"))
+                || target.endsWith(toFilename(generatedClassname, "Sting_", ".java"));
     }
-    catch ( final IOException e )
-    {
-      throw new IllegalStateException( "Failure to delete directory: " + directory, e );
-    }
-  }
 
-  @Nonnull
-  @Override
-  protected List<String> getOptions()
-  {
-    final List<String> options = new ArrayList<>( super.getOptions() );
-    options.add( "-Asting.emit_json_descriptors=true" );
-    options.add( "-Asting.emit_dot_reports=true" );
-    options.add( "-Asting.debug=true" );
-    return options;
-  }
+    @DataProvider(name = "successfulInjectorCompiles")
+    @Nonnull
+    public Object[][] successfulInjectorCompiles() {
+        return new Object[][] {
+            new Object[] {"com.example.injector.BasicInjectorModel"},
+            new Object[] {"com.example.injector.PrimitiveProviderOptionalBoxedDependencyModel"},
+            new Object[] {"com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel"},
+            new Object[] {"com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel"},
+            new Object[] {"com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel"},
+            new Object[] {"com.example.injector.gwt.DisableGwtInjectorModel"},
+            new Object[] {"com.example.injector.gwt.EnableGwtInjectorModel"},
+            new Object[] {"com.example.injector.outputs.BasicOutputModel"},
+            new Object[] {"com.example.injector.outputs.BoxedProviderPrimitiveOutputModel"},
+            new Object[] {"com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel"},
+            new Object[] {"com.example.injector.outputs.CollectionOutputModel"},
+            new Object[] {"com.example.injector.outputs.ComplexOutputModel"},
+            new Object[] {"com.example.injector.outputs.EmptyCollectionOutputModel"},
+            new Object[] {"com.example.injector.outputs.JavaOptionalOutputModel"},
+            new Object[] {"com.example.injector.outputs.MultipleOutputModel"},
+            new Object[] {"com.example.injector.outputs.OptionalOutputModel"},
+            new Object[] {"com.example.injector.outputs.OptionalMissingOutputModel"},
+            new Object[] {"com.example.injector.outputs.OptionalProvidesOutputModel"},
+            new Object[] {"com.example.injector.outputs.PrimitiveAndBoxedCollectionOutputModel"},
+            new Object[] {"com.example.injector.outputs.PrimitiveProviderBoxedOutputModel"},
+            new Object[] {"com.example.injector.outputs.PrimitiveProviderBoxedSupplierKindsOutputModel"},
+            new Object[] {"com.example.injector.outputs.PrimitiveOutputModel"},
+            new Object[] {"com.example.injector.outputs.QualifiedOutputModel"},
+            new Object[] {"com.example.injector.outputs.SupplierCollectionOutputModel"},
+            new Object[] {"com.example.injector.outputs.SupplierOptionalCollectionOutputModel"},
+            new Object[] {"com.example.injector.outputs.SupplierOptionalOutputModel"},
+            new Object[] {"com.example.injector.outputs.SupplierOutputModel"},
+            new Object[] {"com.example.injector.inputs.MultipleInputInjectorModel"},
+            new Object[] {"com.example.injector.inputs.OptionalInputInjectorModel"},
+            new Object[] {"com.example.injector.inputs.PrimitiveInputBoxedDependencyInjectorModel"},
+            new Object[] {"com.example.injector.inputs.PrimitiveInputInjectorModel"},
+            new Object[] {"com.example.injector.inputs.SingleInputInjectorModel"}
+        };
+    }
+
+    // These tests save less fixtures to the filesystem
+    @Test(dataProvider = "successfulInjectorCompiles")
+    public void processSuccessfulInjectorCompile(@Nonnull final String classname) throws Exception {
+        final List<String> expectedOutputs = Arrays.asList(jsonOutput(classname), jsonGraphOutput(classname));
+        assertSuccessfulCompile(inputs(classname), expectedOutputs, t -> emitInjectorGeneratedFile(classname, t));
+    }
+
+    @DataProvider(name = "successfulPrimitiveInteropCompiles")
+    @Nonnull
+    public Object[][] successfulPrimitiveInteropCompiles() {
+        return new Object[][] {
+            new Object[] {"com.example.injector.AllPrimitiveProviderBoxedDependencyModel"},
+            new Object[] {"com.example.injector.AllPrimitiveProviderOptionalBoxedDependencyModel"},
+            new Object[] {"com.example.injector.inputs.AllPrimitiveInputBoxedDependencyInjectorModel"},
+            new Object[] {"com.example.injector.outputs.AllBoxedProviderPrimitiveOutputModel"},
+            new Object[] {"com.example.injector.outputs.AllPrimitiveProviderBoxedCollectionKindsOutputModel"},
+            new Object[] {"com.example.injector.outputs.AllPrimitiveProviderBoxedOutputModel"}
+        };
+    }
+
+    @Test(dataProvider = "successfulPrimitiveInteropCompiles")
+    public void processSuccessfulPrimitiveInteropCompile(@Nonnull final String classname) {
+        final Compilation compilation = compile(Collections.singletonList(input("input", classname)));
+        assertCompilationSuccessful(compilation);
+    }
+
+    @DataProvider(name = "successfulOptionalRequestInjectorCompiles")
+    @Nonnull
+    public Object[][] successfulOptionalRequestInjectorCompiles() {
+        return new Object[][] {
+            new Object[] {"com.example.injector.OptionalCollectionDependencyInjectorModel"},
+            new Object[] {"com.example.injector.outputs.OptionalFilteredCollectionOutputModel"}
+        };
+    }
+
+    @Test(dataProvider = "successfulOptionalRequestInjectorCompiles")
+    public void processSuccessfulOptionalRequestInjectorCompile(@Nonnull final String classname) {
+        final Compilation compilation = compile(Collections.singletonList(input("input", classname)));
+        assertCompilationSuccessful(compilation);
+    }
+
+    @DataProvider(name = "successfulInterceptorCompiles")
+    @Nonnull
+    public Object[][] successfulInterceptorCompiles() {
+        return new Object[][] {
+            new Object[] {"public interceptor annotations", "com.example.interceptor.BasicInterceptorModel"},
+            new Object[] {"service-interface binding", "com.example.interceptor.BasicInterceptorModel"},
+            new Object[] {"third-party simple-name binding", "com.example.interceptor.ThirdPartyBindingModel"},
+            new Object[] {"implementation binding source", "com.example.interceptor.ImplementationBindingSourceModel"},
+            new Object[] {"provider binding source", "com.example.interceptor.ProviderBindingSourceModel"},
+            new Object[] {
+                "combined service and binding-source annotations", "com.example.interceptor.CombinedBindingModel"
+            },
+            new Object[] {"multiple published service interfaces", "com.example.interceptor.MultiServiceBindingModel"},
+            new Object[] {"qualified service proxies", "com.example.interceptor.QualifiedBindingModel"},
+            new Object[] {"factory-generated service interface", "com.example.interceptor.FactoryBindingModel"},
+            new Object[] {"before-only interceptor", "com.example.interceptor.BasicInterceptorModel"},
+            new Object[] {"after-only interceptor", "com.example.interceptor.VoidResultModel"},
+            new Object[] {"afterException-only interceptor", "com.example.interceptor.ResultAndThrownModel"},
+            new Object[] {"all lifecycle phases", "com.example.interceptor.AllLifecyclePhasesModel"},
+            new Object[] {"around metadata", "com.example.interceptor.AroundMetadataModel"},
+            new Object[] {"around nullability", "com.example.interceptor.AroundNullabilityModel"},
+            new Object[] {"void around", "com.example.interceptor.VoidAroundModel"},
+            new Object[] {"service type marker", "com.example.interceptor.LifecycleMetadataModel"},
+            new Object[] {"method name marker", "com.example.interceptor.LifecycleMetadataModel"},
+            new Object[] {"arguments marker before", "com.example.interceptor.LifecycleMetadataModel"},
+            new Object[] {"arguments marker after", "com.example.interceptor.LifecycleMetadataModel"},
+            new Object[] {"arguments marker afterException", "com.example.interceptor.LifecycleMetadataModel"},
+            new Object[] {"proxy method whitelist annotation copying", "com.example.interceptor.AnnotationCopyModel"},
+            new Object[] {"binding value string", "com.example.interceptor.BindingValueConversionsModel"},
+            new Object[] {"binding value primitive", "com.example.interceptor.BindingValueConversionsModel"},
+            new Object[] {"binding value enum", "com.example.interceptor.BindingValueConversionsModel"},
+            new Object[] {"enum template binding", "com.example.interceptor.EnumTemplateBindingModel"},
+            new Object[] {"binding value class", "com.example.interceptor.BindingValueConversionsModel"},
+            new Object[] {"binding value arrays", "com.example.interceptor.BindingValueConversionsModel"},
+            new Object[] {"binding value defaults", "com.example.interceptor.BindingValueConversionsModel"},
+            new Object[] {"arguments requested", "com.example.interceptor.ArgumentsRequestedModel"},
+            new Object[] {"result reference", "com.example.interceptor.ResultAndThrownModel"},
+            new Object[] {"result primitive", "com.example.interceptor.PrimitiveResultModel"},
+            new Object[] {"result void", "com.example.interceptor.VoidResultModel"},
+            new Object[] {"thrown checked", "com.example.interceptor.ResultAndThrownModel"},
+            new Object[] {"thrown runtime", "com.example.interceptor.ResultAndThrownModel"},
+            new Object[] {
+                "default and inherited interface methods", "com.example.interceptor.DefaultInheritedMethodsModel"
+            },
+            new Object[] {"all service request kinds", "com.example.interceptor.RequestKindsModel"},
+            new Object[] {"overloaded methods", "com.example.interceptor.OverloadedVarargsObjectModel"},
+            new Object[] {"varargs methods", "com.example.interceptor.OverloadedVarargsObjectModel"},
+            new Object[] {"redeclared Object methods", "com.example.interceptor.OverloadedVarargsObjectModel"},
+            new Object[] {"redeclared lifecycle override", "com.example.interceptor.RedeclaredLifecycleOverrideModel"},
+            new Object[] {
+                "unrelated simple-name lifecycle annotations ignored",
+                "com.example.interceptor.UnrelatedLifecycleNameModel"
+            },
+            new Object[] {
+                "unreachable invalid interceptor binding deferred",
+                "com.example.interceptor.UnreachableInvalidInterceptorModel"
+            },
+            new Object[] {
+                "eager unrequested interceptor proxy dependencies",
+                "com.example.interceptor.EagerUnrequestedInterceptorModel"
+            },
+            new Object[] {"supplier cycle boundary", "com.example.interceptor.SupplierCycleBoundaryModel"},
+            new Object[] {"proxy emission dedupe", "com.example.interceptor.TwoInjectorsProxyDedupeModel"}
+        };
+    }
+
+    @Test(dataProvider = "successfulInterceptorCompiles")
+    public void processSuccessfulInterceptorCompile(
+            @SuppressWarnings("unused") @Nonnull final String label, @Nonnull final String classname) {
+        final Compilation compilation = compile(Collections.singletonList(input("input", classname)));
+        assertCompilationSuccessful(compilation);
+    }
+
+    @DataProvider(name = "failedInterceptorCompiles")
+    @Nonnull
+    public Object[][] failedInterceptorCompiles() {
+        return new Object[][] {
+            new Object[] {
+                "service method binding",
+                "com.example.interceptor.MethodLevelServiceBindingModel",
+                "Interceptor bindings on service interface methods are not supported"
+            },
+            new Object[] {
+                "implementation method binding",
+                "com.example.interceptor.MethodLevelImplementationBindingModel",
+                "Interceptor bindings on implementation methods are not supported"
+            },
+            new Object[] {
+                "standalone service method binding",
+                "com.example.interceptor.StandaloneMethodLevelServiceBindingModel",
+                "Interceptor bindings on service interface methods are not supported"
+            },
+            new Object[] {
+                "standalone implementation method binding",
+                "com.example.interceptor.StandaloneMethodLevelImplementationBindingModel",
+                "Interceptor bindings on implementation methods are not supported"
+            },
+            new Object[] {
+                "non-fragment method binding",
+                "com.example.interceptor.NonFragmentMethodBindingModel",
+                "Interceptor bindings on non-fragment methods are not supported"
+            },
+            new Object[] {
+                "duplicate binding type",
+                "com.example.interceptor.DuplicateBindingTypeModel",
+                "Duplicate interceptor binding annotation type com.example.interceptor.DuplicateBindingTypeModel.Trace"
+            },
+            new Object[] {
+                "duplicate priority",
+                "com.example.interceptor.DuplicatePriorityModel",
+                "Duplicate interceptor priority 100"
+            },
+            new Object[] {
+                "concrete published type",
+                "com.example.interceptor.ConcretePublishedTypeModel",
+                "Intercepted bindings must publish service interfaces only"
+            },
+            new Object[] {
+                "Object published type",
+                "com.example.interceptor.ObjectPublishedTypeModel",
+                "Intercepted bindings must not publish java.lang.Object"
+            },
+            new Object[] {
+                "empty implementedBy",
+                "com.example.interceptor.EmptyImplementedByModel",
+                "must declare a non-empty String implementedBy member"
+            },
+            new Object[] {
+                "input interception",
+                "com.example.interceptor.InputInterceptionModel",
+                "Interceptor bindings on injector input services are not supported"
+            },
+            new Object[] {
+                "nullable provider interception",
+                "com.example.interceptor.NullableProviderModel",
+                "Interceptor bindings on nullable or optional provider bindings are not supported"
+            },
+            new Object[] {
+                "generic service",
+                "com.example.interceptor.GenericServiceModel",
+                "@Typed specified a type that is a a parameterized type"
+            },
+            new Object[] {
+                "generic service method",
+                "com.example.interceptor.GenericMethodModel",
+                "Intercepted service methods must not declare type parameters"
+            },
+            new Object[] {
+                "source retention", "com.example.interceptor.SourceRetentionModel", "must not use @Retention(SOURCE)"
+            },
+            new Object[] {
+                "third-party missing priority",
+                "com.example.interceptor.ThirdPartyMissingPriorityModel",
+                "must declare an int priority member"
+            },
+            new Object[] {
+                "third-party bad implementedBy",
+                "com.example.interceptor.ThirdPartyBadImplementedByModel",
+                "must declare a non-empty String implementedBy member"
+            },
+            new Object[] {
+                "missing implementedBy class",
+                "com.example.interceptor.MissingImplementedByClassModel",
+                "does not exist"
+            },
+            new Object[] {
+                "binary implementedBy",
+                "com.example.interceptor.BinaryImplementedByModel",
+                "implementedBy must be a canonical dotted qualified Java name"
+            },
+            new Object[] {
+                "unknown template placeholder",
+                "com.example.interceptor.UnknownTemplatePlaceholderModel",
+                "implementedBy template references unknown interceptor binding member missing"
+            },
+            new Object[] {
+                "non-enum template placeholder",
+                "com.example.interceptor.NonEnumTemplatePlaceholderModel",
+                "implementedBy template placeholder {value} must reference a scalar enum "
+                        + "interceptor binding member"
+            },
+            new Object[] {
+                "enum array template placeholder",
+                "com.example.interceptor.EnumArrayTemplatePlaceholderModel",
+                "implementedBy template placeholder {value} must reference a scalar enum "
+                        + "interceptor binding member"
+            },
+            new Object[] {
+                "malformed implementedBy template",
+                "com.example.interceptor.MalformedTemplateModel",
+                "implementedBy template contains an unmatched '{'"
+            },
+            new Object[] {
+                "template resolves to non-canonical classname",
+                "com.example.interceptor.NonCanonicalTemplateClassnameModel",
+                "implementedBy must be a canonical dotted qualified Java name"
+            },
+            new Object[] {
+                "missing template interceptor",
+                "com.example.interceptor.MissingTemplateInterceptorModel",
+                "Interceptor implementation "
+                        + "com.example.interceptor.MissingTemplateInterceptorModel.MissingTraceInterceptor "
+                        + "does not exist"
+            },
+            new Object[] {
+                "invalid enum constant template",
+                "com.example.interceptor.InvalidEnumConstantTemplateModel",
+                "must not contain leading, trailing, or repeated underscores"
+            },
+            new Object[] {
+                "non-injectable interceptor",
+                "com.example.interceptor.NonInjectableInterceptorModel",
+                "must be annotated with @Injectable"
+            },
+            new Object[] {
+                "non-public interceptor",
+                "com.example.interceptor.NonPublicInterceptorModel",
+                "must be effectively public"
+            },
+            new Object[] {
+                "private lifecycle method",
+                "com.example.interceptor.PrivateLifecycleMethodModel",
+                "Interceptor lifecycle methods must be public instance methods"
+            },
+            new Object[] {
+                "protected lifecycle method",
+                "com.example.interceptor.ProtectedLifecycleMethodModel",
+                "Interceptor lifecycle methods must be public instance methods"
+            },
+            new Object[] {
+                "package lifecycle method",
+                "com.example.interceptor.PackageAccessLifecycleMethodModel",
+                "Interceptor lifecycle methods must be public instance methods"
+            },
+            new Object[] {
+                "static lifecycle method",
+                "com.example.interceptor.StaticLifecycleMethodModel",
+                "Interceptor lifecycle methods must be public instance methods"
+            },
+            new Object[] {
+                "inherited lifecycle method",
+                "com.example.interceptor.InheritedLifecycleMethodModel",
+                "Inherited interceptor lifecycle annotations are not supported"
+            },
+            new Object[] {
+                "unannotated lifecycle override",
+                "com.example.interceptor.UnannotatedOverrideLifecycleModel",
+                "Inherited interceptor lifecycle annotations are not supported"
+            },
+            new Object[] {
+                "inherited duplicate lifecycle phase",
+                "com.example.interceptor.InheritedDuplicateLifecycleModel",
+                "Inherited interceptor lifecycle annotations are not supported"
+            },
+            new Object[] {
+                "non-void lifecycle method",
+                "com.example.interceptor.NonVoidLifecycleMethodModel",
+                "Interceptor lifecycle methods must return void"
+            },
+            new Object[] {
+                "generic lifecycle method",
+                "com.example.interceptor.TypeParameterLifecycleMethodModel",
+                "Interceptor lifecycle methods must not declare type parameters"
+            },
+            new Object[] {
+                "multiple lifecycle annotations",
+                "com.example.interceptor.MultipleLifecycleAnnotationsModel",
+                "Interceptor lifecycle method must not have multiple lifecycle annotations"
+            },
+            new Object[] {
+                "checked lifecycle exception",
+                "com.example.interceptor.CheckedExceptionLifecycleMethodModel",
+                "Interceptor lifecycle methods must not declare checked exceptions"
+            },
+            new Object[] {
+                "duplicate lifecycle phase",
+                "com.example.interceptor.DuplicateLifecyclePhaseModel",
+                "must declare at most one BEFORE lifecycle method"
+            },
+            new Object[] {
+                "duplicate around phase",
+                "com.example.interceptor.DuplicateAroundMethodModel",
+                "must declare at most one AROUND lifecycle method"
+            },
+            new Object[] {
+                "multiple around lifecycle annotations",
+                "com.example.interceptor.MultipleAroundLifecycleAnnotationsModel",
+                "Interceptor lifecycle method must not have multiple lifecycle annotations"
+            },
+            new Object[] {
+                "private around method",
+                "com.example.interceptor.PrivateAroundMethodModel",
+                "Interceptor lifecycle methods must be public instance methods"
+            },
+            new Object[] {
+                "static around method",
+                "com.example.interceptor.StaticAroundMethodModel",
+                "Interceptor lifecycle methods must be public instance methods"
+            },
+            new Object[] {
+                "generic around method",
+                "com.example.interceptor.TypeParameterAroundMethodModel",
+                "Interceptor lifecycle methods must not declare type parameters"
+            },
+            new Object[] {
+                "wrong around return type",
+                "com.example.interceptor.WrongReturnAroundMethodModel",
+                "Interceptor @Around lifecycle methods must return java.lang.Object"
+            },
+            new Object[] {
+                "missing proceed parameter",
+                "com.example.interceptor.MissingProceedAroundMethodModel",
+                "Interceptor @Around lifecycle methods must declare exactly one @Proceed parameter"
+            },
+            new Object[] {
+                "duplicate proceed parameters",
+                "com.example.interceptor.DuplicateProceedAroundMethodModel",
+                "Interceptor @Around lifecycle methods must declare exactly one @Proceed parameter"
+            },
+            new Object[] {
+                "wrong proceed type",
+                "com.example.interceptor.WrongProceedTypeModel",
+                "@Proceed lifecycle parameter must have type sting.interceptors.Invocation"
+            },
+            new Object[] {
+                "proceed wrong phase",
+                "com.example.interceptor.ProceedWrongPhaseModel",
+                "@Proceed lifecycle parameter is only valid on @Around methods"
+            },
+            new Object[] {
+                "Result on around",
+                "com.example.interceptor.ResultAroundMethodModel",
+                "@Result lifecycle parameter is only valid on @After methods"
+            },
+            new Object[] {
+                "Thrown on around",
+                "com.example.interceptor.ThrownAroundMethodModel",
+                "@Thrown lifecycle parameter is only valid on @AfterException methods"
+            },
+            new Object[] {
+                "empty interceptor",
+                "com.example.interceptor.NoLifecycleMethodModel",
+                "must declare at least one lifecycle method"
+            },
+            new Object[] {
+                "unsupported lifecycle parameter marker",
+                "com.example.interceptor.UnsupportedLifecycleParameterMarkerModel",
+                "Interceptor lifecycle parameters must have exactly one marker annotation"
+            },
+            new Object[] {
+                "unannotated lifecycle parameter",
+                "com.example.interceptor.UnannotatedLifecycleParameterModel",
+                "Interceptor lifecycle parameters must have exactly one marker annotation"
+            },
+            new Object[] {
+                "multiple lifecycle parameter markers",
+                "com.example.interceptor.MultipleMarkerLifecycleParameterModel",
+                "Interceptor lifecycle parameters must not have multiple marker annotations"
+            },
+            new Object[] {
+                "ServiceType wrong type",
+                "com.example.interceptor.ServiceTypeWrongTypeModel",
+                "@ServiceType lifecycle parameter must have type java.lang.String"
+            },
+            new Object[] {
+                "MethodName wrong type",
+                "com.example.interceptor.MethodNameWrongTypeModel",
+                "@MethodName lifecycle parameter must have type java.lang.String"
+            },
+            new Object[] {
+                "Arguments wrong type",
+                "com.example.interceptor.ArgumentsWrongTypeModel",
+                "@Arguments lifecycle parameter must have type Object[]"
+            },
+            new Object[] {
+                "Result wrong type",
+                "com.example.interceptor.ResultWrongTypeModel",
+                "@Result lifecycle parameter must have type java.lang.Object"
+            },
+            new Object[] {
+                "Thrown wrong type",
+                "com.example.interceptor.ThrownWrongTypeModel",
+                "@Thrown lifecycle parameter must have type java.lang.Throwable"
+            },
+            new Object[] {
+                "Result wrong phase",
+                "com.example.interceptor.ResultWrongPhaseModel",
+                "@Result lifecycle parameter is only valid on @After methods"
+            },
+            new Object[] {
+                "Thrown wrong phase",
+                "com.example.interceptor.ThrownWrongPhaseModel",
+                "@Thrown lifecycle parameter is only valid on @AfterException methods"
+            },
+            new Object[] {
+                "unknown binding value",
+                "com.example.interceptor.UnknownBindingValueModel",
+                "@BindingValue references unknown interceptor binding member missing"
+            },
+            new Object[] {
+                "binding value wrong type",
+                "com.example.interceptor.BindingValueWrongTypeModel",
+                "is not compatible with lifecycle parameter type java.lang.String"
+            },
+            new Object[] {
+                "binding value array",
+                "com.example.interceptor.BindingValueArrayModel",
+                "is not compatible with lifecycle parameter type java.lang.Object[]"
+            },
+            new Object[] {
+                "binding value annotation",
+                "com.example.interceptor.BindingValueAnnotationModel",
+                "has an unsupported v1 value type"
+            },
+            new Object[] {
+                "binding value annotation array",
+                "com.example.interceptor.BindingValueAnnotationArrayModel",
+                "has an unsupported v1 value type"
+            },
+            new Object[] {
+                "interceptor proxy cycle",
+                "com.example.interceptor.InterceptorCycleModel",
+                "Injector contains a circular dependency"
+            }
+        };
+    }
+
+    @Test(dataProvider = "failedInterceptorCompiles")
+    public void processFailedInterceptorCompile(
+            @SuppressWarnings("unused") @Nonnull final String label,
+            @Nonnull final String classname,
+            @Nonnull final String message) {
+        final Compilation compilation = compile(Collections.singletonList(input("bad_input", classname)));
+        assertFalse(compilation.success());
+        assertErrorDiagnostic(compilation, message);
+    }
+
+    @DataProvider(name = "generatedInterceptorSourceAssertions")
+    @Nonnull
+    public Object[][] generatedInterceptorSourceAssertions() {
+        return new Object[][] {
+            new Object[] {
+                "no arguments allocation when not requested",
+                "com.example.interceptor.NoArgumentsModel",
+                "NoArgumentsModel",
+                "new Object[]",
+                false
+            },
+            new Object[] {
+                "arguments allocation emitted when requested",
+                "com.example.interceptor.ArgumentsRequestedModel",
+                "ArgumentsRequestedModel",
+                "arguments = new Object[] {value}",
+                true
+            },
+            new Object[] {
+                "primitive result local is primitive",
+                "com.example.interceptor.PrimitiveResultModel",
+                "PrimitiveResultModel",
+                "int result",
+                true
+            },
+            new Object[] {
+                "primitive result reaches lifecycle",
+                "com.example.interceptor.PrimitiveResultModel",
+                "PrimitiveResultModel",
+                "after(result)",
+                true
+            },
+            new Object[] {
+                "void result passes null",
+                "com.example.interceptor.VoidResultModel",
+                "VoidResultModel",
+                "after(null)",
+                true
+            },
+            new Object[] {
+                "target field uses service interface type",
+                "com.example.interceptor.NoArgumentsModel",
+                "NoArgumentsModel",
+                "NoArgumentsModel.Service _target",
+                true
+            },
+            new Object[] {
+                "bridge create method returns Object",
+                "com.example.interceptor.NoArgumentsModel",
+                "NoArgumentsModel",
+                "public static Object create(",
+                true
+            },
+            new Object[] {
+                "deterministic proxy class name",
+                "com.example.interceptor.NoArgumentsModel",
+                "NoArgumentsModel",
+                "Sting_com_example_interceptor_NoArgumentsModel_Model_Service_InterceptorProxy",
+                true
+            },
+            new Object[] {
+                "deprecated method annotation copied",
+                "com.example.interceptor.AnnotationCopyModel",
+                "AnnotationCopyModel",
+                "@Deprecated",
+                true
+            },
+            new Object[] {
+                "nonnull method annotation copied",
+                "com.example.interceptor.AnnotationCopyModel",
+                "AnnotationCopyModel",
+                "@Nonnull\n  public String run",
+                true
+            },
+            new Object[] {
+                "nullable parameter annotation copied",
+                "com.example.interceptor.AnnotationCopyModel",
+                "AnnotationCopyModel",
+                "@Nullable final String value",
+                true
+            },
+            new Object[] {
+                "qualified proxy name includes qualifier",
+                "com.example.interceptor.QualifiedBindingModel",
+                "left",
+                "_left_InterceptorProxy",
+                true
+            },
+            new Object[] {
+                "checked exception catch block",
+                "com.example.interceptor.ResultAndThrownModel",
+                "ResultAndThrownModel",
+                "catch (IOException t)",
+                true
+            },
+            new Object[] {
+                "runtime exception catch block",
+                "com.example.interceptor.ResultAndThrownModel",
+                "ResultAndThrownModel",
+                "catch (RuntimeException t)",
+                true
+            },
+            new Object[] {
+                "error catch block",
+                "com.example.interceptor.ResultAndThrownModel",
+                "ResultAndThrownModel",
+                "catch (Error t)",
+                true
+            },
+            new Object[] {
+                "lifecycle nesting try block",
+                "com.example.interceptor.ResultAndThrownModel",
+                "ResultAndThrownModel",
+                "try {",
+                true
+            },
+            new Object[] {
+                "own before failure observed by outer interceptor only",
+                "com.example.interceptor.LifecycleFailureNestingModel",
+                "LifecycleFailureNestingModel",
+                "_interceptor1.before();\n" + "    try {\n" + "      _interceptor2.before();",
+                true
+            },
+            new Object[] {
+                "own after failure observed by outer interceptor only",
+                "com.example.interceptor.LifecycleFailureNestingModel",
+                "LifecycleFailureNestingModel",
+                "      _interceptor2.after();\n" + "    } catch (RuntimeException t) {\n"
+                        + "      _interceptor1.afterException(t);",
+                true
+            },
+            new Object[] {
+                "binding value escaped char",
+                "com.example.interceptor.BindingValueConversionsModel",
+                "BindingValueConversionsModel",
+                "'\\n'",
+                true
+            },
+            new Object[] {
+                "binding value string array literal",
+                "com.example.interceptor.BindingValueConversionsModel",
+                "BindingValueConversionsModel",
+                "new String[] {\"alpha\", \"beta\"}",
+                true
+            },
+            new Object[] {
+                "binding value byte array literal casts",
+                "com.example.interceptor.BindingValueConversionsModel",
+                "BindingValueConversionsModel",
+                "new byte[] {(byte) 1}",
+                true
+            },
+            new Object[] {
+                "binding value short array literal casts",
+                "com.example.interceptor.BindingValueConversionsModel",
+                "BindingValueConversionsModel",
+                "new short[] {(short) 2}",
+                true
+            },
+            new Object[] {
+                "binding value escaped char array literal",
+                "com.example.interceptor.BindingValueConversionsModel",
+                "BindingValueConversionsModel",
+                "new char[] {'\\n', '\\''}",
+                true
+            },
+            new Object[] {
+                "binding value enum array maps to string array",
+                "com.example.interceptor.BindingValueConversionsModel",
+                "BindingValueConversionsModel",
+                "new String[] {\"On\", \"Off\"}",
+                true
+            },
+            new Object[] {
+                "binding value class array maps to string array",
+                "com.example.interceptor.BindingValueConversionsModel",
+                "BindingValueConversionsModel",
+                "new String[] {\"java.io.IOException\"}",
+                true
+            },
+            new Object[] {
+                "binding value empty class array literal",
+                "com.example.interceptor.BindingValueConversionsModel",
+                "BindingValueConversionsModel",
+                "new String[] {}",
+                true
+            },
+            new Object[] {
+                "proxy generated in service package",
+                "com.example.interceptor.NoArgumentsModel",
+                "NoArgumentsModel",
+                "package com.example.interceptor;",
+                true
+            },
+            new Object[] {
+                "default enum template resolved interceptor",
+                "com.example.interceptor.EnumTemplateBindingModel",
+                "DefaultService",
+                "EnumTemplateBindingModel.DefaultTraceInterceptor _interceptor1",
+                true
+            },
+            new Object[] {
+                "explicit enum template resolved interceptor",
+                "com.example.interceptor.EnumTemplateBindingModel",
+                "OtherService",
+                "EnumTemplateBindingModel.OtherTraceInterceptor _interceptor1",
+                true
+            },
+            new Object[] {
+                "underscore enum template resolved interceptor",
+                "com.example.interceptor.EnumTemplateBindingModel",
+                "RequiresNewService",
+                "EnumTemplateBindingModel.RequiresNewTraceInterceptor _interceptor1",
+                true
+            },
+            new Object[] {
+                "third-party enum template resolved interceptor",
+                "com.example.interceptor.EnumTemplateBindingModel",
+                "ThirdPartyService",
+                "EnumTemplateBindingModel.ThirdPartyTraceInterceptor _interceptor1",
+                true
+            },
+            new Object[] {
+                "around proxy creates invocation instance",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "new Invocation(",
+                true
+            },
+            new Object[] {
+                "around proxy invokes next method from invocation lambda",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "nextArguments -> invoke_run_target(nextArguments)",
+                true
+            },
+            new Object[] {
+                "around proxy omits per-method invocation type",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "$Sting$_Invocation",
+                false
+            },
+            new Object[] {
+                "around proxy passes proceed parameter",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "invocation,",
+                true
+            },
+            new Object[] {
+                "around proxy assigns around result directly",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "result = (String) _interceptor1.around(",
+                true
+            },
+            new Object[] {
+                "around proxy omits raw result local",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "rawResult",
+                false
+            },
+            new Object[] {
+                "around proxy omits metadata argument clone",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "arguments.clone()",
+                false
+            },
+            new Object[] {
+                "around proxy wraps undeclared checked throwables",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "throw new UndeclaredThrowableException(t)",
+                true
+            },
+            new Object[] {
+                "around proxy invoke arguments are nonnull",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "private Object invoke_run_interceptor2(@Nonnull final Object[] arguments)",
+                true
+            },
+            new Object[] {
+                "around proxy invoke argument shape asserted",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "assert null != arguments && 2 == arguments.length;",
+                true
+            },
+            new Object[] {
+                "invocation omits replacement argument clone",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "arguments.clone()",
+                false
+            },
+            new Object[] {
+                "invocation omits explicit null replacement check",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "throw new NullPointerException()",
+                false
+            },
+            new Object[] {
+                "invocation omits explicit replacement count check",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "throw new IllegalArgumentException()",
+                false
+            },
+            new Object[] {
+                "invocation omits validity field",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "$sting$_valid",
+                false
+            },
+            new Object[] {
+                "invocation omits invalidate method",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "$sting$_invalidate",
+                false
+            },
+            new Object[] {
+                "invocation omits used field",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "$sting$_used",
+                false
+            },
+            new Object[] {
+                "invocation omits single-use failure",
+                "com.example.interceptor.AroundMetadataModel",
+                "AroundMetadataModel",
+                "throw new IllegalStateException()",
+                false
+            },
+            new Object[] {
+                "around proxy nonnull helper entry",
+                "com.example.interceptor.AroundNullabilityModel",
+                "NonnullService",
+                "@Nonnull\n  private Object invoke_run_interceptor2",
+                true
+            },
+            new Object[] {
+                "around proxy nonnull helper target",
+                "com.example.interceptor.AroundNullabilityModel",
+                "NonnullService",
+                "@Nonnull\n  private Object invoke_run_target",
+                true
+            },
+            new Object[] {
+                "around proxy nullable helper entry",
+                "com.example.interceptor.AroundNullabilityModel",
+                "NullableService",
+                "@Nullable\n  private Object invoke_run_interceptor2",
+                true
+            },
+            new Object[] {
+                "around proxy nullable helper target",
+                "com.example.interceptor.AroundNullabilityModel",
+                "NullableService",
+                "@Nullable\n  private Object invoke_run_target",
+                true
+            },
+            new Object[] {
+                "around proxy primitive helper entry is nonnull",
+                "com.example.interceptor.AroundNullabilityModel",
+                "PrimitiveService",
+                "@Nonnull\n  private Object invoke_run_interceptor2",
+                true
+            },
+            new Object[] {
+                "around proxy primitive helper target is nonnull",
+                "com.example.interceptor.AroundNullabilityModel",
+                "PrimitiveService",
+                "@Nonnull\n  private Object invoke_run_target",
+                true
+            },
+            new Object[] {
+                "around proxy primitive result casts directly",
+                "com.example.interceptor.AroundNullabilityModel",
+                "PrimitiveService",
+                "result = (int) _interceptor1.around(",
+                true
+            },
+            new Object[] {
+                "around proxy omits primitive typed result local",
+                "com.example.interceptor.AroundNullabilityModel",
+                "PrimitiveService",
+                "typedResult",
+                false
+            },
+            new Object[] {
+                "void around helper entry returns void",
+                "com.example.interceptor.VoidAroundModel",
+                "VoidAroundModel",
+                "private void invoke_run_interceptor2(@Nonnull final Object[] arguments)",
+                true
+            },
+            new Object[] {
+                "void around helper target returns void",
+                "com.example.interceptor.VoidAroundModel",
+                "VoidAroundModel",
+                "private void invoke_run_target(@Nonnull final Object[] arguments)",
+                true
+            },
+            new Object[] {
+                "void around omits result local",
+                "com.example.interceptor.VoidAroundModel",
+                "VoidAroundModel",
+                "final Object result",
+                false
+            }
+        };
+    }
+
+    @Test(dataProvider = "generatedInterceptorSourceAssertions")
+    public void generatedInterceptorSourceAssertion(
+            @Nonnull final String label,
+            @Nonnull final String classname,
+            @Nonnull final String filenamePart,
+            @Nonnull final String sourceFragment,
+            final boolean present)
+            throws Exception {
+        final Compilation compilation = compile(Collections.singletonList(input("input", classname)));
+        assertCompilationSuccessful(compilation);
+        final String source = readGeneratedInterceptorProxy(compilation, filenamePart);
+        if (present) {
+            assertTrue(source.contains(sourceFragment), label + "\nSource:\n" + source);
+        } else {
+            assertFalse(source.contains(sourceFragment), label + "\nSource:\n" + source);
+        }
+    }
+
+    @Test
+    public void aroundInvocationUsesUnmodifiableWhenJetbrainsAnnotationsPresent() throws Exception {
+        final Compilation compilation = compile(
+                inputs("com.example.interceptor.AroundNullabilityModel", "org.jetbrains.annotations.Unmodifiable"));
+        assertCompilationSuccessful(compilation);
+        final String source = readGeneratedInterceptorProxy(compilation, "NonnullService");
+        assertTrue(source.contains("import org.jetbrains.annotations.Unmodifiable;"), source);
+        assertTrue(
+                source.contains("@Nonnull\n" + "  private @Unmodifiable Object invoke_run_interceptor2(\n"
+                        + "      "
+                        + "@Nonnull final @Unmodifiable Object[] arguments)"),
+                source);
+        assertTrue(
+                source.contains("@Nonnull\n" + "  private @Unmodifiable Object invoke_run_target("
+                        + "@Nonnull final @Unmodifiable Object[] arguments)"),
+                source);
+    }
+
+    @DataProvider(name = "generatedInterceptorProxyFixtures")
+    @Nonnull
+    public Object[][] generatedInterceptorProxyFixtures() {
+        return new Object[][] {
+            new Object[] {
+                "no arguments proxy",
+                "com.example.interceptor.NoArgumentsModel",
+                "com/example/interceptor/"
+                        + "Sting_com_example_interceptor_NoArgumentsModel_Model_Service_InterceptorProxy.java"
+            },
+            new Object[] {
+                "arguments metadata proxy",
+                "com.example.interceptor.ArgumentsRequestedModel",
+                "com/example/interceptor/"
+                        + "Sting_com_example_interceptor_ArgumentsRequestedModel_Model_Service_InterceptorProxy.java"
+            },
+            new Object[] {
+                "after-exception nesting proxy",
+                "com.example.interceptor.ResultAndThrownModel",
+                "com/example/interceptor/"
+                        + "Sting_com_example_interceptor_ResultAndThrownModel_Model_Service_InterceptorProxy.java"
+            },
+            new Object[] {
+                "own-before and own-after failure nesting proxy",
+                "com.example.interceptor.LifecycleFailureNestingModel",
+                "com/example/interceptor/"
+                    + "Sting_com_example_interceptor_LifecycleFailureNestingModel_Model_Service_InterceptorProxy.java"
+            },
+            new Object[] {
+                "around metadata proxy",
+                "com.example.interceptor.AroundMetadataModel",
+                "com/example/interceptor/"
+                        + "Sting_com_example_interceptor_AroundMetadataModel_Model_Service_InterceptorProxy.java"
+            }
+        };
+    }
+
+    @Test(dataProvider = "generatedInterceptorProxyFixtures")
+    public void generatedInterceptorProxyFixture(
+            @SuppressWarnings("unused") @Nonnull final String label,
+            @Nonnull final String classname,
+            @Nonnull final String output)
+            throws Exception {
+        assertSuccessfulCompile(
+                inputs(classname), Collections.singletonList(output), target -> target.endsWith(output));
+    }
+
+    @Test
+    public void interceptorProxyGraphDescriptorContainsProxyMetadata() throws Exception {
+        final Compilation compilation =
+                compile(Collections.singletonList(input("input", "com.example.interceptor.QualifiedBindingModel")));
+        assertCompilationSuccessful(compilation);
+        final String graph =
+                readClassOutput(compilation, "__ObjectGraph.sting.json").replaceAll("\\s+", "");
+        assertTrue(graph.contains("\"kind\":\"PROXY\""), graph);
+        assertTrue(graph.contains("\"service\""), graph);
+        assertTrue(graph.contains("\"target\":\"com.example.interceptor.QualifiedBindingModel.LeftModel\""), graph);
+        assertTrue(
+                graph.contains("\"interceptors\":[\"com.example.interceptor.QualifiedBindingModel.TraceInterceptor\"]"),
+                graph);
+    }
+
+    @Test
+    public void interceptorProxyGraphDescriptorUsesProviderNodeIdsForProxyDependencies() throws Exception {
+        final Compilation compilation = compile(
+                Collections.singletonList(input("input", "com.example.interceptor.SupplierCycleBoundaryModel")));
+        assertCompilationSuccessful(compilation);
+        final String graph =
+                readClassOutput(compilation, "__ObjectGraph.sting.json").replaceAll("\\s+", "");
+        assertTrue(graph.contains("\"supportedBy\":[\"proxy:"), graph);
+    }
+
+    @Test
+    public void interceptorProxyDotReportContainsProxyLabels() throws Exception {
+        final Compilation compilation =
+                compile(Collections.singletonList(input("input", "com.example.interceptor.QualifiedBindingModel")));
+        assertCompilationSuccessful(compilation);
+        final String dot = readClassOutput(compilation, ".gv");
+        assertTrue(dot.contains("Proxy Service/right"), dot);
+        assertTrue(dot.contains("proxy:com.example.interceptor.QualifiedBindingModel.LeftModel"), dot);
+        assertTrue(dot.contains("TraceInterceptor"), dot);
+    }
+
+    private boolean emitInjectorGeneratedFile(@Nonnull final String classname, @Nonnull final String target) {
+        final int index = classname.lastIndexOf(".");
+        final String simpleClassName = -1 == index ? classname : classname.substring(index + 1);
+        return target.endsWith(".java")
+                || target.endsWith(simpleClassName + StingProcessor.JSON_SUFFIX)
+                || target.endsWith(simpleClassName + StingProcessor.DOT_SUFFIX)
+                || target.endsWith(simpleClassName + StingProcessor.GRAPH_SUFFIX);
+    }
+
+    @Test
+    public void nestedInjectable() throws Exception {
+        assertSuccessfulCompile(
+                "com.example.injectable.NestedModel", jsonOutput("com.example.injectable.NestedModel_MyModel"));
+    }
+
+    @Test
+    public void nestedNestedInjectable() throws Exception {
+        assertSuccessfulCompile(
+                "com.example.injectable.NestedNestedModel",
+                jsonOutput("com.example.injectable.NestedNestedModel_Middle_MyModel"));
+    }
+
+    @Test
+    public void nestedFragment() throws Exception {
+        assertSuccessfulCompile(
+                "com.example.fragment.NestedModel", jsonOutput("com.example.fragment.NestedModel_MyModel"));
+    }
+
+    @Test
+    public void nestedNestedFragment() throws Exception {
+        assertSuccessfulCompile(
+                "com.example.fragment.NestedNestedModel",
+                jsonOutput("com.example.fragment.NestedNestedModel_Middle_MyModel"));
+    }
+
+    @Test
+    public void typedProviderMethodSupportsMultiplePublishedServiceTypes() throws Exception {
+        final String pkg = "com.example.fragment.types";
+        final String classname = pkg + ".BasicTypesModel";
+        assertSuccessfulCompile(
+                inputs(classname, pkg + ".MyModel"), Arrays.asList(javaOutput(classname), jsonOutput(classname)));
+    }
+
+    @Test
+    public void typedProviderMethodPublishesOnlyDeclaredServiceTypes() throws Exception {
+        final String pkg = "com.example.fragment.types";
+        final String classname = pkg + ".TypedProviderMethodModel";
+        assertSuccessfulCompile(
+                inputs(classname, pkg + ".MyModel"), Arrays.asList(javaOutput(classname), jsonOutput(classname)));
+    }
+
+    @Test
+    public void packageAccessFragmentDependency() throws Exception {
+        final String pkg = "com.example.fragment.dependency.access.package_access";
+        final String classname = pkg + ".PackageAccessDependencyModel";
+        assertSuccessfulCompile(
+                inputs(
+                        classname,
+                        pkg + ".MyType1",
+                        pkg + ".MyType2",
+                        pkg + ".MyType3",
+                        pkg + ".MyType4",
+                        pkg + ".MyType5"),
+                Arrays.asList(javaOutput(classname), jsonOutput(classname)));
+    }
+
+    @Test
+    public void publicAccessFragmentDependency() throws Exception {
+        final String pkg = "com.example.fragment.dependency.access.public_access";
+        final String classname = pkg + ".PublicAccessDependencyModel";
+        assertSuccessfulCompile(
+                inputs(
+                        classname,
+                        pkg + ".MyType1",
+                        pkg + ".MyType2",
+                        pkg + ".MyType3",
+                        pkg + ".MyType4",
+                        pkg + ".MyType5"),
+                Arrays.asList(javaOutput(classname), jsonOutput(classname)));
+    }
+
+    @Test
+    public void basicIncludesFragment() throws Exception {
+        final String classname = "com.example.fragment.includes.BasicIncludesModel";
+        assertSuccessfulCompile(
+                inputs(classname, "com.example.fragment.includes.Included1Model"),
+                Collections.singletonList(jsonOutput(classname)));
+    }
+
+    @Test
+    public void multipleIncludesFragment() throws Exception {
+        final String classname = "com.example.fragment.includes.MultipleIncludesModel";
+        assertSuccessfulCompile(
+                inputs(
+                        classname,
+                        "com.example.fragment.includes.Included1Model",
+                        "com.example.fragment.includes.Included2Model"),
+                Collections.singletonList(jsonOutput(classname)));
+    }
+
+    @Test
+    public void crossPackageIncludeFailsWhenFragmentIsLocalOnly() {
+        final Compilation compilation = compile(Arrays.asList(
+                input("bad_input", "com.example.fragment.includes.local_only.CrossPackageIncludesModel"),
+                input("bad_input", "com.example.fragment.includes.local_only.other.MyModel")));
+
+        assertFalse(compilation.success());
+        assertErrorDiagnostic(
+                compilation,
+                "@Fragment target has an includes parameter containing the value "
+                        + "com.example.fragment.includes.local_only.other.MyModel that is in the package "
+                        + "com.example.fragment.includes.local_only.other when the fragment is in the package "
+                        + "com.example.fragment.includes.local_only and localOnly is true");
+    }
+
+    @Test
+    public void crossPackageIncludeAllowedWhenFragmentIsNotLocalOnly() {
+        final Compilation compilation = compile(Arrays.asList(
+                input("input", "com.example.fragment.includes.local_only_disabled.CrossPackageIncludesModel"),
+                input("input", "com.example.fragment.includes.local_only_disabled.other.MyModel")));
+
+        assertCompilationSuccessful(compilation);
+    }
+
+    @Test
+    public void singleIncludesInjector() throws Exception {
+        final String pkg = "com.example.injector.includes.single";
+        assertSuccessfulCompile(
+                inputs(pkg + ".SingleIncludesModel", pkg + ".MyFragment"),
+                Arrays.asList(
+                        jsonOutput(pkg + ".SingleIncludesModel"),
+                        javaOutput(pkg + ".SingleIncludesModel"),
+                        jsonOutput(pkg + ".MyFragment"),
+                        javaOutput(pkg + ".MyFragment")));
+    }
+
+    @Test
+    public void multipleIncludesInjector() throws Exception {
+        final String pkg = "com.example.injector.includes.multiple";
+        assertSuccessfulCompile(
+                inputs(pkg + ".MultipleIncludesModel", pkg + ".MyFragment", pkg + ".MyModel"),
+                Arrays.asList(
+                        jsonOutput(pkg + ".MultipleIncludesModel"),
+                        javaOutput(pkg + ".MultipleIncludesModel"),
+                        jsonOutput(pkg + ".MyFragment"),
+                        javaOutput(pkg + ".MyFragment"),
+                        jsonOutput(pkg + ".MyModel"),
+                        javaOutput(pkg + ".MyModel")));
+    }
+
+    @Test
+    public void diamondIncludesInjector() throws Exception {
+        final String pkg = "com.example.injector.includes.diamond";
+        assertSuccessfulCompile(
+                inputs(
+                        pkg + ".DiamondDependencyIncludesModel",
+                        pkg + ".MyFragment1",
+                        pkg + ".MyFragment2",
+                        pkg + ".MyFragment3",
+                        pkg + ".MyModel"),
+                Arrays.asList(
+                        jsonOutput(pkg + ".DiamondDependencyIncludesModel"),
+                        javaOutput(pkg + ".DiamondDependencyIncludesModel"),
+                        jsonOutput(pkg + ".MyFragment1"),
+                        javaOutput(pkg + ".MyFragment1"),
+                        jsonOutput(pkg + ".MyFragment2"),
+                        javaOutput(pkg + ".MyFragment2"),
+                        jsonOutput(pkg + ".MyFragment3"),
+                        javaOutput(pkg + ".MyFragment3"),
+                        jsonOutput(pkg + ".MyModel"),
+                        javaOutput(pkg + ".MyModel")));
+    }
+
+    @Test
+    public void graphvizNameCollision() throws Exception {
+        final String pkg = "com.example.injector.graphviz";
+        assertSuccessfulCompile(
+                inputs(pkg + ".NameCollisionInjectorModel", pkg + ".pkg1.MyModel", pkg + ".pkg2.MyModel"),
+                Arrays.asList(
+                        jsonOutput(pkg + ".NameCollisionInjectorModel"),
+                        javaOutput(pkg + ".NameCollisionInjectorModel"),
+                        graphvizOutput(pkg + ".NameCollisionInjectorModel"),
+                        jsonOutput(pkg + ".pkg1.MyModel"),
+                        javaOutput(pkg + ".pkg1.MyModel"),
+                        jsonOutput(pkg + ".pkg2.MyModel"),
+                        javaOutput(pkg + ".pkg2.MyModel")));
+    }
+
+    @Test
+    public void InjectorIncludesInjector() throws Exception {
+        final String pkg = "com.example.injector.includes.injector";
+        assertSuccessfulCompile(
+                inputs(pkg + ".MyInjector", pkg + ".MyOtherInjectorModel", pkg + ".MyFragment", pkg + ".MyModel"),
+                Arrays.asList(
+                        jsonOutput(pkg + ".MyInjector"),
+                        javaOutput(pkg + ".MyInjector"),
+                        jsonOutput(pkg + ".MyOtherInjectorModel"),
+                        javaOutput(pkg + ".MyOtherInjectorModel"),
+                        jsonOutput(pkg + ".MyFragment"),
+                        javaOutput(pkg + ".MyFragment")));
+    }
+
+    @Test
+    public void todomvcIntegrationTest() throws Exception {
+        final String pkg = "com.example.integration.todomvc";
+        assertSuccessfulCompile(
+                inputs(
+                        pkg + ".ArezComponent",
+                        pkg + ".ioc.TodoInjector",
+                        pkg + ".model.Arez_BrowserLocation",
+                        pkg + ".model.Arez_TodoRepository",
+                        pkg + ".model.Arez_TodoService",
+                        pkg + ".model.Arez_ViewService",
+                        pkg + ".model.BrowserLocation",
+                        pkg + ".model.BrowserLocationFragment",
+                        pkg + ".model.TodoRepository",
+                        pkg + ".model.TodoService",
+                        pkg + ".model.ViewService"),
+                Arrays.asList(
+                        jsonOutput(pkg + ".ioc.TodoInjector"),
+                        javaOutput(pkg + ".ioc.TodoInjector"),
+                        javaOutput(pkg + ".model.Arez_TodoRepository"),
+                        jsonOutput(pkg + ".model.Arez_TodoRepository"),
+                        javaOutput(pkg + ".model.Arez_TodoService"),
+                        jsonOutput(pkg + ".model.Arez_TodoService"),
+                        javaOutput(pkg + ".model.Arez_ViewService"),
+                        jsonOutput(pkg + ".model.Arez_ViewService"),
+                        javaOutput(pkg + ".model.BrowserLocationFragment"),
+                        jsonOutput(pkg + ".model.BrowserLocationFragment")));
+    }
+
+    @DataProvider(name = "failedCompiles")
+    public Object[][] failedCompiles() {
+        return new Object[][] {
+            new Object[] {"com.example.fragment.ClassModel", "@Fragment target must be an interface"},
+            new Object[] {
+                "com.example.fragment.EnclosedAnnotationFragmentModel", "@Fragment target must not contain any types"
+            },
+            new Object[] {
+                "com.example.fragment.EnclosedClassFragmentModel", "@Fragment target must not contain any types"
+            },
+            new Object[] {
+                "com.example.fragment.EnclosedEnumFragmentModel", "@Fragment target must not contain any types"
+            },
+            new Object[] {
+                "com.example.fragment.EnclosedInterfaceFragmentModel", "@Fragment target must not contain any types"
+            },
+            new Object[] {
+                "com.example.fragment.FragmentExtendsSuperinterfaceModel",
+                "@Fragment target must not extend any interfaces"
+            },
+            new Object[] {
+                "com.example.fragment.Jsr330ScopedFragmentModel",
+                "@Fragment target must not be annotated with an annotation that is annotated with the"
+                        + " javax.inject.Scope annotation such as [@javax.inject.Singleton]"
+            },
+            new Object[] {
+                "com.example.fragment.NoProvidesOrIncludesModel",
+                "@Fragment target must contain one or more methods or one or more includes"
+            },
+            new Object[] {"com.example.fragment.ParameterizedModel", "@Fragment target must not have type parameters"},
+            new Object[] {
+                "com.example.fragment.includes.BadTypesInIncludesModel",
+                "@Fragment target has an includes parameter containing the value java.util.EventListener that is not a"
+                        + " type annotated by either @Fragment or @Injectable"
+            },
+            new Object[] {
+                "com.example.fragment.includes.DuplicateIncludesModel",
+                "@Fragment target has an includes parameter containing duplicate includes with the type"
+                        + " com.example.fragment.includes.DuplicateIncludesModel.MyComponent"
+            },
+            new Object[] {
+                "com.example.fragment.includes.InvalidProvider1IncludesModel",
+                "@Fragment target has an 'includes' parameter containing the value"
+                    + " com.example.fragment.includes.InvalidProvider1IncludesModel.MyComponent that is annotated by"
+                    + " @com.example.fragment.includes.InvalidProvider1IncludesModel.StingProvider(name=\"[FlatEnclosingName]MF1_[SimpleName]_Provider\")"
+                    + " that is annotated by an invalid @StingProvider annotation missing a 'value' parameter of type"
+                    + " string."
+            },
+            new Object[] {
+                "com.example.fragment.includes.InvalidProvider2IncludesModel",
+                "@Fragment target has an 'includes' parameter containing the value"
+                    + " com.example.fragment.includes.InvalidProvider2IncludesModel.MyComponent that is annotated by"
+                    + " @com.example.fragment.includes.InvalidProvider2IncludesModel.StingProvider(23) that is"
+                    + " annotated by an invalid @StingProvider annotation missing a 'value' parameter of type string."
+            },
+            new Object[] {
+                "com.example.fragment.includes.MissingProviderIncludesModel",
+                "@Fragment target has an parameter named 'includes' containing the value"
+                    + " com.example.fragment.includes.MissingProviderIncludesModel.MyComponent and that type is"
+                    + " annotated by the @StingProvider annotation. The provider annotation expects a provider class"
+                    + " named com.example.fragment.includes.MissingProviderIncludesModel_MF1_MyComponent_Provider but"
+                    + " no such class exists. The type needs to be removed from the includes or the provider class"
+                    + " needs to be present."
+            },
+            new Object[] {
+                "com.example.fragment.includes.MultipleProvidersIncludesModel",
+                "@Fragment target has an 'includes' parameter containing the value"
+                    + " com.example.fragment.includes.MultipleProvidersIncludesModel.MyComponent that is annotated by"
+                    + " multiple @StingProvider annotations. Matching annotations:\n"
+                    + "    com.example.fragment.includes.MultipleProvidersIncludesModel.MyFrameworkComponent1\n"
+                    + "    com.example.fragment.includes.MultipleProvidersIncludesModel.MyFrameworkComponent2"
+            },
+            new Object[] {
+                "com.example.fragment.includes.PrimitiveInIncludesModel",
+                "@Fragment target must not include a primitive in the includes parameter"
+            },
+            new Object[] {"com.example.fragment.includes.SelfIncludesModel", "@Fragment target must not include self"},
+            new Object[] {
+                "com.example.fragment.includes.UnannotatedProviderIncludesModel",
+                "@Fragment target has an parameter named 'includes' containing the value"
+                    + " com.example.fragment.includes.UnannotatedProviderIncludesModel.MyComponent and that type is"
+                    + " annotated by the @StingProvider annotation. The provider annotation expects a provider class"
+                    + " named com.example.fragment.includes.UnannotatedProviderIncludesModel.MyComponent_Provider but"
+                    + " that class is not annotated with either @Injector, @Fragment or @Injectable"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.ArrayTypeInputModel",
+                "@Fragment target must not contain a method with a parameter that contains an array type"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.NullableCollectionInputModel",
+                "@Fragment target must not contain a method with a parameter annotated with the @Nullable annotation"
+                        + " that is not an instance dependency kind"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.NullableOptionalInputModel",
+                "@Fragment target must not contain a method with a parameter annotated with the @Nullable annotation"
+                        + " that is not an instance dependency kind"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.NullableSupplierCollectionInputModel",
+                "@Fragment target must not contain a method with a parameter annotated with the @Nullable annotation"
+                        + " that is not an instance dependency kind"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.ParameterizedCollectionInputModel",
+                "@Fragment target must not contain a method with a parameter that contains an unexpected parameterized"
+                        + " type. Only parameterized types known to the framework are supported"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.ParameterizedInputModel",
+                "@Fragment target must not contain a method with a parameter that contains an unexpected parameterized"
+                        + " type. Only parameterized types known to the framework are supported"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.ParameterizedSupplierCollectionInputModel",
+                "@Fragment target must not contain a method with a parameter that contains an unexpected parameterized"
+                        + " type. Only parameterized types known to the framework are supported"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.RawCollectionInputModel",
+                "@Fragment target must not contain a method with a parameter that contains a raw type"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.RawParameterizedCollectionInputModel",
+                "@Fragment target must not contain a method with a parameter that contains a raw type"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.RawParameterizedInputModel",
+                "@Fragment target must not contain a method with a parameter that contains a raw type"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.RawParameterizedSupplierCollectionInputModel",
+                "@Fragment target must not contain a method with a parameter that contains a raw type"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.RawSupplierCollectionInputModel",
+                "@Fragment target must not contain a method with a parameter that contains a raw type"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.RawSupplierInputModel",
+                "@Fragment target must not contain a method with a parameter that contains a raw type"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.WildcardCollectionInputModel",
+                "@Fragment target must not contain a method with a parameter that contains a wildcard type parameter"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.WildcardSupplierCollectionInputModel",
+                "@Fragment target must not contain a method with a parameter that contains a wildcard type parameter"
+            },
+            new Object[] {
+                "com.example.fragment.inputs.WildcardSupplierInputModel",
+                "@Fragment target must not contain a method with a parameter that contains a wildcard type parameter"
+            },
+            new Object[] {
+                "com.example.fragment.provides.AbstractMethodProvidesModel",
+                "@Fragment target must only contain methods with a default modifier"
+            },
+            new Object[] {
+                "com.example.fragment.provides.CdiTypedProvidesModel",
+                "@Fragment target must not contain a method annotated with the javax.enterprise.inject.Typed"
+                        + " annotation. Use the sting.Typed annotation instead"
+            },
+            new Object[] {
+                "com.example.fragment.provides.Jsr330ScopedProvidesModel",
+                "@Fragment target must not contain a method that is annotated with an annotation that is annotated"
+                        + " with the javax.inject.Scope annotation such as [@javax.inject.Singleton]"
+            },
+            new Object[] {
+                "com.example.fragment.provides.NullablePrimitiveReturnTypeProvidesModel",
+                "@Fragment contains a method that is incorrectly annotated with @Nullable as the return type is a"
+                        + " primitive value"
+            },
+            new Object[] {
+                "com.example.fragment.provides.ParameterizedProvidesModel",
+                "@Fragment target must not contain methods with a type parameter"
+            },
+            new Object[] {
+                "com.example.fragment.provides.QualifiedAndNoTypesModel",
+                "@Fragment target must not contain methods that specify zero types with the @Typed annotation and"
+                        + " specify a qualifier with the @Named annotation as the qualifier is meaningless"
+            },
+            new Object[] {
+                "com.example.fragment.provides.StaticMethodProvidesModel",
+                "@Fragment target must only contain methods with a default modifier"
+            },
+            new Object[] {
+                "com.example.fragment.provides.VoidReturnTypeProvidesModel",
+                "@Fragment target must only contain methods that return a value"
+            },
+            new Object[] {
+                "com.example.fragment.named.Jsr330NamedInputModel",
+                "@Fragment target must not contain a method with a parameter annotated with the javax.inject.Named"
+                        + " annotation. Use the sting.Named annotation instead"
+            },
+            new Object[] {
+                "com.example.fragment.named.Jsr330NamedProvidesModel",
+                "@Fragment target must not contain a method annotated with the javax.inject.Named annotation. Use the"
+                        + " sting.Named annotation instead"
+            },
+            new Object[] {
+                "com.example.fragment.provides.types.BadType1Model",
+                "@Typed specified a type that is not assignable to the return type of the method"
+            },
+            new Object[] {
+                "com.example.fragment.provides.types.BadType2Model",
+                "@Typed specified a type that is not assignable to the return type of the method"
+            },
+            new Object[] {
+                "com.example.fragment.provides.types.BadType3Model",
+                "@Typed specified a type that is not assignable to the return type of the method"
+            },
+            new Object[] {
+                "com.example.fragment.provides.types.NoTypesAndLazyModel",
+                "@Fragment target must not contain methods that specify zero types with the @Typed annotation and are"
+                        + " not annotated with the @Eager annotation otherwise the component can not be created by the"
+                        + " injector"
+            },
+            new Object[] {
+                "com.example.fragment.provides.types.ParameterizedServiceModel",
+                "@Typed specified a type that is a a parameterized type"
+            },
+            new Object[] {"com.example.injectable.AbstractModel", "@Injectable target must not be abstract"},
+            new Object[] {"com.example.injectable.InterfaceModel", "@Injectable target must be a class"},
+            new Object[] {
+                "com.example.injectable.MultipleConstructorModel",
+                "@Injectable target must not have multiple constructors"
+            },
+            new Object[] {
+                "com.example.injectable.NonStaticNestedModel",
+                "@Injectable target must not be a non-static nested class"
+            },
+            new Object[] {
+                "com.example.injectable.ParameterizedModel", "@Injectable target must not have type parameters"
+            },
+            new Object[] {
+                "com.example.injectable.QualifiedWithNoTypesModel",
+                "@Injectable target must not specify zero types with the @Typed annotation and specify a qualifier"
+                        + " with the @Named annotation as the qualifier is meaningless"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.ArrayTypeInputModel",
+                "@Injectable target must not contain a constructor with a parameter that contains an array type"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.NullableCollectionInputModel",
+                "@Injectable target must not contain a constructor with a parameter annotated with @Nullable that is"
+                        + " not an instance dependency kind"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.NullableOptionalInputModel",
+                "@Injectable target must not contain a constructor with a parameter annotated with @Nullable that is"
+                        + " not an instance dependency kind"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.NullableSupplierCollectionInputModel",
+                "@Injectable target must not contain a constructor with a parameter annotated with @Nullable that is"
+                        + " not an instance dependency kind"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.ParameterizedCollectionInputModel",
+                "@Injectable target must not contain a constructor with a parameter that contains an unexpected"
+                        + " parameterized type. Only parameterized types known to the framework are supported"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.ParameterizedSupplierCollectionInputModel",
+                "@Injectable target must not contain a constructor with a parameter that contains an unexpected"
+                        + " parameterized type. Only parameterized types known to the framework are supported"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.ParameterizedInputModel",
+                "@Injectable target must not contain a constructor with a parameter that contains an unexpected"
+                        + " parameterized type. Only parameterized types known to the framework are supported"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.RawCollectionInputModel",
+                "@Injectable target must not contain a constructor with a parameter that contains a raw type"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.RawParameterizedCollectionInputModel",
+                "@Injectable target must not contain a constructor with a parameter that contains a raw type"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.RawParameterizedInputModel",
+                "@Injectable target must not contain a constructor with a parameter that contains a raw type"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.RawParameterizedSupplierCollectionInputModel",
+                "@Injectable target must not contain a constructor with a parameter that contains a raw type"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.RawSupplierCollectionInputModel",
+                "@Injectable target must not contain a constructor with a parameter that contains a raw type"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.RawSupplierInputModel",
+                "@Injectable target must not contain a constructor with a parameter that contains a raw type"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.WildcardCollectionInputModel",
+                "@Injectable target must not contain a constructor with a parameter that contains a wildcard type"
+                        + " parameter"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.WildcardSupplierCollectionInputModel",
+                "@Injectable target must not contain a constructor with a parameter that contains a wildcard type"
+                        + " parameter"
+            },
+            new Object[] {
+                "com.example.injectable.inputs.WildcardSupplierInputModel",
+                "@Injectable target must not contain a constructor with a parameter that contains a wildcard type"
+                        + " parameter"
+            },
+            new Object[] {
+                "com.example.injectable.types.BadType1Model",
+                "@Typed specified a type that is not assignable to the declaring type"
+            },
+            new Object[] {
+                "com.example.injectable.types.BadType2Model",
+                "@Typed specified a type that is not assignable to the declaring type"
+            },
+            new Object[] {
+                "com.example.injectable.types.BadType3Model",
+                "@Typed specified a type that is not assignable to the declaring type"
+            },
+            new Object[] {
+                "com.example.injectable.types.NoTypesAndLazyModel",
+                "@Injectable target must not specify zero types with the @Typed annotation or must be annotated with"
+                        + " the @Eager annotation otherwise the component can not be created by the injector"
+            },
+            new Object[] {
+                "com.example.injectable.types.ParameterizedTypeServiceModel",
+                "@Typed specified a type that is a a parameterized type"
+            },
+            new Object[] {"com.example.injector.ClassInjector", "@Injector target must be an interface"},
+            new Object[] {
+                "com.example.injector.DefaultMethodInInjectorModel", "@Injector target must not include default methods"
+            },
+            new Object[] {
+                "com.example.injector.EnclosingAnnotationInjectorModel",
+                "@Injector target must not contain a type that is not annotated by either @Injectable or @Fragment"
+            },
+            new Object[] {
+                "com.example.injector.EnclosingClassInjectorModel",
+                "@Injector target must not contain a type that is not annotated by either @Injectable or @Fragment"
+            },
+            new Object[] {
+                "com.example.injector.EnclosingEnumInjectorModel",
+                "@Injector target must not contain a type that is not annotated by either @Injectable or @Fragment"
+            },
+            new Object[] {
+                "com.example.injector.EnclosingInterfaceInjectorModel",
+                "@Injector target must not contain a type that is not annotated by either @Injectable or @Fragment"
+            },
+            new Object[] {"com.example.injector.EnumInjector", "@Injector target must be an interface"},
+            new Object[] {
+                "com.example.injector.Jsr330ScopedInjectorModel",
+                "@Injector target must not be annotated with an annotation that is annotated with the"
+                        + " javax.inject.Scope annotation such as [@javax.inject.Singleton]"
+            },
+            new Object[] {
+                "com.example.injector.MissingPrimitiveDependencyModel",
+                "@Injector target must not contain a non-optional dependency [int] that can not be satisfied.\n"
+                        + "  Dependency Path:\n"
+                        + "    [Injector]       com.example.injector.MissingPrimitiveDependencyModel\n"
+                        + "    [Injectable]     com.example.injector.MissingPrimitiveDependencyModel.MyModel1\n"
+                        + "    [Provides]    * "
+                        + " com.example.injector.MissingPrimitiveDependencyModel.MyFragment.provideConfig"
+            },
+            new Object[] {
+                "com.example.injector.MultipleCandidatesForSingularDependencyModel",
+                "@Injector target must not contain a non-collection dependency [java.lang.Runnable] that can be"
+                    + " satisfied by multiple nodes.\n"
+                    + "  Dependency Path:\n"
+                    + "    [Injector]       com.example.injector.MultipleCandidatesForSingularDependencyModel\n"
+                    + "  \n"
+                    + "  Candidate Nodes:\n"
+                    + "    [Provides]      "
+                    + " com.example.injector.MultipleCandidatesForSingularDependencyModel.MyFragment1.provideRunnable1\n"
+                    + "    [Provides]      "
+                    + " com.example.injector.MultipleCandidatesForSingularDependencyModel.MyFragment2.provideRunnable2"
+            },
+            new Object[] {
+                "com.example.injector.OptionalOutputMultipleMatchesModel",
+                "@Injector target must not contain a non-collection dependency [java.lang.Runnable] that can be"
+                        + " satisfied by multiple nodes.\n"
+                        + "  Dependency Path:\n"
+                        + "    [Injector]       com.example.injector.OptionalOutputMultipleMatchesModel\n"
+                        + "  \n"
+                        + "  Candidate Nodes:\n"
+                        + "    [Provides]      "
+                        + " com.example.injector.OptionalOutputMultipleMatchesModel.MyFragment1.provideRunnable1\n"
+                        + "    [Provides]      "
+                        + " com.example.injector.OptionalOutputMultipleMatchesModel.MyFragment2.provideRunnable2"
+            },
+            new Object[] {
+                "com.example.injector.NoDirectDependenciesAndNoEagerInIncludesModel",
+                "@Injector target produced an empty object graph. This means that there are no eager nodes in the"
+                        + " includes and there are no dependencies or only unsatisfied optional dependencies defined by"
+                        + " the injector"
+            },
+            new Object[] {
+                "com.example.injector.NullableBoxedProviderPrimitiveOutputModel",
+                "@Injector target must not contain an optional provider method or optional injector input and a"
+                        + " non-optional service request for the coordinate [int]\n"
+                        + "  Dependency Path:\n"
+                        + "    [Injector]       com.example.injector.NullableBoxedProviderPrimitiveOutputModel\n"
+                        + "  \n"
+                        + "  Binding:\n"
+                        + "    [Provides]      "
+                        + " com.example.injector.NullableBoxedProviderPrimitiveOutputModel.MyFragment.provideValue"
+            },
+            new Object[] {
+                "com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel",
+                "@Injector target must not contain an optional provider method or optional injector input and a"
+                    + " non-optional service request for the coordinate [java.lang.String]\n"
+                    + "  Dependency Path:\n"
+                    + "    [Injector]      "
+                    + " com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel\n"
+                    + "    [Injectable]    "
+                    + " com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyModel1\n"
+                    + "    [Provides]    * "
+                    + " com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment1.provideRunnable\n"
+                    + "  \n"
+                    + "  Binding:\n"
+                    + "    [Provides]      "
+                    + " com.example.injector.NullableProvidesWithNonOptionalSingularDependencyModel.MyFragment2.provideConfig"
+            },
+            new Object[] {
+                "com.example.injector.SupplierOptionalOutputMultipleMatchesModel",
+                "@Injector target must not contain a non-collection dependency [java.lang.Runnable] that can be"
+                    + " satisfied by multiple nodes.\n"
+                    + "  Dependency Path:\n"
+                    + "    [Injector]       com.example.injector.SupplierOptionalOutputMultipleMatchesModel\n"
+                    + "  \n"
+                    + "  Candidate Nodes:\n"
+                    + "    [Provides]      "
+                    + " com.example.injector.SupplierOptionalOutputMultipleMatchesModel.MyFragment1.provideRunnable1\n"
+                    + "    [Provides]      "
+                    + " com.example.injector.SupplierOptionalOutputMultipleMatchesModel.MyFragment2.provideRunnable2"
+            },
+            new Object[] {
+                "com.example.factory.NoFactoryMethodsModel",
+                "@Factory target must contain at least one abstract method that returns a value"
+            },
+            new Object[] {
+                "com.example.factory.ParameterMismatchFactoryModel",
+                "@Factory target must contain abstract method parameters whose name and type match the created type"
+                        + " constructor parameter"
+            },
+            new Object[] {
+                "com.example.factory.MultipleConstructorsFactoryModel",
+                "@Factory target must create types with a single accessible constructor"
+            },
+            new Object[] {
+                "com.example.injector.TypeParametersInjectorModel", "@Injector target must not have type parameters"
+            },
+            new Object[] {
+                "com.example.injector.NamedInjectablesAreNotAutoDiscoverableInjectorModel",
+                "@Injector target must not contain a non-optional dependency"
+                        + " [com.example.injector.NamedInjectablesAreNotAutoDiscoverableInjectorModel.MyModel] that can"
+                        + " not be satisfied.\n"
+                        + "  Dependency Path:\n"
+                        + "    [Injector]      "
+                        + " com.example.injector.NamedInjectablesAreNotAutoDiscoverableInjectorModel.MyInjector"
+            },
+            new Object[] {
+                "com.example.injector.TypedInjectablesAreNotAutoDiscoverableInjectorModel",
+                "@Injector target must not contain a non-optional dependency"
+                        + " [com.example.injector.TypedInjectablesAreNotAutoDiscoverableInjectorModel.MyModel] that can"
+                        + " not be satisfied.\n"
+                        + "  Dependency Path:\n"
+                        + "    [Injector]      "
+                        + " com.example.injector.TypedInjectablesAreNotAutoDiscoverableInjectorModel.MyInjector"
+            },
+            new Object[] {
+                "com.example.injector.autodetect.provider.MissingProviderModel",
+                "@Injector target must not contain a non-optional dependency"
+                    + " [com.example.injector.autodetect.provider.MissingProviderModel.MyModel1] that can not be"
+                    + " auto-discovered via @StingProvider because the framework type"
+                    + " com.example.injector.autodetect.provider.MissingProviderModel.MyModel1 expects a provider"
+                    + " class named com.example.injector.autodetect.provider.MissingProviderModel.MyModel1Impl but no"
+                    + " such class exists.\n"
+                    + "  Dependency Path:\n"
+                    + "    [Injector]       com.example.injector.autodetect.provider.MissingProviderModel.MyInjector"
+            },
+            new Object[] {
+                "com.example.injector.autodetect.provider.MultipleProvidersModel",
+                "@Injector target is attempting to auto-discover the type"
+                    + " com.example.injector.autodetect.provider.MultipleProvidersModel.MyModel1 that is annotated by"
+                    + " multiple @StingProvider annotations. Matching annotations:\n"
+                    + "    com.example.injector.autodetect.provider.MultipleProvidersModel.MyFrameworkComponent1\n"
+                    + "    com.example.injector.autodetect.provider.MultipleProvidersModel.MyFrameworkComponent2"
+            },
+            new Object[] {
+                "com.example.injector.autodetect.provider.QualifiedPublishedTypeModel",
+                "@Injector target must not contain a non-optional dependency"
+                    + " [com.example.injector.autodetect.provider.QualifiedPublishedTypeModel.MyModel1] that can not"
+                    + " be auto-discovered via @StingProvider because the provider class"
+                    + " com.example.injector.autodetect.provider.QualifiedPublishedTypeModel.MyModel1Impl does not"
+                    + " publish the service"
+                    + " [com.example.injector.autodetect.provider.QualifiedPublishedTypeModel.MyModel1] for the"
+                    + " framework type com.example.injector.autodetect.provider.QualifiedPublishedTypeModel.MyModel1."
+                    + " The provider must publish the framework type with the default qualifier.\n"
+                    + "  Dependency Path:\n"
+                    + "    [Injector]      "
+                    + " com.example.injector.autodetect.provider.QualifiedPublishedTypeModel.MyInjector"
+            },
+            new Object[] {
+                "com.example.injector.autodetect.provider.WrongPublishedTypeModel",
+                "@Injector target must not contain a non-optional dependency"
+                    + " [com.example.injector.autodetect.provider.WrongPublishedTypeModel.MyModel1] that can not be"
+                    + " auto-discovered via @StingProvider because the provider class"
+                    + " com.example.injector.autodetect.provider.WrongPublishedTypeModel.MyModel1Impl does not publish"
+                    + " the service [com.example.injector.autodetect.provider.WrongPublishedTypeModel.MyModel1] for"
+                    + " the framework type com.example.injector.autodetect.provider.WrongPublishedTypeModel.MyModel1."
+                    + " The provider must publish the framework type with the default qualifier.\n"
+                    + "  Dependency Path:\n"
+                    + "    [Injector]      "
+                    + " com.example.injector.autodetect.provider.WrongPublishedTypeModel.MyInjector"
+            },
+            new Object[] {
+                "com.example.injector.circular.ChainedCircularDependencyModel",
+                "Injector contains a circular dependency.\n"
+                        + "  Path:\n"
+                        + "    [Injector]       com.example.injector.circular.ChainedCircularDependencyModel\n"
+                        + "    [Injectable] +-< com.example.injector.circular.ChainedCircularDependencyModel.MyModel1\n"
+                        + "    [Provides]   |  "
+                        + " com.example.injector.circular.ChainedCircularDependencyModel.MyFragment1.provideConfig\n"
+                        + "    [Provides]   |  "
+                        + " com.example.injector.circular.ChainedCircularDependencyModel.MyFragment2.provideInteger\n"
+                        + "    [Injectable] |   com.example.injector.circular.ChainedCircularDependencyModel.MyModel4\n"
+                        + "    [Injectable] +-> com.example.injector.circular.ChainedCircularDependencyModel.MyModel1"
+            },
+            new Object[] {
+                "com.example.injector.circular.DirectlyCircularDependencyModel",
+                "Injector contains a circular dependency.\n"
+                    + "  Path:\n"
+                    + "    [Injector]       com.example.injector.circular.DirectlyCircularDependencyModel\n"
+                    + "    [Injectable] +-< com.example.injector.circular.DirectlyCircularDependencyModel.MyModel1\n"
+                    + "    [Injectable] |   com.example.injector.circular.DirectlyCircularDependencyModel.MyModel2\n"
+                    + "    [Injectable] +-> com.example.injector.circular.DirectlyCircularDependencyModel.MyModel1"
+            },
+            new Object[] {
+                "com.example.injector.includes.BadTypesInIncludesModel",
+                "@Injector target has an includes parameter containing the value java.util.EventListener that is not a"
+                        + " type annotated by either @Fragment or @Injectable"
+            },
+            new Object[] {
+                "com.example.injector.includes.DuplicateIncludesModel",
+                "@Injector target has an includes parameter containing duplicate includes with the type"
+                        + " com.example.injector.includes.DuplicateIncludesModel.MyComponent"
+            },
+            new Object[] {
+                "com.example.injector.includes.ExplicitIncludesOfEnclosedFragmentModel",
+                "@Injector target must not include a @Fragment annotated type that is auto-included as it is enclosed"
+                        + " within the injector type"
+            },
+            new Object[] {
+                "com.example.injector.includes.ExplicitIncludesOfEnclosedInjectableModel",
+                "@Injector target must not include an @Injectable annotated type that is auto-included as it is"
+                        + " enclosed within the injector type"
+            },
+            new Object[] {
+                "com.example.injector.includes.FragmentOnlyIncludesModel",
+                "@Injector target has an includes parameter containing the value "
+                        + "com.example.injector.includes.FragmentOnlyIncludesModel.MyModel that is not annotated by "
+                        + "@Fragment when fragmentOnly is true"
+            },
+            new Object[] {
+                "com.example.injector.includes.InvalidProvider1IncludesModel",
+                "@Injector target has an 'includes' parameter containing the value"
+                    + " com.example.injector.includes.InvalidProvider1IncludesModel.MyComponent that is annotated by"
+                    + " @com.example.injector.includes.InvalidProvider1IncludesModel.StingProvider(name=\"[FlatEnclosingName]MF1_[SimpleName]_Provider\")"
+                    + " that is annotated by an invalid @StingProvider annotation missing a 'value' parameter of type"
+                    + " string."
+            },
+            new Object[] {
+                "com.example.injector.includes.InvalidProvider2IncludesModel",
+                "@Injector target has an 'includes' parameter containing the value"
+                    + " com.example.injector.includes.InvalidProvider2IncludesModel.MyComponent that is annotated by"
+                    + " @com.example.injector.includes.InvalidProvider2IncludesModel.StingProvider(42) that is"
+                    + " annotated by an invalid @StingProvider annotation missing a 'value' parameter of type string."
+            },
+            new Object[] {
+                "com.example.injector.includes.MissingProviderIncludesModel",
+                "@Injector target has an parameter named 'includes' containing the value"
+                    + " com.example.injector.includes.MissingProviderIncludesModel_MyComponent and that type is"
+                    + " annotated by the @StingProvider annotation. The provider annotation expects a provider class"
+                    + " named com.example.injector.includes.MF1_MissingProviderIncludesModel_MyComponent_Provider but"
+                    + " no such class exists. The type needs to be removed from the includes or the provider class"
+                    + " needs to be present."
+            },
+            new Object[] {
+                "com.example.injector.includes.MultipleProvidersIncludesModel",
+                "@Injector target has an 'includes' parameter containing the value"
+                    + " com.example.injector.includes.MultipleProvidersIncludesModel.MyComponent that is annotated by"
+                    + " multiple @StingProvider annotations. Matching annotations:\n"
+                    + "    com.example.injector.includes.MultipleProvidersIncludesModel.MyFrameworkComponent1\n"
+                    + "    com.example.injector.includes.MultipleProvidersIncludesModel.MyFrameworkComponent2"
+            },
+            new Object[] {
+                "com.example.injector.includes.PrimitiveInIncludesModel",
+                "@Injector target must not include a primitive in the includes parameter"
+            },
+            new Object[] {"com.example.injector.includes.SelfIncludesModel", "@Injector target must not include self"},
+            new Object[] {
+                "com.example.injector.includes.UnannotatedProviderIncludesModel",
+                "@Injector target has an parameter named 'includes' containing the value"
+                    + " com.example.injector.includes.UnannotatedProviderIncludesModel.MyComponent and that type is"
+                    + " annotated by the @StingProvider annotation. The provider annotation expects a provider class"
+                    + " named com.example.injector.includes.UnannotatedProviderIncludesModel.MyComponent_Provider but"
+                    + " that class is not annotated with either @Injector, @Fragment or @Injectable"
+            },
+            new Object[] {
+                "com.example.injector.includes.UnusedFragmentIncludesModel",
+                "@Injector must not include type com.example.injector.includes.UnusedFragmentIncludesModel.MyFragment"
+                        + " when the type is not used within the graph"
+            },
+            new Object[] {
+                "com.example.injector.includes.UnusedInjectableIncludesModel",
+                "@Injector must not include type com.example.injector.includes.UnusedInjectableIncludesModel.MyModel1"
+                        + " when the type is not used within the graph"
+            },
+            new Object[] {
+                "com.example.injector.includes.UnusedStingProviderIncludesModel",
+                "@Injector must not include type"
+                    + " com.example.injector.includes.UnusedStingProviderIncludesModel.MyModel1 when the type is not"
+                    + " used within the graph"
+            },
+            new Object[] {
+                "com.example.injector.inputs.ArrayTypeInputModel",
+                "@Input must not specify an array type for the type parameter"
+            },
+            new Object[] {
+                "com.example.injector.inputs.MismatchOptionalityInputInjectorModel",
+                "@Injector target must not contain an optional provider method or optional injector input and a"
+                    + " non-optional service request for the coordinate [java.lang.Runnable]\n"
+                    + "  Dependency Path:\n"
+                    + "    [Injector]       com.example.injector.inputs.MismatchOptionalityInputInjectorModel\n"
+                    + "    [Injectable]  * "
+                    + " com.example.injector.inputs.MismatchOptionalityInputInjectorModel.MyModel\n"
+                    + "  \n"
+                    + "  Binding:\n"
+                    + "    [Input]         "
+                    + " com.example.injector.inputs.MismatchOptionalityInputInjectorModel.input1/[java.lang.Runnable]?"
+            },
+            new Object[] {
+                "com.example.injector.inputs.RawParameterizedTypeInputModel",
+                "@Input must not specify a parameterized type for the type parameter"
+            },
+            new Object[] {
+                "com.example.injector.inputs.VoidTypeInputModel",
+                "@Input must specify a non-void type for the type parameter"
+            },
+            new Object[] {
+                "com.example.injector.named.Jsr330NamedOutputModel",
+                "@Injector target must not contain a method annotated with the javax.inject.Named annotation. Use the"
+                        + " sting.Named annotation instead"
+            },
+            new Object[] {
+                "com.example.injector.outputs.ArrayTypeOutputModel",
+                "@Injector target must not contain a method with a return type that contains an array type"
+            },
+            new Object[] {
+                "com.example.injector.outputs.Jsr330ScopedOutputModel",
+                "@Injector target must not contain a method that is annotated with an annotation that is annotated"
+                        + " with the javax.inject.Scope annotation such as [@javax.inject.Singleton]"
+            },
+            new Object[] {
+                "com.example.injector.outputs.NullableCollectionOutputModel",
+                "@Injector target must not contain a method annotated with @Nullable that is not an instance"
+                        + " dependency kind"
+            },
+            new Object[] {
+                "com.example.injector.outputs.NullableOptionalOutputModel",
+                "@Injector target must not contain a method annotated with @Nullable that is not an instance"
+                        + " dependency kind"
+            },
+            new Object[] {
+                "com.example.injector.outputs.NullableSupplierCollectionOutputModel",
+                "@Injector target must not contain a method annotated with @Nullable that is not an instance"
+                        + " dependency kind"
+            },
+            new Object[] {
+                "com.example.injector.outputs.MethodReturningVoidOutputModel",
+                "@Injector target must not contain a method that has a void return value"
+            },
+            new Object[] {
+                "com.example.injector.outputs.MethodThrowsExceptionOutputModel",
+                "@Injector target must not contain a method that throws any exceptions"
+            },
+            new Object[] {
+                "com.example.injector.outputs.MethodWithParametersOutputModel",
+                "@Injector target must not contain a method that has parameters"
+            },
+            new Object[] {
+                "com.example.injector.outputs.MethodWithTypeParametersOutputModel",
+                "@Injector target must not contain a method that has any type parameters"
+            },
+            new Object[] {
+                "com.example.injector.outputs.MissingOutputModel",
+                "@Injector target must not contain a non-optional dependency [java.lang.Integer] that can not be"
+                    + " satisfied.\n"
+                    + "  Dependency Path:\n"
+                    + "    [Injector]       com.example.injector.outputs.MissingOutputModel\n"
+                    + "    [Injectable]     com.example.injector.outputs.MissingOutputModel.MyModel1\n"
+                    + "    [Provides]      "
+                    + " com.example.injector.outputs.MissingOutputModel.MyFragment1.provideRunnable\n"
+                    + "    [Provides]    *  com.example.injector.outputs.MissingOutputModel.MyFragment2.provideConfig"
+            },
+            new Object[] {
+                "com.example.injector.outputs.NullableBoxedProviderBoxedOutputModel",
+                "@Injector target must not contain an optional provider method or optional injector input and a"
+                        + " non-optional service request for the coordinate [java.lang.Integer]\n"
+                        + "  Dependency Path:\n"
+                        + "    [Injector]       com.example.injector.outputs.NullableBoxedProviderBoxedOutputModel\n"
+                        + "  \n"
+                        + "  Binding:\n"
+                        + "    [Provides]      "
+                        + " com.example.injector.outputs.NullableBoxedProviderBoxedOutputModel.MyFragment.provideValue"
+            },
+            new Object[] {
+                "com.example.injector.outputs.OptionalCollectionOutputModel",
+                "@Injector target must not contain a method with a return type that contains an unexpected"
+                        + " parameterized type. Only parameterized types known to the framework are supported"
+            },
+            new Object[] {
+                "com.example.injector.outputs.ParameterizedCollectionOutputModel",
+                "@Injector target must not contain a method with a return type that contains an unexpected"
+                        + " parameterized type. Only parameterized types known to the framework are supported"
+            },
+            new Object[] {
+                "com.example.injector.outputs.ParameterizedOutputModel",
+                "@Injector target must not contain a method with a return type that contains an unexpected"
+                        + " parameterized type. Only parameterized types known to the framework are supported"
+            },
+            new Object[] {
+                "com.example.injector.outputs.PrimitiveAndBoxedAmbiguousOutputModel",
+                "@Injector target must not contain a non-collection dependency [java.lang.Integer] that can be"
+                    + " satisfied by multiple nodes.\n"
+                    + "  Dependency Path:\n"
+                    + "    [Injector]       com.example.injector.outputs.PrimitiveAndBoxedAmbiguousOutputModel\n"
+                    + "  \n"
+                    + "  Candidate Nodes:\n"
+                    + "    [Provides]      "
+                    + " com.example.injector.outputs.PrimitiveAndBoxedAmbiguousOutputModel.MyFragment1.provideValue\n"
+                    + "    [Provides]      "
+                    + " com.example.injector.outputs.PrimitiveAndBoxedAmbiguousOutputModel.MyFragment2.provideValue"
+            },
+            new Object[] {
+                "com.example.injector.outputs.ParameterizedSupplierCollectionOutputModel",
+                "@Injector target must not contain a method with a return type that contains an unexpected"
+                        + " parameterized type. Only parameterized types known to the framework are supported"
+            },
+            new Object[] {
+                "com.example.injector.outputs.RawCollectionOutputModel",
+                "@Injector target must not contain a method with a return type that contains a raw type"
+            },
+            new Object[] {
+                "com.example.injector.outputs.RawParameterizedCollectionOutputModel",
+                "@Injector target must not contain a method with a return type that contains a raw type"
+            },
+            new Object[] {
+                "com.example.injector.outputs.RawParameterizedOutputModel",
+                "@Injector target must not contain a method with a return type that contains a raw type"
+            },
+            new Object[] {
+                "com.example.injector.outputs.RawParameterizedSupplierCollectionOutputModel",
+                "@Injector target must not contain a method with a return type that contains a raw type"
+            },
+            new Object[] {
+                "com.example.injector.outputs.RawSupplierCollectionOutputModel",
+                "@Injector target must not contain a method with a return type that contains a raw type"
+            },
+            new Object[] {
+                "com.example.injector.outputs.RawSupplierOutputModel",
+                "@Injector target must not contain a method with a return type that contains a raw type"
+            },
+            new Object[] {
+                "com.example.injector.outputs.WildcardCollectionOutputModel",
+                "@Injector target must not contain a method with a return type that contains a wildcard type parameter"
+            },
+            new Object[] {
+                "com.example.injector.outputs.WildcardSupplierCollectionOutputModel",
+                "@Injector target must not contain a method with a return type that contains a wildcard type parameter"
+            },
+            new Object[] {
+                "com.example.injector.outputs.WildcardSupplierOutputModel",
+                "@Injector target must not contain a method with a return type that contains a wildcard type parameter"
+            },
+            new Object[] {
+                "com.example.injector_fragment.AnnotationInjectorFragment",
+                "@InjectorFragment target must be an interface"
+            },
+            new Object[] {
+                "com.example.injector_fragment.ClassInjectorFragment", "@InjectorFragment target must be an interface"
+            },
+            new Object[] {
+                "com.example.injector_fragment.DefaultMethodInInjectorFragment",
+                "@InjectorFragment target must not include default methods"
+            },
+            new Object[] {
+                "com.example.injector_fragment.EnumInjectorFragment", "@InjectorFragment target must be an interface"
+            },
+            new Object[] {
+                "com.example.injector_fragment.StaticMethodInInjectorFragment",
+                "@InjectorFragment target must not include static methods"
+            },
+            new Object[] {"com.example.unclaimed.named.UnclaimedNamedAnnotationModel", "@Named target is not valid"},
+            new Object[] {
+                "com.example.unclaimed.named.UnclaimedNamedConstructorParameterModel",
+                "@Named target must only be present on a constructor parameter if the constructor is enclosed in a"
+                        + " type annotated with @Injectable or the type is annotated with an annotation annotated by"
+                        + " @ActAsStingConsumer or @ActAsStingComponent"
+            },
+            new Object[] {"com.example.unclaimed.named.UnclaimedNamedEnumModel", "@Named target is not valid"},
+            new Object[] {
+                "com.example.unclaimed.named.UnclaimedNamedMethodModel",
+                "@Named target must not be a method unless the method is enclosed in a type annotated with @Fragment,"
+                        + " @Injector or @InjectorFragment"
+            },
+            new Object[] {
+                "com.example.unclaimed.named.UnclaimedNamedMethodParameterModel",
+                "@Named target must only be present on a method parameter if the method is enclosed in a type"
+                        + " annotated with @Fragment"
+            },
+            new Object[] {
+                "com.example.unclaimed.named.UnclaimedNamedTypeModel",
+                "@Named target must only be present on a type if the type is annotated with @Injectable or the type is"
+                        + " annotated with an annotation annotated by @ActAsStingProvider or @ActAsStingComponent"
+            },
+            new Object[] {
+                "com.example.named.NamedOnCtorParamInActAsStingProviderModel",
+                "@Named target must only be present on a constructor parameter if the constructor is enclosed in a"
+                        + " type annotated with @Injectable or the type is annotated with an annotation annotated by"
+                        + " @ActAsStingConsumer or @ActAsStingComponent"
+            },
+            new Object[] {
+                "com.example.named.NamedOnTypeInActAsStingConsumerModel",
+                "@Named target must only be present on a type if the type is annotated with @Injectable or the type is"
+                        + " annotated with an annotation annotated by @ActAsStingProvider or @ActAsStingComponent"
+            },
+            new Object[] {
+                "com.example.provider_backed.named.NamedOnProviderBackedCtorParamModel",
+                "@Named target must only be present on a constructor parameter if the constructor is enclosed in a"
+                        + " type annotated with @Injectable or the type is annotated with an annotation annotated by"
+                        + " @ActAsStingConsumer or @ActAsStingComponent"
+            },
+            new Object[] {
+                "com.example.provider_backed.named.NamedOnProviderBackedTypeModel",
+                "@Named target must only be present on a type if the type is annotated with @Injectable or the type is"
+                        + " annotated with an annotation annotated by @ActAsStingProvider or @ActAsStingComponent"
+            },
+            new Object[] {"com.example.unclaimed.typed.UnclaimedTypedAnnotationModel", "@Typed target is not valid"},
+            new Object[] {"com.example.unclaimed.typed.UnclaimedTypedEnumModel", "@Typed target is not valid"},
+            new Object[] {
+                "com.example.unclaimed.typed.UnclaimedTypedMethodModel",
+                "@Typed target must not be a method unless the method is enclosed in a type annotated with @Fragment"
+            },
+            new Object[] {
+                "com.example.injector.outputs.TypedOutputModel",
+                "@Typed target must not be a method unless the method is enclosed in a type annotated with @Fragment"
+            },
+            new Object[] {
+                "com.example.unclaimed.typed.UnclaimedTypedTypeModel",
+                "@Typed target must only be present on a type if the type is annotated with @Injectable or the type is"
+                        + " annotated with an annotation annotated by @ActAsStingProvider or @ActAsStingComponent"
+            },
+            new Object[] {
+                "com.example.provider_backed.typed.TypedOnProviderBackedTypeModel",
+                "@Typed target must only be present on a type if the type is annotated with @Injectable or the type is"
+                        + " annotated with an annotation annotated by @ActAsStingProvider or @ActAsStingComponent"
+            },
+            new Object[] {"com.example.unclaimed.eager.UnclaimedEagerAnnotationModel", "@Eager target is not valid"},
+            new Object[] {"com.example.unclaimed.eager.UnclaimedEagerEnumModel", "@Eager target is not valid"},
+            new Object[] {
+                "com.example.unclaimed.eager.UnclaimedEagerMethodModel",
+                "@Eager target must only be present on a method if the method is enclosed in a type annotated with"
+                        + " @Fragment"
+            },
+            new Object[] {
+                "com.example.unclaimed.eager.UnclaimedEagerTypeModel",
+                "@Eager target must only be present on a type if the type is annotated with @Injectable or the type is"
+                        + " annotated with an annotation annotated by @ActAsStingProvider or @ActAsStingComponent"
+            },
+            new Object[] {
+                "com.example.provider_backed.eager.EagerOnProviderBackedTypeModel",
+                "@Eager target must only be present on a type if the type is annotated with @Injectable or the type is"
+                        + " annotated with an annotation annotated by @ActAsStingProvider or @ActAsStingComponent"
+            }
+        };
+    }
+
+    @Test(dataProvider = "failedCompiles")
+    public void processFailedCompile(@Nonnull final String classname, @Nonnull final String errorMessageFragment) {
+        assertFailedCompile(classname, errorMessageFragment);
+    }
+
+    @DataProvider(name = "compileWithWarnings")
+    @Nonnull
+    public Object[][] compileWithWarnings() {
+        return new Object[][] {
+            new Object[] {
+                "com.example.fragment.includes.IncludeAutoDiscoverableModel",
+                "@Fragment target should not include an auto-discoverable type"
+                        + " com.example.fragment.includes.IncludeAutoDiscoverableModel.MyAutoDiscoverableModel. This"
+                        + " warning can be suppressed by annotating the element with @SuppressWarnings("
+                        + " \"Sting:AutoDiscoverableIncluded\" )"
+            },
+            new Object[] {
+                "com.example.injectable.CdiTypedModel",
+                "@Injectable target must not be annotated with the javax.enterprise.inject.Typed annotation. Use the"
+                    + " sting.Typed annotation instead. This warning can be suppressed by annotating the element with"
+                    + " @SuppressWarnings( \"Sting:CdiTypedPresent\" )"
+            },
+            new Object[] {
+                "com.example.injectable.Jsr330InjectModel",
+                "@Injectable target must not be annotated with the javax.inject.Inject annotation. This warning can be"
+                    + " suppressed by annotating the element with @SuppressWarnings( \"Sting:Jsr330InjectPresent\" )"
+            },
+            new Object[] {
+                "com.example.injectable.Jsr330ScopedModel",
+                "@Injectable target should not be annotated with an annotation that is annotated with the"
+                    + " javax.inject.Scope annotation such as [@javax.inject.Singleton]. This warning can be"
+                    + " suppressed by annotating the element with @SuppressWarnings( \"Sting:Jsr330ScopedPresent\" )"
+            },
+            new Object[] {
+                "com.example.injectable.ProtectedConstructorModel",
+                "@Injectable target should not have a protected constructor. The type is instantiated by the injector"
+                    + " and should have a package-access constructor. This warning can be suppressed by annotating the"
+                    + " element with @SuppressWarnings( \"Sting:ProtectedConstructor\" )"
+            },
+            new Object[] {
+                "com.example.injectable.PublicConstructorModel",
+                "@Injectable target should not have a public constructor. The type is instantiated by the injector and"
+                        + " should have a package-access constructor. This warning can be suppressed by annotating the"
+                        + " element with @SuppressWarnings( \"Sting:PublicConstructor\" )"
+            },
+            new Object[] {
+                "com.example.injectable.named.Jsr330NamedInputModel",
+                "@Injectable target must not contain a constructor with a parameter annotated with the"
+                        + " javax.inject.Named annotation. Use the sting.Named annotation instead. This warning can be"
+                        + " suppressed by annotating the element with @SuppressWarnings( \"Sting:Jsr330NamedPresent\" )"
+            },
+            new Object[] {
+                "com.example.injectable.named.Jsr330NamedInjectableModel",
+                "@Injectable target must not be annotated with the javax.inject.Named annotation. Use the sting.Named"
+                        + " annotation instead. This warning can be suppressed by annotating the element with"
+                        + " @SuppressWarnings( \"Sting:Jsr330NamedPresent\" )"
+            }
+        };
+    }
+
+    @Test(dataProvider = "compileWithWarnings")
+    public void processCompileWithWarnings(@Nonnull final String classname, @Nonnull final String messageFragment) {
+        assertCompilesWithSingleWarningThatCanBeUpgradedToError(classname, messageFragment);
+    }
+
+    @DataProvider(name = "compileWithoutWarnings")
+    @Nonnull
+    public Object[][] compileWithoutWarnings() {
+        return new Object[][] {
+            new Object[] {"NoPackageModel"},
+            new Object[] {"com.example.deprecated.DeprecatedConstructorInjectableModel"},
+            new Object[] {"com.example.deprecated.DeprecatedDependencyInjectableModel"},
+            new Object[] {"com.example.deprecated.DeprecatedDependencyInjectorModel"},
+            new Object[] {"com.example.deprecated.DeprecatedFragmentModel"},
+            new Object[] {"com.example.deprecated.DeprecatedFragmentNodeInjectorModel"},
+            new Object[] {"com.example.deprecated.DeprecatedInjectableModel"},
+            new Object[] {"com.example.deprecated.DeprecatedInjectableNodeInjectorModel"},
+            new Object[] {"com.example.deprecated.DeprecatedInjectorModel"},
+            new Object[] {"com.example.deprecated.DeprecatedProvidesDependencyModel"},
+            new Object[] {"com.example.deprecated.DeprecatedProvidesDependencyNodeInjectorModel"},
+            new Object[] {"com.example.deprecated.DeprecatedProvidesModel"},
+            new Object[] {"com.example.deprecated.DeprecatedProvidesNodeInjectorModel"},
+            new Object[] {"com.example.fragment.PackageAccessModel"},
+            new Object[] {"com.example.fragment.includes.SuppressedIncludeAutoDiscoverableModel"},
+            new Object[] {"com.example.injectable.ExposeTypesModel"},
+            new Object[] {"com.example.injectable.FinalModel"},
+            new Object[] {"com.example.injectable.PackageAccessModel"},
+            new Object[] {"com.example.injectable.SuppressedCdiTypedModel"},
+            new Object[] {"com.example.injectable.SuppressedJsr330InjectModel"},
+            new Object[] {"com.example.injectable.SuppressedJsr330ScopedModel"},
+            new Object[] {"com.example.injectable.SuppressedProtectedConstructorModel"},
+            new Object[] {"com.example.injectable.SuppressedPublicConstructorModel"},
+            new Object[] {"com.example.injectable.named.SuppressedJsr330NamedInputModel"},
+            new Object[] {"com.example.injectable.named.SuppressedJsr330NamedInjectableModel"},
+            new Object[] {"com.example.injector.AutodetectInjectableModel"},
+            new Object[] {"com.example.injector.AutodetectProviderFragmentModel"},
+            new Object[] {"com.example.injector.AutodetectProviderInjectableModel"},
+            new Object[] {"com.example.injector.AutodetectProviderNestedModel"},
+            new Object[] {"com.example.meta.ActAsStingConsumerOnlyModel"},
+            new Object[] {"com.example.meta.ActAsStingProviderOnlyModel"},
+            new Object[] {"com.example.meta.ActAsStingComponentOnlyModel"},
+            new Object[] {"com.example.meta.StingProviderOnlyModel"},
+            new Object[] {"com.example.named.NamedOnActAsStingComponentModel"},
+            new Object[] {"com.example.named.NamedOnCtorParamInActAsStingComponentModel"},
+            new Object[] {"com.example.named.NamedOnCtorParamInActAsStingConsumerModel"},
+            new Object[] {"com.example.named.NamedOnInjectorFragment"},
+            new Object[] {"com.example.named.NamedOnTypeInActAsStingProviderModel"},
+            new Object[] {"com.example.provider_backed.eager.EagerOnActAsStingProviderBackedTypeModel"},
+            new Object[] {"com.example.provider_backed.eager.EagerOnActAsStingComponentBackedTypeModel"},
+            new Object[] {"com.example.provider_backed.named.NamedOnActAsStingProviderBackedTypeModel"},
+            new Object[] {"com.example.provider_backed.named.NamedOnCtorParamInActAsStingConsumerBackedTypeModel"},
+            new Object[] {
+                "com.example.provider_backed.named.NamedOnCtorParamInThirdPartyActAsStingConsumerBackedTypeModel"
+            },
+            new Object[] {"com.example.provider_backed.named.NamedOnTypeInThirdPartyActAsStingProviderBackedTypeModel"},
+            new Object[] {"com.example.provider_backed.typed.TypedOnActAsStingComponentBackedTypeModel"},
+            new Object[] {"com.example.provider_backed.typed.TypedOnActAsStingProviderBackedTypeModel"}
+        };
+    }
+
+    @Test
+    public void supportedAnnotationTypesIncludeMetaAnnotations() {
+        final Set<String> supportedAnnotationTypes = new StingProcessor().getSupportedAnnotationTypes();
+        assertTrue(supportedAnnotationTypes.contains("sting.StingProvider"));
+        assertTrue(supportedAnnotationTypes.contains("sting.ActAsStingConsumer"));
+        assertTrue(supportedAnnotationTypes.contains("sting.ActAsStingProvider"));
+        assertTrue(supportedAnnotationTypes.contains("sting.ActAsStingComponent"));
+    }
+
+    @Test
+    public void processRedundantInjectableInFragmentModel() {
+        final Compilation compilation = compile(Arrays.asList(
+                input("input", "com.example.fragment.includes.redundant_injectable.RedundantInjectableInFragmentModel"),
+                input("input", "com.example.fragment.includes.redundant_injectable.MyModel"),
+                input("input", "com.example.fragment.includes.redundant_injectable.MyFragment")));
+        assertCompilationSuccessful(compilation);
+        assertDiagnosticCount(compilation, Diagnostic.Kind.ERROR, 0);
+        assertWarningDiagnostic(
+                compilation,
+                "@Fragment target should not include type com.example.fragment.includes.redundant_injectable.MyModel"
+                    + " as it is already transitively included via included fragments. This warning can be suppressed"
+                    + " by annotating the element with @SuppressWarnings( \"Sting:RedundantExplicitInjectableInclude\""
+                    + " )");
+        assertDiagnosticCount(compilation, Diagnostic.Kind.WARNING, 1);
+    }
+
+    @Test
+    public void processSuppressedRedundantInjectableInFragmentModel() {
+        final Compilation compilation = compile(Arrays.asList(
+                input(
+                        "input",
+                        "com.example.fragment.includes.redundant_injectable.SuppressedRedundantInjectableInFragmentModel"),
+                input("input", "com.example.fragment.includes.redundant_injectable.MyModel"),
+                input("input", "com.example.fragment.includes.redundant_injectable.MyFragment")));
+        assertCompilationSuccessful(compilation);
+        assertDiagnosticCount(compilation, Diagnostic.Kind.ERROR, 0);
+        assertDiagnosticCount(compilation, Diagnostic.Kind.WARNING, 0);
+    }
+
+    @Test
+    public void processRedundantInjectableInInjectorModel() {
+        final Compilation compilation = compile(Arrays.asList(
+                input("input", "com.example.injector.includes.redundant_injectable.RedundantInjectableInInjectorModel"),
+                input("input", "com.example.injector.includes.redundant_injectable.MyModel"),
+                input("input", "com.example.injector.includes.redundant_injectable.MyFragment")));
+        assertCompilationSuccessful(compilation);
+        assertDiagnosticCount(compilation, Diagnostic.Kind.ERROR, 0);
+        assertWarningDiagnostic(
+                compilation,
+                "@Injector target should not include type com.example.injector.includes.redundant_injectable.MyModel"
+                    + " as it is already transitively included via included fragments. This warning can be suppressed"
+                    + " by annotating the element with @SuppressWarnings( \"Sting:RedundantExplicitInjectableInclude\""
+                    + " )");
+        assertDiagnosticCount(compilation, Diagnostic.Kind.WARNING, 1);
+    }
+
+    @Test
+    public void processSuppressedRedundantInjectableInInjectorModel() {
+        final Compilation compilation = compile(Arrays.asList(
+                input(
+                        "input",
+                        "com.example.injector.includes.redundant_injectable.SuppressedRedundantInjectableInInjectorModel"),
+                input("input", "com.example.injector.includes.redundant_injectable.MyModel"),
+                input("input", "com.example.injector.includes.redundant_injectable.MyFragment")));
+        assertCompilationSuccessful(compilation);
+        assertDiagnosticCount(compilation, Diagnostic.Kind.ERROR, 0);
+        assertDiagnosticCount(compilation, Diagnostic.Kind.WARNING, 0);
+    }
+
+    @Test
+    public void processFragmentIncludeCycleModel() {
+        final Compilation compilation = compile(
+                Collections.singletonList(input("input", "com.example.fragment.includes.cycle.IncludeCycleModel")));
+        assertCompilationSuccessful(compilation);
+        assertDiagnosticCount(compilation, Diagnostic.Kind.ERROR, 0);
+        assertWarningDiagnostic(
+                compilation,
+                "@Fragment target should not include a fragment"
+                        + " com.example.fragment.includes.cycle.IncludeCycleModel.B that transitively includes"
+                        + " com.example.fragment.includes.cycle.IncludeCycleModel.A. This warning can be suppressed by"
+                        + " annotating the element with @SuppressWarnings( \"Sting:FragmentIncludeCycle\" )");
+        assertDiagnosticCount(compilation, Diagnostic.Kind.WARNING, 1);
+    }
+
+    @Test
+    public void processSuppressedFragmentIncludeCycleModel() {
+        final Compilation compilation = compile(Collections.singletonList(
+                input("input", "com.example.fragment.includes.cycle.SuppressedIncludeCycleModel")));
+        assertCompilationSuccessful(compilation);
+        assertDiagnosticCount(compilation, Diagnostic.Kind.ERROR, 0);
+        assertDiagnosticCount(compilation, Diagnostic.Kind.WARNING, 0);
+    }
+
+    @Test
+    public void processFragmentIncludeLongerCycleModel() {
+        final Compilation compilation = compile(Collections.singletonList(
+                input("input", "com.example.fragment.includes.cycle.IncludeLongerCycleModel")));
+        assertCompilationSuccessful(compilation);
+        assertDiagnosticCount(compilation, Diagnostic.Kind.ERROR, 0);
+        // Expect 3 warnings (one for each of A, B, C origins)
+        assertWarningDiagnostic(
+                compilation,
+                "@Fragment target should not include a fragment"
+                    + " com.example.fragment.includes.cycle.IncludeLongerCycleModel.B that transitively includes"
+                    + " com.example.fragment.includes.cycle.IncludeLongerCycleModel.A. This warning can be suppressed"
+                    + " by annotating the element with @SuppressWarnings( \"Sting:FragmentIncludeCycle\" )");
+        assertDiagnosticCount(compilation, Diagnostic.Kind.WARNING, 3);
+    }
+
+    @Test
+    public void processProviderFragmentIncludeCycleModel() {
+        final Compilation compilation = compile(Arrays.asList(
+                input("input", "com.example.fragment.includes.provider_cycle.MyFrameworkFragment"),
+                input("input", "com.example.fragment.includes.provider_cycle.A"),
+                input("input", "com.example.fragment.includes.provider_cycle.B"),
+                input("input", "com.example.fragment.includes.provider_cycle.C"),
+                input("input", "com.example.fragment.includes.provider_cycle.AImpl"),
+                input("input", "com.example.fragment.includes.provider_cycle.BImpl"),
+                input("input", "com.example.fragment.includes.provider_cycle.CImpl")));
+        assertCompilationSuccessful(compilation);
+        assertDiagnosticCount(compilation, Diagnostic.Kind.ERROR, 0);
+        // Expect 3 warnings (one for each of AImpl, BImpl, CImpl origins)
+        assertWarningDiagnostic(
+                compilation,
+                "@Fragment target should not include a fragment com.example.fragment.includes.provider_cycle.BImpl"
+                        + " that transitively includes com.example.fragment.includes.provider_cycle.AImpl. This warning"
+                        + " can be suppressed by annotating the element with @SuppressWarnings("
+                        + " \"Sting:FragmentIncludeCycle\" )");
+        assertDiagnosticCount(compilation, Diagnostic.Kind.WARNING, 3);
+    }
+
+    @Test
+    public void processSuppressedProviderFragmentIncludeCycleModel() {
+        final Compilation compilation = compile(Arrays.asList(
+                input("input", "com.example.fragment.includes.provider_cycle_suppressed.MyFrameworkFragment"),
+                input("input", "com.example.fragment.includes.provider_cycle_suppressed.A"),
+                input("input", "com.example.fragment.includes.provider_cycle_suppressed.B"),
+                input("input", "com.example.fragment.includes.provider_cycle_suppressed.C"),
+                input("input", "com.example.fragment.includes.provider_cycle_suppressed.AImpl"),
+                input("input", "com.example.fragment.includes.provider_cycle_suppressed.BImpl"),
+                input("input", "com.example.fragment.includes.provider_cycle_suppressed.CImpl")));
+        assertCompilationSuccessful(compilation);
+        assertDiagnosticCount(compilation, Diagnostic.Kind.ERROR, 0);
+        assertDiagnosticCount(compilation, Diagnostic.Kind.WARNING, 0);
+    }
+
+    @Test(dataProvider = "compileWithoutWarnings")
+    public void processCompileWithoutWarnings(@Nonnull final String classname) {
+        assertCompilesWithoutWarnings(classname);
+    }
+
+    @Test
+    public void autodetectInjectableHasNonMatchingQualifier() throws IOException {
+        final Compilation stage1 =
+                compile(Collections.singletonList(input("bad_input", "com.example.injector.autodetect.MyModel1")));
+
+        final Path targetDir = Files.createTempDirectory("sting");
+        CompileTestUtil.outputFiles(stage1.classOutputFilenames(), stage1.classOutput(), targetDir);
+
+        final List<File> classPath = buildClasspath(targetDir.toFile());
+        final Compilation stage2 = CompileTestUtil.compile(
+                Collections.singletonList(input("bad_input", "com.example.injector.autodetect.MyInjector")),
+                getOptions(),
+                processors(),
+                classPath);
+
+        assertFalse(stage2.success());
+
+        assertErrorDiagnostic(
+                stage2,
+                "@Injector target must not contain a non-optional dependency"
+                        + " [com.example.injector.autodetect.MyModel1;qualifier='BadQualifier'] that can not be"
+                        + " satisfied.\n"
+                        + "  Dependency Path:\n"
+                        + "    [Injector]       com.example.injector.autodetect.MyInjector");
+        assertErrorDiagnostic(
+                stage2, "StingProcessor failed to process 1 types. See earlier warnings for further details.");
+    }
+
+    @Test
+    public void unresolvedInjector() {
+        // This occurs when the actual class itself is unresolved
+        final String classname = "com.example.injector.UnresolvedInjectorModel";
+        final JavaFileObject source1 = input("unresolved", classname);
+        assertFailedCompileResource(
+                Collections.singletonList(source1),
+                "StingProcessor unable to process com.example.injector.UnresolvedInjectorModel because not all of its"
+                        + " dependencies could be resolved. Check for compilation errors or a circular dependency with"
+                        + " generated code.");
+    }
+
+    @Test
+    public void fragmentCreatedInLaterRound() throws Exception {
+        // This verifies that a fragment created by another annotation processor will be
+        // incorporated into the at the component graph without causing failures
+        final Processor synthesizingProcessor =
+                newSynthesizingProcessor("com.example.multiround.fragment.MyGeneratedFragment", 0);
+        final Compilation compilation = CompileTestUtil.compile(
+                inputs(
+                        "com.example.multiround.fragment.MyInjector",
+                        "com.example.multiround.fragment.MyFragment",
+                        // The following inputs exist so that the synthesizing processor has types to "process"
+                        "com.example.multiround.fragment.MyFramework",
+                        "com.example.multiround.fragment.SomeType"),
+                getOptions(),
+                Arrays.asList(synthesizingProcessor, processor()),
+                Collections.emptyList());
+
+        assertCompilationSuccessful(compilation);
+
+        compilation.assertJavaClassPresent("com.example.multiround.fragment.MyInjector");
+        compilation.assertJavaSourcePresent("com.example.multiround.fragment.Sting_MyInjector");
+        compilation.assertJavaClassPresent("com.example.multiround.fragment.Sting_MyInjector");
+        compilation.assertJavaClassPresent("com.example.multiround.fragment.MyFragment");
+        compilation.assertJavaSourcePresent("com.example.multiround.fragment.Sting_MyFragment");
+        compilation.assertJavaClassPresent("com.example.multiround.fragment.Sting_MyFragment");
+        compilation.assertJavaClassPresent("com.example.multiround.fragment.MyFramework");
+        compilation.assertJavaClassPresent("com.example.multiround.fragment.SomeType");
+        compilation.assertJavaSourcePresent("com.example.multiround.fragment.MyGeneratedFragment");
+        compilation.assertJavaClassPresent("com.example.multiround.fragment.MyGeneratedFragment");
+        compilation.assertJavaSourcePresent("com.example.multiround.fragment.Sting_MyGeneratedFragment");
+        compilation.assertJavaClassPresent("com.example.multiround.fragment.Sting_MyGeneratedFragment");
+    }
+
+    @Test
+    public void injectableCreatedInLaterRound() throws Exception {
+        // This verifies that a fragment created by another annotation processor will be
+        // incorporated into the at the component graph without causing failures
+        final Processor synthesizingProcessor =
+                newSynthesizingProcessor("com.example.multiround.injectable.MyGeneratedInjectable", 0);
+        final Compilation compilation = CompileTestUtil.compile(
+                inputs(
+                        "com.example.multiround.injectable.MyInjector",
+                        "com.example.multiround.injectable.MyFragment",
+                        // The following inputs exist so that the synthesizing processor has types to "process"
+                        "com.example.multiround.fragment.MyFramework",
+                        "com.example.multiround.fragment.SomeType"),
+                getOptions(),
+                Arrays.asList(processor(), synthesizingProcessor),
+                Collections.emptyList());
+
+        assertCompilationSuccessful(compilation);
+
+        compilation.assertJavaClassPresent("com.example.multiround.injectable.MyInjector");
+        compilation.assertJavaSourcePresent("com.example.multiround.injectable.Sting_MyInjector");
+        compilation.assertJavaClassPresent("com.example.multiround.injectable.Sting_MyInjector");
+        compilation.assertJavaClassPresent("com.example.multiround.injectable.MyFragment");
+        compilation.assertJavaSourcePresent("com.example.multiround.injectable.Sting_MyFragment");
+        compilation.assertJavaClassPresent("com.example.multiround.injectable.Sting_MyFragment");
+        compilation.assertJavaSourcePresent("com.example.multiround.injectable.MyGeneratedInjectable");
+        compilation.assertJavaClassPresent("com.example.multiround.injectable.MyGeneratedInjectable");
+        compilation.assertJavaSourcePresent("com.example.multiround.injectable.Sting_MyGeneratedInjectable");
+        compilation.assertJavaClassPresent("com.example.multiround.injectable.Sting_MyGeneratedInjectable");
+    }
+
+    @Test
+    public void formatGeneratedSourceFailsClearlyWithoutJdkExports() throws Exception {
+        final Path source = fixtureDir().resolve("input").resolve(toFilename("com.example.injectable.BasicModel"));
+        assertTrue(Files.exists(source), "Expected smoke source to exist at " + source);
+
+        final Path classOutput = Files.createTempDirectory("sting-format-no-exports-classes");
+        final Path sourceOutput = Files.createTempDirectory("sting-format-no-exports-sources");
+        try {
+            final Path javac = Path.of(System.getProperty("java.home"), "bin", "javac");
+            assertTrue(Files.exists(javac), "Expected javac to exist at " + javac);
+
+            final List<String> command = new ArrayList<>();
+            command.add(javac.toString());
+            command.add("-cp");
+            command.add(System.getProperty("java.class.path"));
+            command.add("-processorpath");
+            command.add(System.getProperty("java.class.path"));
+            command.add("-processor");
+            command.add(StingProcessor.class.getName());
+            command.add("-d");
+            command.add(classOutput.toString());
+            command.add("-s");
+            command.add(sourceOutput.toString());
+            command.addAll(getOptions());
+            command.add("-Asting.format_generated_source=true");
+            command.add(source.toString());
+
+            final Process process =
+                    new ProcessBuilder(command).redirectErrorStream(true).start();
+            final String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            final int exitCode = process.waitFor();
+
+            assertNotEquals(exitCode, 0, "Expected javac to fail without formatter JDK exports. Output:\n" + output);
+            assertTrue(
+                    output.contains("sting.format_generated_source"),
+                    "Expected diagnostic to mention sting.format_generated_source. Output:\n" + output);
+            for (final String export : formatterJdkExports()) {
+                assertTrue(
+                        output.contains(export),
+                        "Expected diagnostic to mention required export " + export + ". Output:\n" + output);
+            }
+        } finally {
+            deleteDir(sourceOutput);
+            deleteDir(classOutput);
+        }
+    }
+
+    @Nonnull
+    private String readGeneratedInterceptorProxy(
+            @Nonnull final Compilation compilation, @Nonnull final String filenamePart) throws IOException {
+        final String filename = compilation.sourceOutputFilenames().stream()
+                .filter(f -> f.endsWith("_InterceptorProxy.java"))
+                .filter(f -> f.contains(filenamePart))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Unable to find interceptor proxy containing " + filenamePart
+                        + " in " + compilation.sourceOutputFilenames()));
+        return Files.readString(compilation.sourceOutput().resolve(filename), StandardCharsets.UTF_8);
+    }
+
+    @Nonnull
+    private String readClassOutput(@Nonnull final Compilation compilation, @Nonnull final String suffix)
+            throws IOException {
+        final String filename = compilation.classOutputFilenames().stream()
+                .filter(f -> f.endsWith(suffix))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Unable to find class output ending in " + suffix + " in "
+                        + compilation.classOutputFilenames()));
+        return Files.readString(compilation.classOutput().resolve(filename), StandardCharsets.UTF_8);
+    }
+
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void deleteDir(@Nonnull final Path directory) {
+        try (var paths = Files.walk(directory)) {
+            paths.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+        } catch (final IOException e) {
+            throw new IllegalStateException("Failure to delete directory: " + directory, e);
+        }
+    }
+
+    @Nonnull
+    @Override
+    protected List<String> getOptions() {
+        final List<String> options = new ArrayList<>(super.getOptions());
+        options.add("-Asting.emit_json_descriptors=true");
+        options.add("-Asting.emit_dot_reports=true");
+        options.add("-Asting.debug=true");
+        return options;
+    }
 }

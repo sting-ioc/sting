@@ -6,10 +6,8 @@ import java.util.function.Supplier;
 import sting.Fragment;
 
 @Fragment
-public interface ParameterizedSupplierCollectionInputModel
-{
-  default String provideX( Collection<Supplier<List<String>>> supplier )
-  {
-    return null;
-  }
+public interface ParameterizedSupplierCollectionInputModel {
+    default String provideX(Collection<Supplier<List<String>>> supplier) {
+        return null;
+    }
 }

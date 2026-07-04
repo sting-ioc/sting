@@ -5,25 +5,20 @@ import sting.Fragment;
 import sting.Injector;
 
 @Injector
-interface PrimitiveAndBoxedCollectionOutputModel
-{
-  Collection<Integer> getValues();
+interface PrimitiveAndBoxedCollectionOutputModel {
+    Collection<Integer> getValues();
 
-  @Fragment
-  interface MyFragment1
-  {
-    default int provideValue()
-    {
-      return 1;
+    @Fragment
+    interface MyFragment1 {
+        default int provideValue() {
+            return 1;
+        }
     }
-  }
 
-  @Fragment
-  interface MyFragment2
-  {
-    default Integer provideValue()
-    {
-      return 2;
+    @Fragment
+    interface MyFragment2 {
+        default Integer provideValue() {
+            return 2;
+        }
     }
-  }
 }

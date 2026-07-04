@@ -20,143 +20,122 @@ import javax.lang.model.type.TypeMirror;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
 
-final class FactoryGenerator
-{
-  private FactoryGenerator()
-  {
-  }
+final class FactoryGenerator {
+    private FactoryGenerator() {}
 
-  @Nonnull
-  static TypeSpec buildType( @Nonnull final ProcessingEnvironment processingEnv,
-                             @Nonnull final FactoryDescriptor factory )
-  {
-    final TypeElement element = factory.getElement();
-    final TypeMirror type = element.asType();
-    final TypeSpec.Builder builder =
-      TypeSpec
-        .classBuilder( StingGeneratorUtil.getGeneratedClassName( element ) )
-        .addModifiers( Modifier.PUBLIC, Modifier.FINAL )
-        .addAnnotation( ClassName.get( "sting", "Injectable" ) )
-        .addAnnotation( AnnotationSpec.builder( ClassName.get( "sting", "Typed" ) )
-                          .addMember( "value", "$T.class", type )
-                          .build() )
-        .addSuperinterface( TypeName.get( type ) );
-    GeneratorUtil.addOriginatingTypes( element, builder );
-    GeneratorUtil.copyWhitelistedAnnotations( element, builder );
-    GeneratorUtil.addGeneratedAnnotation( processingEnv, builder, StingProcessor.class.getName() );
-    SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv,
-                                                        builder,
-                                                        Collections.emptyList(),
-                                                        Collections.singletonList( type ) );
+    @Nonnull
+    static TypeSpec buildType(
+            @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final FactoryDescriptor factory) {
+        final TypeElement element = factory.getElement();
+        final TypeMirror type = element.asType();
+        final TypeSpec.Builder builder = TypeSpec.classBuilder(StingGeneratorUtil.getGeneratedClassName(element))
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
+                .addAnnotation(ClassName.get("sting", "Injectable"))
+                .addAnnotation(AnnotationSpec.builder(ClassName.get("sting", "Typed"))
+                        .addMember("value", "$T.class", type)
+                        .build())
+                .addSuperinterface(TypeName.get(type));
+        GeneratorUtil.addOriginatingTypes(element, builder);
+        GeneratorUtil.copyWhitelistedAnnotations(element, builder);
+        GeneratorUtil.addGeneratedAnnotation(processingEnv, builder, StingProcessor.class.getName());
+        SuppressWarningsUtil.addSuppressWarningsIfRequired(
+                processingEnv, builder, Collections.emptyList(), Collections.singletonList(type));
 
-    emitFields( processingEnv, factory, builder );
-    emitConstructor( factory, builder );
-    emitMethods( processingEnv, factory, builder );
+        emitFields(processingEnv, factory, builder);
+        emitConstructor(factory, builder);
+        emitMethods(processingEnv, factory, builder);
 
-    return builder.build();
-  }
-
-  private static void emitFields( @Nonnull final ProcessingEnvironment processingEnv,
-                                  @Nonnull final FactoryDescriptor factory,
-                                  @Nonnull final TypeSpec.Builder builder )
-  {
-    for ( final FactoryDependencyDescriptor dependency : factory.getDependencies() )
-    {
-      final ServiceRequest serviceRequest = dependency.serviceRequest();
-      final ServiceSpec service = serviceRequest.getService();
-      final TypeName type = StingGeneratorUtil.getServiceType( serviceRequest );
-      final FieldSpec.Builder field =
-        FieldSpec
-          .builder( type, dependency.fieldName(), Modifier.PRIVATE, Modifier.FINAL );
-      if ( !type.isPrimitive() )
-      {
-        field.addAnnotation( service.isOptional() ?
-                             GeneratorUtil.NULLABLE_CLASSNAME :
-                             GeneratorUtil.NONNULL_CLASSNAME );
-      }
-      final List<TypeMirror> types = Collections.singletonList( service.getCoordinate().type() );
-      SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv, field, Collections.emptyList(), types );
-      builder.addField( field.build() );
+        return builder.build();
     }
-  }
 
-  private static void emitConstructor( @Nonnull final FactoryDescriptor factory,
-                                       @Nonnull final TypeSpec.Builder builder )
-  {
-    final MethodSpec.Builder ctor = MethodSpec.constructorBuilder();
-    for ( final FactoryDependencyDescriptor dependency : factory.getDependencies() )
-    {
-      final ServiceRequest serviceRequest = dependency.serviceRequest();
-      final VariableElement parameterElement = (VariableElement) serviceRequest.getElement();
-      final ParameterSpec.Builder parameter =
-        ParameterSpec.builder( StingGeneratorUtil.getServiceType( serviceRequest ),
-                               dependency.parameterName(),
-                               Modifier.FINAL );
-      GeneratorUtil.copyWhitelistedAnnotations( parameterElement, parameter );
-      ctor.addParameter( parameter.build() );
-      ctor.addStatement( "$N = $N", dependency.fieldName(), dependency.parameterName() );
+    private static void emitFields(
+            @Nonnull final ProcessingEnvironment processingEnv,
+            @Nonnull final FactoryDescriptor factory,
+            @Nonnull final TypeSpec.Builder builder) {
+        for (final FactoryDependencyDescriptor dependency : factory.getDependencies()) {
+            final ServiceRequest serviceRequest = dependency.serviceRequest();
+            final ServiceSpec service = serviceRequest.getService();
+            final TypeName type = StingGeneratorUtil.getServiceType(serviceRequest);
+            final FieldSpec.Builder field =
+                    FieldSpec.builder(type, dependency.fieldName(), Modifier.PRIVATE, Modifier.FINAL);
+            if (!type.isPrimitive()) {
+                field.addAnnotation(
+                        service.isOptional() ? GeneratorUtil.NULLABLE_CLASSNAME : GeneratorUtil.NONNULL_CLASSNAME);
+            }
+            final List<TypeMirror> types =
+                    Collections.singletonList(service.getCoordinate().type());
+            SuppressWarningsUtil.addSuppressWarningsIfRequired(processingEnv, field, Collections.emptyList(), types);
+            builder.addField(field.build());
+        }
     }
-    builder.addMethod( ctor.build() );
-  }
 
-  private static void emitMethods( @Nonnull final ProcessingEnvironment processingEnv,
-                                   @Nonnull final FactoryDescriptor factory,
-                                   @Nonnull final TypeSpec.Builder builder )
-  {
-    for ( final FactoryMethodDescriptor methodDescriptor : factory.getMethods() )
-    {
-      final MethodSpec.Builder method =
-        MethodSpec
-          .methodBuilder( methodDescriptor.method().getSimpleName().toString() )
-          .addAnnotation( Override.class )
-          .addModifiers( Modifier.PUBLIC )
-          .returns( TypeName.get( methodDescriptor.method().getReturnType() ) );
-      GeneratorUtil.copyWhitelistedAnnotations( methodDescriptor.method(), method );
-      for ( final VariableElement parameterElement : methodDescriptor.method().getParameters() )
-      {
-        final ParameterSpec.Builder parameter =
-          ParameterSpec.builder( TypeName.get( parameterElement.asType() ), parameterElement.getSimpleName().toString() );
-        GeneratorUtil.copyWhitelistedAnnotations( parameterElement, parameter );
-        method.addParameter( parameter.build() );
-      }
-      SuppressWarningsUtil.addSuppressWarningsIfRequired( processingEnv,
-                                                          method,
-                                                          Collections.emptyList(),
-                                                          Collections.singletonList( methodDescriptor.method()
-                                                                                       .asType() ) );
-
-      final StringBuilder code = new StringBuilder();
-      final List<Object> args = new ArrayList<>();
-      code.append( "return new $T(" );
-      args.add( methodDescriptor.producedType() );
-      final List<? extends VariableElement> constructorParameters = methodDescriptor.constructorParameters();
-      final Map<Integer, VariableElement> methodParametersByIndex =
-        methodDescriptor.methodParametersByConstructorIndex();
-      final Map<Integer, FactoryDependencyDescriptor> dependenciesByIndex =
-        methodDescriptor.dependenciesByConstructorIndex();
-      for ( int i = 0; i < constructorParameters.size(); i++ )
-      {
-        if ( 0 != i )
-        {
-          code.append( ", " );
+    private static void emitConstructor(
+            @Nonnull final FactoryDescriptor factory, @Nonnull final TypeSpec.Builder builder) {
+        final MethodSpec.Builder ctor = MethodSpec.constructorBuilder();
+        for (final FactoryDependencyDescriptor dependency : factory.getDependencies()) {
+            final ServiceRequest serviceRequest = dependency.serviceRequest();
+            final VariableElement parameterElement = (VariableElement) serviceRequest.getElement();
+            final ParameterSpec.Builder parameter = ParameterSpec.builder(
+                    StingGeneratorUtil.getServiceType(serviceRequest), dependency.parameterName(), Modifier.FINAL);
+            GeneratorUtil.copyWhitelistedAnnotations(parameterElement, parameter);
+            ctor.addParameter(parameter.build());
+            ctor.addStatement("$N = $N", dependency.fieldName(), dependency.parameterName());
         }
-        final VariableElement factoryParameter = methodParametersByIndex.get( i );
-        if ( null != factoryParameter )
-        {
-          code.append( "$N" );
-          args.add( factoryParameter.getSimpleName().toString() );
-        }
-        else
-        {
-          final FactoryDependencyDescriptor dependency = dependenciesByIndex.get( i );
-          assert null != dependency;
-          code.append( "$N" );
-          args.add( dependency.fieldName() );
-        }
-      }
-      code.append( ")" );
-      method.addStatement( code.toString(), args.toArray() );
-      builder.addMethod( method.build() );
+        builder.addMethod(ctor.build());
     }
-  }
+
+    private static void emitMethods(
+            @Nonnull final ProcessingEnvironment processingEnv,
+            @Nonnull final FactoryDescriptor factory,
+            @Nonnull final TypeSpec.Builder builder) {
+        for (final FactoryMethodDescriptor methodDescriptor : factory.getMethods()) {
+            final MethodSpec.Builder method = MethodSpec.methodBuilder(
+                            methodDescriptor.method().getSimpleName().toString())
+                    .addAnnotation(Override.class)
+                    .addModifiers(Modifier.PUBLIC)
+                    .returns(TypeName.get(methodDescriptor.method().getReturnType()));
+            GeneratorUtil.copyWhitelistedAnnotations(methodDescriptor.method(), method);
+            for (final VariableElement parameterElement :
+                    methodDescriptor.method().getParameters()) {
+                final ParameterSpec.Builder parameter = ParameterSpec.builder(
+                        TypeName.get(parameterElement.asType()),
+                        parameterElement.getSimpleName().toString());
+                GeneratorUtil.copyWhitelistedAnnotations(parameterElement, parameter);
+                method.addParameter(parameter.build());
+            }
+            SuppressWarningsUtil.addSuppressWarningsIfRequired(
+                    processingEnv,
+                    method,
+                    Collections.emptyList(),
+                    Collections.singletonList(methodDescriptor.method().asType()));
+
+            final StringBuilder code = new StringBuilder();
+            final List<Object> args = new ArrayList<>();
+            code.append("return new $T(");
+            args.add(methodDescriptor.producedType());
+            final List<? extends VariableElement> constructorParameters = methodDescriptor.constructorParameters();
+            final Map<Integer, VariableElement> methodParametersByIndex =
+                    methodDescriptor.methodParametersByConstructorIndex();
+            final Map<Integer, FactoryDependencyDescriptor> dependenciesByIndex =
+                    methodDescriptor.dependenciesByConstructorIndex();
+            for (int i = 0; i < constructorParameters.size(); i++) {
+                if (0 != i) {
+                    code.append(", ");
+                }
+                final VariableElement factoryParameter = methodParametersByIndex.get(i);
+                if (null != factoryParameter) {
+                    code.append("$N");
+                    args.add(factoryParameter.getSimpleName().toString());
+                } else {
+                    final FactoryDependencyDescriptor dependency = dependenciesByIndex.get(i);
+                    assert null != dependency;
+                    code.append("$N");
+                    args.add(dependency.fieldName());
+                }
+            }
+            code.append(")");
+            method.addStatement(code.toString(), args.toArray());
+            builder.addMethod(method.build());
+        }
+    }
 }

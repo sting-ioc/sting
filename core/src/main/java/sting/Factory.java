@@ -75,9 +75,7 @@ import java.lang.annotation.Target;
  * dependency and accepts the {@code size} parameter from the caller when {@code create(int)} is invoked.</p>
  */
 @Documented
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.TYPE )
-@StingProvider( "[FlatEnclosingName]Sting_[SimpleName]" )
-public @interface Factory
-{
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+@StingProvider("[FlatEnclosingName]Sting_[SimpleName]")
+public @interface Factory {}

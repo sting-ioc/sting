@@ -10,43 +10,29 @@ import sting.Typed;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class SourceRetentionModel
-{
-  private SourceRetentionModel()
-  {
-  }
+public final class SourceRetentionModel {
+    private SourceRetentionModel() {}
 
-  @Injector( includes = SourceRetentionModel.Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-  Service service();
-  }
-
-  @Trace
-  interface Service
-  {
-  }
-
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before()
-    {
+    @Injector(includes = SourceRetentionModel.Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.SourceRetentionModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.SOURCE )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Trace
+    interface Service {}
+
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {}
+
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before() {}
+    }
+
+    @InterceptorBinding(implementedBy = "com.example.interceptor.SourceRetentionModel.TraceInterceptor", priority = 100)
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

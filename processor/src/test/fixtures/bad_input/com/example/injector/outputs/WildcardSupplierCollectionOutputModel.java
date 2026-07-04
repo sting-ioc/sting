@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import sting.Injector;
 
 @Injector
-public interface WildcardSupplierCollectionOutputModel
-{
-  Collection<Supplier<?>> getMyThing();
+public interface WildcardSupplierCollectionOutputModel {
+    Collection<Supplier<?>> getMyThing();
 }

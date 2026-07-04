@@ -8,30 +8,25 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-public interface MyInjector
-{
-  Supplier<NotificationService> getNotificationService();
+public interface MyInjector {
+    Supplier<NotificationService> getNotificationService();
 
-  @Nullable
-  FaultAuditService getFaultAuditService();
+    @Nullable
+    FaultAuditService getFaultAuditService();
 
-  Optional<FaultAuditService> getOptionalFaultAuditService();
+    Optional<FaultAuditService> getOptionalFaultAuditService();
 
-  Supplier<Optional<FaultAuditService>> getFaultAuditServiceSupplier();
+    Supplier<Optional<FaultAuditService>> getFaultAuditServiceSupplier();
 
-  Collection<Supplier<Optional<FaultAuditService>>> getFaultAuditServiceSuppliers();
+    Collection<Supplier<Optional<FaultAuditService>>> getFaultAuditServiceSuppliers();
 
-  Collection<NotificationService> getNotificationServices();
+    Collection<NotificationService> getNotificationServices();
 
-  //DOC ELIDE START
-  @Injectable
-  class NotificationService
-  {
-  }
+    // DOC ELIDE START
+    @Injectable
+    class NotificationService {}
 
-  @Injectable
-  class FaultAuditService
-  {
-  }
-  //DOC ELIDE END
+    @Injectable
+    class FaultAuditService {}
+    // DOC ELIDE END
 }

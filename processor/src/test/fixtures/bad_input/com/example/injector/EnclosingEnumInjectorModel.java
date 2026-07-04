@@ -4,16 +4,11 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
-interface EnclosingEnumInjectorModel
-{
-  MyModel getMyModel();
+interface EnclosingEnumInjectorModel {
+    MyModel getMyModel();
 
-  @Injectable
-  class MyModel
-  {
-  }
+    @Injectable
+    class MyModel {}
 
-  enum Foo
-  {
-  }
+    enum Foo {}
 }

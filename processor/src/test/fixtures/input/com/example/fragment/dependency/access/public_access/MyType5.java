@@ -1,5 +1,3 @@
 package com.example.fragment.dependency.access.public_access;
 
-public interface MyType5
-{
-}
+public interface MyType5 {}

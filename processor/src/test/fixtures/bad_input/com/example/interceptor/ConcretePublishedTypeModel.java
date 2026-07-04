@@ -9,37 +9,28 @@ import sting.Injector;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class ConcretePublishedTypeModel
-{
-  private ConcretePublishedTypeModel()
-  {
-  }
+public final class ConcretePublishedTypeModel {
+    private ConcretePublishedTypeModel() {}
 
-  @Injector( includes = ConcretePublishedTypeModel.Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-  Model model();
-  }
-
-  @Trace
-  @Injectable
-  static class Model
-  {
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before()
-    {
+    @Injector(includes = ConcretePublishedTypeModel.Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Model model();
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.ConcretePublishedTypeModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Trace
+    @Injectable
+    static class Model {}
+
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before() {}
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.ConcretePublishedTypeModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

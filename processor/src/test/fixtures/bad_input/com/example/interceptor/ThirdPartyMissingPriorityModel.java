@@ -9,50 +9,35 @@ import sting.Injector;
 import sting.Typed;
 import sting.interceptors.Before;
 
-public final class ThirdPartyMissingPriorityModel
-{
-  private ThirdPartyMissingPriorityModel()
-  {
-  }
+public final class ThirdPartyMissingPriorityModel {
+    private ThirdPartyMissingPriorityModel() {}
 
-  @Trace
-  interface Service
-  {
-  }
+    @Trace
+    interface Service {}
 
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-  }
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {}
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before()
-    {
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.ThirdPartyMissingPriorityModel.TraceInterceptor" )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before() {}
+    }
 
-  @Retention( RetentionPolicy.CLASS )
-  @Target( ElementType.ANNOTATION_TYPE )
-  @interface InterceptorBinding
-  {
-    String implementedBy() default "";
-  }
+    @InterceptorBinding(implementedBy = "com.example.interceptor.ThirdPartyMissingPriorityModel.TraceInterceptor")
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
+
+    @Retention(RetentionPolicy.CLASS)
+    @Target(ElementType.ANNOTATION_TYPE)
+    @interface InterceptorBinding {
+        String implementedBy() default "";
+    }
 }

@@ -1,6 +1,3 @@
 package com.example.integration.todomvc.model;
 
-final class Arez_BrowserLocation
-  extends BrowserLocation
-{
-}
+final class Arez_BrowserLocation extends BrowserLocation {}

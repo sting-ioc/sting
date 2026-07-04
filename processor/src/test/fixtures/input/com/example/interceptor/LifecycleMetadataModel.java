@@ -16,64 +16,51 @@ import sting.interceptors.MethodName;
 import sting.interceptors.ServiceType;
 import sting.interceptors.Thrown;
 
-public final class LifecycleMetadataModel
-{
-  private LifecycleMetadataModel()
-  {
-  }
+public final class LifecycleMetadataModel {
+    private LifecycleMetadataModel() {}
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Trace
-  interface Service
-  {
-    void run( String value );
-  }
-
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-    public void run( final String value )
-    {
-    }
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before( @ServiceType final String serviceType,
-                        @MethodName final String methodName,
-                        @Arguments final Object[] arguments )
-    {
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
     }
 
-    @After
-    public void after( @ServiceType final String serviceType,
-                       @MethodName final String methodName,
-                       @Arguments final Object[] arguments )
-    {
+    @Trace
+    interface Service {
+        void run(String value);
     }
 
-    @AfterException
-    public void afterException( @ServiceType final String serviceType,
-                                @MethodName final String methodName,
-                                @Arguments final Object[] arguments,
-                                @Thrown final Throwable throwable )
-    {
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {
+        public void run(final String value) {}
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.LifecycleMetadataModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before(
+                @ServiceType final String serviceType,
+                @MethodName final String methodName,
+                @Arguments final Object[] arguments) {}
+
+        @After
+        public void after(
+                @ServiceType final String serviceType,
+                @MethodName final String methodName,
+                @Arguments final Object[] arguments) {}
+
+        @AfterException
+        public void afterException(
+                @ServiceType final String serviceType,
+                @MethodName final String methodName,
+                @Arguments final Object[] arguments,
+                @Thrown final Throwable throwable) {}
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.LifecycleMetadataModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

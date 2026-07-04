@@ -4,16 +4,13 @@ import sting.Fragment;
 import sting.Injector;
 
 @Injector
-interface BoxedProviderPrimitiveOutputModel
-{
-  int getValue();
+interface BoxedProviderPrimitiveOutputModel {
+    int getValue();
 
-  @Fragment
-  interface MyFragment
-  {
-    default Integer provideValue()
-    {
-      return 42;
+    @Fragment
+    interface MyFragment {
+        default Integer provideValue() {
+            return 42;
+        }
     }
-  }
 }

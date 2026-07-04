@@ -1,5 +1,3 @@
 package com.example.integration.todomvc.model;
 
-abstract class BrowserLocation
-{
-}
+abstract class BrowserLocation {}

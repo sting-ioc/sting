@@ -4,8 +4,7 @@ import java.util.Collection;
 import sting.Injector;
 
 @Injector
-public interface RawCollectionOutputModel
-{
-  @SuppressWarnings( "rawtypes" )
-  Collection getMyThing();
+public interface RawCollectionOutputModel {
+    @SuppressWarnings("rawtypes")
+    Collection getMyThing();
 }

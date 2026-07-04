@@ -11,44 +11,33 @@ import sting.interceptors.Before;
 import sting.interceptors.BindingValue;
 import sting.interceptors.InterceptorBinding;
 
-public final class BindingValueWrongTypeModel
-{
-  private BindingValueWrongTypeModel()
-  {
-  }
+public final class BindingValueWrongTypeModel {
+    private BindingValueWrongTypeModel() {}
 
-  @Trace
-  interface Service
-  {
-  }
+    @Trace
+    interface Service {}
 
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-  }
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {}
 
-  @Injector( includes = Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-    Service service();
-  }
-
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before( @BindingValue( "count" ) final String count )
-    {
+    @Injector(includes = Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.BindingValueWrongTypeModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-    int count() default 1;
-  }
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before(@BindingValue("count") final String count) {}
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.BindingValueWrongTypeModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {
+        int count() default 1;
+    }
 }

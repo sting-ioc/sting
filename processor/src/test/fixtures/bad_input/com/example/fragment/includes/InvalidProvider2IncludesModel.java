@@ -2,21 +2,15 @@ package com.example.fragment.includes;
 
 import sting.Fragment;
 
-@Fragment( includes = InvalidProvider2IncludesModel.MyComponent.class )
-public interface InvalidProvider2IncludesModel
-{
-  @interface StingProvider
-  {
-    int value();
-  }
+@Fragment(includes = InvalidProvider2IncludesModel.MyComponent.class)
+public interface InvalidProvider2IncludesModel {
+    @interface StingProvider {
+        int value();
+    }
 
-  @StingProvider( 23 )
-  @interface MyFrameworkComponent1
-  {
-  }
+    @StingProvider(23)
+    @interface MyFrameworkComponent1 {}
 
-  @MyFrameworkComponent1
-  class MyComponent
-  {
-  }
+    @MyFrameworkComponent1
+    class MyComponent {}
 }

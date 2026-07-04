@@ -6,9 +6,6 @@ import javax.annotation.Nullable;
 import sting.Injectable;
 
 @Injectable
-public class NullableSupplierCollectionInputModel
-{
-  NullableSupplierCollectionInputModel( @Nullable Collection<Supplier<String>> someValue )
-  {
-  }
+public class NullableSupplierCollectionInputModel {
+    NullableSupplierCollectionInputModel(@Nullable Collection<Supplier<String>> someValue) {}
 }

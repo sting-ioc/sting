@@ -4,8 +4,5 @@ import sting.Injectable;
 import sting.Typed;
 
 @Injectable
-@Typed( MyModel.class )
-public class MyFramework_MyModel
-  extends MyModel
-{
-}
+@Typed(MyModel.class)
+public class MyFramework_MyModel extends MyModel {}

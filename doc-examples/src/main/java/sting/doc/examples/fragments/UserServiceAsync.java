@@ -1,5 +1,3 @@
 package sting.doc.examples.fragments;
 
-public interface UserServiceAsync
-{
-}
+public interface UserServiceAsync {}

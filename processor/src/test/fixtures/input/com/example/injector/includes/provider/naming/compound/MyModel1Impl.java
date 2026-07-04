@@ -4,8 +4,5 @@ import sting.Injectable;
 import sting.Typed;
 
 @Injectable
-@Typed( MyModel1.class )
-class MyModel1Impl
-  extends MyModel1
-{
-}
+@Typed(MyModel1.class)
+class MyModel1Impl extends MyModel1 {}

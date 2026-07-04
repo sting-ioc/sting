@@ -10,48 +10,35 @@ import sting.Typed;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class GenericMethodModel
-{
-  private GenericMethodModel()
-  {
-  }
+public final class GenericMethodModel {
+    private GenericMethodModel() {}
 
-  @Injector( includes = GenericMethodModel.Model.class, fragmentOnly = false )
-  interface MyInjector
-  {
-  Service service();
-  }
-
-  @Trace
-  interface Service
-  {
-    <T> T run();
-  }
-
-  @Injectable
-  @Typed( Service.class )
-  static class Model
-    implements Service
-  {
-    public <T> T run()
-    {
-      return null;
+    @Injector(includes = GenericMethodModel.Model.class, fragmentOnly = false)
+    interface MyInjector {
+        Service service();
     }
-  }
 
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before()
-    {
+    @Trace
+    interface Service {
+        <T> T run();
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.GenericMethodModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injectable
+    @Typed(Service.class)
+    static class Model implements Service {
+        public <T> T run() {
+            return null;
+        }
+    }
+
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before() {}
+    }
+
+    @InterceptorBinding(implementedBy = "com.example.interceptor.GenericMethodModel.TraceInterceptor", priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }

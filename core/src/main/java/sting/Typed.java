@@ -27,15 +27,14 @@ import javax.annotation.Nonnull;
  * return type is not implicitly published unless it is listed in {@link #value()}.</p>
  */
 @Documented
-@Retention( RetentionPolicy.RUNTIME )
-@Target( { ElementType.TYPE, ElementType.METHOD } )
-public @interface Typed
-{
-  /**
-   * The types published by the component.
-   *
-   * @return the types published by the component.
-   */
-  @Nonnull
-  Class<?>[] value();
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Typed {
+    /**
+     * The types published by the component.
+     *
+     * @return the types published by the component.
+     */
+    @Nonnull
+    Class<?>[] value();
 }

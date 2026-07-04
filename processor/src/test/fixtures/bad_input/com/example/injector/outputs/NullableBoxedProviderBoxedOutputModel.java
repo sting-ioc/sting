@@ -5,17 +5,14 @@ import sting.Fragment;
 import sting.Injector;
 
 @Injector
-interface NullableBoxedProviderBoxedOutputModel
-{
-  Integer getValue();
+interface NullableBoxedProviderBoxedOutputModel {
+    Integer getValue();
 
-  @Fragment
-  interface MyFragment
-  {
-    @Nullable
-    default Integer provideValue()
-    {
-      return null;
+    @Fragment
+    interface MyFragment {
+        @Nullable
+        default Integer provideValue() {
+            return null;
+        }
     }
-  }
 }

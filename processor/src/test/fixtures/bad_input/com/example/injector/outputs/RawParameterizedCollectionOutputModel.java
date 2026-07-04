@@ -5,8 +5,7 @@ import java.util.List;
 import sting.Injector;
 
 @Injector
-public interface RawParameterizedCollectionOutputModel
-{
-  @SuppressWarnings( "rawtypes" )
-  Collection<List> getMyThing();
+public interface RawParameterizedCollectionOutputModel {
+    @SuppressWarnings("rawtypes")
+    Collection<List> getMyThing();
 }

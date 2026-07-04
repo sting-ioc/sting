@@ -8,8 +8,6 @@ import java.lang.annotation.Target;
 /**
  * Marks a public interceptor lifecycle method that runs before the target service method.
  */
-@Retention( RetentionPolicy.RUNTIME )
-@Target( ElementType.METHOD )
-public @interface Before
-{
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface Before {}

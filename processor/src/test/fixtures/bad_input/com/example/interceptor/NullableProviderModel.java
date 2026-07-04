@@ -11,46 +11,35 @@ import sting.Injector;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
-public final class NullableProviderModel
-{
-  private NullableProviderModel()
-  {
-  }
+public final class NullableProviderModel {
+    private NullableProviderModel() {}
 
-  @Injector( includes = NullableProviderModel.MyFragment.class )
-  interface MyInjector
-  {
-  java.util.Optional<Service> service();
-  }
-
-  interface Service
-  {
-  }
-
-  @Fragment
-  interface MyFragment
-  {
-    @Trace
-    @Nullable
-    default Service service()
-    {
-      return null;
+    @Injector(includes = NullableProviderModel.MyFragment.class)
+    interface MyInjector {
+        java.util.Optional<Service> service();
     }
-  }
 
-  @Injectable
-  public static class TraceInterceptor
-  {
-    @Before
-    public void before()
-    {
+    interface Service {}
+
+    @Fragment
+    interface MyFragment {
+        @Trace
+        @Nullable
+        default Service service() {
+            return null;
+        }
     }
-  }
 
-  @InterceptorBinding( implementedBy = "com.example.interceptor.NullableProviderModel.TraceInterceptor", priority = 100 )
-  @Retention( RetentionPolicy.CLASS )
-  @Target( { ElementType.TYPE, ElementType.METHOD } )
-  @interface Trace
-  {
-  }
+    @Injectable
+    public static class TraceInterceptor {
+        @Before
+        public void before() {}
+    }
+
+    @InterceptorBinding(
+            implementedBy = "com.example.interceptor.NullableProviderModel.TraceInterceptor",
+            priority = 100)
+    @Retention(RetentionPolicy.CLASS)
+    @Target({ElementType.TYPE, ElementType.METHOD})
+    @interface Trace {}
 }
