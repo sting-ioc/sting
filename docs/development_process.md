@@ -16,10 +16,8 @@ title: Development Process
 
 ### Publishing the Website
 
-TravisCI regenerates the website every time a commit is pushed to the master branch. The initial setup was
-derived from a [gist](https://gist.github.com/domenic/ec8b0fc8ab45f39403dd) and customized for our project.
-The basic idea is to setup the GitHub project with a deploy key, encrypt the key and make it available to
-TravisCI that will unencrypt it as part of the build.
+The website is published by running `bundle exec buildr site:deploy` with credentials that can push to
+the `sting-ioc.github.io` repository.
 
 Firstly you create the key via the following command.
 

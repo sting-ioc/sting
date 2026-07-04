@@ -1,0 +1,206 @@
+meta:
+  project: sting-bazel-phase-1
+  status: accepted
+  last_updated: "2026-07-04"
+  required_full_gates:
+    - tools/check.sh
+  statuses:
+    - pending
+    - in_progress
+    - completed
+    - cancelled
+
+current_focus: T01
+
+tasks:
+  - id: PLAN-APPROVAL
+    title: Review and accept Bazel Phase 1 plan
+    status: completed
+    priority: high
+    depends_on: []
+    acceptance_criteria:
+      - User has reviewed the latest planning artifacts.
+      - User feedback, if any, is reflected in requirements, implementation plan, and task board.
+      - Plan status is moved from draft_pending_review to accepted.
+    files_touched:
+      - plans/bazel-phase-1/00-requirements.md
+      - plans/bazel-phase-1/10-implementation-plan.md
+      - plans/bazel-phase-1/20-task-board.yaml
+      - plans/bazel-phase-1/30-compatibility-matrix.md
+      - plans/bazel-phase-1/40-test-strategy.md
+    evidence: []
+    commit:
+      hash: not_required
+      message: User approved implementation after reviewing emitted planning artifacts.
+
+  - id: T01
+    title: Apply Java formatting as isolated change
+    status: pending
+    priority: high
+    depends_on:
+      - PLAN-APPROVAL
+    acceptance_criteria:
+      - Maintained Java source/test files are formatted.
+      - "`processor/src/test/fixtures/bad_input/**` and `processor/src/test/fixtures/input/**` are formatted."
+      - Expected-output fixture trees are not reformatted.
+      - Formatting diff is committed separately before formatter tooling/check enforcement.
+    files_touched:
+      - "core/src/main/java/**/*.java"
+      - "processor/src/main/java/**/*.java"
+      - "processor/src/test/java/**/*.java"
+      - "processor/src/test/fixtures/bad_input/**/*.java"
+      - "processor/src/test/fixtures/input/**/*.java"
+      - "server/src/main/java/**/*.java"
+      - "server/src/test/java/**/*.java"
+      - "integration-tests/src/test/java/**/*.java"
+      - "server-integration-tests/src/test/java/**/*.java"
+      - "doc-examples/src/main/java/**/*.java"
+    evidence: []
+    commit:
+      hash: pending
+      message: pending
+
+  - id: T02
+    title: Add Bazel foundation and tooling
+    status: pending
+    priority: high
+    depends_on:
+      - T01
+    acceptance_criteria:
+      - "Bazel 9.1.1, Bzlmod, Java 17 `.bazelrc`, root BUILD, and strict Java/TestNG rules exist."
+      - "depgen configs and `tools/update_java_deps.sh` exist and generate expected sections."
+      - buildifier and Java formatter tooling/check are wired.
+      - "GitHub Actions workflow runs `tools/check.sh`."
+    files_touched:
+      - .bazelversion
+      - .bazelrc
+      - MODULE.bazel
+      - BUILD.bazel
+      - "third_party/java/**"
+      - "tools/**"
+      - ".github/workflows/**"
+    evidence: []
+    commit:
+      hash: pending
+      message: pending
+
+  - id: T03
+    title: Add phase-1 module build targets
+    status: pending
+    priority: high
+    depends_on:
+      - T02
+    acceptance_criteria:
+      - "`core`, `processor`, `server`, `doc-examples`, `integration-tests`, and `server-integration-tests` build with Bazel."
+      - "`core` includes `Sting.gwt.xml` as a resource."
+      - "Existing `*/generated/**` trees are not compiled."
+      - "`//processor:sting_processor_plugin` is explicit and used where generated Sting code is needed."
+    files_touched:
+      - core/BUILD.bazel
+      - processor/BUILD.bazel
+      - server/BUILD.bazel
+      - doc-examples/BUILD.bazel
+      - integration-tests/BUILD.bazel
+      - server-integration-tests/BUILD.bazel
+    evidence: []
+    commit:
+      hash: pending
+      message: pending
+
+  - id: T04
+    title: Add TestNG targets and fixture data wiring
+    status: pending
+    priority: high
+    depends_on:
+      - T03
+    acceptance_criteria:
+      - TestNG targets live in packages with test source.
+      - Processor and server unit-test targets run.
+      - Integration and server-integration targets run.
+      - Processor fixture directory is supplied through Bazel runfiles data.
+    files_touched:
+      - processor/src/test/java/sting/processor/BUILD.bazel
+      - server/src/test/java/sting/server/interceptors/BUILD.bazel
+      - integration-tests/src/test/java/sting/integration/BUILD.bazel
+      - integration-tests/src/test/java/sting/integration/other/BUILD.bazel
+      - server-integration-tests/src/test/java/sting/server/integration/BUILD.bazel
+      - processor/BUILD.bazel
+    evidence: []
+    commit:
+      hash: pending
+      message: pending
+
+  - id: T05
+    title: Resolve strict Java, Error Prone, and strict-deps findings
+    status: pending
+    priority: high
+    depends_on:
+      - T04
+    acceptance_criteria:
+      - "`bazel build //...` passes."
+      - "`bazel test //...` passes or any excessive Error Prone churn is escalated before weakening rules."
+      - Source fixes are minimal and related to strict Bazel compilation.
+    files_touched:
+      - "core/src/main/java/**/*.java"
+      - "processor/src/main/java/**/*.java"
+      - "processor/src/test/java/**/*.java"
+      - "server/src/main/java/**/*.java"
+      - "server/src/test/java/**/*.java"
+      - "integration-tests/src/test/java/**/*.java"
+      - "server-integration-tests/src/test/java/**/*.java"
+      - "doc-examples/src/main/java/**/*.java"
+      - "**/BUILD.bazel"
+    evidence: []
+    commit:
+      hash: pending
+      message: pending
+
+  - id: T06
+    title: Add processor/server unit coverage gate
+    status: pending
+    priority: high
+    depends_on:
+      - T05
+    acceptance_criteria:
+      - Coverage runs only processor and server unit-test targets.
+      - Coverage denominator is processor/server main source code only.
+      - Baseline line/branch thresholds are recorded from first passing report and rounded down slightly.
+      - "`tools/check_coverage.py` or equivalent fails below thresholds."
+    files_touched:
+      - tools/check.sh
+      - tools/check_coverage.py
+      - BUILD.bazel
+      - processor/src/test/java/sting/processor/BUILD.bazel
+      - server/src/test/java/sting/server/interceptors/BUILD.bazel
+    evidence: []
+    commit:
+      hash: pending
+      message: pending
+
+  - id: T07
+    title: Final Bazel verification and docs alignment
+    status: pending
+    priority: high
+    depends_on:
+      - T06
+    acceptance_criteria:
+      - "`tools/check.sh` passes."
+      - "`tools/check.sh` fails on stale depgen output."
+      - Travis references remain absent.
+      - Contributor-facing docs mention the Bazel check path where appropriate.
+      - Task board evidence and commit metadata are complete.
+    files_touched:
+      - tools/check.sh
+      - CONTRIBUTING.md
+      - AGENTS.md
+      - "plans/bazel-phase-1/**"
+    evidence: []
+    commit:
+      hash: pending
+      message: pending
+
+history:
+  - timestamp: "2026-07-04"
+    task: PLAN-APPROVAL
+    commit: not_required
+    note: User replied "implement"; plan accepted and implementation may begin.

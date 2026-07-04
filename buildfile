@@ -268,8 +268,8 @@ define 'sting' do
       Java::Commands.java 'sting.downstream.CollectBuildStats', { :classpath => cp, :properties => properties } unless ENV['BUILD_STATS'] == 'no'
     end
 
-    # Only run this test when preparing for release, never on TravisCI (as produces different byte sizes)
-    test.exclude '*BuildStatsTest' if ENV['PRODUCT_VERSION'].nil? || ENV['BUILD_STATS'] == 'no' || !ENV['TRAVIS_BUILD_NUMBER'].nil?
+    # Only run this test when preparing for release.
+    test.exclude '*BuildStatsTest' if ENV['PRODUCT_VERSION'].nil? || ENV['BUILD_STATS'] == 'no'
 
     test.using :testng
     test.compile.with :javax_annotation,

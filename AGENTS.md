@@ -46,6 +46,59 @@ Prerequisites: JDK 17+, Ruby 2.7.x with Bundler, Node.js (for docs site) and Yar
 - CI-equivalent locally: `bundle exec buildr ci J2CL=no`.
 - Docs site (optional): `bundle exec buildr site:serve` (dev), `bundle exec buildr site:build` (static output under `reports/site`).
 
+## Bazel Build Invariants
+
+- Keep Bazel parallel to Buildr until the migration explicitly changes that; do not remove or weaken Buildr behavior
+  while adding Bazel support.
+- Phase 1 Bazel coverage is limited to building and testing `core`, `doc-examples`, `integration-tests`, `processor`,
+  `server`, and `server-integration-tests`.
+- Keep Java 17 and preserve Sting's current strict compiler stance. Bazel Java macros should use `-Werror`,
+  `-Xlint:all,-processing,-serial`, Error Prone, and the formatter `--add-exports` where annotation processing needs
+  them.
+- Do not adopt NullAway or JSpecify as part of the Bazel migration. Sting currently uses `javax.annotation`
+  `@Nonnull`/`@Nullable`; keep that model unless a separate migration is requested.
+- Compile tests with the same strict options as production code, including Error Prone. If this causes excessive source
+  churn, stop and ask before introducing a less strict test-specific rule.
+- Keep TestNG as the test framework. Use a TestNG macro strategy similar to
+  `/Users/peter/Code/stocksoftware/replicant/third_party/java/rules.bzl`.
+- Use coarse module-level Bazel targets by default, matching the existing Buildr modules. Prefer finer-grained targets
+  only when a specific module genuinely needs them.
+- Place Bazel test targets in packages with the corresponding test sources. Prefer one TestNG target per test source
+  package/module unless a specific test class needs its own target.
+- Mirror the dependency versions in `build.yaml` for Bazel's `third_party/java/dependencies.yml` unless Bazel, Java 17,
+  or Error Prone requires a specific version exception.
+- `third_party/java/BUILD.bazel` may contain a small hand-written section above the depgen-generated block for stable
+  aliases and aggregate targets. Keep depgen-owned content generated and avoid hand-editing inside generated blocks.
+- Model processor test fixtures as Bazel `data` and pass `sting.fixture_dir` through a runfiles-aware path. Do not copy
+  fixtures into the source tree or rely on Buildr's processor-test working-directory layout.
+- Bazel targets must not compile existing `*/generated/**` directories. Treat those directories as local Buildr output
+  artifacts and let Bazel produce generated sources under Bazel outputs.
+- Use Bazel `9.1.1` with Bzlmod, `rules_java 9.6.1`, Java/tool Java 17, strict Java deps, explicit Java test deps,
+  disabled Java header compilation, and a peer-directory symlink prefix adapted for Sting.
+- Model Sting annotation processing explicitly with a `java_plugin` target. Bazel targets that need generated Sting code
+  should list the processor plugin directly rather than relying on service discovery from runtime dependencies.
+- Add a Phase 1 coverage gate for processor and server code only, using only the processor and server unit-test
+  targets. Establish the initial line/branch thresholds from the first passing Bazel coverage report, rounding down
+  slightly to create a stable baseline; do not add tests merely to raise the initial gate.
+- Travis CI is disabled legacy infrastructure. Do not add Travis configuration or Travis-specific build behavior; use
+  GitHub Actions for new CI work.
+- The Phase 1 GitHub Actions workflow should run the Bazel verification script only (`tools/check.sh`). Do not fold
+  Buildr site/deploy/release behavior into this workflow.
+- `tools/check.sh` should run `tools/update_java_deps.sh` first and fail if depgen-generated Bazel files are stale.
+- For Phase 1, the Bazel annotation processor target only needs to support build/test workflows. Do not recreate
+  Buildr's shaded release `processor` jar unless release packaging becomes part of the requested scope.
+- Keep Phase 1 Bazel documentation internal/contributor-facing. Do not add end-user Bazel setup docs until Bazel
+  becomes part of published consumer setup or release packaging.
+- Java source formatting may be introduced as part of the Bazel tooling, but the repository-wide formatting changes
+  must be committed separately before committing the formatter tooling/check.
+- Java formatting should cover maintained Java source/test code plus `processor/src/test/fixtures/bad_input/**` and
+  `processor/src/test/fixtures/input/**`. Do not format expected-output fixture trees unless a fixture update is
+  deliberately required and verified by processor tests.
+- For Phase 1 Bazel, include `core/src/main/java/sting/Sting.gwt.xml` as a `core` resource, but do not reproduce
+  Buildr's GWT compile/enhance behavior or GWT classifier packaging.
+- Use `/Users/peter/Code/realityforge/jdbt` as the primary Bazel example for Bzlmod, `tools/` scripts, depgen-managed
+  third-party dependencies, CI workflow shape, buildifier, Java formatting, and coverage gating.
+
 ## Coding Style & Naming Conventions
 
 - Language: Java 17; compilation uses `-Xlint:all` and `-Werror` (warnings must be fixed).

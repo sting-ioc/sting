@@ -101,7 +101,6 @@ task 'site:deploy' => ['site:build'] do
   # Verify the site is valid first
   task('site:link_check').invoke
 
-  # Only publish the site off the master branch if running out of Travis
   origin_url = 'https://github.com/sting-ioc/sting-ioc.github.io.git'
 
   local_dir = "#{WORKSPACE_DIR}/target/remote_site"
