@@ -1,0 +1,29 @@
+load("//third_party/java:rules.bzl", "doc_examples_java_library")
+
+package(default_visibility = ["//visibility:public"])
+
+doc_examples_java_library(
+    name = "typing",
+    srcs = [
+        "ApplicationFragment.java",
+        "AsyncCallback.java",
+        "Listener.java",
+        "LoginService.java",
+        "MessageBroker.java",
+        "MessageSender.java",
+        "MessageService.java",
+        "NamedApplicationFragment.java",
+        "RemoteLoginService.java",
+        "UserHeaderItem.java",
+        "UserLoginCompletedEvent.java",
+        "UserLoginFailedEvent.java",
+        "UserLoginStartedEvent.java",
+    ],
+    plugins = [
+        "//processor:sting_processor_plugin",
+    ],
+    deps = [
+        "//core",
+        "//third_party/java:javax_annotation",
+    ],
+)

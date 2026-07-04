@@ -4,10 +4,20 @@ package(default_visibility = ["//visibility:public"])
 
 java_library(
     name = "doc-examples",
-    srcs = glob(["src/main/java/**/*.java"]),
-    plugins = ["//processor:sting_processor_plugin"],
-    deps = [
-        "//core",
-        "//third_party/java:javax_annotation",
+    exports = [
+        "//doc-examples/src/main/java/sting/doc/examples/dependency_kinds",
+        "//doc-examples/src/main/java/sting/doc/examples/eager",
+        "//doc-examples/src/main/java/sting/doc/examples/fragments",
+        "//doc-examples/src/main/java/sting/doc/examples/getting_started/step1",
+        "//doc-examples/src/main/java/sting/doc/examples/getting_started/step2",
+        "//doc-examples/src/main/java/sting/doc/examples/getting_started/step3",
+        "//doc-examples/src/main/java/sting/doc/examples/include_injector",
+        "//doc-examples/src/main/java/sting/doc/examples/include_injector/auto",
+        "//doc-examples/src/main/java/sting/doc/examples/include_injector/manual",
+        "//doc-examples/src/main/java/sting/doc/examples/inputs",
+        "//doc-examples/src/main/java/sting/doc/examples/interceptors",
+        "//doc-examples/src/main/java/sting/doc/examples/naming",
+        "//doc-examples/src/main/java/sting/doc/examples/outputs",
+        "//doc-examples/src/main/java/sting/doc/examples/typing",
     ],
 )

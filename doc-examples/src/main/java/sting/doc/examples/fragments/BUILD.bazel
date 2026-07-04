@@ -1,0 +1,33 @@
+load("//third_party/java:rules.bzl", "doc_examples_java_library")
+
+package(default_visibility = ["//visibility:public"])
+
+doc_examples_java_library(
+    name = "fragments",
+    srcs = [
+        "AuthorizationServiceAsync.java",
+        "Compiler.java",
+        "CompilerFragment.java",
+        "DiagnosticsReporter.java",
+        "FileSystemService.java",
+        "GWT.java",
+        "GroupRepository.java",
+        "Optimizer.java",
+        "Parser.java",
+        "ParserFragment.java",
+        "PermissionRepository.java",
+        "RemoteServicesFragment.java",
+        "SecurityFragment.java",
+        "ServiceDefTarget.java",
+        "StdoutDiagnosticsReporter.java",
+        "UserRepository.java",
+        "UserServiceAsync.java",
+    ],
+    plugins = [
+        "//processor:sting_processor_plugin",
+    ],
+    deps = [
+        "//core",
+        "//third_party/java:javax_annotation",
+    ],
+)

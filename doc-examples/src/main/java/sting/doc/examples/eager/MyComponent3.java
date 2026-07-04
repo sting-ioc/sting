@@ -7,9 +7,7 @@ import sting.Injectable;
 @Injectable
 @Eager
 public class MyComponent3 {
-    @SuppressWarnings("UnusedVariable")
     private final MyComponent1 _myComponent1;
-
     private final Supplier<MyComponent2> _myComponent2Supplier;
 
     MyComponent3(MyComponent1 myComponent1, Supplier<MyComponent2> myComponent2Supplier) {

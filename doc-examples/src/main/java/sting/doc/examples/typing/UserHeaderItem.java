@@ -13,8 +13,6 @@ public class UserHeaderItem {
     }
 
     // DOC ELIDE START
-    private void setText(final String text) {
-        assert null != text;
-    }
+    private void setText(final String text) {}
     // DOC ELIDE END
 }

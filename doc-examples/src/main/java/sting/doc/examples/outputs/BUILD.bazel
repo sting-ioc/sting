@@ -1,0 +1,20 @@
+load("//third_party/java:rules.bzl", "doc_examples_java_library")
+
+package(default_visibility = ["//visibility:public"])
+
+doc_examples_java_library(
+    name = "outputs",
+    srcs = [
+        "Book.java",
+        "BookCatalog.java",
+        "LibraryApplication.java",
+        "Main.java",
+    ],
+    plugins = [
+        "//processor:sting_processor_plugin",
+    ],
+    deps = [
+        "//core",
+        "//third_party/java:javax_annotation",
+    ],
+)

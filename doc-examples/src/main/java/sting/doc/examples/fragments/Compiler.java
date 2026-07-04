@@ -1,8 +1,6 @@
 package sting.doc.examples.fragments;
 
 public class Compiler {
-    private Compiler() {}
-
     public static class Builder {
         Builder setFileSystemService(FileSystemService fileSystemService) {
             return this;

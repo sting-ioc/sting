@@ -1,6 +1,5 @@
 package sting.doc.examples.typing;
 
-import javax.annotation.Nullable;
 import sting.Injectable;
 
 @Injectable
@@ -31,7 +30,6 @@ public class LoginService {
     }
 
     // DOC ELIDE START
-    @Nullable
     private final RemoteLoginService _remoteLoginService = null;
     // DOC ELIDE END
 }

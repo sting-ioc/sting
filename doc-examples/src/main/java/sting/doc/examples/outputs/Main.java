@@ -1,8 +1,6 @@
 package sting.doc.examples.outputs;
 
 public class Main {
-    private Main() {}
-
     public static void main(String[] args) {
         final LibraryApplication application = LibraryApplication.create();
         final BookCatalog bookCatalog = application.getBookCatalog();

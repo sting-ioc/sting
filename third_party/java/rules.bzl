@@ -105,6 +105,13 @@ _JAVA_JAVACOPTS = [
     "10000",
 ] + _ERROR_PRONE_JAVACOPTS
 
+_DOC_EXAMPLES_RELAXED_ERROR_PRONE_JAVACOPTS = [
+    "-Xep:EmptyBlock:OFF",
+    "-Xep:FieldMissingNullable:OFF",
+    "-Xep:PrivateConstructorForUtilityClass:OFF",
+    "-Xep:UnusedVariable:OFF",
+]
+
 _JAVA_TEST_JVM_FLAGS = [
     "-ea",
 ]
@@ -115,6 +122,16 @@ def java_library(name, srcs = [], javacopts = [], deps = [], plugins = [], **kwa
         srcs = srcs,
         deps = deps,
         javacopts = _JAVA_JAVACOPTS + javacopts,
+        plugins = plugins,
+        **kwargs
+    )
+
+def doc_examples_java_library(name, srcs = [], javacopts = [], deps = [], plugins = [], **kwargs):
+    _java_library(
+        name = name,
+        srcs = srcs,
+        deps = deps,
+        javacopts = _JAVA_JAVACOPTS + _DOC_EXAMPLES_RELAXED_ERROR_PRONE_JAVACOPTS + javacopts,
         plugins = plugins,
         **kwargs
     )
