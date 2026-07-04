@@ -2,5 +2,11 @@ package(default_visibility = ["//visibility:public"])
 
 filegroup(
     name = "all",
-    srcs = glob(["**/*"]),
+    srcs = [
+        "//processor/src/test/fixtures/bad_input:all",
+        "//processor/src/test/fixtures/expected:all",
+        "//processor/src/test/fixtures/expectedFormatted:all",
+        "//processor/src/test/fixtures/input:all",
+        "//processor/src/test/fixtures/unresolved:all",
+    ],
 )

@@ -1,0 +1,45 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "AllLifecyclePhasesModel.java",
+        "AnnotationCopyModel.java",
+        "ArgumentsRequestedModel.java",
+        "AroundMetadataModel.java",
+        "AroundNullabilityModel.java",
+        "BasicInterceptorModel.java",
+        "BindingValueConversionsModel.java",
+        "CombinedBindingModel.java",
+        "DefaultInheritedMethodsModel.java",
+        "EagerUnrequestedInterceptorModel.java",
+        "EnumTemplateBindingModel.java",
+        "FactoryBindingModel.java",
+        "ImplementationBindingSourceModel.java",
+        "LifecycleFailureNestingModel.java",
+        "LifecycleMetadataModel.java",
+        "MultiServiceBindingModel.java",
+        "NoArgumentsModel.java",
+        "OverloadedVarargsObjectModel.java",
+        "PrimitiveResultModel.java",
+        "ProviderBindingSourceModel.java",
+        "QualifiedBindingModel.java",
+        "RedeclaredLifecycleOverrideModel.java",
+        "RequestKindsModel.java",
+        "ResultAndThrownModel.java",
+        "SupplierCycleBoundaryModel.java",
+        "ThirdPartyBindingModel.java",
+        "TwoInjectorsProxyDedupeModel.java",
+        "UnreachableInvalidInterceptorModel.java",
+        "UnrelatedLifecycleNameModel.java",
+        "VoidAroundModel.java",
+        "VoidResultModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

@@ -1,0 +1,27 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "MyFragment.sting.json",
+        "MyInjector.gv",
+        "MyInjector.sting.json",
+        "MyInjector__ObjectGraph.sting.json",
+        "MyOtherInjectorModel.gv",
+        "MyOtherInjectorModel.sting.json",
+        "MyOtherInjectorModel__ObjectGraph.sting.json",
+        "Sting_MyFragment.java",
+        "Sting_MyInjector.java",
+        "Sting_MyOtherInjectorModel.java",
+        "Sting_MyOtherInjectorModel_Provider.java",
+        "Sting_MyOtherInjectorModel_Provider.sting.json",
+        "Sting_Sting_MyOtherInjectorModel_Provider.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

@@ -1,0 +1,17 @@
+load("//third_party/java:rules.bzl", "java_library")
+
+package(default_visibility = ["//visibility:public"])
+
+java_library(
+    name = "server",
+    srcs = [
+        "Transactional.java",
+        "package-info.java",
+    ],
+    plugins = [
+        "//processor:sting_processor_plugin",
+    ],
+    deps = [
+        "//core",
+    ],
+)

@@ -12,10 +12,13 @@ java_library(
 
 java_testng(
     name = "all_tests",
-    srcs = glob(
-        ["*.java"],
-        exclude = ["AbstractStingProcessorTest.java"],
-    ),
+    srcs = [
+        "StingProcessorInjectorGraphTest.java",
+        "StingProcessorMultiStageCompilesTest.java",
+        "StingProcessorNoJsonTest.java",
+        "StingProcessorRuntimeDeriveTest.java",
+        "StingProcessorTest.java",
+    ],
     data = ["//processor/src/test/fixtures:all"],
     jvm_flags = [
         "-Dsting.fixture_dir=processor/src/test/fixtures",

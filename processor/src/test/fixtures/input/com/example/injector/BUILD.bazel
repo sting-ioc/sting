@@ -1,0 +1,30 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "AllPrimitiveProviderBoxedDependencyModel.java",
+        "AllPrimitiveProviderOptionalBoxedDependencyModel.java",
+        "AutodetectInjectableModel.java",
+        "AutodetectProviderFragmentModel.java",
+        "AutodetectProviderInjectableModel.java",
+        "AutodetectProviderNestedModel.java",
+        "BasicInjectorModel.java",
+        "OptionalCollectionDependencyInjectorModel.java",
+        "PrimitiveProviderOptionalBoxedDependencyModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+        "//processor/src/test/fixtures/input/com/example/injector/circular:all",
+        "//processor/src/test/fixtures/input/com/example/injector/eager:all",
+        "//processor/src/test/fixtures/input/com/example/injector/graphviz:all",
+        "//processor/src/test/fixtures/input/com/example/injector/gwt:all",
+        "//processor/src/test/fixtures/input/com/example/injector/includes:all",
+        "//processor/src/test/fixtures/input/com/example/injector/inputs:all",
+        "//processor/src/test/fixtures/input/com/example/injector/outputs:all",
+    ],
+)

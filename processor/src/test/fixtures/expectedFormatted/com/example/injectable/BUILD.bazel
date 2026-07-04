@@ -1,0 +1,24 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "BasicModel.sting.json",
+        "NestedModel_MyModel.sting.json",
+        "NestedModel_Sting_MyModel.java",
+        "NestedNestedModel_Middle_MyModel.sting.json",
+        "NestedNestedModel_Middle_Sting_MyModel.java",
+        "Sting_BasicModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injectable/dependency:all",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injectable/eager:all",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injectable/qualifier:all",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injectable/types:all",
+    ],
+)

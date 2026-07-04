@@ -1,0 +1,17 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "SupplierBrokenChainedCircularDependencyModel.java",
+        "SupplierBrokenDirectCircularDependencyModel.java",
+        "SupplierBrokenFragmentWalkingCircularDependencyModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

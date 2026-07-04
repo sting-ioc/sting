@@ -1,0 +1,18 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "Sting_TodoInjector.java",
+        "TodoInjector.gv",
+        "TodoInjector.sting.json",
+        "TodoInjector__ObjectGraph.sting.json",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

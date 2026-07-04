@@ -1,0 +1,26 @@
+load("//third_party/java:rules.bzl", "java_library")
+
+package(default_visibility = ["//visibility:public"])
+
+java_library(
+    name = "interceptors",
+    srcs = [
+        "MandatoryTransactionInterceptor.java",
+        "NeverTransactionInterceptor.java",
+        "NotSupportedTransactionInterceptor.java",
+        "RequiredTransactionInterceptor.java",
+        "RequiresNewTransactionInterceptor.java",
+        "SupportsTransactionInterceptor.java",
+        "TransactionInterceptorSupport.java",
+        "package-info.java",
+    ],
+    plugins = [
+        "//processor:sting_processor_plugin",
+    ],
+    deps = [
+        "//core",
+        "//server/src/main/java/sting/server",
+        "//third_party/java:jakarta_transaction_api",
+        "//third_party/java:javax_annotation",
+    ],
+)

@@ -1,0 +1,23 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "Arez_BrowserLocation.java",
+        "Arez_TodoRepository.java",
+        "Arez_TodoService.java",
+        "Arez_ViewService.java",
+        "BrowserLocation.java",
+        "BrowserLocationFragment.java",
+        "TodoRepository.java",
+        "TodoService.java",
+        "ViewService.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

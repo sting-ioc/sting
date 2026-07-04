@@ -1,0 +1,18 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "ArezComponent.java",
+        "package-info.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+        "//processor/src/test/fixtures/input/com/example/integration/todomvc/ioc:all",
+        "//processor/src/test/fixtures/input/com/example/integration/todomvc/model:all",
+    ],
+)

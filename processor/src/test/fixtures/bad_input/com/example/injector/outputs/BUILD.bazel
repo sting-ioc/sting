@@ -1,0 +1,40 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "ArrayTypeOutputModel.java",
+        "Jsr330ScopedOutputModel.java",
+        "MethodReturningVoidOutputModel.java",
+        "MethodThrowsExceptionOutputModel.java",
+        "MethodWithParametersOutputModel.java",
+        "MethodWithTypeParametersOutputModel.java",
+        "MissingOutputModel.java",
+        "NullableBoxedProviderBoxedOutputModel.java",
+        "NullableCollectionOutputModel.java",
+        "NullableOptionalOutputModel.java",
+        "NullableSupplierCollectionOutputModel.java",
+        "OptionalCollectionOutputModel.java",
+        "ParameterizedCollectionOutputModel.java",
+        "ParameterizedOutputModel.java",
+        "ParameterizedSupplierCollectionOutputModel.java",
+        "PrimitiveAndBoxedAmbiguousOutputModel.java",
+        "RawCollectionOutputModel.java",
+        "RawParameterizedCollectionOutputModel.java",
+        "RawParameterizedOutputModel.java",
+        "RawParameterizedSupplierCollectionOutputModel.java",
+        "RawSupplierCollectionOutputModel.java",
+        "RawSupplierOutputModel.java",
+        "TypedOutputModel.java",
+        "WildcardCollectionOutputModel.java",
+        "WildcardSupplierCollectionOutputModel.java",
+        "WildcardSupplierOutputModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

@@ -1,0 +1,10 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "all",
+    srcs = [
+        "//processor/src/test/fixtures/bad_input/com/example/provider_backed/eager:all",
+        "//processor/src/test/fixtures/bad_input/com/example/provider_backed/named:all",
+        "//processor/src/test/fixtures/bad_input/com/example/provider_backed/typed:all",
+    ],
+)

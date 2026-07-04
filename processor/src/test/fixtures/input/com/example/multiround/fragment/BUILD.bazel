@@ -1,0 +1,19 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "MyFragment.java",
+        "MyFramework.java",
+        "MyGeneratedFragment.java",
+        "MyInjector.java",
+        "SomeType.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

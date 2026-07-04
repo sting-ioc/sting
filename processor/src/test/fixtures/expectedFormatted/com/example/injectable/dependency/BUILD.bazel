@@ -1,0 +1,44 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "BasicDependencyModel.sting.json",
+        "CollectionDependencyModel.sting.json",
+        "ComplexDependencyModel.sting.json",
+        "MultipleDependencyModel.sting.json",
+        "NonnullDependencyModel.sting.json",
+        "NullableDependencyModel.sting.json",
+        "OptionalDependencyModel.sting.json",
+        "PackageAccessDependencyModel.sting.json",
+        "PrimitiveDependencyModel.sting.json",
+        "PublicAccessDependencyModel.sting.json",
+        "QualifiedDependencyModel.sting.json",
+        "Sting_BasicDependencyModel.java",
+        "Sting_CollectionDependencyModel.java",
+        "Sting_ComplexDependencyModel.java",
+        "Sting_MultipleDependencyModel.java",
+        "Sting_NonnullDependencyModel.java",
+        "Sting_NullableDependencyModel.java",
+        "Sting_OptionalDependencyModel.java",
+        "Sting_PackageAccessDependencyModel.java",
+        "Sting_PrimitiveDependencyModel.java",
+        "Sting_PublicAccessDependencyModel.java",
+        "Sting_QualifiedDependencyModel.java",
+        "Sting_SupplierCollectionDependencyModel.java",
+        "Sting_SupplierDependencyModel.java",
+        "Sting_SupplierOptionalCollectionDependencyModel.java",
+        "Sting_SupplierOptionalDependencyModel.java",
+        "SupplierCollectionDependencyModel.sting.json",
+        "SupplierDependencyModel.sting.json",
+        "SupplierOptionalCollectionDependencyModel.sting.json",
+        "SupplierOptionalDependencyModel.sting.json",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

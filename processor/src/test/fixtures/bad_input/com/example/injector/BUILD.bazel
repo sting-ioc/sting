@@ -1,0 +1,38 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "ClassInjector.java",
+        "DefaultMethodInInjectorModel.java",
+        "EnclosingAnnotationInjectorModel.java",
+        "EnclosingClassInjectorModel.java",
+        "EnclosingEnumInjectorModel.java",
+        "EnclosingInterfaceInjectorModel.java",
+        "EnumInjector.java",
+        "Jsr330ScopedInjectorModel.java",
+        "MissingPrimitiveDependencyModel.java",
+        "MultipleCandidatesForSingularDependencyModel.java",
+        "NamedInjectablesAreNotAutoDiscoverableInjectorModel.java",
+        "NoDirectDependenciesAndNoEagerInIncludesModel.java",
+        "NullableBoxedProviderPrimitiveOutputModel.java",
+        "NullableProvidesWithNonOptionalSingularDependencyModel.java",
+        "OptionalOutputMultipleMatchesModel.java",
+        "SupplierOptionalOutputMultipleMatchesModel.java",
+        "TypeParametersInjectorModel.java",
+        "TypedInjectablesAreNotAutoDiscoverableInjectorModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+        "//processor/src/test/fixtures/bad_input/com/example/injector/autodetect:all",
+        "//processor/src/test/fixtures/bad_input/com/example/injector/circular:all",
+        "//processor/src/test/fixtures/bad_input/com/example/injector/includes:all",
+        "//processor/src/test/fixtures/bad_input/com/example/injector/inputs:all",
+        "//processor/src/test/fixtures/bad_input/com/example/injector/named:all",
+        "//processor/src/test/fixtures/bad_input/com/example/injector/outputs:all",
+    ],
+)

@@ -1,0 +1,23 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "BasicFactoryModel_Sting_MyComponentFactory.java",
+        "BasicFactoryModel_Sting_MyComponentFactory.sting.json",
+        "MultiMethodFactoryModel_Sting_ModelFactory.java",
+        "MultiMethodFactoryModel_Sting_ModelFactory.sting.json",
+        "ParameterAnnotationsFactoryModel_Sting_MyComponentFactory.java",
+        "ParameterAnnotationsFactoryModel_Sting_MyComponentFactory.sting.json",
+        "Sting_BasicFactoryModel_Sting_MyComponentFactory.java",
+        "Sting_MultiMethodFactoryModel_Sting_ModelFactory.java",
+        "Sting_ParameterAnnotationsFactoryModel_Sting_MyComponentFactory.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

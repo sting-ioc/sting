@@ -1,0 +1,17 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "MyInjector.java",
+        "MyModel1.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+        "//processor/src/test/fixtures/bad_input/com/example/injector/autodetect/provider:all",
+    ],
+)

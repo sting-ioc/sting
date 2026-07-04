@@ -4,8 +4,8 @@ package(default_visibility = ["//visibility:public"])
 
 java_library(
     name = "core",
-    srcs = glob(["src/main/java/**/*.java"]),
-    resource_strip_prefix = "core/src/main/java",
-    resources = ["src/main/java/sting/Sting.gwt.xml"],
-    deps = ["//third_party/java:javax_annotation"],
+    exports = [
+        "//core/src/main/java/sting",
+        "//core/src/main/java/sting/interceptors",
+    ],
 )

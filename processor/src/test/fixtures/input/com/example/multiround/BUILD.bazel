@@ -1,0 +1,9 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "all",
+    srcs = [
+        "//processor/src/test/fixtures/input/com/example/multiround/fragment:all",
+        "//processor/src/test/fixtures/input/com/example/multiround/injectable:all",
+    ],
+)

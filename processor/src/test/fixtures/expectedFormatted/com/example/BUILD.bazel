@@ -1,0 +1,13 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "all",
+    srcs = [
+        "//processor/src/test/fixtures/expectedFormatted/com/example/factory:all",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/fragment:all",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injectable:all",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injector:all",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/integration:all",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/interceptor:all",
+    ],
+)

@@ -1,0 +1,20 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "BasicTypesModel.sting.json",
+        "NoTypesModel.sting.json",
+        "Sting_BasicTypesModel.java",
+        "Sting_NoTypesModel.java",
+        "Sting_TypedProviderMethodModel.java",
+        "TypedProviderMethodModel.sting.json",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

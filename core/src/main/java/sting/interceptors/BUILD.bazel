@@ -1,0 +1,26 @@
+load("//third_party/java:rules.bzl", "java_library")
+
+package(default_visibility = ["//visibility:public"])
+
+java_library(
+    name = "interceptors",
+    srcs = [
+        "After.java",
+        "AfterException.java",
+        "Arguments.java",
+        "Around.java",
+        "Before.java",
+        "BindingValue.java",
+        "InterceptorBinding.java",
+        "Invocation.java",
+        "MethodName.java",
+        "Proceed.java",
+        "Result.java",
+        "ServiceType.java",
+        "Thrown.java",
+        "package-info.java",
+    ],
+    deps = [
+        "//third_party/java:javax_annotation",
+    ],
+)

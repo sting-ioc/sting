@@ -1,0 +1,16 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "all",
+    srcs = [
+        "//processor/src/test/fixtures/bad_input/com/example/factory:all",
+        "//processor/src/test/fixtures/bad_input/com/example/fragment:all",
+        "//processor/src/test/fixtures/bad_input/com/example/injectable:all",
+        "//processor/src/test/fixtures/bad_input/com/example/injector:all",
+        "//processor/src/test/fixtures/bad_input/com/example/injector_fragment:all",
+        "//processor/src/test/fixtures/bad_input/com/example/interceptor:all",
+        "//processor/src/test/fixtures/bad_input/com/example/named:all",
+        "//processor/src/test/fixtures/bad_input/com/example/provider_backed:all",
+        "//processor/src/test/fixtures/bad_input/com/example/unclaimed:all",
+    ],
+)

@@ -1,0 +1,30 @@
+load("//third_party/java:rules.bzl", "java_library")
+
+package(default_visibility = ["//visibility:public"])
+
+java_library(
+    name = "sting",
+    srcs = [
+        "ActAsStingComponent.java",
+        "ActAsStingConsumer.java",
+        "ActAsStingProvider.java",
+        "Eager.java",
+        "Factory.java",
+        "Feature.java",
+        "Fragment.java",
+        "Injectable.java",
+        "Injector.java",
+        "InjectorFragment.java",
+        "Named.java",
+        "StingProvider.java",
+        "Typed.java",
+        "package-info.java",
+    ],
+    resource_strip_prefix = "core/src/main/java",
+    resources = [
+        "Sting.gwt.xml",
+    ],
+    deps = [
+        "//third_party/java:javax_annotation",
+    ],
+)

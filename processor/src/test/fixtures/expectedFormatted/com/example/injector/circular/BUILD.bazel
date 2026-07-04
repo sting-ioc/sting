@@ -1,0 +1,34 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "Sting_SupplierBrokenChainedCircularDependencyModel.java",
+        "Sting_SupplierBrokenDirectCircularDependencyModel.java",
+        "Sting_SupplierBrokenFragmentWalkingCircularDependencyModel.java",
+        "SupplierBrokenChainedCircularDependencyModel.gv",
+        "SupplierBrokenChainedCircularDependencyModel.sting.json",
+        "SupplierBrokenChainedCircularDependencyModel_Sting_MyModel1.java",
+        "SupplierBrokenChainedCircularDependencyModel_Sting_MyModel2.java",
+        "SupplierBrokenChainedCircularDependencyModel_Sting_MyModel3.java",
+        "SupplierBrokenChainedCircularDependencyModel__ObjectGraph.sting.json",
+        "SupplierBrokenDirectCircularDependencyModel.gv",
+        "SupplierBrokenDirectCircularDependencyModel.sting.json",
+        "SupplierBrokenDirectCircularDependencyModel_Sting_MyModel1.java",
+        "SupplierBrokenDirectCircularDependencyModel_Sting_MyModel2.java",
+        "SupplierBrokenDirectCircularDependencyModel__ObjectGraph.sting.json",
+        "SupplierBrokenFragmentWalkingCircularDependencyModel.gv",
+        "SupplierBrokenFragmentWalkingCircularDependencyModel.sting.json",
+        "SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyFragment.java",
+        "SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel1.java",
+        "SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel2.java",
+        "SupplierBrokenFragmentWalkingCircularDependencyModel__ObjectGraph.sting.json",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

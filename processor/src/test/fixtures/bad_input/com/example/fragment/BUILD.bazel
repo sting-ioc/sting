@@ -1,0 +1,27 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "ClassModel.java",
+        "EnclosedAnnotationFragmentModel.java",
+        "EnclosedClassFragmentModel.java",
+        "EnclosedEnumFragmentModel.java",
+        "EnclosedInterfaceFragmentModel.java",
+        "FragmentExtendsSuperinterfaceModel.java",
+        "Jsr330ScopedFragmentModel.java",
+        "NoProvidesOrIncludesModel.java",
+        "ParameterizedModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+        "//processor/src/test/fixtures/bad_input/com/example/fragment/includes:all",
+        "//processor/src/test/fixtures/bad_input/com/example/fragment/inputs:all",
+        "//processor/src/test/fixtures/bad_input/com/example/fragment/named:all",
+        "//processor/src/test/fixtures/bad_input/com/example/fragment/provides:all",
+    ],
+)

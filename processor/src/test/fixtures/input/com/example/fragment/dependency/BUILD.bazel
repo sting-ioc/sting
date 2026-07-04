@@ -1,0 +1,28 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "BasicDependencyModel.java",
+        "CollectionDependencyModel.java",
+        "ComplexDependencyModel.java",
+        "MultipleDependencyModel.java",
+        "NonnullDependencyModel.java",
+        "NullableDependencyModel.java",
+        "OptionalDependencyModel.java",
+        "PrimitiveDependencyModel.java",
+        "QualifiedDependencyModel.java",
+        "SupplierCollectionDependencyModel.java",
+        "SupplierDependencyModel.java",
+        "SupplierOptionalCollectionDependencyModel.java",
+        "SupplierOptionalDependencyModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+        "//processor/src/test/fixtures/input/com/example/fragment/dependency/access:all",
+    ],
+)

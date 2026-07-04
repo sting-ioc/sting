@@ -1,0 +1,19 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "DiamondDependencyIncludesModel.java",
+        "MyFragment1.java",
+        "MyFragment2.java",
+        "MyFragment3.java",
+        "MyModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

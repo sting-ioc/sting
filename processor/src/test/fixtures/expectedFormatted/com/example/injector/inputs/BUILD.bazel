@@ -1,0 +1,36 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "MultipleInputInjectorModel.gv",
+        "MultipleInputInjectorModel.sting.json",
+        "MultipleInputInjectorModel_Sting_MyModel.java",
+        "MultipleInputInjectorModel__ObjectGraph.sting.json",
+        "OptionalInputInjectorModel.gv",
+        "OptionalInputInjectorModel.sting.json",
+        "OptionalInputInjectorModel__ObjectGraph.sting.json",
+        "PrimitiveInputBoxedDependencyInjectorModel.gv",
+        "PrimitiveInputBoxedDependencyInjectorModel.sting.json",
+        "PrimitiveInputBoxedDependencyInjectorModel_Sting_MyModel.java",
+        "PrimitiveInputBoxedDependencyInjectorModel__ObjectGraph.sting.json",
+        "PrimitiveInputInjectorModel.gv",
+        "PrimitiveInputInjectorModel.sting.json",
+        "PrimitiveInputInjectorModel__ObjectGraph.sting.json",
+        "SingleInputInjectorModel.gv",
+        "SingleInputInjectorModel.sting.json",
+        "SingleInputInjectorModel__ObjectGraph.sting.json",
+        "Sting_MultipleInputInjectorModel.java",
+        "Sting_OptionalInputInjectorModel.java",
+        "Sting_PrimitiveInputBoxedDependencyInjectorModel.java",
+        "Sting_PrimitiveInputInjectorModel.java",
+        "Sting_SingleInputInjectorModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

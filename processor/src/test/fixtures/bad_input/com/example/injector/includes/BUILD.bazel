@@ -1,0 +1,29 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "BadTypesInIncludesModel.java",
+        "DuplicateIncludesModel.java",
+        "ExplicitIncludesOfEnclosedFragmentModel.java",
+        "ExplicitIncludesOfEnclosedInjectableModel.java",
+        "FragmentOnlyIncludesModel.java",
+        "InvalidProvider1IncludesModel.java",
+        "InvalidProvider2IncludesModel.java",
+        "MissingProviderIncludesModel.java",
+        "MultipleProvidersIncludesModel.java",
+        "PrimitiveInIncludesModel.java",
+        "SelfIncludesModel.java",
+        "UnannotatedProviderIncludesModel.java",
+        "UnusedFragmentIncludesModel.java",
+        "UnusedInjectableIncludesModel.java",
+        "UnusedStingProviderIncludesModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

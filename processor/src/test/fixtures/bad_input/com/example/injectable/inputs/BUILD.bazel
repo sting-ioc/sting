@@ -1,0 +1,30 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "ArrayTypeInputModel.java",
+        "NullableCollectionInputModel.java",
+        "NullableOptionalInputModel.java",
+        "NullableSupplierCollectionInputModel.java",
+        "ParameterizedCollectionInputModel.java",
+        "ParameterizedInputModel.java",
+        "ParameterizedSupplierCollectionInputModel.java",
+        "RawCollectionInputModel.java",
+        "RawParameterizedCollectionInputModel.java",
+        "RawParameterizedInputModel.java",
+        "RawParameterizedSupplierCollectionInputModel.java",
+        "RawSupplierCollectionInputModel.java",
+        "RawSupplierInputModel.java",
+        "WildcardCollectionInputModel.java",
+        "WildcardSupplierCollectionInputModel.java",
+        "WildcardSupplierInputModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

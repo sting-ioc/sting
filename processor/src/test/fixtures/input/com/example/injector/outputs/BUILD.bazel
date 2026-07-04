@@ -1,0 +1,38 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "AllBoxedProviderPrimitiveOutputModel.java",
+        "AllPrimitiveProviderBoxedCollectionKindsOutputModel.java",
+        "AllPrimitiveProviderBoxedOutputModel.java",
+        "BasicOutputModel.java",
+        "BoxedProviderPrimitiveOutputModel.java",
+        "CollectionContainingMultipleInstancesOutputModel.java",
+        "CollectionOutputModel.java",
+        "ComplexOutputModel.java",
+        "EmptyCollectionOutputModel.java",
+        "JavaOptionalOutputModel.java",
+        "MultipleOutputModel.java",
+        "OptionalFilteredCollectionOutputModel.java",
+        "OptionalMissingOutputModel.java",
+        "OptionalOutputModel.java",
+        "OptionalProvidesOutputModel.java",
+        "PrimitiveAndBoxedCollectionOutputModel.java",
+        "PrimitiveOutputModel.java",
+        "PrimitiveProviderBoxedOutputModel.java",
+        "PrimitiveProviderBoxedSupplierKindsOutputModel.java",
+        "QualifiedOutputModel.java",
+        "SupplierCollectionOutputModel.java",
+        "SupplierOptionalCollectionOutputModel.java",
+        "SupplierOptionalOutputModel.java",
+        "SupplierOutputModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

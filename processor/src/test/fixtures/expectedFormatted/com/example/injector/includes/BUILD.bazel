@@ -1,0 +1,13 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "all",
+    srcs = [
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injector/includes/diamond:all",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injector/includes/injector:all",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injector/includes/multiple:all",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injector/includes/provider:all",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injector/includes/recursive:all",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injector/includes/single:all",
+    ],
+)

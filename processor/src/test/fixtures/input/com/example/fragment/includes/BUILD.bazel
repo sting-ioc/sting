@@ -1,0 +1,25 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "BasicIncludesModel.java",
+        "IncludeAutoDiscoverableModel.java",
+        "Included1Model.java",
+        "Included2Model.java",
+        "MultipleIncludesModel.java",
+        "SuppressedIncludeAutoDiscoverableModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+        "//processor/src/test/fixtures/input/com/example/fragment/includes/cycle:all",
+        "//processor/src/test/fixtures/input/com/example/fragment/includes/local_only_disabled:all",
+        "//processor/src/test/fixtures/input/com/example/fragment/includes/provider_cycle:all",
+        "//processor/src/test/fixtures/input/com/example/fragment/includes/provider_cycle_suppressed:all",
+        "//processor/src/test/fixtures/input/com/example/fragment/includes/redundant_injectable:all",
+    ],
+)

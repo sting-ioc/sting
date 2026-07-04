@@ -1,0 +1,19 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "NamedOnActAsStingComponentModel.java",
+        "NamedOnCtorParamInActAsStingComponentModel.java",
+        "NamedOnCtorParamInActAsStingConsumerModel.java",
+        "NamedOnInjectorFragment.java",
+        "NamedOnTypeInActAsStingProviderModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

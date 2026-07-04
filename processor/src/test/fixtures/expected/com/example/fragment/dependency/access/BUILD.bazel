@@ -1,0 +1,9 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "all",
+    srcs = [
+        "//processor/src/test/fixtures/expected/com/example/fragment/dependency/access/package_access:all",
+        "//processor/src/test/fixtures/expected/com/example/fragment/dependency/access/public_access:all",
+    ],
+)

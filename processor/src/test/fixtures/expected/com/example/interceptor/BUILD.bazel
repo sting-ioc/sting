@@ -1,0 +1,19 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "Sting_com_example_interceptor_ArgumentsRequestedModel_Model_Service_InterceptorProxy.java",
+        "Sting_com_example_interceptor_AroundMetadataModel_Model_Service_InterceptorProxy.java",
+        "Sting_com_example_interceptor_LifecycleFailureNestingModel_Model_Service_InterceptorProxy.java",
+        "Sting_com_example_interceptor_NoArgumentsModel_Model_Service_InterceptorProxy.java",
+        "Sting_com_example_interceptor_ResultAndThrownModel_Model_Service_InterceptorProxy.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

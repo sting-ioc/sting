@@ -1,0 +1,29 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "BasicDependencyModel.java",
+        "CollectionDependencyModel.java",
+        "ComplexDependencyModel.java",
+        "MultipleDependencyModel.java",
+        "NonnullDependencyModel.java",
+        "NullableDependencyModel.java",
+        "OptionalDependencyModel.java",
+        "PackageAccessDependencyModel.java",
+        "PrimitiveDependencyModel.java",
+        "PublicAccessDependencyModel.java",
+        "QualifiedDependencyModel.java",
+        "SupplierCollectionDependencyModel.java",
+        "SupplierDependencyModel.java",
+        "SupplierOptionalCollectionDependencyModel.java",
+        "SupplierOptionalDependencyModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

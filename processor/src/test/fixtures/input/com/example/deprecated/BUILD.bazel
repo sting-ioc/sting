@@ -1,0 +1,26 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "DeprecatedConstructorInjectableModel.java",
+        "DeprecatedDependencyInjectableModel.java",
+        "DeprecatedDependencyInjectorModel.java",
+        "DeprecatedFragmentModel.java",
+        "DeprecatedFragmentNodeInjectorModel.java",
+        "DeprecatedInjectableModel.java",
+        "DeprecatedInjectableNodeInjectorModel.java",
+        "DeprecatedInjectorModel.java",
+        "DeprecatedProvidesDependencyModel.java",
+        "DeprecatedProvidesDependencyNodeInjectorModel.java",
+        "DeprecatedProvidesModel.java",
+        "DeprecatedProvidesNodeInjectorModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

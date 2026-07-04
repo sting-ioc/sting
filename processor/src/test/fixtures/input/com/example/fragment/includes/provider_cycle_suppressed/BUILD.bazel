@@ -1,0 +1,21 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "A.java",
+        "AImpl.java",
+        "B.java",
+        "BImpl.java",
+        "C.java",
+        "CImpl.java",
+        "MyFrameworkFragment.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

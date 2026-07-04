@@ -1,0 +1,22 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "AbstractModel.java",
+        "InterfaceModel.java",
+        "MultipleConstructorModel.java",
+        "NonStaticNestedModel.java",
+        "ParameterizedModel.java",
+        "QualifiedWithNoTypesModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+        "//processor/src/test/fixtures/bad_input/com/example/injectable/inputs:all",
+        "//processor/src/test/fixtures/bad_input/com/example/injectable/types:all",
+    ],
+)

@@ -1,0 +1,35 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "BasicModel.java",
+        "CdiTypedModel.java",
+        "ExposeTypesModel.java",
+        "FinalModel.java",
+        "Jsr330InjectModel.java",
+        "Jsr330ScopedModel.java",
+        "NestedModel.java",
+        "NestedNestedModel.java",
+        "PackageAccessModel.java",
+        "ProtectedConstructorModel.java",
+        "PublicConstructorModel.java",
+        "SuppressedCdiTypedModel.java",
+        "SuppressedJsr330InjectModel.java",
+        "SuppressedJsr330ScopedModel.java",
+        "SuppressedProtectedConstructorModel.java",
+        "SuppressedPublicConstructorModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+        "//processor/src/test/fixtures/input/com/example/injectable/dependency:all",
+        "//processor/src/test/fixtures/input/com/example/injectable/eager:all",
+        "//processor/src/test/fixtures/input/com/example/injectable/named:all",
+        "//processor/src/test/fixtures/input/com/example/injectable/qualifier:all",
+        "//processor/src/test/fixtures/input/com/example/injectable/types:all",
+    ],
+)

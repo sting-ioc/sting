@@ -1,0 +1,31 @@
+load("//third_party/java:rules.bzl", "java_library")
+
+package(default_visibility = ["//visibility:public"])
+
+java_library(
+    name = "api",
+    srcs = [
+        "MyService3.java",
+        "MyService4.java",
+    ],
+)
+
+java_library(
+    name = "pkg2",
+    srcs = [
+        "Model3.java",
+        "Model4.java",
+        "MyFragment.java",
+        "MyPackageAccessFragment.java",
+    ],
+    plugins = [
+        "//processor:sting_processor_plugin",
+    ],
+    deps = [
+        ":api",
+        "//core",
+        "//integration-tests/src/test/java/sting/integration:test_support",
+        "//integration-tests/src/test/java/sting/integration/other/pkg1",
+        "//third_party/java:javax_annotation",
+    ],
+)

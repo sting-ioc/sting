@@ -1,0 +1,22 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "Arez_TodoRepository.sting.json",
+        "Arez_TodoService.sting.json",
+        "Arez_ViewService.sting.json",
+        "BrowserLocationFragment.sting.json",
+        "Sting_Arez_TodoRepository.java",
+        "Sting_Arez_TodoService.java",
+        "Sting_Arez_ViewService.java",
+        "Sting_BrowserLocationFragment.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

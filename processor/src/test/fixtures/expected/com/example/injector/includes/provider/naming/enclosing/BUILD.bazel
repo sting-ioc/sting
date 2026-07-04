@@ -1,0 +1,18 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "MyInjector__ObjectGraph.sting.json",
+        "Outer_Middle_Leaf_Sting_MyFramework_MyModel2.java",
+        "Sting_MyFramework_MyModel.java",
+        "Sting_MyInjector.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

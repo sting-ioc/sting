@@ -1,0 +1,9 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "all",
+    srcs = [
+        "//processor/src/test/fixtures/unresolved/com/example/autodetect:all",
+        "//processor/src/test/fixtures/unresolved/com/example/injector:all",
+    ],
+)

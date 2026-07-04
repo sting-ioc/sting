@@ -1,0 +1,22 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "BasicIncludesModel.sting.json",
+        "Included1Model.sting.json",
+        "Included2Model.sting.json",
+        "MultipleIncludesModel.sting.json",
+        "Sting_BasicIncludesModel.java",
+        "Sting_Included1Model.java",
+        "Sting_Included2Model.java",
+        "Sting_MultipleIncludesModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

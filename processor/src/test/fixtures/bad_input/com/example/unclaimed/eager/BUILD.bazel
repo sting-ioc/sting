@@ -1,0 +1,18 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "UnclaimedEagerAnnotationModel.java",
+        "UnclaimedEagerEnumModel.java",
+        "UnclaimedEagerMethodModel.java",
+        "UnclaimedEagerTypeModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

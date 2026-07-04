@@ -1,0 +1,21 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "MyFragment1.java",
+        "MyFragment2.java",
+        "MyFragment3.java",
+        "MyModel1.java",
+        "MyModel2.java",
+        "MyModel3.java",
+        "RecursiveIncludesModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

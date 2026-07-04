@@ -1,0 +1,10 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "all",
+    srcs = [
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injector/includes/provider/naming/compound:all",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injector/includes/provider/naming/enclosing:all",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injector/includes/provider/naming/flat_enclosing:all",
+    ],
+)

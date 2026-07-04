@@ -1,0 +1,29 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "BasicModel.sting.json",
+        "MultiProvideModel.sting.json",
+        "NestedModel_MyModel.sting.json",
+        "NestedModel_Sting_MyModel.java",
+        "NestedNestedModel_Middle_MyModel.sting.json",
+        "NestedNestedModel_Middle_Sting_MyModel.java",
+        "NullableProvidesModel.sting.json",
+        "Sting_BasicModel.java",
+        "Sting_MultiProvideModel.java",
+        "Sting_NullableProvidesModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+        "//processor/src/test/fixtures/expected/com/example/fragment/dependency:all",
+        "//processor/src/test/fixtures/expected/com/example/fragment/eager:all",
+        "//processor/src/test/fixtures/expected/com/example/fragment/includes:all",
+        "//processor/src/test/fixtures/expected/com/example/fragment/qualifier:all",
+        "//processor/src/test/fixtures/expected/com/example/fragment/types:all",
+    ],
+)

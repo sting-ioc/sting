@@ -1,0 +1,23 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "AbstractMethodProvidesModel.java",
+        "CdiTypedProvidesModel.java",
+        "Jsr330ScopedProvidesModel.java",
+        "NullablePrimitiveReturnTypeProvidesModel.java",
+        "ParameterizedProvidesModel.java",
+        "QualifiedAndNoTypesModel.java",
+        "StaticMethodProvidesModel.java",
+        "VoidReturnTypeProvidesModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+        "//processor/src/test/fixtures/bad_input/com/example/fragment/provides/types:all",
+    ],
+)

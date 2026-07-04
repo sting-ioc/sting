@@ -1,0 +1,19 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "BadType1Model.java",
+        "BadType2Model.java",
+        "BadType3Model.java",
+        "NoTypesAndLazyModel.java",
+        "ParameterizedServiceModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+    ],
+)

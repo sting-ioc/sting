@@ -1,0 +1,32 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "BasicInjectorModel.gv",
+        "BasicInjectorModel.sting.json",
+        "BasicInjectorModel_Sting_MyModel.java",
+        "BasicInjectorModel__ObjectGraph.sting.json",
+        "PrimitiveProviderOptionalBoxedDependencyModel.gv",
+        "PrimitiveProviderOptionalBoxedDependencyModel.sting.json",
+        "PrimitiveProviderOptionalBoxedDependencyModel_Sting_MyFragment.java",
+        "PrimitiveProviderOptionalBoxedDependencyModel_Sting_MyModel.java",
+        "PrimitiveProviderOptionalBoxedDependencyModel__ObjectGraph.sting.json",
+        "Sting_BasicInjectorModel.java",
+        "Sting_PrimitiveProviderOptionalBoxedDependencyModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+        "//processor/src/test/fixtures/expected/com/example/injector/circular:all",
+        "//processor/src/test/fixtures/expected/com/example/injector/eager:all",
+        "//processor/src/test/fixtures/expected/com/example/injector/graphviz:all",
+        "//processor/src/test/fixtures/expected/com/example/injector/gwt:all",
+        "//processor/src/test/fixtures/expected/com/example/injector/includes:all",
+        "//processor/src/test/fixtures/expected/com/example/injector/inputs:all",
+        "//processor/src/test/fixtures/expected/com/example/injector/outputs:all",
+    ],
+)

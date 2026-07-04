@@ -1,0 +1,9 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "all",
+    srcs = [
+        "//processor/src/test/fixtures/expected/com/example/integration/todomvc/ioc:all",
+        "//processor/src/test/fixtures/expected/com/example/integration/todomvc/model:all",
+    ],
+)

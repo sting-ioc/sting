@@ -1,0 +1,24 @@
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "local_files",
+    srcs = [
+        "BasicEagerDependencyModel_Sting_MyModel0.java",
+        "BasicEagerDependencyModel_Sting_MyModel1.java",
+        "BasicEagerDependencyModel_Sting_MyModel2.java",
+        "BasicEagerDependencyModel_Sting_MyModel3.java",
+        "BasicEagerDependencyModel_Sting_MyModel4.java",
+        "BasicEagerDependencyModel_Sting_MyModel5.java",
+        "BasicEagerDependencyModel_Sting_MyModel6.java",
+        "BasicEagerDependencyModel__ObjectGraph.sting.json",
+        "Sting_BasicEagerDependencyModel.java",
+    ],
+)
+
+filegroup(
+    name = "all",
+    srcs = [
+        ":local_files",
+        "//processor/src/test/fixtures/expectedFormatted/com/example/injector/eager/fragment:all",
+    ],
+)
