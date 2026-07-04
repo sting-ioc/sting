@@ -119,7 +119,7 @@ public final class PrimitiveBoxedInteropIntegrationTest extends AbstractIntegrat
 
     @Test
     public void primitiveOutputs() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertTrue(injector.getPrimitiveValue1());
         assertEquals(injector.getPrimitiveValue2(), 'Q');
@@ -133,7 +133,7 @@ public final class PrimitiveBoxedInteropIntegrationTest extends AbstractIntegrat
 
     @Test
     public void boxedOutputs() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertEquals(injector.getBoxedValue1(), Boolean.TRUE);
         assertEquals(injector.getBoxedValue2(), Character.valueOf('Q'));
@@ -147,7 +147,7 @@ public final class PrimitiveBoxedInteropIntegrationTest extends AbstractIntegrat
 
     @Test
     public void collectionOutputs() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertSingletonCollection(injector.getValue1s(), Boolean.TRUE);
         assertSingletonCollection(injector.getValue2s(), 'Q');
@@ -161,7 +161,7 @@ public final class PrimitiveBoxedInteropIntegrationTest extends AbstractIntegrat
 
     @Test
     public void supplierCollectionOutputs() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertSingletonSupplierCollection(injector.getValue1Suppliers(), Boolean.TRUE);
         assertSingletonSupplierCollection(injector.getValue2Suppliers(), 'Q');

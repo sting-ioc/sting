@@ -88,7 +88,7 @@ public final class FactoryParameterAnnotationsIntegrationTest extends AbstractIn
     @Test
     public void scenario() {
         clearTrace();
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
         final MyComponentFactory factory = injector.getFactory();
         final Runnable action = new StableRunnable();
 

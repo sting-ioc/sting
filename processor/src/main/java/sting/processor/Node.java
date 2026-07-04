@@ -310,7 +310,7 @@ final class Node {
     }
 
     void addResolvedDependency(@Nonnull final ServiceRequest serviceRequest, @Nonnull final Node node) {
-        final Edge edge = new Edge(this, serviceRequest);
+        final var edge = new Edge(this, serviceRequest);
         edge.setSatisfiedBy(Collections.singletonList(node));
         _dependsOn.put(serviceRequest, edge);
     }

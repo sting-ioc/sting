@@ -42,7 +42,7 @@ final class StingGeneratorUtil {
 
     static TypeName getServiceType(@Nonnull final ServiceRequest serviceRequest) {
         final ServiceRequest.Kind kind = serviceRequest.getKind();
-        final TypeName baseType =
+        final var baseType =
                 TypeName.get(serviceRequest.getService().getCoordinate().type());
         if (ServiceRequest.Kind.INSTANCE == kind) {
             return baseType;
@@ -73,7 +73,7 @@ final class StingGeneratorUtil {
             @Nonnull final Binding binding) {
         final ServiceRequest[] dependencies = binding.getDependencies();
 
-        final List<TypeMirror> typesProcessed = new ArrayList<>();
+        final var typesProcessed = new ArrayList<TypeMirror>();
         typesProcessed.add(typeProduced);
 
         code.append("(");
@@ -84,7 +84,7 @@ final class StingGeneratorUtil {
         boolean anyNonPublicNonInstance = false;
         boolean firstParam = true;
         for (final ServiceRequest service : dependencies) {
-            final VariableElement parameter = (VariableElement) service.getElement();
+            final var parameter = (VariableElement) service.getElement();
             final String paramName = parameter.getSimpleName().toString();
 
             typesProcessed.add(service.getService().getCoordinate().type());
@@ -145,7 +145,7 @@ final class StingGeneratorUtil {
         }
         code.append(")");
         method.addStatement(code.toString(), args.toArray());
-        final List<String> additionalSuppressions = new ArrayList<>();
+        final var additionalSuppressions = new ArrayList<String>();
         if (!allPublic) {
             additionalSuppressions.add("unchecked");
         }

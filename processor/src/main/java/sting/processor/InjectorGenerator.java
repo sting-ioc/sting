@@ -22,7 +22,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
@@ -64,7 +63,7 @@ final class InjectorGenerator {
             @Nonnull final TypeSpec.Builder builder) {
         for (final Edge edge : graph.getRootNode().getDependsOn()) {
             final ServiceRequest service = edge.getServiceRequest();
-            final ExecutableElement element = (ExecutableElement) service.getElement();
+            final var element = (ExecutableElement) service.getElement();
             final MethodSpec.Builder method = MethodSpec.overriding(
                     element, (DeclaredType) graph.getInjector().getElement().asType(), processingEnv.getTypeUtils());
             GeneratorUtil.copyWhitelistedAnnotations(element, method);
@@ -74,8 +73,8 @@ final class InjectorGenerator {
                 final String name = getOutputCollectionCacheName(edge);
                 final CodeBlock.Builder block = CodeBlock.builder();
                 block.beginControlFlow("if ( null == $N )", name);
-                final StringBuilder code = new StringBuilder();
-                final List<Object> args = new ArrayList<>();
+                final var code = new StringBuilder();
+                final var args = new ArrayList<Object>();
                 code.append("$N = ");
                 args.add(name);
                 emitServiceValue(edge, true, code, args);
@@ -84,8 +83,8 @@ final class InjectorGenerator {
                 method.addCode(block.build());
                 method.addStatement("return $N", name);
             } else {
-                final StringBuilder code = new StringBuilder();
-                final List<Object> args = new ArrayList<>();
+                final var code = new StringBuilder();
+                final var args = new ArrayList<Object>();
                 code.append("return ");
                 emitServiceValue(edge, true, code, args);
                 method.addStatement(code.toString(), args.toArray());
@@ -114,9 +113,8 @@ final class InjectorGenerator {
             if (node.isEager()) {
                 final Binding binding = node.getProviderBinding();
                 if (Binding.Kind.INPUT == binding.getKind()) {
-                    final InputDescriptor input = (InputDescriptor) binding.getOwner();
-                    final ServiceSpec serviceSpec =
-                            binding.getPublishedServices().get(0);
+                    final var input = (InputDescriptor) binding.getOwner();
+                    final var serviceSpec = binding.getPublishedServices().get(0);
                     if (serviceSpec.isOptional()
                             || serviceSpec.getCoordinate().type().getKind().isPrimitive()) {
                         ctor.addStatement("$N = $N", node.getName(), input.name());
@@ -124,8 +122,8 @@ final class InjectorGenerator {
                         ctor.addStatement("$N = $T.requireNonNull( $N )", node.getName(), Objects.class, input.name());
                     }
                 } else {
-                    final StringBuilder code = new StringBuilder();
-                    final List<Object> args = new ArrayList<>();
+                    final var code = new StringBuilder();
+                    final var args = new ArrayList<Object>();
                     provideAndAssign(node, code, args);
                     ctor.addStatement(code.toString(), args.toArray());
                 }
@@ -140,8 +138,7 @@ final class InjectorGenerator {
             @Nonnull final ComponentGraph graph,
             @Nonnull final TypeSpec.Builder builder) {
         for (final Node node : graph.getNodes()) {
-            final FieldSpec.Builder field =
-                    FieldSpec.builder(getPublicTypeName(node), node.getName(), Modifier.PRIVATE);
+            final var field = FieldSpec.builder(getPublicTypeName(node), node.getName(), Modifier.PRIVATE);
             if (!node.getType().getKind().isPrimitive()) {
                 field.addAnnotation(
                         node.isEager() && node.getProviderBinding().isRequired()
@@ -201,9 +198,9 @@ final class InjectorGenerator {
                         .returns(getPublicTypeName(node));
                 final Binding binding = node.getProviderBinding();
                 final Element element = binding.getElement();
-                final List<TypeMirror> types =
+                final var types =
                         Collections.singletonList(element.getEnclosingElement().asType());
-                final List<String> additionalSuppressions = new ArrayList<>();
+                final var additionalSuppressions = new ArrayList<String>();
                 if (ElementsUtil.isDeprecated(element)) {
                     additionalSuppressions.add("deprecation");
                 }
@@ -235,8 +232,8 @@ final class InjectorGenerator {
                     block.beginControlFlow("if ( !$N )", flagName);
                     block.addStatement("$N = true", flagName);
                 }
-                final StringBuilder code = new StringBuilder();
-                final List<Object> args = new ArrayList<>();
+                final var code = new StringBuilder();
+                final var args = new ArrayList<Object>();
                 provideAndAssign(node, code, args);
                 block.addStatement(code.toString(), args.toArray());
                 block.endControlFlow();
@@ -279,8 +276,7 @@ final class InjectorGenerator {
             args.add(StingGeneratorUtil.getFragmentProvidesStubName(
                     (ExecutableElement) node.getBinding().getElement()));
         } else {
-            final InjectableDescriptor injectable =
-                    (InjectableDescriptor) node.getBinding().getOwner();
+            final var injectable = (InjectableDescriptor) node.getBinding().getOwner();
             code.append("$T.create");
             args.add(StingGeneratorUtil.getGeneratedClassName(injectable.getElement()));
         }
@@ -422,12 +418,12 @@ final class InjectorGenerator {
             @Nonnull final TypeSpec.Builder builder,
             @Nonnull final ComponentGraph graph) {
         for (final FragmentNode node : graph.getFragments()) {
-            final TypeName type =
+            final var type =
                     StingGeneratorUtil.getGeneratedClassName(node.fragment().getElement());
             final FieldSpec.Builder field = FieldSpec.builder(type, node.name(), Modifier.PRIVATE, Modifier.FINAL)
                     .addAnnotation(GeneratorUtil.NONNULL_CLASSNAME)
                     .initializer("new $T()", type);
-            final List<TypeMirror> types =
+            final var types =
                     Collections.singletonList(node.fragment().getElement().asType());
             SuppressWarningsUtil.addSuppressWarningsIfRequired(processingEnv, field, Collections.emptyList(), types);
             builder.addField(field.build());

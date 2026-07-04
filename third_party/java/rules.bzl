@@ -92,6 +92,7 @@ _ERROR_PRONE_JAVACOPTS = [
     "-Xep:PrivateConstructorForUtilityClass:ERROR",
     "-Xep:UnnecessaryDefaultInEnumSwitch:ERROR",
     "-Xep:UnnecessarilyFullyQualified:ERROR",
+    "-Xep:Varifier:ERROR",
 ]
 
 _JAVA_JAVACOPTS = [
@@ -110,6 +111,7 @@ _DOC_EXAMPLES_RELAXED_ERROR_PRONE_JAVACOPTS = [
     "-Xep:FieldMissingNullable:OFF",
     "-Xep:PrivateConstructorForUtilityClass:OFF",
     "-Xep:UnusedVariable:OFF",
+    "-Xep:Varifier:OFF",
 ]
 
 _JAVA_TEST_JVM_FLAGS = [

@@ -145,5 +145,5 @@ Coverage command labels may be adjusted to match final target names, but coverag
 ## Implementation Notes
 
 - Bazel uses TestNG `7.10.2` rather than the `build.yaml` `6.11` artifact because `proton-qa` 0.72 calls TestNG byte-array assertion overloads that are absent in 6.11.
-- The Error Prone strict set keeps substantive checks but omits `Varifier` after validation showed broad style-only churn in the processor.
+- The Error Prone strict set includes `Varifier`; doc-examples disable only that check through their relaxed macro to avoid rewriting published example sources.
 - Bazel excludes `-Xlint:this-escape` because the Bazel javac toolchain emits this newer warning while the project target remains Java 17.

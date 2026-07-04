@@ -398,9 +398,9 @@ public final class StingProcessor extends AbstractStandardProcessor {
     }
 
     private void processResolvedFragments(@Nonnull final RoundEnvironment env) {
-        final List<FragmentDescriptor> deferred = new ArrayList<>();
-        final List<FragmentDescriptor> current = new ArrayList<>(_registry.getFragments());
-        final AtomicBoolean resolvedType = new AtomicBoolean();
+        final var deferred = new ArrayList<FragmentDescriptor>();
+        final var current = new ArrayList<>(_registry.getFragments());
+        final var resolvedType = new AtomicBoolean();
 
         while (!current.isEmpty()) {
             for (final FragmentDescriptor fragment : current) {
@@ -459,9 +459,9 @@ public final class StingProcessor extends AbstractStandardProcessor {
     private void processResolvedInjectors(@Nonnull final RoundEnvironment env) {
         final boolean profileEnabled = isProfileEnabled();
 
-        final List<InjectorDescriptor> deferred = new ArrayList<>();
-        final List<InjectorDescriptor> current = new ArrayList<>(_registry.getInjectors());
-        final AtomicBoolean resolvedType = new AtomicBoolean();
+        final var deferred = new ArrayList<InjectorDescriptor>();
+        final var current = new ArrayList<>(_registry.getInjectors());
+        final var resolvedType = new AtomicBoolean();
 
         while (!current.isEmpty()) {
             for (final InjectorDescriptor injector : current) {
@@ -519,7 +519,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
     private void buildAndEmitObjectGraph(@Nonnull final InjectorDescriptor injector) throws Exception {
         debug(() -> "Preparing to build component graph for the injector "
                 + injector.getElement().getQualifiedName());
-        final ComponentGraph graph = new ComponentGraph(this, injector, _registry);
+        final var graph = new ComponentGraph(this, injector, _registry);
         registerIncludesComponents(graph);
 
         registerInputs(graph);
@@ -567,7 +567,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
         emitObjectGraphJsonDescriptor(graph);
         emitInterceptorProxies(graph);
 
-        final String packageName =
+        final var packageName =
                 GeneratorUtil.getQualifiedPackageName(graph.getInjector().getElement());
 
         debug(() -> "Emitting injector implementation for the injector "
@@ -655,8 +655,8 @@ public final class StingProcessor extends AbstractStandardProcessor {
     }
 
     private void buildObjectGraphNodes(@Nonnull final ComponentGraph graph) {
-        final Set<Node> completed = new HashSet<>();
-        final Stack<WorkEntry> workList = new Stack<>();
+        final var completed = new HashSet<Node>();
+        final var workList = new Stack<WorkEntry>();
         // At this stage the "rootNode" contains dependencies for all the output methods declared on the injector
         // and all the eager services declared in includes have already been added to the nodes list.
         //
@@ -704,7 +704,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             }
             final ServiceRequest serviceRequest = edge.getServiceRequest();
             final Coordinate coordinate = serviceRequest.getService().getCoordinate();
-            final List<Binding> bindings = new ArrayList<>(graph.findAllBindingsByCoordinate(coordinate));
+            final var bindings = new ArrayList<>(graph.findAllBindingsByCoordinate(coordinate));
 
             if (bindings.isEmpty() && coordinate.qualifier().isEmpty()) {
                 final String typename = coordinate.type().toString();
@@ -713,8 +713,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                     bindings.add(injectable.getBinding());
                 }
                 if (bindings.isEmpty()) {
-                    final TypeElement typeElement =
-                            processingEnv.getElementUtils().getTypeElement(typename);
+                    final var typeElement = processingEnv.getElementUtils().getTypeElement(typename);
                     if (null != typeElement) {
                         final InjectableDescriptor candidate = deriveInjectableDescriptor(typeElement);
                         if (null != candidate && candidate.isAutoDiscoverable()) {
@@ -761,7 +760,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             } else {
                 final ServiceRequest.Kind kind = serviceRequest.getKind();
                 if (1 == bindings.size() || kind.isCollection()) {
-                    final List<Node> nodes = new ArrayList<>();
+                    final var nodes = new ArrayList<Node>();
                     for (final Binding binding : bindings) {
                         final Node node = graph.findOrCreateProviderNode(binding, coordinate);
                         nodes.add(node);
@@ -802,11 +801,11 @@ public final class StingProcessor extends AbstractStandardProcessor {
     private void addDependsOnToWorkList(
             @Nonnull final Stack<WorkEntry> workList, @Nonnull final Node node, @Nullable final WorkEntry parent) {
         for (final Edge e : node.getDependsOn()) {
-            final Stack<PathEntry> stack = new Stack<>();
+            final var stack = new Stack<PathEntry>();
             if (null != parent) {
                 stack.addAll(parent.getStack());
             }
-            final PathEntry entry = new PathEntry(node, e);
+            final var entry = new PathEntry(node, e);
             stack.add(entry);
             workList.add(new WorkEntry(entry, stack));
         }
@@ -834,8 +833,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             }
             _resolvingFragmentTypes.add(fragmentName);
             try {
-                final ResolveType resolveType =
-                        isResolved(env, fragment, fragment.getElement(), fragment.getIncludes());
+                final var resolveType = isResolved(env, fragment, fragment.getElement(), fragment.getIncludes());
                 if (resolveType == ResolveType.RESOLVED) {
                     fragment.markAsResolved();
                     // Check for redundant explicit @Injectable includes that are also transitively included via
@@ -894,7 +892,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             @Nonnull final IncludeDescriptor include) {
         AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType(originator, Constants.INJECTOR_CLASSNAME);
 
-        final String annotationClassname =
+        final var annotationClassname =
                 null != annotation ? Constants.INJECTOR_CLASSNAME : Constants.FRAGMENT_CLASSNAME;
         if (null == annotation) {
             annotation = AnnotationsUtil.getAnnotationByType(originator, Constants.FRAGMENT_CLASSNAME);
@@ -924,7 +922,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             return ResolveType.UNRESOLVED;
         }
         final boolean isInjectable = AnnotationsUtil.hasAnnotationOfType(element, Constants.INJECTABLE_CLASSNAME);
-        final boolean isFragment =
+        final var isFragment =
                 !isInjectable && AnnotationsUtil.hasAnnotationOfType(element, Constants.FRAGMENT_CLASSNAME);
         if (include.isProvider() && !isInjectable && !isFragment) {
             if (descriptor instanceof FragmentDescriptor) {
@@ -957,7 +955,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                 throw new ProcessorException(message, originator, annotation);
             }
         } else if (!include.auto() && ((InjectorDescriptor) descriptor).isFragmentOnly() && !isFragment) {
-            final InjectorDescriptor injectorDescriptor = (InjectorDescriptor) descriptor;
+            final var injectorDescriptor = (InjectorDescriptor) descriptor;
             injectorDescriptor.markAsContainsError();
             final String message = MemberChecks.toSimpleName(Constants.INJECTOR_CLASSNAME)
                     + " target has an includes parameter containing " + "the value "
@@ -1020,7 +1018,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             throw new ProcessorException(
                     MemberChecks.must(Constants.INJECTOR_FRAGMENT_CLASSNAME, "be an interface"), element);
         }
-        final List<ExecutableElement> methods =
+        final var methods =
                 ElementsUtil.getMethods(element, processingEnv.getElementUtils(), processingEnv.getTypeUtils());
         for (final ExecutableElement method : methods) {
             if (method.getModifiers().contains(Modifier.DEFAULT)) {
@@ -1059,15 +1057,15 @@ public final class StingProcessor extends AbstractStandardProcessor {
         }
 
         final boolean gwt = isGwtEnabled(element);
-        final boolean injectable =
+        final var injectable =
                 (boolean) AnnotationsUtil.getAnnotationValue(element, Constants.INJECTOR_CLASSNAME, "injectable")
                         .getValue();
         final boolean fragmentOnly = extractInjectorFragmentOnly(element);
         final List<IncludeDescriptor> includes = extractIncludes(element, Constants.INJECTOR_CLASSNAME, fragmentOnly);
         final List<InputDescriptor> inputs = extractInputs(element);
 
-        final List<ServiceRequest> outputs = new ArrayList<>();
-        final List<ExecutableElement> methods =
+        final var outputs = new ArrayList<ServiceRequest>();
+        final var methods =
                 ElementsUtil.getMethods(element, processingEnv.getElementUtils(), processingEnv.getTypeUtils());
         for (final ExecutableElement method : methods) {
             if (method.getModifiers().contains(Modifier.ABSTRACT)) {
@@ -1083,7 +1081,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             final ElementKind enclosedElementKind = enclosedElement.getKind();
             if (ElementKind.INTERFACE == enclosedElementKind
                     && AnnotationsUtil.hasAnnotationOfType(enclosedElement, Constants.FRAGMENT_CLASSNAME)) {
-                final DeclaredType type = (DeclaredType) enclosedElement.asType();
+                final var type = (DeclaredType) enclosedElement.asType();
                 if (includes.stream().noneMatch(d -> Objects.equals(d.includedType(), type))) {
                     includes.add(new IncludeDescriptor(type, type.toString(), true));
                 } else {
@@ -1096,7 +1094,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                 }
             } else if (ElementKind.CLASS == enclosedElementKind
                     && AnnotationsUtil.hasAnnotationOfType(enclosedElement, Constants.INJECTABLE_CLASSNAME)) {
-                final DeclaredType type = (DeclaredType) enclosedElement.asType();
+                final var type = (DeclaredType) enclosedElement.asType();
                 if (includes.stream().noneMatch(d -> Objects.equals(d.includedType(), type))) {
                     includes.add(new IncludeDescriptor(type, type.toString(), true));
                 } else {
@@ -1117,8 +1115,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                         element);
             }
         }
-        final InjectorDescriptor injector =
-                new InjectorDescriptor(element, gwt, injectable, fragmentOnly, includes, inputs, outputs);
+        final var injector = new InjectorDescriptor(element, gwt, injectable, fragmentOnly, includes, inputs, outputs);
         _registry.registerInjector(injector);
         emitInjectorJsonDescriptor(injector);
     }
@@ -1242,8 +1239,8 @@ public final class StingProcessor extends AbstractStandardProcessor {
                             method);
                 }
 
-                final Coordinate coordinate = new Coordinate(qualifier, dependencyType);
-                final ServiceSpec service = new ServiceSpec(coordinate, optional);
+                final var coordinate = new Coordinate(qualifier, dependencyType);
+                final var service = new ServiceSpec(coordinate, optional);
                 return new ServiceRequest(kind, service, method);
             }
         }
@@ -1515,7 +1512,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
         }
         final boolean localOnly = extractFragmentLocalOnly(element);
         final List<IncludeDescriptor> includes = extractIncludes(element, Constants.FRAGMENT_CLASSNAME, false);
-        final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
+        final var bindings = new LinkedHashMap<ExecutableElement, Binding>();
         for (final Element enclosedElement : element.getEnclosedElements()) {
             final ElementKind enclosedElementKind = enclosedElement.getKind();
             if (ElementKind.METHOD == enclosedElementKind) {
@@ -1558,12 +1555,12 @@ public final class StingProcessor extends AbstractStandardProcessor {
                     MemberChecks.mustNot(Constants.FACTORY_CLASSNAME, "extend any interfaces"), element);
         }
 
-        final List<FactoryMethodDescriptor> methods = new ArrayList<>();
-        final List<FactoryDependencyDescriptor> dependencies = new ArrayList<>();
-        final Set<String> usedFieldNames = new HashSet<>();
+        final var methods = new ArrayList<FactoryMethodDescriptor>();
+        final var dependencies = new ArrayList<FactoryDependencyDescriptor>();
+        final var usedFieldNames = new HashSet<String>();
         for (final Element enclosedElement : element.getEnclosedElements()) {
             if (ElementKind.METHOD == enclosedElement.getKind()) {
-                final ExecutableElement method = (ExecutableElement) enclosedElement;
+                final var method = (ExecutableElement) enclosedElement;
                 if (!method.getModifiers().contains(Modifier.DEFAULT)
                         && !method.getModifiers().contains(Modifier.STATIC)
                         && !method.getModifiers().contains(Modifier.PRIVATE)) {
@@ -1584,18 +1581,18 @@ public final class StingProcessor extends AbstractStandardProcessor {
     @SuppressWarnings("unchecked")
     @Nonnull
     private List<InputDescriptor> extractInputs(@Nonnull final TypeElement element) {
-        final List<InputDescriptor> results = new ArrayList<>();
+        final var results = new ArrayList<InputDescriptor>();
         final AnnotationMirror annotation = AnnotationsUtil.getAnnotationByType(element, Constants.INJECTOR_CLASSNAME);
         final AnnotationValue inputsAnnotationValue = AnnotationsUtil.findAnnotationValue(annotation, "inputs");
         assert null != inputsAnnotationValue;
-        final List<AnnotationMirror> inputs = (List<AnnotationMirror>) inputsAnnotationValue.getValue();
+        final var inputs = (List<AnnotationMirror>) inputsAnnotationValue.getValue();
 
         final int size = inputs.size();
         for (int i = 0; i < size; i++) {
             final AnnotationMirror input = inputs.get(i);
             final String qualifier = AnnotationsUtil.getAnnotationValueValue(input, "qualifier");
             final AnnotationValue typeAnnotationValue = AnnotationsUtil.getAnnotationValue(input, "type");
-            final TypeMirror type = (TypeMirror) typeAnnotationValue.getValue();
+            final var type = (TypeMirror) typeAnnotationValue.getValue();
             if (TypeKind.ARRAY == type.getKind()) {
                 throw new ProcessorException(
                         MemberChecks.toSimpleName(Constants.INPUT_CLASSNAME)
@@ -1621,10 +1618,10 @@ public final class StingProcessor extends AbstractStandardProcessor {
                         input,
                         typeAnnotationValue);
             }
-            final Coordinate coordinate = new Coordinate(qualifier, type);
+            final var coordinate = new Coordinate(qualifier, type);
             final boolean optional = AnnotationsUtil.getAnnotationValueValue(input, "optional");
-            final ServiceSpec service = new ServiceSpec(coordinate, optional);
-            final Binding binding = new Binding(
+            final var service = new ServiceSpec(coordinate, optional);
+            final var binding = new Binding(
                     Binding.Kind.INPUT,
                     element.getQualifiedName() + "#" + i,
                     Collections.singletonList(service),
@@ -1640,10 +1637,10 @@ public final class StingProcessor extends AbstractStandardProcessor {
     @Nonnull
     private List<IncludeDescriptor> extractIncludes(
             @Nonnull final TypeElement element, @Nonnull final String annotationClassname, final boolean fragmentOnly) {
-        final List<IncludeDescriptor> results = new ArrayList<>();
-        final List<TypeMirror> includes =
+        final var results = new ArrayList<IncludeDescriptor>();
+        final var includes =
                 AnnotationsUtil.getTypeMirrorsAnnotationParameter(element, annotationClassname, "includes");
-        final Set<String> included = new HashSet<>();
+        final var included = new HashSet<String>();
         for (final TypeMirror include : includes) {
             if (processingEnv.getTypeUtils().isSameType(include, element.asType())) {
                 throw new ProcessorException(
@@ -1679,7 +1676,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                                     + includeElement.asType(),
                             (TypeElement) includeElement);
                     if (null != provider) {
-                        final String targetQualifiedName =
+                        final var targetQualifiedName =
                                 deriveProviderQualifiedName((TypeElement) includeElement, provider.provider());
                         results.add(new IncludeDescriptor((DeclaredType) include, targetQualifiedName, false));
                     } else {
@@ -1768,7 +1765,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
     @Nonnull
     private String getEnclosingName(@Nonnull final TypeElement element) {
         Element enclosingElement = element.getEnclosingElement();
-        final List<String> nameParts = new ArrayList<>();
+        final var nameParts = new ArrayList<String>();
         while (ElementKind.PACKAGE != enclosingElement.getKind()) {
             nameParts.add(enclosingElement.getSimpleName().toString());
             enclosingElement = enclosingElement.getEnclosingElement();
@@ -1819,7 +1816,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
 
         final String providerTypeName = deriveProviderQualifiedName(frameworkType, provider.provider());
         final TypeElement providerType = processingEnv.getElementUtils().getTypeElement(providerTypeName);
-        final Coordinate coordinate = new Coordinate("", frameworkType.asType());
+        final var coordinate = new Coordinate("", frameworkType.asType());
         if (null == providerType) {
             throw new ProcessorException(
                     buildAutoDiscoverProviderError(
@@ -1998,7 +1995,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
 
         final boolean eager = AnnotationsUtil.hasAnnotationOfType(method, Constants.EAGER_CLASSNAME);
 
-        final List<ServiceRequest> dependencies = new ArrayList<>();
+        final var dependencies = new ArrayList<ServiceRequest>();
         int index = 0;
         final List<? extends TypeMirror> parameterTypes = ((ExecutableType) method.asType()).getParameterTypes();
         for (final VariableElement parameter : method.getParameters()) {
@@ -2007,8 +2004,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
         }
 
         final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType(method, Constants.TYPED_CLASSNAME);
-        final AnnotationValue value =
-                null != annotation ? AnnotationsUtil.findAnnotationValue(annotation, "value") : null;
+        final var value = null != annotation ? AnnotationsUtil.findAnnotationValue(annotation, "value") : null;
 
         final String qualifier = getQualifier(method);
         if (AnnotationsUtil.hasAnnotationOfType(method, Constants.JSR_330_NAMED_CLASSNAME)) {
@@ -2032,7 +2028,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                 : ((List<AnnotationValue>) value.getValue())
                         .stream().map(v -> (TypeMirror) v.getValue()).toList();
 
-        final ServiceSpec[] specs = new ServiceSpec[types.size()];
+        final var specs = new ServiceSpec[types.size()];
         for (int i = 0; i < specs.length; i++) {
             final TypeMirror type = types.get(i);
             if (!processingEnv.getTypeUtils().isAssignable(method.getReturnType(), type)) {
@@ -2077,7 +2073,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                     element);
         }
 
-        final Binding binding = new Binding(
+        final var binding = new Binding(
                 Binding.Kind.PROVIDES,
                 element.getQualifiedName() + "#" + method.getSimpleName(),
                 Arrays.asList(specs),
@@ -3061,8 +3057,8 @@ public final class StingProcessor extends AbstractStandardProcessor {
                                     + " annotation instead");
                     throw new ProcessorException(message, parameter);
                 }
-                final Coordinate coordinate = new Coordinate(qualifier, dependencyType);
-                final ServiceSpec service = new ServiceSpec(coordinate, optional);
+                final var coordinate = new Coordinate(qualifier, dependencyType);
+                final var service = new ServiceSpec(coordinate, optional);
                 return new ServiceRequest(kind, service, parameter);
             }
         }
@@ -3093,7 +3089,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
 
         final boolean eager = AnnotationsUtil.hasAnnotationOfType(element, Constants.EAGER_CLASSNAME);
 
-        final List<ServiceRequest> dependencies = new ArrayList<>();
+        final var dependencies = new ArrayList<ServiceRequest>();
         int index = 0;
         final List<? extends TypeMirror> parameterTypes = ((ExecutableType) constructor.asType()).getParameterTypes();
         for (final VariableElement parameter : constructor.getParameters()) {
@@ -3102,8 +3098,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
         }
 
         final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType(element, Constants.TYPED_CLASSNAME);
-        final AnnotationValue value =
-                null != annotation ? AnnotationsUtil.findAnnotationValue(annotation, "value") : null;
+        final var value = null != annotation ? AnnotationsUtil.findAnnotationValue(annotation, "value") : null;
 
         final String qualifier = getQualifier(element);
         if (AnnotationsUtil.hasAnnotationOfType(element, Constants.JSR_330_NAMED_CLASSNAME)
@@ -3138,7 +3133,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                 : ((List<AnnotationValue>) value.getValue())
                         .stream().map(v -> (TypeMirror) v.getValue()).toList();
 
-        final ServiceSpec[] specs = new ServiceSpec[types.size()];
+        final var specs = new ServiceSpec[types.size()];
         for (int i = 0; i < specs.length; i++) {
             final TypeMirror type = types.get(i);
             if (!processingEnv.getTypeUtils().isAssignable(element.asType(), type)) {
@@ -3180,7 +3175,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                     element);
         }
 
-        final Binding binding = new Binding(
+        final var binding = new Binding(
                 Binding.Kind.INJECTABLE,
                 element.getQualifiedName().toString(),
                 Arrays.asList(specs),
@@ -3188,7 +3183,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                 constructor,
                 dependencies.toArray(new ServiceRequest[0]));
         binding.setInterceptorBindingSource(element, findInterceptorBindingAnnotationValues(element));
-        final InjectableDescriptor injectable = new InjectableDescriptor(binding);
+        final var injectable = new InjectableDescriptor(binding);
         _registry.registerInjectable(injectable);
     }
 
@@ -3219,7 +3214,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                     method);
         }
 
-        final DeclaredType returnType = (DeclaredType) method.getReturnType();
+        final var returnType = (DeclaredType) method.getReturnType();
         if (!returnType.getTypeArguments().isEmpty()) {
             throw new ProcessorException(
                     MemberChecks.mustNot(
@@ -3227,7 +3222,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                     method);
         }
 
-        final TypeElement producedType = (TypeElement) returnType.asElement();
+        final var producedType = (TypeElement) returnType.asElement();
         if (ElementKind.CLASS != producedType.getKind()) {
             throw new ProcessorException(
                     MemberChecks.must(Constants.FACTORY_CLASSNAME, "contain abstract methods that return a class type"),
@@ -3268,10 +3263,9 @@ public final class StingProcessor extends AbstractStandardProcessor {
 
         final List<? extends VariableElement> constructorParameters = constructor.getParameters();
         final List<? extends VariableElement> methodParameters = method.getParameters();
-        final Map<Integer, VariableElement> methodParametersByConstructorIndex = new LinkedHashMap<>();
-        final Map<Integer, FactoryDependencyDescriptor> dependenciesByConstructorIndex = new LinkedHashMap<>();
-        final List<? extends TypeMirror> constructorParameterTypes =
-                ((ExecutableType) constructor.asType()).getParameterTypes();
+        final var methodParametersByConstructorIndex = new LinkedHashMap<Integer, VariableElement>();
+        final var dependenciesByConstructorIndex = new LinkedHashMap<Integer, FactoryDependencyDescriptor>();
+        final var constructorParameterTypes = ((ExecutableType) constructor.asType()).getParameterTypes();
 
         for (final VariableElement parameter : methodParameters) {
             boolean matched = false;
@@ -3314,10 +3308,8 @@ public final class StingProcessor extends AbstractStandardProcessor {
         for (int i = 0; i < constructorParameters.size(); i++) {
             if (!methodParametersByConstructorIndex.containsKey(i)) {
                 final VariableElement constructorParameter = constructorParameters.get(i);
-                final ServiceRequest request =
-                        handleConstructorParameter(constructorParameter, constructorParameterTypes.get(i));
-                final FactoryDependencyDescriptor dependency =
-                        findOrCreateFactoryDependency(request, dependencies, usedFieldNames);
+                final var request = handleConstructorParameter(constructorParameter, constructorParameterTypes.get(i));
+                final var dependency = findOrCreateFactoryDependency(request, dependencies, usedFieldNames);
                 dependenciesByConstructorIndex.put(i, dependency);
             }
         }
@@ -3342,11 +3334,10 @@ public final class StingProcessor extends AbstractStandardProcessor {
             }
         }
 
-        final VariableElement parameter = (VariableElement) request.getElement();
+        final var parameter = (VariableElement) request.getElement();
         final String parameterName = parameter.getSimpleName().toString();
         final String fieldName = uniqueFactoryFieldName(parameterName, usedFieldNames);
-        final FactoryDependencyDescriptor dependency =
-                new FactoryDependencyDescriptor(request, parameterName, fieldName);
+        final var dependency = new FactoryDependencyDescriptor(request, parameterName, fieldName);
         dependencies.add(dependency);
         return dependency;
     }
@@ -3373,7 +3364,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             return true;
         } else {
             final String factoryPackage = GeneratorUtil.getQualifiedPackageName(factory);
-            final String targetPackage =
+            final var targetPackage =
                     GeneratorUtil.getQualifiedPackageName((TypeElement) constructor.getEnclosingElement());
             return factoryPackage.equals(targetPackage);
         }
@@ -3457,8 +3448,8 @@ public final class StingProcessor extends AbstractStandardProcessor {
                                     + MemberChecks.suppressedBy(Constants.WARNING_JSR_330_NAMED));
                     warning(message, parameter);
                 }
-                final Coordinate coordinate = new Coordinate(qualifier, dependencyType);
-                final ServiceSpec service = new ServiceSpec(coordinate, optional);
+                final var coordinate = new Coordinate(qualifier, dependencyType);
+                final var service = new ServiceSpec(coordinate, optional);
                 return new ServiceRequest(kind, service, parameter);
             }
         }
@@ -3538,13 +3529,13 @@ public final class StingProcessor extends AbstractStandardProcessor {
         } else {
             final boolean localOnly = extractFragmentLocalOnly(element);
             final List<IncludeDescriptor> includes = extractIncludes(element, Constants.FRAGMENT_CLASSNAME, false);
-            final Map<ExecutableElement, Binding> bindings = new LinkedHashMap<>();
+            final var bindings = new LinkedHashMap<ExecutableElement, Binding>();
             for (final Element enclosedElement : element.getEnclosedElements()) {
                 if (ElementKind.METHOD == enclosedElement.getKind()) {
                     processProvidesMethod(element, bindings, (ExecutableElement) enclosedElement);
                 }
             }
-            final FragmentDescriptor fragment = new FragmentDescriptor(element, includes, localOnly, bindings.values());
+            final var fragment = new FragmentDescriptor(element, includes, localOnly, bindings.values());
             fragment.markJavaStubAsGenerated();
             _derivedFragmentCache.put(classname, fragment);
             return fragment;
@@ -3591,7 +3582,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
 
         final boolean eager = AnnotationsUtil.hasAnnotationOfType(element, Constants.EAGER_CLASSNAME);
 
-        final List<ServiceRequest> dependencies = new ArrayList<>();
+        final var dependencies = new ArrayList<ServiceRequest>();
         int index = 0;
         final List<? extends TypeMirror> parameterTypes = ((ExecutableType) constructor.asType()).getParameterTypes();
         for (final VariableElement parameter : constructor.getParameters()) {
@@ -3600,8 +3591,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
         }
 
         final AnnotationMirror annotation = AnnotationsUtil.findAnnotationByType(element, Constants.TYPED_CLASSNAME);
-        final AnnotationValue value =
-                null != annotation ? AnnotationsUtil.findAnnotationValue(annotation, "value") : null;
+        final var value = null != annotation ? AnnotationsUtil.findAnnotationValue(annotation, "value") : null;
 
         final String qualifier = getQualifier(element);
 
@@ -3611,7 +3601,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                 : ((List<AnnotationValue>) value.getValue())
                         .stream().map(v -> (TypeMirror) v.getValue()).toList();
 
-        final ServiceSpec[] specs = new ServiceSpec[types.size()];
+        final var specs = new ServiceSpec[types.size()];
         for (int i = 0; i < specs.length; i++) {
             final TypeMirror type = types.get(i);
             if (!processingEnv.getTypeUtils().isAssignable(element.asType(), type)) {
@@ -3653,14 +3643,14 @@ public final class StingProcessor extends AbstractStandardProcessor {
                     element);
         }
 
-        final Binding binding = new Binding(
+        final var binding = new Binding(
                 Binding.Kind.INJECTABLE,
                 element.getQualifiedName().toString(),
                 Arrays.asList(specs),
                 eager,
                 constructor,
                 dependencies.toArray(new ServiceRequest[0]));
-        final InjectableDescriptor injectable = new InjectableDescriptor(binding);
+        final var injectable = new InjectableDescriptor(binding);
         injectable.markJavaStubAsGenerated();
         _derivedInjectableCache.put(classname, injectable);
         return injectable;
@@ -3674,8 +3664,8 @@ public final class StingProcessor extends AbstractStandardProcessor {
             return;
         }
 
-        final Set<String> directInjectables = new HashSet<>();
-        final Set<String> transitiveInjectables = new HashSet<>();
+        final var directInjectables = new HashSet<String>();
+        final var transitiveInjectables = new HashSet<String>();
 
         for (final IncludeDescriptor include : includes) {
             final String classname = include.actualTypeName();

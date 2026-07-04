@@ -46,7 +46,7 @@ public final class InputsIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void scenario() {
         clearTrace();
-        final MyInjector injector = MyInjector.create(new Model1());
+        final var injector = MyInjector.create(new Model1());
 
         assertCreateTrace("Model1[]");
 
@@ -70,7 +70,7 @@ public final class InputsIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void scenario_onlyAccessModel3() {
         clearTrace();
-        final MyInjector injector = MyInjector.create(new Model1());
+        final var injector = MyInjector.create(new Model1());
 
         assertCreateTrace("Model1[]");
 

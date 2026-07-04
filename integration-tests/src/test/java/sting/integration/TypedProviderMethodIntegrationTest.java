@@ -39,7 +39,7 @@ public final class TypedProviderMethodIntegrationTest extends AbstractIntegratio
     @Test
     public void scenario() {
         clearTrace();
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertCreateTrace("");
 

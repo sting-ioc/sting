@@ -119,7 +119,7 @@ final class ComponentGraph {
     private Node createNode(@Nonnull final Binding binding) {
         final String id = binding.getId();
         assert !_nodesById.containsKey(id);
-        final Node node = new Node(this, binding);
+        final var node = new Node(this, binding);
         _nodesById.put(id, node);
         return node;
     }
@@ -139,8 +139,8 @@ final class ComponentGraph {
     void complete() {
         assert !_complete;
         _complete = true;
-        final AtomicInteger index = new AtomicInteger();
-        final Map<FragmentDescriptor, FragmentNode> fragmentMap = new HashMap<>();
+        final var index = new AtomicInteger();
+        final var fragmentMap = new HashMap<FragmentDescriptor, FragmentNode>();
         _fragmentNodes = _nodesById.values().stream()
                 .filter(Node::isFromProvides)
                 .map(n -> (FragmentDescriptor) n.getBinding().getOwner())
@@ -161,9 +161,9 @@ final class ComponentGraph {
 
     @Nonnull
     private List<Node> sortNodes(@Nonnull final Collection<Node> nodes) {
-        final List<Node> results = new ArrayList<>(nodes.size());
-        final List<Node> workList = new ArrayList<>(nodes);
-        final Set<Node> done = new HashSet<>();
+        final var results = new ArrayList<Node>(nodes.size());
+        final var workList = new ArrayList<Node>(nodes);
+        final var done = new HashSet<Node>();
         while (!workList.isEmpty()) {
             final Node node = workList.remove(workList.size() - 1);
             processNode(node, results, done);

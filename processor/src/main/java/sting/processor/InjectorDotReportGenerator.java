@@ -18,7 +18,7 @@ final class InjectorDotReportGenerator {
             @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final ComponentGraph graph) {
         final Map<String, Set<String>> types = buildTypeMap(graph);
 
-        final StringBuilder sb = new StringBuilder();
+        final var sb = new StringBuilder();
         final String injectorName = extractShortestUniqueName(
                 types, graph.getInjector().getElement().asType().toString());
         sb.append("digraph \"")
@@ -146,7 +146,7 @@ final class InjectorDotReportGenerator {
     private static Map<String, Set<String>> buildTypeMap(@Nonnull final ComponentGraph graph) {
         // Map used to try and generate the shortest name for a node
         // SimpleName -> [FQN]
-        final Map<String, Set<String>> types = new HashMap<>();
+        final var types = new HashMap<String, Set<String>>();
         for (final Node node : graph.getRawNodeCollection()) {
             recordType(types, node.getType().toString());
             recordDependencyTypes(types, node);
@@ -176,7 +176,7 @@ final class InjectorDotReportGenerator {
         if (1 == matches.size()) {
             return simpleName;
         } else {
-            final List<String> parts = new ArrayList<>();
+            final var parts = new ArrayList<String>();
             parts.add(simpleName);
 
             boolean matched = true;

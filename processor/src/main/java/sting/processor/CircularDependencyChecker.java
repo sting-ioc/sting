@@ -11,7 +11,7 @@ final class CircularDependencyChecker {
     private CircularDependencyChecker() {}
 
     static void verifyNoCircularDependencyLoops(@Nonnull final ComponentGraph graph) {
-        final Set<Node> completed = new HashSet<>();
+        final var completed = new HashSet<Node>();
 
         verifyNoCircularDependenciesForRootNode(graph, graph.getRootNode(), completed);
 
@@ -24,8 +24,8 @@ final class CircularDependencyChecker {
 
     private static void verifyNoCircularDependenciesForRootNode(
             @Nonnull final ComponentGraph graph, @Nonnull final Node node, @Nonnull final Set<Node> completed) {
-        final Stack<PathEntry> stack = new Stack<>();
-        final PathEntry entry = new PathEntry(node, null);
+        final var stack = new Stack<PathEntry>();
+        final var entry = new PathEntry(node, null);
         verifyNoCircularDependenciesForNode(graph, entry, stack, completed);
         assert stack.isEmpty();
     }
@@ -38,7 +38,7 @@ final class CircularDependencyChecker {
         stack.add(entry);
         for (final Edge edge : entry.node().getDependsOn()) {
             for (final Node node : edge.getSatisfiedBy()) {
-                final PathEntry childEntry = new PathEntry(node, edge);
+                final var childEntry = new PathEntry(node, edge);
                 final int indexOfMatching =
                         doesEdgeBreakDependencyChain(edge) ? -1 : detectCircularDependency(stack, node);
                 if (-1 != indexOfMatching) {
@@ -95,7 +95,7 @@ final class CircularDependencyChecker {
     @Nonnull
     private static String describeCircularDependencyPath(
             @Nonnull final Stack<PathEntry> stack, @Nonnull final PathEntry badEntry) {
-        final StringBuilder sb = new StringBuilder();
+        final var sb = new StringBuilder();
 
         boolean matched = false;
         for (final PathEntry entry : stack) {

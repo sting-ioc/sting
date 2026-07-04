@@ -28,7 +28,7 @@ final class WorkEntry {
 
     @Nonnull
     String describePathFromRoot() {
-        final StringBuilder sb = new StringBuilder();
+        final var sb = new StringBuilder();
 
         final int size = _stack.size();
         for (int i = 0; i < size; i++) {

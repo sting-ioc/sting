@@ -42,7 +42,7 @@ Last updated: 2026-07-04
 ## Documented Compatibility Exceptions
 
 - Bazel uses TestNG `7.10.2` because `proton-qa` 0.72 calls TestNG assertion overloads missing from TestNG `6.11`.
-- The Error Prone strict set omits `Varifier`; the first strict build produced broad style-only churn in processor sources.
+- The Error Prone strict set includes `Varifier`; doc-examples disable only that check through the relaxed macro to keep published example sources unchanged.
 - Bazel excludes `-Xlint:this-escape` to avoid warnings introduced by the Bazel javac toolchain beyond the Java 17 Buildr baseline.
 
 ## CI Parity

@@ -32,7 +32,7 @@ public final class CollectionOutputCachedIntegrationTest extends AbstractIntegra
     @Test
     public void scenario() {
         clearTrace();
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         final Collection<MyType> myTypes1 = injector.getMyTypes();
         final Collection<MyType> myTypes2 = injector.getMyTypes();

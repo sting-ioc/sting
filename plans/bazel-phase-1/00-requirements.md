@@ -90,7 +90,7 @@ Coverage gate:
 - Travis CI is removed because it is disabled legacy infrastructure.
 - Public end-user setup docs remain Maven-focused; Bazel docs stay contributor-facing.
 - Bazel uses TestNG `7.10.2` because `proton-qa` 0.72 requires newer TestNG assertion overloads at runtime.
-- The strict Error Prone set omits `Varifier` because it caused broad style-only churn without improving this migration.
+- The strict Error Prone set includes `Varifier`; doc-examples use the relaxed macro so examples remain source-compatible with the published documentation.
 
 ## Open Questions Register
 

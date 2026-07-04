@@ -348,7 +348,7 @@ final class InterceptorProxyGenerator {
 
     @Nonnull
     private static TypeName aroundInvocationArgumentsType(@Nullable final AnnotationSpec unmodifiableAnnotation) {
-        final TypeName componentType =
+        final var componentType =
                 null == unmodifiableAnnotation ? ClassName.OBJECT : ClassName.OBJECT.annotated(unmodifiableAnnotation);
         return ArrayTypeName.of(componentType);
     }

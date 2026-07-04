@@ -85,7 +85,7 @@ final class Registry {
 
     @Nonnull
     InterceptorProxyDescriptor findOrCreateInterceptorProxy(@Nonnull final InterceptedServiceDescriptor service) {
-        final InterceptorProxyDescriptor descriptor = new InterceptorProxyDescriptor(service);
+        final var descriptor = new InterceptorProxyDescriptor(service);
         return _interceptorProxies.computeIfAbsent(descriptor.getId(), id -> descriptor);
     }
 

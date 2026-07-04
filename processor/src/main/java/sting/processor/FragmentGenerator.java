@@ -6,7 +6,6 @@ import com.palantir.javapoet.TypeName;
 import com.palantir.javapoet.TypeSpec;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ExecutableElement;
@@ -50,7 +49,7 @@ final class FragmentGenerator {
     @Nonnull
     private static MethodSpec buildProvidesStub(
             @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final Binding binding) {
-        final ExecutableElement element = (ExecutableElement) binding.getElement();
+        final var element = (ExecutableElement) binding.getElement();
         final TypeMirror returnType = element.getReturnType();
         final boolean isPublic = TypeKind.DECLARED != returnType.getKind()
                 || ElementsUtil.isEffectivelyPublic((TypeElement) ((DeclaredType) returnType).asElement());
@@ -61,8 +60,8 @@ final class FragmentGenerator {
                 .returns(isPublic ? TypeName.get(returnType) : OBJECT);
         GeneratorUtil.copyWhitelistedAnnotations(element, method);
 
-        final StringBuilder code = new StringBuilder();
-        final List<Object> args = new ArrayList<>();
+        final var code = new StringBuilder();
+        final var args = new ArrayList<Object>();
         code.append("return $N");
         args.add(element.getSimpleName().toString());
 

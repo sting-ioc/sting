@@ -2684,7 +2684,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         final Path classOutput = Files.createTempDirectory("sting-format-no-exports-classes");
         final Path sourceOutput = Files.createTempDirectory("sting-format-no-exports-sources");
         try {
-            final Path javac = Path.of(System.getProperty("java.home"), "bin", "javac");
+            final var javac = Path.of(System.getProperty("java.home"), "bin", "javac");
             assertTrue(Files.exists(javac), "Expected javac to exist at " + javac);
 
             final List<String> command = new ArrayList<>();
@@ -2705,7 +2705,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
 
             final Process process =
                     new ProcessBuilder(command).redirectErrorStream(true).start();
-            final String output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+            final var output = new String(process.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
             final int exitCode = process.waitFor();
 
             assertNotEquals(exitCode, 0, "Expected javac to fail without formatter JDK exports. Output:\n" + output);

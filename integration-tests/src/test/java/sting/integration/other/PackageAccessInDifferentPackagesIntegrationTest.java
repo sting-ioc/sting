@@ -15,7 +15,7 @@ import sting.integration.other.pkg2.MyService3;
 public final class PackageAccessInDifferentPackagesIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void scenario() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertCreateTrace("");
 

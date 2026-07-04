@@ -134,7 +134,7 @@ final class ServiceRequest {
             if (TypeKind.DECLARED != type.getKind()) {
                 return !_collection && !_supplier && !_optional ? type : null;
             } else {
-                final DeclaredType declaredTypeL1 = (DeclaredType) type;
+                final var declaredTypeL1 = (DeclaredType) type;
                 final String classnameL1 = getClassname(declaredTypeL1);
                 final List<? extends TypeMirror> typeArgumentsL1 = declaredTypeL1.getTypeArguments();
                 if (Optional.class.getName().equals(classnameL1)) {
@@ -147,17 +147,17 @@ final class ServiceRequest {
                     } else {
                         final TypeMirror typeL2 = typeArgumentsL1.get(0);
                         assert TypeKind.DECLARED == typeL2.getKind();
-                        final DeclaredType declaredTypeL2 = (DeclaredType) typeL2;
+                        final var declaredTypeL2 = (DeclaredType) typeL2;
                         final String classnameL2 = getClassname(declaredTypeL2);
                         if (Supplier.class.getName().equals(classnameL2)) {
                             if (_supplier) {
-                                final TypeMirror typeL3 =
+                                final var typeL3 =
                                         declaredTypeL2.getTypeArguments().get(0);
                                 if (_optional) {
                                     if (TypeKind.DECLARED != typeL3.getKind()) {
                                         return null;
                                     }
-                                    final DeclaredType declaredTypeL3 = (DeclaredType) typeL3;
+                                    final var declaredTypeL3 = (DeclaredType) typeL3;
                                     return Optional.class.getName().equals(getClassname(declaredTypeL3))
                                             ? extractDependencyType(declaredTypeL3
                                                     .getTypeArguments()
@@ -180,7 +180,7 @@ final class ServiceRequest {
                         final TypeMirror typeL2 = typeArgumentsL1.get(0);
                         if (_optional) {
                             if (TypeKind.DECLARED == typeL2.getKind()) {
-                                final DeclaredType declaredTypeL2 = (DeclaredType) typeL2;
+                                final var declaredTypeL2 = (DeclaredType) typeL2;
                                 return Optional.class.getName().equals(getClassname(declaredTypeL2))
                                         ? extractDependencyType(declaredTypeL2
                                                 .getTypeArguments()

@@ -66,7 +66,7 @@ public final class ProviderInjectableAnnotatedIncludedIntegrationTest extends Ab
     @Test
     public void scenario() {
         clearTrace();
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertCreateTrace("");
 

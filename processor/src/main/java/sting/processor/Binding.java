@@ -223,7 +223,7 @@ final class Binding {
     @Nonnull
     String describe() {
         if (Kind.INPUT == _kind) {
-            final InputDescriptor input = (InputDescriptor) _owner;
+            final var input = (InputDescriptor) _owner;
             return ((TypeElement) _element).getQualifiedName() + "." + input.name() + "/" + input.service();
         } else if (Kind.INJECTABLE == _kind) {
             return ((TypeElement) _element.getEnclosingElement())

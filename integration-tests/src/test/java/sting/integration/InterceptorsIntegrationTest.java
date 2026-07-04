@@ -1107,7 +1107,7 @@ public final class InterceptorsIntegrationTest {
 
     @Test
     public void requestKindsReturnCachedProxy() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
         final MyService service = injector.service();
 
         assertSame(injector.optionalService().orElseThrow(), service);
@@ -1129,35 +1129,35 @@ public final class InterceptorsIntegrationTest {
 
     @Test
     public void outputRequestReturnsCachedProxy() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertSame(injector.service(), injector.service());
     }
 
     @Test
     public void optionalRequestReturnsCachedProxy() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertSame(injector.optionalService().orElseThrow(), injector.service());
     }
 
     @Test
     public void supplierRequestReturnsCachedProxy() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertSame(injector.serviceSupplier().get(), injector.service());
     }
 
     @Test
     public void supplierOptionalRequestReturnsCachedProxy() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertSame(injector.optionalServiceSupplier().get().orElseThrow(), injector.service());
     }
 
     @Test
     public void collectionRequestReturnsCachedProxy() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertEquals(injector.serviceCollection().size(), 1);
         assertSame(injector.serviceCollection().iterator().next(), injector.service());
@@ -1165,7 +1165,7 @@ public final class InterceptorsIntegrationTest {
 
     @Test
     public void supplierCollectionRequestReturnsCachedProxy() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertEquals(injector.serviceSupplierCollection().size(), 1);
         assertSame(injector.serviceSupplierCollection().iterator().next().get(), injector.service());
@@ -1173,7 +1173,7 @@ public final class InterceptorsIntegrationTest {
 
     @Test
     public void supplierOptionalCollectionRequestReturnsCachedProxy() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertEquals(injector.optionalServiceSupplierCollection().size(), 1);
         assertSame(
@@ -1187,7 +1187,7 @@ public final class InterceptorsIntegrationTest {
 
     @Test
     public void dependenciesReceiveCachedProxy() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
         final MyService service = injector.service();
 
         assertSame(injector.constructorConsumer().service(), service);
@@ -1211,7 +1211,7 @@ public final class InterceptorsIntegrationTest {
 
     @Test
     public void multiplePublishedServicesReceiveDifferentProxies() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
         final MultiA multiA = injector.multiA();
         final MultiB multiB = injector.multiB();
 
@@ -1233,7 +1233,7 @@ public final class InterceptorsIntegrationTest {
 
     @Test
     public void qualifiedServicesReceiveDistinctProxies() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertEquals(injector.leftService().name(), "left");
         assertEquals(injector.rightService().name(), "right");
@@ -1348,7 +1348,7 @@ public final class InterceptorsIntegrationTest {
     public void eagerInterceptionCreatesTargetAndInterceptorWithInjector() {
         c_trace.clear();
 
-        final EagerInjector injector = EagerInjector.create();
+        final var injector = EagerInjector.create();
 
         assertEquals(c_trace, List.of("interceptor:eager:create", "target:eager:create"));
 

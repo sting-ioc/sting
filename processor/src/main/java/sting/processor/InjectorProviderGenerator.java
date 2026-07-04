@@ -58,8 +58,7 @@ final class InjectorProviderGenerator {
         for (final InputDescriptor input : inputs) {
             final ServiceSpec service = input.service();
             final Coordinate coordinate = service.getCoordinate();
-            final ParameterSpec.Builder parameter =
-                    ParameterSpec.builder(TypeName.get(coordinate.type()), input.name(), Modifier.FINAL);
+            final var parameter = ParameterSpec.builder(TypeName.get(coordinate.type()), input.name(), Modifier.FINAL);
             if (!coordinate.type().getKind().isPrimitive()) {
                 parameter.addAnnotation(
                         service.isOptional() ? GeneratorUtil.NULLABLE_CLASSNAME : GeneratorUtil.NONNULL_CLASSNAME);
@@ -97,7 +96,7 @@ final class InjectorProviderGenerator {
                                 .build());
 
                 GeneratorUtil.copyWhitelistedAnnotations(serviceRequest.getElement(), method);
-                final List<String> additionalSuppressions = new ArrayList<>();
+                final var additionalSuppressions = new ArrayList<String>();
                 if (ElementsUtil.isDeprecated(serviceRequest.getElement())) {
                     additionalSuppressions.add("deprecation");
                 }

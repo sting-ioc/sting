@@ -81,7 +81,7 @@ public final class MultiplePublishedTypesDependenciesIntegrationTest extends Abs
 
     @Test
     public void scenario() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertCreateTrace("Model1[] Model4[]");
 

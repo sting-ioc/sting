@@ -145,7 +145,7 @@ public final class OptionalRequestsIntegrationTest extends AbstractIntegrationTe
     @Test
     public void optionalRequests() {
         resetCounters();
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertTrue(injector.getMissingService().isEmpty());
         assertEquals(c_requiredServiceCreations, 0);
@@ -163,7 +163,7 @@ public final class OptionalRequestsIntegrationTest extends AbstractIntegrationTe
         assertEquals(c_optionalPluginCreations, 1);
 
         resetPluginCounters();
-        final MyInjector supplierInjector = MyInjector.create();
+        final var supplierInjector = MyInjector.create();
         final Collection<Supplier<Optional<Plugin>>> pluginSuppliers = supplierInjector.getPluginSuppliers();
         assertEquals(pluginSuppliers.size(), 3);
         assertEquals(c_requiredPluginCreations, 0);
@@ -183,7 +183,7 @@ public final class OptionalRequestsIntegrationTest extends AbstractIntegrationTe
         assertEquals(c_optionalPluginCreations, 1);
 
         resetCounters();
-        final MyInjector injector2 = MyInjector.create();
+        final var injector2 = MyInjector.create();
         final Consumer consumer = injector2.getConsumer();
         assertTrue(consumer.getRequiredService().isPresent());
         assertEquals(consumer.getPlugins().size(), 2);
@@ -204,7 +204,7 @@ public final class OptionalRequestsIntegrationTest extends AbstractIntegrationTe
         assertEquals(c_optionalPluginCreations, 1);
 
         resetPluginCounters();
-        final MyInjector summaryInjector = MyInjector.create();
+        final var summaryInjector = MyInjector.create();
         assertEquals(summaryInjector.getSummary(), "2");
         assertEquals(c_requiredPluginCreations, 1);
         assertEquals(c_optionalPluginCreations, 1);

@@ -25,7 +25,7 @@ import sting.interceptors.Invocation;
 public final class TransactionInterceptorTest {
     @Test
     public void requiredStartsTransactionWhenNoneExists() throws Throwable {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         final Object result = new RequiredTransactionInterceptor(manager).around(invocation(manager, "target", "ok"));
 
         assertEquals(result, "ok");
@@ -34,7 +34,7 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void requiredUsesExistingTransaction() throws Throwable {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.current = new FakeTransaction();
 
         final Object result = new RequiredTransactionInterceptor(manager).around(invocation(manager, "target", "ok"));
@@ -45,7 +45,7 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void requiresNewSuspendsExistingTransaction() throws Throwable {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.current = new FakeTransaction();
 
         final Object result =
@@ -57,7 +57,7 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void mandatoryRequiresExistingTransaction() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
 
         final TransactionalException exception = expectThrows(
                 TransactionalException.class,
@@ -69,7 +69,7 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void mandatoryUsesExistingTransaction() throws Throwable {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.current = new FakeTransaction();
 
         final Object result = new MandatoryTransactionInterceptor(manager).around(invocation(manager, "target", "ok"));
@@ -80,7 +80,7 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void supportsRunsWithoutTransaction() throws Throwable {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
 
         final Object result = new SupportsTransactionInterceptor(manager).around(invocation(manager, "target", "ok"));
 
@@ -90,7 +90,7 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void notSupportedSuspendsExistingTransaction() throws Throwable {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.current = new FakeTransaction();
 
         final Object result =
@@ -102,7 +102,7 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void neverRejectsExistingTransaction() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.current = new FakeTransaction();
 
         final TransactionalException exception = expectThrows(
@@ -115,7 +115,7 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void neverRunsWithoutTransaction() throws Throwable {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
 
         final Object result = new NeverTransactionInterceptor(manager).around(invocation(manager, "target", "ok"));
 
@@ -125,9 +125,9 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void uncheckedExceptionMarksExistingTransactionRollbackOnly() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.current = new FakeTransaction();
-        final IllegalStateException failure = new IllegalStateException("boom");
+        final var failure = new IllegalStateException("boom");
 
         final IllegalStateException exception = expectThrows(
                 IllegalStateException.class,
@@ -141,9 +141,9 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void errorMarksExistingTransactionRollbackOnly() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.current = new FakeTransaction();
-        final AssertionError failure = new AssertionError("boom");
+        final var failure = new AssertionError("boom");
 
         final AssertionError exception = expectThrows(
                 AssertionError.class,
@@ -157,9 +157,9 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void checkedExceptionDoesNotMarkExistingTransactionRollbackOnly() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.current = new FakeTransaction();
-        final Exception failure = new Exception("boom");
+        final var failure = new Exception("boom");
 
         final Exception exception = expectThrows(
                 Exception.class,
@@ -173,8 +173,8 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void startedTransactionRollsBackAfterUncheckedFailure() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
-        final IllegalStateException failure = new IllegalStateException("boom");
+        final var manager = new FakeTransactionManager();
+        final var failure = new IllegalStateException("boom");
 
         final IllegalStateException exception = expectThrows(
                 IllegalStateException.class,
@@ -187,9 +187,9 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void startedTransactionRollsBackAfterUncheckedFailureEvenWhenSetRollbackOnlyFails() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.setRollbackOnlyFailure = new SystemException("setRollbackOnly");
-        final IllegalStateException failure = new IllegalStateException("boom");
+        final var failure = new IllegalStateException("boom");
 
         final IllegalStateException exception = expectThrows(
                 IllegalStateException.class,
@@ -202,8 +202,8 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void startedTransactionCommitsAfterCheckedFailureWhenNotMarkedRollback() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
-        final Exception failure = new Exception("boom");
+        final var manager = new FakeTransactionManager();
+        final var failure = new Exception("boom");
 
         final Exception exception = expectThrows(
                 Exception.class,
@@ -216,7 +216,7 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void startedTransactionRollsBackWhenMarkedRollbackAfterSuccess() throws Throwable {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
 
         final Object result =
                 new RequiredTransactionInterceptor(manager).around(invocation(manager, "target", "ok", true));
@@ -227,8 +227,8 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void startedTransactionRollsBackWhenMarkedRollbackAfterCheckedFailure() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
-        final Exception failure = new Exception("boom");
+        final var manager = new FakeTransactionManager();
+        final var failure = new Exception("boom");
 
         final Exception exception = expectThrows(
                 Exception.class,
@@ -240,7 +240,7 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void initialGetTransactionFailureIsWrapped() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.getTransactionFailure = new SystemException("getTransaction");
 
         final TransactionalException exception = expectThrows(
@@ -253,7 +253,7 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void beginFailureIsWrapped() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.beginFailure = new SystemException("begin");
 
         final TransactionalException exception = expectThrows(
@@ -266,7 +266,7 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void getStatusFailureDuringCompletionIsWrapped() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.getStatusFailure = new SystemException("getStatus");
 
         final TransactionalException exception = expectThrows(
@@ -279,7 +279,7 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void commitFailureIsWrapped() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.commitFailure = new SystemException("commit");
 
         final TransactionalException exception = expectThrows(
@@ -292,9 +292,9 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void rollbackFailureIsWrapped() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.rollbackFailure = new SystemException("rollback");
-        final IllegalStateException failure = new IllegalStateException("boom");
+        final var failure = new IllegalStateException("boom");
 
         final TransactionalException exception = expectThrows(
                 TransactionalException.class,
@@ -307,7 +307,7 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void suspendFailureIsWrapped() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.current = new FakeTransaction();
         manager.suspendFailure = new SystemException("suspend");
 
@@ -321,8 +321,8 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void requiresNewResumesAfterBeginFailure() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
-        final FakeTransaction existing = new FakeTransaction();
+        final var manager = new FakeTransactionManager();
+        final var existing = new FakeTransaction();
         manager.current = existing;
         manager.beginFailure = new SystemException("begin");
 
@@ -337,8 +337,8 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void requiresNewResumesAfterGetStatusFailureDuringCompletion() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
-        final FakeTransaction existing = new FakeTransaction();
+        final var manager = new FakeTransactionManager();
+        final var existing = new FakeTransaction();
         manager.current = existing;
         manager.getStatusFailure = new SystemException("getStatus");
 
@@ -353,8 +353,8 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void requiresNewResumesAfterCommitFailure() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
-        final FakeTransaction existing = new FakeTransaction();
+        final var manager = new FakeTransactionManager();
+        final var existing = new FakeTransaction();
         manager.current = existing;
         manager.commitFailure = new SystemException("commit");
 
@@ -369,11 +369,11 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void requiresNewResumesAfterRollbackFailure() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
-        final FakeTransaction existing = new FakeTransaction();
+        final var manager = new FakeTransactionManager();
+        final var existing = new FakeTransaction();
         manager.current = existing;
         manager.rollbackFailure = new SystemException("rollback");
-        final IllegalStateException failure = new IllegalStateException("boom");
+        final var failure = new IllegalStateException("boom");
 
         final TransactionalException exception = expectThrows(
                 TransactionalException.class,
@@ -387,10 +387,10 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void requiresNewResumeFailureReplacesApplicationException() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.current = new FakeTransaction();
         manager.resumeFailure = new SystemException("resume");
-        final IllegalStateException failure = new IllegalStateException("boom");
+        final var failure = new IllegalStateException("boom");
 
         final TransactionalException exception = expectThrows(
                 TransactionalException.class,
@@ -403,10 +403,10 @@ public final class TransactionInterceptorTest {
 
     @Test
     public void notSupportedResumeFailureReplacesApplicationException() {
-        final FakeTransactionManager manager = new FakeTransactionManager();
+        final var manager = new FakeTransactionManager();
         manager.current = new FakeTransaction();
         manager.resumeFailure = new SystemException("resume");
-        final IllegalStateException failure = new IllegalStateException("boom");
+        final var failure = new IllegalStateException("boom");
 
         final TransactionalException exception = expectThrows(
                 TransactionalException.class,

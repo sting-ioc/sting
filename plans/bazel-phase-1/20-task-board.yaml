@@ -165,7 +165,7 @@ tasks:
     evidence:
       - "`bazel build //...` passed."
       - "`bazel test //...` passed."
-      - "Low-churn Error Prone findings were fixed; `Varifier` was omitted after producing broad style-only churn."
+      - "Error Prone `Varifier` is enabled in the strict rule set; doc-examples disable only that check through the relaxed macro."
     commit:
       hash: f1347456
       message: "feat(bazel): add phase 1 build and checks"

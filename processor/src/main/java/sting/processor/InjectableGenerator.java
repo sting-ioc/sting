@@ -5,7 +5,6 @@ import com.palantir.javapoet.MethodSpec;
 import com.palantir.javapoet.TypeName;
 import com.palantir.javapoet.TypeSpec;
 import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
@@ -43,8 +42,8 @@ final class InjectableGenerator {
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .addAnnotation(GeneratorUtil.NONNULL_CLASSNAME)
                 .returns(isPublic ? TypeName.get(returnType) : OBJECT);
-        final StringBuilder code = new StringBuilder();
-        final List<Object> args = new ArrayList<>();
+        final var code = new StringBuilder();
+        final var args = new ArrayList<Object>();
         code.append("return new $T");
         args.add(returnType);
 

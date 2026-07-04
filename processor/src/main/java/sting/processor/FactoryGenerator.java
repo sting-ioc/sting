@@ -10,7 +10,6 @@ import com.palantir.javapoet.TypeSpec;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
@@ -56,14 +55,12 @@ final class FactoryGenerator {
             final ServiceRequest serviceRequest = dependency.serviceRequest();
             final ServiceSpec service = serviceRequest.getService();
             final TypeName type = StingGeneratorUtil.getServiceType(serviceRequest);
-            final FieldSpec.Builder field =
-                    FieldSpec.builder(type, dependency.fieldName(), Modifier.PRIVATE, Modifier.FINAL);
+            final var field = FieldSpec.builder(type, dependency.fieldName(), Modifier.PRIVATE, Modifier.FINAL);
             if (!type.isPrimitive()) {
                 field.addAnnotation(
                         service.isOptional() ? GeneratorUtil.NULLABLE_CLASSNAME : GeneratorUtil.NONNULL_CLASSNAME);
             }
-            final List<TypeMirror> types =
-                    Collections.singletonList(service.getCoordinate().type());
+            final var types = Collections.singletonList(service.getCoordinate().type());
             SuppressWarningsUtil.addSuppressWarningsIfRequired(processingEnv, field, Collections.emptyList(), types);
             builder.addField(field.build());
         }
@@ -74,7 +71,7 @@ final class FactoryGenerator {
         final MethodSpec.Builder ctor = MethodSpec.constructorBuilder();
         for (final FactoryDependencyDescriptor dependency : factory.getDependencies()) {
             final ServiceRequest serviceRequest = dependency.serviceRequest();
-            final VariableElement parameterElement = (VariableElement) serviceRequest.getElement();
+            final var parameterElement = (VariableElement) serviceRequest.getElement();
             final ParameterSpec.Builder parameter = ParameterSpec.builder(
                     StingGeneratorUtil.getServiceType(serviceRequest), dependency.parameterName(), Modifier.FINAL);
             GeneratorUtil.copyWhitelistedAnnotations(parameterElement, parameter);
@@ -109,15 +106,13 @@ final class FactoryGenerator {
                     Collections.emptyList(),
                     Collections.singletonList(methodDescriptor.method().asType()));
 
-            final StringBuilder code = new StringBuilder();
-            final List<Object> args = new ArrayList<>();
+            final var code = new StringBuilder();
+            final var args = new ArrayList<Object>();
             code.append("return new $T(");
             args.add(methodDescriptor.producedType());
             final List<? extends VariableElement> constructorParameters = methodDescriptor.constructorParameters();
-            final Map<Integer, VariableElement> methodParametersByIndex =
-                    methodDescriptor.methodParametersByConstructorIndex();
-            final Map<Integer, FactoryDependencyDescriptor> dependenciesByIndex =
-                    methodDescriptor.dependenciesByConstructorIndex();
+            final var methodParametersByIndex = methodDescriptor.methodParametersByConstructorIndex();
+            final var dependenciesByIndex = methodDescriptor.dependenciesByConstructorIndex();
             for (int i = 0; i < constructorParameters.size(); i++) {
                 if (0 != i) {
                     code.append(", ");

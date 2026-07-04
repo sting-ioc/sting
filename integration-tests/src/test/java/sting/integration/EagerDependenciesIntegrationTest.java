@@ -52,7 +52,7 @@ public final class EagerDependenciesIntegrationTest extends AbstractIntegrationT
 
     @Test
     public void scenario() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertCreateTrace("Model1[] Model4[]");
 
@@ -70,7 +70,7 @@ public final class EagerDependenciesIntegrationTest extends AbstractIntegrationT
 
     @Test
     public void scenario_onlyAccessModel3() {
-        final MyInjector injector = MyInjector.create();
+        final var injector = MyInjector.create();
 
         assertCreateTrace("Model1[] Model4[]");
 
