@@ -49,7 +49,7 @@ Last updated: 2026-07-04
 8. Final verification
    - Run `tools/check.sh`.
    - Ensure stale depgen detection works.
-   - Ensure no Travis references remain.
+   - Ensure no Travis CI infrastructure remains.
    - Update task board evidence and commits.
 
 ## Delivery Approach
@@ -75,8 +75,8 @@ bazel run //:buildifier_check
 tools/java_format.sh check
 bazel build //...
 bazel test //...
-bazel coverage //processor/src/test/java/sting/processor:processor_tests --combined_report=lcov
-bazel coverage //server/src/test/java/sting/server/interceptors:server_tests --combined_report=lcov
+bazel coverage //processor/src/test/java/sting/processor:all_tests --combined_report=lcov
+bazel coverage //server/src/test/java/sting/server/interceptors:all_tests --combined_report=lcov
 ```
 
 Coverage command labels may be adjusted to match final target names, but coverage scope must remain processor/server unit tests only.
@@ -140,4 +140,10 @@ Coverage command labels may be adjusted to match final target names, but coverag
 | Q-18 | Do not reproduce GWT compile/enhance. | Include `Sting.gwt.xml` resource only. |
 | Q-19 | Coverage uses unit-test targets only. | Coverage gate excludes integration-test targets. |
 | Q-20 | `tools/check.sh` fails on stale depgen output. | Updater runs first; generated drift fails CI. |
-| Q-21 | Emit planning artifacts before implementation. | Plan remains draft pending review. |
+| Q-21 | Emit planning artifacts before implementation. | Plan was accepted before implementation. |
+
+## Implementation Notes
+
+- Bazel uses TestNG `7.10.2` rather than the `build.yaml` `6.11` artifact because `proton-qa` 0.72 calls TestNG byte-array assertion overloads that are absent in 6.11.
+- The Error Prone strict set keeps substantive checks but omits `Varifier` after validation showed broad style-only churn in the processor.
+- Bazel excludes `-Xlint:this-escape` because the Bazel javac toolchain emits this newer warning while the project target remains Java 17.

@@ -28,7 +28,7 @@ Out of scope:
 - Java stays at 17.
 - Bazel uses version `9.1.1`, Bzlmod, and `rules_java 9.6.1`.
 - Buildr remains parallel and must not be weakened by Bazel work.
-- Bazel Java rules must preserve strict compilation with `-Werror`, `-Xlint:all,-processing,-serial`, Error Prone, strict Java deps, and explicit Java test deps.
+- Bazel Java rules must preserve strict compilation with `-Werror`, `-Xlint:all,-processing,-serial,-this-escape`, Error Prone, strict Java deps, and explicit Java test deps.
 - Tests use TestNG.
 - Test compilation starts with the same strict options as production. If Error Prone creates excessive churn, stop and ask before weakening tests.
 - Dependencies mirror `build.yaml` unless Bazel, Java 17, or Error Prone requires a documented exception.
@@ -70,8 +70,8 @@ Targeted checks during implementation:
 
 - `bazel build //...`
 - `bazel test //...`
-- `bazel test //processor/src/test/java/sting/processor:processor_tests`
-- `bazel test //server/src/test/java/sting/server/interceptors:server_tests`
+- `bazel test //processor/src/test/java/sting/processor:all_tests`
+- `bazel test //server/src/test/java/sting/server/interceptors:all_tests`
 - `bazel coverage <processor/server unit test targets> --combined_report=lcov`
 - `tools/java_format.sh check`
 
@@ -89,6 +89,8 @@ Coverage gate:
 - Bazel Phase 1 does not cover downstream or performance test modules.
 - Travis CI is removed because it is disabled legacy infrastructure.
 - Public end-user setup docs remain Maven-focused; Bazel docs stay contributor-facing.
+- Bazel uses TestNG `7.10.2` because `proton-qa` 0.72 requires newer TestNG assertion overloads at runtime.
+- The strict Error Prone set omits `Varifier` because it caused broad style-only churn without improving this migration.
 
 ## Open Questions Register
 

@@ -43,7 +43,10 @@ public final class InterceptorsIntegrationTest {
     private static boolean c_innerBeforeThrows;
     private static boolean c_innerAfterThrows;
     private static boolean c_innerAfterExceptionThrows;
+
+    @Nullable
     private static Supplier<SupplierCycleService> c_supplierCycleServiceSupplier;
+
     private static AroundMode c_outerAroundMode = AroundMode.PROCEED;
     private static AroundMode c_innerAroundMode = AroundMode.PROCEED;
 

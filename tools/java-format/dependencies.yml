@@ -1,0 +1,20 @@
+# NOTE: run tools/update_java_deps.sh after editing this file to update generated content.
+
+repositories:
+  - name: central
+    url: https://repo.maven.apache.org/maven2
+options:
+  workspaceDirectory: ../..
+  repositoryRuleGenerationStrategy: module
+  repositoryRuleStartToken: "# --- depgen-generated java-format repository rules start ---"
+  repositoryRuleEndToken: "# --- depgen-generated java-format repository rules end ---"
+  targetGenerationStrategy: build
+  includeSource: false
+  verifyConfigSha256: false
+  repositoryRuleLoadSymbols:
+    http_file: false
+
+artifacts:
+  - coord: com.palantir.javaformat:palantir-java-format:2.93.0
+    excludes:
+      - com.palantir.javaformat:palantir-java-format-parent

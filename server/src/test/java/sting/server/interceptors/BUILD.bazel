@@ -1,0 +1,13 @@
+load("//third_party/java:rules.bzl", "java_testng")
+
+java_testng(
+    name = "all_tests",
+    srcs = glob(["*.java"]),
+    test_class = "sting.server.interceptors.TransactionInterceptorTest",
+    deps = [
+        "//core",
+        "//server",
+        "//third_party/java:jakarta_transaction_api",
+        "//third_party/java:javax_annotation",
+    ],
+)

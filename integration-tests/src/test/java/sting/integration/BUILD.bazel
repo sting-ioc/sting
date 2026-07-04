@@ -1,0 +1,42 @@
+load("//third_party/java:rules.bzl", "java_library", "java_testng")
+
+java_library(
+    name = "test_support",
+    srcs = ["AbstractIntegrationTest.java"],
+    visibility = ["//integration-tests/src/test/java/sting/integration/other:__pkg__"],
+    deps = [
+        "//third_party/java:javax_annotation",
+        "//third_party/java:testng",
+    ],
+)
+
+java_testng(
+    name = "all_tests",
+    srcs = glob(
+        ["*.java"],
+        exclude = ["AbstractIntegrationTest.java"],
+    ),
+    plugins = ["//processor:sting_processor_plugin"],
+    test_classes = [
+        "sting.integration.BasicIntegrationTest",
+        "sting.integration.CollectionOutputCachedIntegrationTest",
+        "sting.integration.EagerDependenciesIntegrationTest",
+        "sting.integration.FactoryIntegrationTest",
+        "sting.integration.FactoryParameterAnnotationsIntegrationTest",
+        "sting.integration.InputsIntegrationTest",
+        "sting.integration.InterceptorsIntegrationTest",
+        "sting.integration.MultiplePublishedTypesDependenciesIntegrationTest",
+        "sting.integration.OptionalRequestsIntegrationTest",
+        "sting.integration.PrimitiveBoxedInteropIntegrationTest",
+        "sting.integration.ProviderFragmentAutoDiscoveryIntegrationTest",
+        "sting.integration.ProviderInjectableAnnotatedAutoDiscoveryIntegrationTest",
+        "sting.integration.ProviderInjectableAnnotatedIncludedIntegrationTest",
+        "sting.integration.ProviderInjectableAutoDiscoveryIntegrationTest",
+        "sting.integration.TypedProviderMethodIntegrationTest",
+    ],
+    deps = [
+        ":test_support",
+        "//core",
+        "//third_party/java:javax_annotation",
+    ],
+)

@@ -1,0 +1,58 @@
+load("@buildifier_prebuilt//:rules.bzl", "buildifier")
+
+package(default_visibility = ["//visibility:public"])
+
+WARNINGS = [
+    "+unsorted-dict-items",
+    "-module-docstring",
+    "-function-docstring",
+]
+
+buildifier(
+    name = "buildifier",
+    exclude_patterns = [
+        "./.git/*",
+        "./.bazelbsp/*",
+        "./tmp/*",
+    ],
+    lint_mode = "fix",
+    lint_warnings = WARNINGS,
+)
+
+buildifier(
+    name = "buildifier_check",
+    diff_command = "diff -u",
+    exclude_patterns = [
+        "./.git/*",
+        "./.bazelbsp/*",
+        "./tmp/*",
+    ],
+    lint_mode = "warn",
+    lint_warnings = WARNINGS,
+    mode = "diff",
+)
+
+test_suite(
+    name = "unit_tests",
+    tests = [
+        "//processor/src/test/java/sting/processor:all_tests",
+        "//server/src/test/java/sting/server/interceptors:all_tests",
+    ],
+)
+
+test_suite(
+    name = "integration_tests",
+    tests = [
+        "//integration-tests/src/test/java/sting/integration:all_tests",
+        "//integration-tests/src/test/java/sting/integration/other:all_tests",
+        "//server-integration-tests/src/test/java/sting/server/integration:all_tests",
+    ],
+)
+
+test_suite(
+    name = "all_tests",
+    tests = [
+        ":integration_tests",
+        ":unit_tests",
+    ],
+)

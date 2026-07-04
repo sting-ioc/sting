@@ -8,7 +8,7 @@ Last updated: 2026-07-04
 | Area | Buildr Baseline | Bazel Phase 1 Target | Intentional Divergence |
 | --- | --- | --- | --- |
 | Java version | Source/target 17 | Java/tool Java 17 | None |
-| Compiler strictness | `-Werror`, `-Xlint:all,-processing,-serial` | Same plus Error Prone and strict Java deps | Bazel is stricter by design |
+| Compiler strictness | `-Werror`, `-Xlint:all,-processing,-serial` | Same plus Error Prone and strict Java deps; `this-escape` is excluded for Bazel toolchain parity | Bazel is stricter by design |
 | Nullability model | `javax.annotation` | `javax.annotation` | No NullAway/JSpecify migration |
 | Core build | Build core jar and GWT enhanced artifacts | Build core Java library and include `Sting.gwt.xml` resource | No GWT compile/classifier |
 | Processor build | Build and shade release jar | Build unshaded library/plugin for build/test | No shaded release jar |
@@ -38,6 +38,12 @@ Last updated: 2026-07-04
 | Processor fixtures | Relative `src/test/fixtures` | Bazel `data` and runfiles-aware `sting.fixture_dir` | More hermetic than Buildr |
 | Coverage threshold | No numeric local gate found | Initial baseline from first passing Bazel coverage | Processor/server unit tests only |
 | Coverage inputs | N/A | Processor and server unit-test targets only | Integration tests excluded from gate |
+
+## Documented Compatibility Exceptions
+
+- Bazel uses TestNG `7.10.2` because `proton-qa` 0.72 calls TestNG assertion overloads missing from TestNG `6.11`.
+- The Error Prone strict set omits `Varifier`; the first strict build produced broad style-only churn in processor sources.
+- Bazel excludes `-Xlint:this-escape` to avoid warnings introduced by the Bazel javac toolchain beyond the Java 17 Buildr baseline.
 
 ## CI Parity
 

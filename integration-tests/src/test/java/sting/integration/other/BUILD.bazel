@@ -1,0 +1,13 @@
+load("//third_party/java:rules.bzl", "java_testng")
+
+java_testng(
+    name = "all_tests",
+    srcs = glob(["**/*.java"]),
+    plugins = ["//processor:sting_processor_plugin"],
+    test_class = "sting.integration.other.PackageAccessInDifferentPackagesIntegrationTest",
+    deps = [
+        "//core",
+        "//integration-tests/src/test/java/sting/integration:test_support",
+        "//third_party/java:javax_annotation",
+    ],
+)

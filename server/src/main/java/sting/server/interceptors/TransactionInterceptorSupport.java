@@ -135,6 +135,7 @@ abstract class TransactionInterceptorSupport {
                 _transactionManager.setRollbackOnly();
             }
         } catch (final Exception ignored) {
+            // Preserve the original application failure.
         }
     }
 

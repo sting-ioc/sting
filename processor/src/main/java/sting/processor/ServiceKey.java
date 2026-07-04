@@ -39,8 +39,9 @@ final class ServiceKey {
 
     @Override
     public boolean equals(final Object o) {
-        assert o instanceof ServiceKey;
-        final ServiceKey key = (ServiceKey) o;
+        if (!(o instanceof ServiceKey key)) {
+            return false;
+        }
         return matches(_qualifier, _type, key._qualifier, key._type);
     }
 

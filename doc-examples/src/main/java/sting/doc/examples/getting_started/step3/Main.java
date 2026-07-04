@@ -1,6 +1,8 @@
 package sting.doc.examples.getting_started.step3;
 
 public class Main {
+    private Main() {}
+
     public static void main(String[] args) {
         // Instantiate the injector
         final WebApplication application = WebApplication.create();
@@ -10,7 +12,7 @@ public class Main {
 
         // Instantiate the WelcomePage component and use it
         final WelcomePage page = application.getWelcomePage();
-        final String welcomeHtml = page.render();
+        page.render();
         // DOC ELIDE START
         // DOC ELIDE END
     }

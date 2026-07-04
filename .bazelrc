@@ -1,0 +1,12 @@
+common --java_language_version=17
+common --java_runtime_version=remotejdk_17
+common --tool_java_language_version=17
+common --tool_java_runtime_version=remotejdk_17
+
+build --nojava_header_compilation
+build --experimental_strict_java_deps=error
+test --explicit_java_test_deps
+
+# Generate the symlink tree as a peer directory.
+# Keeping it out of the repository avoids IDEs scanning Bazel outputs.
+common --symlink_prefix=../.bazel/sting/

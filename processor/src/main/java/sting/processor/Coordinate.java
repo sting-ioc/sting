@@ -27,8 +27,9 @@ record Coordinate(@Nonnull String qualifier, @Nonnull TypeMirror type) {
 
     @Override
     public boolean equals(final Object o) {
-        assert o instanceof Coordinate;
-        final Coordinate coordinate = (Coordinate) o;
+        if (!(o instanceof Coordinate coordinate)) {
+            return false;
+        }
         return qualifier.equals(coordinate.qualifier) && type.toString().equals(coordinate.type.toString());
     }
 

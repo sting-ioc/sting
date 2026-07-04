@@ -20,14 +20,15 @@ Run while implementing:
 bazel build //core:core
 bazel build //processor:processor
 bazel build //server:server
-bazel build //doc-examples:doc_examples
-bazel test //processor/src/test/java/sting/processor:processor_tests
-bazel test //server/src/test/java/sting/server/interceptors:server_tests
-bazel test //integration-tests/src/test/java/sting/integration:integration_tests
-bazel test //server-integration-tests/src/test/java/sting/server/integration:server_integration_tests
+bazel build //doc-examples:doc-examples
+bazel test //processor/src/test/java/sting/processor:all_tests
+bazel test //server/src/test/java/sting/server/interceptors:all_tests
+bazel test //integration-tests/src/test/java/sting/integration:all_tests
+bazel test //integration-tests/src/test/java/sting/integration/other:all_tests
+bazel test //server-integration-tests/src/test/java/sting/server/integration:all_tests
 ```
 
-Exact labels may change during implementation to match final package names. The scope must remain equivalent.
+These are the final Phase 1 labels.
 
 ## Full Gate
 
@@ -41,7 +42,7 @@ tools/check.sh
 2. Stale generated output check
 3. buildifier check
 4. Java format check
-5. `bazel build //...`
+5. Bazel build of the Phase 1 main module targets
 6. `bazel test //...`
 7. Bazel coverage for processor and server unit-test targets only
 8. Coverage threshold check
@@ -50,8 +51,8 @@ tools/check.sh
 
 Coverage inputs:
 
-- `//processor/src/test/java/sting/processor:processor_tests`
-- `//server/src/test/java/sting/server/interceptors:server_tests`
+- `//processor/src/test/java/sting/processor:all_tests`
+- `//server/src/test/java/sting/server/interceptors:all_tests`
 
 Coverage measurement:
 
@@ -65,6 +66,11 @@ Threshold policy:
 - Record observed line/branch coverage.
 - Round down slightly to create stable initial thresholds.
 - Do not add tests just to raise thresholds.
+
+Initial observed Bazel coverage:
+
+- Line coverage: 94.59% (3917/4141); gate: 94%.
+- Branch coverage: 85.85% (1851/2156); gate: 85%.
 
 ## Failure Handling
 

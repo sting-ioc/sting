@@ -778,7 +778,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                     }
                 } else {
                     //noinspection ConstantConditions
-                    assert bindings.size() > 1 && !kind.isCollection();
+                    assert bindings.size() > 1;
                     final String message = MemberChecks.mustNot(
                             Constants.INJECTOR_CLASSNAME,
                             "contain a non-collection dependency " + coordinate
@@ -2100,15 +2100,14 @@ public final class StingProcessor extends AbstractStandardProcessor {
                         serviceElement = (TypeElement) ((DeclaredType) serviceType).asElement();
                         for (final var annotation : findInterceptorBindingAnnotations(serviceElement)) {
                             final var values = extractBindingValues(annotation);
-                            serviceBindings.add(
-                                    createInterceptorBindingDescriptor(service, annotation, serviceElement, values));
+                            serviceBindings.add(createInterceptorBindingDescriptor(annotation, serviceElement, values));
                         }
                     }
                     if (Binding.Kind.INPUT != binding.getKind()) {
                         for (final var entry :
                                 binding.getInterceptorBindingSourceAnnotations().entrySet()) {
                             serviceBindings.add(createInterceptorBindingDescriptor(
-                                    service, entry.getKey(), bindingSource, entry.getValue()));
+                                    entry.getKey(), bindingSource, entry.getValue()));
                         }
                     }
                     validateNoMethodLevelInterceptorBindings(binding, serviceElement, bindingSource);
@@ -2156,7 +2155,6 @@ public final class StingProcessor extends AbstractStandardProcessor {
 
     @Nonnull
     private InterceptorBindingDescriptor createInterceptorBindingDescriptor(
-            @Nonnull final ServiceSpec service,
             @Nonnull final AnnotationMirror annotation,
             @Nonnull final Element usageElement,
             @Nonnull final Map<String, BindingValueModel> values) {
@@ -2546,7 +2544,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             case '"' -> "'\"'";
             case '\'' -> "'\\''";
             case '\\' -> "'\\\\'";
-            default -> Character.isISOControl(c) ? String.format("'\\u%04x'", (int) c) : "'" + c + "'";
+            default -> Character.isISOControl(c) ? String.format(Locale.ROOT, "'\\u%04x'", (int) c) : "'" + c + "'";
         };
     }
 

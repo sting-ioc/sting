@@ -1,0 +1,208 @@
+load("@rules_java//java:defs.bzl", _java_import = "java_import")
+load("//third_party/java:rules.bzl", "java_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+# --- depgen-generated targets start ---
+
+# DO NOT EDIT: Content is auto-generated from //tools/java-format:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
+
+exports_files(["dependencies.yml"])
+
+# Dependency Graph Generated from the input data
+# \- com.palantir.javaformat:palantir-java-format:jar:2.93.0 [compile]
+#    +- com.palantir.javaformat:palantir-java-format-spi:jar:2.93.0 [compile]
+#    |  +- com.google.guava:guava:jar:33.6.0-jre [compile]
+#    |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.21 [compile]
+#    |  \- com.fasterxml.jackson.datatype:jackson-datatype-guava:jar:2.21.4 [compile]
+#    |     +- com.google.guava:guava:jar:25.1-jre [compile] (conflicts with 33.6.0-jre)
+#    |     +- com.fasterxml.jackson.core:jackson-annotations:jar:2.21 [compile]
+#    |     +- com.fasterxml.jackson.core:jackson-core:jar:2.21.4 [compile]
+#    |     \- com.fasterxml.jackson.core:jackson-databind:jar:2.21.4 [compile]
+#    +- com.google.guava:guava:jar:33.6.0-jre [compile]
+#    |  +- com.google.guava:failureaccess:jar:1.0.3 [compile]
+#    |  +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
+#    |  +- org.jspecify:jspecify:jar:1.0.0 [compile]
+#    |  +- com.google.errorprone:error_prone_annotations:jar:2.47.0 [compile]
+#    |  \- com.google.j2objc:j2objc-annotations:jar:3.1 [compile]
+#    +- org.functionaljava:functionaljava:jar:5.0 [runtime]
+#    +- com.fasterxml.jackson.core:jackson-core:jar:2.21.4 [compile]
+#    +- com.fasterxml.jackson.core:jackson-databind:jar:2.21.4 [compile]
+#    |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.21 [compile]
+#    |  \- com.fasterxml.jackson.core:jackson-core:jar:2.21.4 [compile]
+#    +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.21.4 [runtime]
+#    |  +- com.fasterxml.jackson.core:jackson-core:jar:2.21.4 [runtime]
+#    |  \- com.fasterxml.jackson.core:jackson-databind:jar:2.21.4 [runtime]
+#    +- com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.21.4 [runtime]
+#    |  +- com.fasterxml.jackson.core:jackson-core:jar:2.21.4 [runtime]
+#    |  \- com.fasterxml.jackson.core:jackson-databind:jar:2.21.4 [runtime]
+#    \- com.google.code.findbugs:jsr305:jar:3.0.2 [runtime]
+
+_java_import(
+    name = "com_fasterxml_jackson_core__jackson_annotations",
+    jars = ["@com_fasterxml_jackson_core__jackson_annotations__2_21//file"],
+    tags = ["maven_coordinates=com.fasterxml.jackson.core:jackson-annotations:2.21"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "com_fasterxml_jackson_core__jackson_core",
+    jars = ["@com_fasterxml_jackson_core__jackson_core__2_21_4//file"],
+    tags = ["maven_coordinates=com.fasterxml.jackson.core:jackson-core:2.21.4"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "com_fasterxml_jackson_core__jackson_databind",
+    jars = ["@com_fasterxml_jackson_core__jackson_databind__2_21_4//file"],
+    tags = ["maven_coordinates=com.fasterxml.jackson.core:jackson-databind:2.21.4"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":com_fasterxml_jackson_core__jackson_annotations",
+        ":com_fasterxml_jackson_core__jackson_core",
+    ],
+)
+
+_java_import(
+    name = "com_fasterxml_jackson_datatype__jackson_datatype_guava",
+    jars = ["@com_fasterxml_jackson_datatype__jackson_datatype_guava__2_21_4//file"],
+    tags = ["maven_coordinates=com.fasterxml.jackson.datatype:jackson-datatype-guava:2.21.4"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":com_fasterxml_jackson_core__jackson_annotations",
+        ":com_fasterxml_jackson_core__jackson_core",
+        ":com_fasterxml_jackson_core__jackson_databind",
+        ":com_google_guava__guava",
+    ],
+)
+
+_java_import(
+    name = "com_fasterxml_jackson_datatype__jackson_datatype_jdk8",
+    jars = ["@com_fasterxml_jackson_datatype__jackson_datatype_jdk8__2_21_4//file"],
+    tags = ["maven_coordinates=com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.21.4"],
+    visibility = ["//visibility:private"],
+    runtime_deps = [
+        ":com_fasterxml_jackson_core__jackson_core",
+        ":com_fasterxml_jackson_core__jackson_databind",
+    ],
+)
+
+_java_import(
+    name = "com_fasterxml_jackson_module__jackson_module_parameter_names",
+    jars = ["@com_fasterxml_jackson_module__jackson_module_parameter_names__2_21_4//file"],
+    tags = ["maven_coordinates=com.fasterxml.jackson.module:jackson-module-parameter-names:2.21.4"],
+    visibility = ["//visibility:private"],
+    runtime_deps = [
+        ":com_fasterxml_jackson_core__jackson_core",
+        ":com_fasterxml_jackson_core__jackson_databind",
+    ],
+)
+
+_java_import(
+    name = "com_google_code_findbugs__jsr305",
+    jars = ["@com_google_code_findbugs__jsr305__3_0_2//file"],
+    tags = ["maven_coordinates=com.google.code.findbugs:jsr305:3.0.2"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "com_google_errorprone__error_prone_annotations",
+    jars = ["@com_google_errorprone__error_prone_annotations__2_47_0//file"],
+    tags = ["maven_coordinates=com.google.errorprone:error_prone_annotations:2.47.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "com_google_guava__failureaccess",
+    jars = ["@com_google_guava__failureaccess__1_0_3//file"],
+    tags = ["maven_coordinates=com.google.guava:failureaccess:1.0.3"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "com_google_guava__guava",
+    jars = ["@com_google_guava__guava__33_6_0_jre//file"],
+    tags = ["maven_coordinates=com.google.guava:guava:33.6.0-jre"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":com_google_errorprone__error_prone_annotations",
+        ":com_google_guava__failureaccess",
+        ":com_google_guava__listenablefuture",
+        ":com_google_j2objc__j2objc_annotations",
+        ":org_jspecify__jspecify",
+    ],
+)
+
+_java_import(
+    name = "com_google_guava__listenablefuture",
+    jars = ["@com_google_guava__listenablefuture__9999_0_empty_to_avoid_conflict_with_guava//file"],
+    tags = ["maven_coordinates=com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "com_google_j2objc__j2objc_annotations",
+    jars = ["@com_google_j2objc__j2objc_annotations__3_1//file"],
+    tags = ["maven_coordinates=com.google.j2objc:j2objc-annotations:3.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "com_palantir_javaformat__palantir_java_format",
+    jars = ["@com_palantir_javaformat__palantir_java_format__2_93_0//file"],
+    tags = ["maven_coordinates=com.palantir.javaformat:palantir-java-format:2.93.0"],
+    runtime_deps = [
+        ":com_fasterxml_jackson_datatype__jackson_datatype_jdk8",
+        ":com_fasterxml_jackson_module__jackson_module_parameter_names",
+        ":com_google_code_findbugs__jsr305",
+        ":org_functionaljava__functionaljava",
+    ],
+    deps = [
+        ":com_fasterxml_jackson_core__jackson_core",
+        ":com_fasterxml_jackson_core__jackson_databind",
+        ":com_google_guava__guava",
+        ":com_palantir_javaformat__palantir_java_format_spi",
+    ],
+)
+
+_java_import(
+    name = "com_palantir_javaformat__palantir_java_format_spi",
+    jars = ["@com_palantir_javaformat__palantir_java_format_spi__2_93_0//file"],
+    tags = ["maven_coordinates=com.palantir.javaformat:palantir-java-format-spi:2.93.0"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":com_fasterxml_jackson_core__jackson_annotations",
+        ":com_fasterxml_jackson_datatype__jackson_datatype_guava",
+        ":com_google_guava__guava",
+    ],
+)
+
+_java_import(
+    name = "org_functionaljava__functionaljava",
+    jars = ["@org_functionaljava__functionaljava__5_0//file"],
+    tags = ["maven_coordinates=org.functionaljava:functionaljava:5.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "org_jspecify__jspecify",
+    jars = ["@org_jspecify__jspecify__1_0_0//file"],
+    tags = ["maven_coordinates=org.jspecify:jspecify:1.0.0"],
+    visibility = ["//visibility:private"],
+)
+
+# --- depgen-generated targets end ---
+
+java_binary(
+    name = "palantir_java_format",
+    jvm_flags = [
+        "--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
+        "--add-exports=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED",
+        "--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED",
+        "--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED",
+        "--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED",
+        "--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED",
+    ],
+    main_class = "com.palantir.javaformat.java.Main",
+    runtime_deps = [":com_palantir_javaformat__palantir_java_format"],
+)

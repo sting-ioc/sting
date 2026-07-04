@@ -1,0 +1,556 @@
+load("@rules_java//java:defs.bzl", _java_binary = "java_binary", _java_import = "java_import", _java_test = "java_test")
+
+package(default_visibility = ["//visibility:public"])
+
+# --- depgen-generated targets start ---
+
+# DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
+
+# SHA256 of the configuration content that generated this content
+_CONFIG_SHA256 = "8B3810AB0E94B685E726DCCD6C6A71B56A7C68F3CC157B9690FD09FF6BEA7B4D"
+
+exports_files(["dependencies.yml"])
+
+# Dependency Graph Generated from the input data
+# +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
+# +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
+# +- org.realityforge.proton:proton-core:jar:0.72 [compile]
+# |  +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
+# |  +- org.glassfish:javax.json:jar:1.1 [compile]
+# |  +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
+# |  \- com.google.guava:guava:jar:27.1-jre [compile]
+# |     +- com.google.guava:failureaccess:jar:1.0.1 [compile] (conflicts with 1.0.3)
+# |     +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
+# |     +- com.google.code.findbugs:jsr305:jar:3.0.2 [compile]
+# |     +- org.checkerframework:checker-qual:jar:2.5.2 [compile]
+# |     +- com.google.errorprone:error_prone_annotations:jar:2.2.0 [compile] (conflicts with 2.49.0)
+# |     +- com.google.j2objc:j2objc-annotations:jar:1.1 [compile] (conflicts with 3.1)
+# |     \- org.codehaus.mojo:animal-sniffer-annotations:jar:1.17 [compile]
+# +- org.realityforge.proton:proton-qa:jar:0.72 [compile]
+# |  +- org.realityforge.proton:proton-core:jar:0.72 [compile]
+# |  +- org.realityforge.proton:proton-core:jar:sources:0.72 [compile]
+# |  +- org.realityforge.proton:proton-core:jar:javadoc:0.72 [compile]
+# |  +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
+# |  +- org.glassfish:javax.json:jar:1.1 [compile]
+# |  +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
+# |  +- com.google.guava:guava:jar:33.6.0-jre [compile] (conflicts with 27.1-jre)
+# |  +- com.palantir.javaformat:palantir-java-format:jar:2.92.0 [compile]
+# |  +- com.palantir.javaformat:palantir-java-format-spi:jar:2.92.0 [compile]
+# |  +- com.google.guava:failureaccess:jar:1.0.3 [compile]
+# |  +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
+# |  +- org.jspecify:jspecify:jar:1.0.0 [compile]
+# |  +- com.google.errorprone:error_prone_annotations:jar:2.49.0 [compile]
+# |  +- com.google.j2objc:j2objc-annotations:jar:3.1 [compile]
+# |  +- org.functionaljava:functionaljava:jar:5.0 [compile]
+# |  +- com.fasterxml.jackson.core:jackson-core:jar:2.21.1 [compile]
+# |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.21.1 [compile]
+# |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.21 [compile]
+# |  +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.21.1 [compile]
+# |  +- com.fasterxml.jackson.datatype:jackson-datatype-guava:jar:2.21.1 [compile]
+# |  \- com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.21.1 [compile]
+# +- org.glassfish:javax.json:jar:1.1 [compile]
+# |  \- javax.json:javax.json-api:jar:1.1 [compile, optional]
+# +- org.gwtproject:gwt-user:jar:2.11.0 [compile]
+# |  +- com.google.jsinterop:jsinterop-annotations:jar:2.0.0 [compile]
+# |  +- javax.validation:validation-api:jar:1.0.0.GA [compile]
+# |  +- javax.validation:validation-api:jar:sources:1.0.0.GA [compile]
+# |  +- javax.servlet:javax.servlet-api:jar:3.1.0 [compile]
+# |  \- org.w3c.css:sac:jar:1.3 [compile]
+# +- javax:javaee-api:jar:8.0 [compile]
+# |  +- javax:javaee-web-api:jar:8.0 [compile, optional]
+# |  +- org.glassfish:javax.faces:jar:2.3.2 [compile, optional]
+# |  +- javax.jms:javax.jms-api:jar:2.0.1 [compile, optional]
+# |  +- com.sun.mail:javax.mail:jar:1.6.0 [compile]
+# |  |  \- javax.activation:activation:jar:1.1 [compile]
+# |  +- javax.resource:javax.resource-api:jar:1.7 [compile, optional]
+# |  +- javax.management.j2ee:javax.management.j2ee-api:jar:1.1.1 [compile, optional]
+# |  +- javax.security.jacc:javax.security.jacc-api:jar:1.5 [compile, optional]
+# |  +- javax.enterprise.concurrent:javax.enterprise.concurrent-api:jar:1.0 [compile, optional]
+# |  +- javax.batch:javax.batch-api:jar:1.0.1 [compile, optional]
+# |  +- javax.enterprise.deploy:javax.enterprise.deploy-api:jar:1.6 [compile, optional]
+# |  +- javax.xml.registry:javax.xml.registry-api:jar:1.0.7 [compile, optional]
+# |  \- javax.xml.rpc:javax.xml.rpc-api:jar:1.1.1 [compile, optional]
+# +- jakarta.transaction:jakarta.transaction-api:jar:2.0.1 [compile]
+# +- org.testng:testng:jar:7.10.2 [compile]
+# |  +- org.slf4j:slf4j-api:jar:1.7.36 [compile]
+# |  +- com.beust:jcommander:jar:1.82 [compile]
+# |  +- org.webjars:jquery:jar:3.7.1 [runtime]
+# |  +- com.google.inject:guice:jar:5.1.0 [compile, optional]
+# |  \- org.yaml:snakeyaml:jar:2.2 [runtime, optional]
+# \- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
+
+_java_test(
+    name = "verify_config_sha256",
+    size = "small",
+    args = [
+        "--config-file",
+        "$(rootpath //third_party/java:dependencies.yml)",
+        "--verbose",
+        "hash",
+        "--verify-sha256",
+        _CONFIG_SHA256,
+    ],
+    data = ["//third_party/java:dependencies.yml"],
+    main_class = "org.realityforge.bazel.depgen.Main",
+    use_testrunner = False,
+    visibility = ["//visibility:private"],
+    runtime_deps = [":bazel_depgen"],
+)
+
+_java_binary(
+    name = "update_depgen_generated_outputs",
+    args = [
+        "--config-file",
+        "$(rootpath //third_party/java:dependencies.yml)",
+        "--verbose",
+        "generate",
+    ],
+    data = ["//third_party/java:dependencies.yml"],
+    main_class = "org.realityforge.bazel.depgen.Main",
+    tags = [
+        "local",
+        "manual",
+        "no-cache",
+        "no-remote",
+        "no-sandbox",
+    ],
+    visibility = ["//visibility:private"],
+    runtime_deps = [":bazel_depgen"],
+)
+
+_java_import(
+    name = "jcommander",
+    jars = ["@jcommander//file"],
+    srcjar = "@jcommander__sources//file",
+    tags = ["maven_coordinates=com.beust:jcommander:1.82"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "jackson_annotations",
+    jars = ["@jackson_annotations//file"],
+    srcjar = "@jackson_annotations__sources//file",
+    tags = ["maven_coordinates=com.fasterxml.jackson.core:jackson-annotations:2.21"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "jackson_core",
+    jars = ["@jackson_core//file"],
+    srcjar = "@jackson_core__sources//file",
+    tags = ["maven_coordinates=com.fasterxml.jackson.core:jackson-core:2.21.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "jackson_databind",
+    jars = ["@jackson_databind//file"],
+    srcjar = "@jackson_databind__sources//file",
+    tags = ["maven_coordinates=com.fasterxml.jackson.core:jackson-databind:2.21.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "jackson_datatype_guava",
+    jars = ["@jackson_datatype_guava//file"],
+    srcjar = "@jackson_datatype_guava__sources//file",
+    tags = ["maven_coordinates=com.fasterxml.jackson.datatype:jackson-datatype-guava:2.21.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "jackson_datatype_jdk8",
+    jars = ["@jackson_datatype_jdk8//file"],
+    srcjar = "@jackson_datatype_jdk8__sources//file",
+    tags = ["maven_coordinates=com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.21.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "jackson_module_parameter_names",
+    jars = ["@jackson_module_parameter_names//file"],
+    srcjar = "@jackson_module_parameter_names__sources//file",
+    tags = ["maven_coordinates=com.fasterxml.jackson.module:jackson-module-parameter-names:2.21.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "jsr305",
+    jars = ["@jsr305//file"],
+    srcjar = "@jsr305__sources//file",
+    tags = ["maven_coordinates=com.google.code.findbugs:jsr305:3.0.2"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "error_prone_annotations",
+    jars = ["@error_prone_annotations//file"],
+    srcjar = "@error_prone_annotations__sources//file",
+    tags = ["maven_coordinates=com.google.errorprone:error_prone_annotations:2.49.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "failureaccess",
+    jars = ["@failureaccess//file"],
+    srcjar = "@failureaccess__sources//file",
+    tags = ["maven_coordinates=com.google.guava:failureaccess:1.0.3"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "guava",
+    jars = ["@guava//file"],
+    srcjar = "@guava__sources//file",
+    tags = ["maven_coordinates=com.google.guava:guava:27.1-jre"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":animal_sniffer_annotations",
+        ":checker_qual",
+        ":error_prone_annotations",
+        ":failureaccess",
+        ":j2objc_annotations",
+        ":jsr305",
+        ":listenablefuture",
+    ],
+)
+
+_java_import(
+    name = "listenablefuture",
+    jars = ["@listenablefuture//file"],
+    tags = ["maven_coordinates=com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava"],
+)
+
+_java_import(
+    name = "guice",
+    jars = ["@guice//file"],
+    srcjar = "@guice__sources//file",
+    tags = ["maven_coordinates=com.google.inject:guice:5.1.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "j2objc_annotations",
+    jars = ["@j2objc_annotations//file"],
+    srcjar = "@j2objc_annotations__sources//file",
+    tags = ["maven_coordinates=com.google.j2objc:j2objc-annotations:3.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "jsinterop_annotations",
+    jars = ["@jsinterop_annotations//file"],
+    srcjar = "@jsinterop_annotations__sources//file",
+    tags = ["maven_coordinates=com.google.jsinterop:jsinterop-annotations:2.0.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "palantir_java_format",
+    jars = ["@palantir_java_format//file"],
+    srcjar = "@palantir_java_format__sources//file",
+    tags = ["maven_coordinates=com.palantir.javaformat:palantir-java-format:2.92.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "palantir_java_format_spi",
+    jars = ["@palantir_java_format_spi//file"],
+    srcjar = "@palantir_java_format_spi__sources//file",
+    tags = ["maven_coordinates=com.palantir.javaformat:palantir-java-format-spi:2.92.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javapoet",
+    jars = ["@javapoet//file"],
+    tags = ["maven_coordinates=com.palantir.javapoet:javapoet:0.14.0"],
+)
+
+_java_import(
+    name = "javax_mail",
+    jars = ["@javax_mail//file"],
+    srcjar = "@javax_mail__sources//file",
+    tags = ["maven_coordinates=com.sun.mail:javax.mail:1.6.0"],
+    visibility = ["//visibility:private"],
+    deps = [":activation"],
+)
+
+_java_import(
+    name = "jakarta_transaction_api",
+    jars = ["@jakarta_transaction_api//file"],
+    tags = ["maven_coordinates=jakarta.transaction:jakarta.transaction-api:2.0.1"],
+)
+
+_java_import(
+    name = "activation",
+    jars = ["@activation//file"],
+    srcjar = "@activation__sources//file",
+    tags = ["maven_coordinates=javax.activation:activation:1.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javax_batch_api",
+    jars = ["@javax_batch_api//file"],
+    srcjar = "@javax_batch_api__sources//file",
+    tags = ["maven_coordinates=javax.batch:javax.batch-api:1.0.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javax_enterprise_concurrent_api",
+    jars = ["@javax_enterprise_concurrent_api//file"],
+    srcjar = "@javax_enterprise_concurrent_api__sources//file",
+    tags = ["maven_coordinates=javax.enterprise.concurrent:javax.enterprise.concurrent-api:1.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javax_enterprise_deploy_api",
+    jars = ["@javax_enterprise_deploy_api//file"],
+    srcjar = "@javax_enterprise_deploy_api__sources//file",
+    tags = ["maven_coordinates=javax.enterprise.deploy:javax.enterprise.deploy-api:1.6"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javax_jms_api",
+    jars = ["@javax_jms_api//file"],
+    srcjar = "@javax_jms_api__sources//file",
+    tags = ["maven_coordinates=javax.jms:javax.jms-api:2.0.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javax_json_api",
+    jars = ["@javax_json_api//file"],
+    srcjar = "@javax_json_api__sources//file",
+    tags = ["maven_coordinates=javax.json:javax.json-api:1.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javax_management_j2ee_api",
+    jars = ["@javax_management_j2ee_api//file"],
+    srcjar = "@javax_management_j2ee_api__sources//file",
+    tags = ["maven_coordinates=javax.management.j2ee:javax.management.j2ee-api:1.1.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javax_resource_api",
+    jars = ["@javax_resource_api//file"],
+    srcjar = "@javax_resource_api__sources//file",
+    tags = ["maven_coordinates=javax.resource:javax.resource-api:1.7"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javax_security_jacc_api",
+    jars = ["@javax_security_jacc_api//file"],
+    srcjar = "@javax_security_jacc_api__sources//file",
+    tags = ["maven_coordinates=javax.security.jacc:javax.security.jacc-api:1.5"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javax_servlet_api",
+    jars = ["@javax_servlet_api//file"],
+    srcjar = "@javax_servlet_api__sources//file",
+    tags = ["maven_coordinates=javax.servlet:javax.servlet-api:3.1.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "validation_api",
+    jars = ["@validation_api//file"],
+    srcjar = "@validation_api__sources//file",
+    tags = ["maven_coordinates=javax.validation:validation-api:1.0.0.GA"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javax_xml_registry_api",
+    jars = ["@javax_xml_registry_api//file"],
+    srcjar = "@javax_xml_registry_api__sources//file",
+    tags = ["maven_coordinates=javax.xml.registry:javax.xml.registry-api:1.0.7"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javax_xml_rpc_api",
+    jars = ["@javax_xml_rpc_api//file"],
+    srcjar = "@javax_xml_rpc_api__sources//file",
+    tags = ["maven_coordinates=javax.xml.rpc:javax.xml.rpc-api:1.1.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javaee_api",
+    jars = ["@javaee_api//file"],
+    tags = ["maven_coordinates=javax:javaee-api:8.0"],
+    deps = [":javax_mail"],
+)
+
+_java_import(
+    name = "javaee_web_api",
+    jars = ["@javaee_web_api//file"],
+    srcjar = "@javaee_web_api__sources//file",
+    tags = ["maven_coordinates=javax:javaee-web-api:8.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "checker_qual",
+    jars = ["@checker_qual//file"],
+    srcjar = "@checker_qual__sources//file",
+    tags = ["maven_coordinates=org.checkerframework:checker-qual:2.5.2"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "animal_sniffer_annotations",
+    jars = ["@animal_sniffer_annotations//file"],
+    srcjar = "@animal_sniffer_annotations__sources//file",
+    tags = ["maven_coordinates=org.codehaus.mojo:animal-sniffer-annotations:1.17"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "functionaljava",
+    jars = ["@functionaljava//file"],
+    srcjar = "@functionaljava__sources//file",
+    tags = ["maven_coordinates=org.functionaljava:functionaljava:5.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javax_faces",
+    jars = ["@javax_faces//file"],
+    srcjar = "@javax_faces__sources//file",
+    tags = ["maven_coordinates=org.glassfish:javax.faces:2.3.2"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javax_json",
+    jars = ["@javax_json//file"],
+    tags = ["maven_coordinates=org.glassfish:javax.json:1.1"],
+)
+
+_java_import(
+    name = "gwt_user",
+    jars = ["@gwt_user//file"],
+    tags = ["maven_coordinates=org.gwtproject:gwt-user:2.11.0"],
+    deps = [
+        ":javax_servlet_api",
+        ":jsinterop_annotations",
+        ":sac",
+        ":validation_api",
+    ],
+)
+
+_java_import(
+    name = "jspecify",
+    jars = ["@jspecify//file"],
+    srcjar = "@jspecify__sources//file",
+    tags = ["maven_coordinates=org.jspecify:jspecify:1.0.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "bazel_depgen",
+    jars = ["@bazel_depgen//file"],
+    tags = ["maven_coordinates=org.realityforge.bazel.depgen:bazel-depgen:0.26"],
+)
+
+_java_import(
+    name = "javax_annotation",
+    jars = ["@javax_annotation//file"],
+    tags = ["maven_coordinates=org.realityforge.javax.annotation:javax.annotation:1.1.1"],
+)
+
+_java_import(
+    name = "proton_core",
+    jars = ["@proton_core//file"],
+    tags = ["maven_coordinates=org.realityforge.proton:proton-core:0.72"],
+    deps = [
+        ":guava",
+        ":javapoet",
+        ":javax_annotation",
+        ":javax_json",
+    ],
+)
+
+_java_import(
+    name = "proton_qa",
+    jars = ["@proton_qa//file"],
+    tags = ["maven_coordinates=org.realityforge.proton:proton-qa:0.72"],
+    deps = [
+        ":error_prone_annotations",
+        ":failureaccess",
+        ":functionaljava",
+        ":guava",
+        ":j2objc_annotations",
+        ":jackson_annotations",
+        ":jackson_core",
+        ":jackson_databind",
+        ":jackson_datatype_guava",
+        ":jackson_datatype_jdk8",
+        ":jackson_module_parameter_names",
+        ":javapoet",
+        ":javax_annotation",
+        ":javax_json",
+        ":jspecify",
+        ":listenablefuture",
+        ":palantir_java_format",
+        ":palantir_java_format_spi",
+        ":proton_core",
+    ],
+)
+
+_java_import(
+    name = "slf4j_api",
+    jars = ["@slf4j_api//file"],
+    srcjar = "@slf4j_api__sources//file",
+    tags = ["maven_coordinates=org.slf4j:slf4j-api:1.7.36"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "testng",
+    jars = ["@testng//file"],
+    tags = ["maven_coordinates=org.testng:testng:7.10.2"],
+    runtime_deps = [":jquery"],
+    deps = [
+        ":jcommander",
+        ":slf4j_api",
+    ],
+)
+
+_java_import(
+    name = "sac",
+    jars = ["@sac//file"],
+    srcjar = "@sac__sources//file",
+    tags = ["maven_coordinates=org.w3c.css:sac:1.3"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "jquery",
+    jars = ["@jquery//file"],
+    srcjar = "@jquery__sources//file",
+    tags = ["maven_coordinates=org.webjars:jquery:3.7.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "snakeyaml",
+    jars = ["@snakeyaml//file"],
+    srcjar = "@snakeyaml__sources//file",
+    tags = ["maven_coordinates=org.yaml:snakeyaml:2.2"],
+    visibility = ["//visibility:private"],
+)
+
+# --- depgen-generated targets end ---

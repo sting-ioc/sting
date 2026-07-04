@@ -8,6 +8,7 @@ import jakarta.transaction.InvalidTransactionException;
 import jakarta.transaction.NotSupportedException;
 import jakarta.transaction.RollbackException;
 import jakarta.transaction.Status;
+import jakarta.transaction.Synchronization;
 import jakarta.transaction.SystemException;
 import jakarta.transaction.Transaction;
 import jakarta.transaction.TransactionManager;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.transaction.xa.XAResource;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import sting.Injectable;
@@ -136,12 +138,12 @@ public final class ServerTransactionalIntegrationTest {
         }
 
         @Override
-        public boolean delistResource(@Nonnull final javax.transaction.xa.XAResource xaResource, final int flag) {
+        public boolean delistResource(@Nonnull final XAResource xaResource, final int flag) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean enlistResource(@Nonnull final javax.transaction.xa.XAResource xaResource) {
+        public boolean enlistResource(@Nonnull final XAResource xaResource) {
             throw new UnsupportedOperationException();
         }
 
@@ -151,7 +153,7 @@ public final class ServerTransactionalIntegrationTest {
         }
 
         @Override
-        public void registerSynchronization(@Nonnull final jakarta.transaction.Synchronization synchronization) {
+        public void registerSynchronization(@Nonnull final Synchronization synchronization) {
             throw new UnsupportedOperationException();
         }
 

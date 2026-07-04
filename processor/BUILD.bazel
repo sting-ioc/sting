@@ -1,0 +1,22 @@
+load("//third_party/java:rules.bzl", "java_library", "java_plugin")
+
+package(default_visibility = ["//visibility:public"])
+
+java_library(
+    name = "processor",
+    srcs = glob(["src/main/java/**/*.java"]),
+    resource_strip_prefix = "processor/src/main/resources",
+    resources = glob(["src/main/resources/**"]),
+    deps = [
+        "//third_party/java:javapoet",
+        "//third_party/java:javax_annotation",
+        "//third_party/java:javax_json",
+        "//third_party/java:proton_core",
+    ],
+)
+
+java_plugin(
+    name = "sting_processor_plugin",
+    processor_class = "sting.processor.StingProcessor",
+    deps = [":processor"],
+)

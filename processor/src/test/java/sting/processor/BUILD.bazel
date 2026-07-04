@@ -1,0 +1,40 @@
+load("//third_party/java:rules.bzl", "FORMATTER_JVM_FLAGS", "java_library", "java_testng")
+
+java_library(
+    name = "test_support",
+    srcs = ["AbstractStingProcessorTest.java"],
+    deps = [
+        "//processor",
+        "//third_party/java:javax_annotation",
+        "//third_party/java:proton_qa",
+    ],
+)
+
+java_testng(
+    name = "all_tests",
+    srcs = glob(
+        ["*.java"],
+        exclude = ["AbstractStingProcessorTest.java"],
+    ),
+    data = ["//processor/src/test/fixtures:all"],
+    jvm_flags = [
+        "-Dsting.fixture_dir=processor/src/test/fixtures",
+    ] + FORMATTER_JVM_FLAGS,
+    test_classes = [
+        "sting.processor.StingProcessorInjectorGraphTest",
+        "sting.processor.StingProcessorMultiStageCompilesTest",
+        "sting.processor.StingProcessorNoJsonTest",
+        "sting.processor.StingProcessorRuntimeDeriveTest",
+        "sting.processor.StingProcessorTest",
+    ],
+    deps = [
+        ":test_support",
+        "//core",
+        "//processor",
+        "//third_party/java:gwt_user",
+        "//third_party/java:javaee_api",
+        "//third_party/java:javax_annotation",
+        "//third_party/java:javax_json",
+        "//third_party/java:proton_qa",
+    ],
+)
