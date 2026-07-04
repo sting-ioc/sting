@@ -39,7 +39,7 @@ final class ServiceKey {
 
     @Override
     public boolean equals(final Object o) {
-      return o instanceof ServiceKey key && matches( _qualifier, _type, key._qualifier, key._type );
+        return o instanceof ServiceKey key && matches(_qualifier, _type, key._qualifier, key._type);
     }
 
     private static boolean matches(
