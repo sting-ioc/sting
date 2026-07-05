@@ -17,7 +17,7 @@ _java_plugin(
 # DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
 
 # SHA256 of the configuration content that generated this content
-_CONFIG_SHA256 = "2176B7573CC0E444EDE54852ABEFDE752B3FCA872C7AFA88338D20BA32F9BF73"
+_CONFIG_SHA256 = "46FDB051DD06159E826D74533E20887F782236AA240E661B8AA201CB8D5B2905"
 
 exports_files(["dependencies.yml"])
 
@@ -268,6 +268,7 @@ _java_import(
 _java_import(
     name = "javapoet",
     jars = ["@javapoet//file"],
+    srcjar = "@javapoet__sources//file",
     tags = ["maven_coordinates=com.palantir.javapoet:javapoet:0.14.0"],
 )
 
@@ -283,6 +284,7 @@ _java_import(
 _java_import(
     name = "nullaway",
     jars = ["@nullaway//file"],
+    srcjar = "@nullaway__sources//file",
     tags = ["maven_coordinates=com.uber.nullaway:nullaway:0.13.7"],
     runtime_deps = [
         ":dataflow_nullaway",
@@ -294,6 +296,7 @@ _java_import(
 _java_import(
     name = "jakarta_transaction_api",
     jars = ["@jakarta_transaction_api//file"],
+    srcjar = "@jakarta_transaction_api__sources//file",
     tags = ["maven_coordinates=jakarta.transaction:jakarta.transaction-api:2.0.1"],
 )
 
@@ -388,6 +391,7 @@ _java_import(
 _java_import(
     name = "javaee_api",
     jars = ["@javaee_api//file"],
+    srcjar = "@javaee_api__sources//file",
     tags = ["maven_coordinates=javax:javaee-api:8.0"],
     deps = [":javax_mail"],
 )
@@ -403,6 +407,7 @@ _java_import(
 _java_import(
     name = "checker_qual",
     jars = ["@checker_qual//file"],
+    srcjar = "@checker_qual__sources//file",
     tags = ["maven_coordinates=org.checkerframework:checker-qual:4.0.0"],
 )
 
@@ -462,12 +467,14 @@ _java_import(
 _java_import(
     name = "javaemul_internal_annotations",
     jars = ["@javaemul_internal_annotations//file"],
+    srcjar = "@javaemul_internal_annotations__sources//file",
     tags = ["maven_coordinates=org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:0.01"],
 )
 
 _java_import(
     name = "javax_annotation",
     jars = ["@javax_annotation//file"],
+    srcjar = "@javax_annotation__sources//file",
     tags = ["maven_coordinates=org.realityforge.javax.annotation:javax.annotation:1.1.1"],
 )
 
@@ -523,6 +530,7 @@ _java_import(
 _java_import(
     name = "testng",
     jars = ["@testng//file"],
+    srcjar = "@testng__sources//file",
     tags = ["maven_coordinates=org.testng:testng:7.10.2"],
     runtime_deps = [":jquery"],
     deps = [

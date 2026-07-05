@@ -13,9 +13,7 @@ options:
 
 artifacts:
   - coord: org.realityforge.javax.annotation:javax.annotation:1.1.1
-    includeSource: false
   - coord: com.palantir.javapoet:javapoet:0.14.0
-    includeSource: false
     excludes:
       - com.palantir.javapoet:javapoet-root
   - coord: org.realityforge.proton:proton-core:0.72
@@ -24,19 +22,11 @@ artifacts:
   # Processor tests need javaemul.internal.annotations.DoNotInline to exercise @Injector.gwt
   # AUTODETECT/ENABLE output without pulling the full GWT user jar into Bazel builds.
   - coord: org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:0.01
-    includeSource: false
   - coord: javax:javaee-api:8.0
-    includeSource: false
   - coord: jakarta.transaction:jakarta.transaction-api:2.0.1
-    includeSource: false
   - coord: org.testng:testng:7.10.2
-    includeSource: false
   - coord: org.jspecify:jspecify:1.0.0
   - coord: com.uber.nullaway:nullaway:0.13.7
-    includeSource: false
   - coord: org.checkerframework:checker-qual:4.0.0
-    includeSource: false
   - coord: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
     includeSource: false
-    excludes:
-      - '*:*'
