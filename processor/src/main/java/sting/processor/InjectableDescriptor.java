@@ -1,19 +1,17 @@
 package sting.processor;
 
 import java.util.Objects;
-import javax.annotation.Nonnull;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.TypeElement;
 
 final class InjectableDescriptor {
-    @Nonnull
     private final Binding _binding;
     /**
      * True if the java stub has been generated.
      */
     private boolean _javaStubGenerated;
 
-    InjectableDescriptor(@Nonnull final Binding binding) {
+    InjectableDescriptor(final Binding binding) {
         _binding = Objects.requireNonNull(binding);
         _binding.setOwner(this);
     }
@@ -28,12 +26,10 @@ final class InjectableDescriptor {
         }
     }
 
-    @Nonnull
     TypeElement getElement() {
-        return (TypeElement) _binding.getElement().getEnclosingElement();
+        return (TypeElement) Objects.requireNonNull(_binding.getElement().getEnclosingElement());
     }
 
-    @Nonnull
     Binding getBinding() {
         return _binding;
     }
@@ -46,7 +42,7 @@ final class InjectableDescriptor {
         _javaStubGenerated = true;
     }
 
-    void write(@Nonnull final JsonGenerator g) {
+    void write(final JsonGenerator g) {
         g.writeStartObject();
         g.write("schema", "injectable/1");
         _binding.write(g);

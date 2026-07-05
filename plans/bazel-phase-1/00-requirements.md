@@ -20,7 +20,7 @@ Out of scope:
 
 - Replacing Buildr release, Maven publishing, site deployment, downstream-test, performance-test, GWT compile/classifier packaging, or public consumer setup.
 - Recreating Buildr's shaded release `processor` jar in Bazel.
-- NullAway/JSpecify migration.
+- Full NullAway/JSpecify migration beyond processor internals.
 - Adding tests to raise initial coverage.
 
 ## Locked Decisions And Non-Negotiables
@@ -109,11 +109,11 @@ All known design questions are resolved. The user approved implementation on 202
 - id: Q-02
   status: resolved
   question: Should strict Java rules include NullAway/JSpecify and Error Prone?
-  context: `jdbt` uses NullAway/JSpecify; Sting uses `javax.annotation`.
+  context: `jdbt` uses NullAway/JSpecify; Sting initially used `javax.annotation` throughout.
   options: Adopt all; adopt Error Prone only; keep Buildr compiler flags only.
   tradeoffs: NullAway/JSpecify is a source migration; Error Prone improves strictness but may cause churn.
-  recommended_default: Adopt Error Prone, not NullAway/JSpecify, and stop if churn is excessive.
-  user_decision: Accepted with explicit Error Prone adoption.
+  recommended_default: Adopt Error Prone first; migrate processor internals to JSpecify/NullAway in the follow-up.
+  user_decision: Initially accepted Error Prone-only; follow-up adopted JSpecify/NullAway for processor internals only.
   artifacts_updated: `00-requirements.md`, `10-implementation-plan.md`, `20-task-board.yaml`
 
 - id: Q-03

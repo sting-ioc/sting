@@ -59,7 +59,8 @@ define 'sting' do
     compile.with :proton_core,
                  :javax_json,
                  :javapoet,
-                 :javax_annotation
+                 :javax_annotation,
+                 :jspecify
 
     test.with :proton_qa,
               :gwt_user,

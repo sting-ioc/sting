@@ -50,6 +50,7 @@ java_library(
         "WorkEntry.java",
         "package-info.java",
     ],
+    nullaway = True,
     resource_strip_prefix = "processor/src/main/resources",
     resources = [
         "//processor/src/main/resources/META-INF/services:processor_service",

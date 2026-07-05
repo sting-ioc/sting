@@ -1,9 +1,6 @@
 package sting.processor;
 
-import javax.annotation.Nonnull;
-
-record LifecycleParameterDescriptor(
-        @Nonnull Kind kind, @Nonnull String name) {
+record LifecycleParameterDescriptor(Kind kind, String name) {
     enum Kind {
         SERVICE_TYPE,
         METHOD_NAME,

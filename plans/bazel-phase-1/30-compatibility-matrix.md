@@ -9,7 +9,7 @@ Last updated: 2026-07-04
 | --- | --- | --- | --- |
 | Java version | Source/target 17 | Java/tool Java 17 | None |
 | Compiler strictness | `-Werror`, `-Xlint:all,-processing,-serial` | Same plus Error Prone and strict Java deps; `this-escape` is excluded for Bazel toolchain parity | Bazel is stricter by design |
-| Nullability model | `javax.annotation` | `javax.annotation` | No NullAway/JSpecify migration |
+| Nullability model | `javax.annotation` | JSpecify for processor internals; `javax.annotation` remains for generated code and processor inputs | NullAway is scoped to processor main sources |
 | Core build | Build core jar and GWT enhanced artifacts | Build core Java library and include `Sting.gwt.xml` resource | No GWT compile/classifier |
 | Processor build | Build and shade release jar | Build unshaded library/plugin for build/test | No shaded release jar |
 | Server build | Compile with Sting processor | Compile with explicit Sting `java_plugin` | Explicit plugin instead of processor discovery |

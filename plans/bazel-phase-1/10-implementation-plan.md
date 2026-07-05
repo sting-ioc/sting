@@ -121,7 +121,7 @@ Coverage command labels may be adjusted to match final target names, but coverag
 | ID | Decision | Concrete Plan Impact |
 | --- | --- | --- |
 | Q-01 | Use unshaded build/test processor target. | No Bazel shaded release jar in Phase 1. |
-| Q-02 | Adopt Error Prone, not NullAway/JSpecify. | Strict rules include Error Prone only; `javax.annotation` stays. |
+| Q-02 | Adopt Error Prone first, then JSpecify/NullAway for processor internals. | Strict rules include Error Prone globally and NullAway only for the processor main target; generated code and processor input fixtures stay on `javax.annotation`. |
 | Q-03 | Keep TestNG. | Add TestNG macro and TestNG targets. |
 | Q-04 | Tests use production strict compile options unless churn is excessive. | Test macro starts with same strict javacopts. |
 | Q-05 | Coarse module-level targets by default. | BUILD target structure mirrors Buildr modules unless needed otherwise. |

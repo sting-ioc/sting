@@ -270,6 +270,13 @@ _http_file(
 )
 
 _http_file(
+    name = "nullaway",
+    downloaded_file_path = "com/uber/nullaway/nullaway/0.13.7/nullaway-0.13.7.jar",
+    sha256 = "6bcb696ddcfa0f7cc12b90face8e7af041063f278cd9f3f07de2c53262e24d68",
+    urls = ["https://repo.maven.apache.org/maven2/com/uber/nullaway/nullaway/0.13.7/nullaway-0.13.7.jar"],
+)
+
+_http_file(
     name = "jakarta_transaction_api",
     downloaded_file_path = "jakarta/transaction/jakarta.transaction-api/2.0.1/jakarta.transaction-api-2.0.1.jar",
     sha256 = "50c0a7c760c13ae6c042acf182b28f0047413db95b4636fb8879bcffab5ba875",
@@ -481,16 +488,23 @@ _http_file(
 
 _http_file(
     name = "checker_qual",
-    downloaded_file_path = "org/checkerframework/checker-qual/2.5.2/checker-qual-2.5.2.jar",
-    sha256 = "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
-    urls = ["https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/2.5.2/checker-qual-2.5.2.jar"],
+    downloaded_file_path = "org/checkerframework/checker-qual/4.0.0/checker-qual-4.0.0.jar",
+    sha256 = "a06f08bc5dfa51d751cc5bd2453443a99a14825d57bd3c576de2648d2c99fcb8",
+    urls = ["https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/4.0.0/checker-qual-4.0.0.jar"],
 )
 
 _http_file(
-    name = "checker_qual__sources",
-    downloaded_file_path = "org/checkerframework/checker-qual/2.5.2/checker-qual-2.5.2-sources.jar",
-    sha256 = "821c5c63a6f156a3bb498c5bbb613580d9d8f4134131a5627d330fc4018669d2",
-    urls = ["https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/2.5.2/checker-qual-2.5.2-sources.jar"],
+    name = "dataflow_nullaway",
+    downloaded_file_path = "org/checkerframework/dataflow-nullaway/4.0.0/dataflow-nullaway-4.0.0.jar",
+    sha256 = "4038b94f4a58f5895a19dde9c9c04ee4cc8bf25e83d4ef10152428e760783f9a",
+    urls = ["https://repo.maven.apache.org/maven2/org/checkerframework/dataflow-nullaway/4.0.0/dataflow-nullaway-4.0.0.jar"],
+)
+
+_http_file(
+    name = "dataflow_nullaway__sources",
+    downloaded_file_path = "org/checkerframework/dataflow-nullaway/4.0.0/dataflow-nullaway-4.0.0-sources.jar",
+    sha256 = "440646716bf06c054ef7437ee3e3006e5be79b9076e9492f4c8124b2aad9587d",
+    urls = ["https://repo.maven.apache.org/maven2/org/checkerframework/dataflow-nullaway/4.0.0/dataflow-nullaway-4.0.0-sources.jar"],
 )
 
 _http_file(

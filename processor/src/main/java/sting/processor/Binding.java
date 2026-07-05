@@ -5,26 +5,23 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
+import org.jspecify.annotations.Nullable;
 
 final class Binding {
     /**
      * The kind of the binding.
      */
-    @Nonnull
     private final Kind _kind;
     /**
      * A unique identifier for the binding which can be specified by the developer or derived automatically.
      * For an INJECTABLE binding this is the fully qualified name of the class. For other bindings it is
      * the fully qualified name of the class combined with the name of the method.
      */
-    @Nonnull
     private final String _id;
     /**
      * Is the binding eager or lazy. Eager bindings are instantiated after the injector is instantiated
@@ -40,22 +37,18 @@ final class Binding {
      *   <lI>A {@link javax.lang.model.element.ExecutableElement} of a method for {@link Kind#PROVIDES} binding</lI>
      * </ul>
      */
-    @Nonnull
     private final Element _element;
     /**
      * The dependencies that need to be supplied when creating a binding instance.
      */
-    @Nonnull
     private final ServiceRequest[] _dependencies;
     /**
      * The service specifications published by this binding.
      */
-    @Nonnull
     private final List<ServiceSpec> _publishedServices;
     /**
      * Intercepted published services derived from this binding.
      */
-    @Nonnull
     private final List<InterceptedServiceDescriptor> _interceptedServices = new ArrayList<>();
     /**
      * Flag indicating whether this binding will always create a component or may produce a null value.
@@ -64,6 +57,7 @@ final class Binding {
     /**
      * The descriptor that created the binding.
      */
+    @Nullable
     private Object _owner;
     /**
      * The source element used when discovering interceptor bindings. This is the injectable type for injectable
@@ -74,7 +68,6 @@ final class Binding {
     /**
      * Interceptor binding annotations found on the binding source when the binding is created.
      */
-    @Nonnull
     private final Map<AnnotationMirror, Map<String, BindingValueModel>> _interceptorBindingSourceAnnotations =
             new LinkedHashMap<>();
     /**
@@ -83,12 +76,12 @@ final class Binding {
     private boolean _interceptorBindingsProcessed;
 
     Binding(
-            @Nonnull final Kind kind,
-            @Nonnull final String id,
-            @Nonnull final List<ServiceSpec> publishedServices,
+            final Kind kind,
+            final String id,
+            final List<ServiceSpec> publishedServices,
             final boolean eager,
-            @Nonnull final Element element,
-            @Nonnull final ServiceRequest[] dependencies) {
+            final Element element,
+            final ServiceRequest[] dependencies) {
         assert (Kind.INPUT == kind && ElementKind.INTERFACE == element.getKind())
                 || (Kind.INJECTABLE == kind && ElementKind.CONSTRUCTOR == element.getKind())
                 || (Kind.PROVIDES == kind && ElementKind.METHOD == element.getKind());
@@ -106,35 +99,30 @@ final class Binding {
         assert Kind.INJECTABLE != kind || _publishedServices.stream().allMatch(ServiceSpec::isRequired);
     }
 
-    @Nonnull
     Object getOwner() {
-        assert null != _owner;
-        return _owner;
+        return Objects.requireNonNull(_owner);
     }
 
-    @Nonnull
     Kind getKind() {
         return _kind;
     }
 
-    @Nonnull
     String getId() {
         return _id;
     }
 
-    @Nonnull
     List<ServiceSpec> getPublishedServices() {
         return _publishedServices;
     }
 
-    void addInterceptedService(@Nonnull final InterceptedServiceDescriptor service) {
+    void addInterceptedService(final InterceptedServiceDescriptor service) {
         assert service.binding() == this;
         _interceptedServices.add(service);
     }
 
     void setInterceptorBindingSource(
-            @Nonnull final Element interceptorBindingSource,
-            @Nonnull final Map<AnnotationMirror, Map<String, BindingValueModel>> interceptorBindingSourceAnnotations) {
+            final Element interceptorBindingSource,
+            final Map<AnnotationMirror, Map<String, BindingValueModel>> interceptorBindingSourceAnnotations) {
         assert null == _interceptorBindingSource;
         _interceptorBindingSource = Objects.requireNonNull(interceptorBindingSource);
         _interceptorBindingSourceAnnotations.putAll(interceptorBindingSourceAnnotations);
@@ -145,7 +133,6 @@ final class Binding {
         return _interceptorBindingSource;
     }
 
-    @Nonnull
     Map<AnnotationMirror, Map<String, BindingValueModel>> getInterceptorBindingSourceAnnotations() {
         return _interceptorBindingSourceAnnotations;
     }
@@ -160,7 +147,7 @@ final class Binding {
     }
 
     @Nullable
-    InterceptedServiceDescriptor findInterceptedService(@Nonnull final Coordinate coordinate) {
+    InterceptedServiceDescriptor findInterceptedService(final Coordinate coordinate) {
         return _interceptedServices.stream()
                 .filter(s -> s.service().getCoordinate().equals(coordinate))
                 .findAny()
@@ -179,17 +166,15 @@ final class Binding {
         return !isOptional();
     }
 
-    @Nonnull
     Element getElement() {
         return _element;
     }
 
-    @Nonnull
     ServiceRequest[] getDependencies() {
         return _dependencies;
     }
 
-    void write(@Nonnull final JsonGenerator g) {
+    void write(final JsonGenerator g) {
         g.write("id", _id);
         if (!_publishedServices.isEmpty()) {
             g.writeStartArray("publishedServices");
@@ -212,7 +197,7 @@ final class Binding {
         }
     }
 
-    void setOwner(@Nonnull final Object owner) {
+    void setOwner(final Object owner) {
         assert null == _owner;
         assert (owner instanceof InputDescriptor && Kind.INPUT == _kind)
                 || (owner instanceof InjectableDescriptor && Kind.INJECTABLE == _kind)
@@ -220,22 +205,21 @@ final class Binding {
         _owner = owner;
     }
 
-    @Nonnull
     String describe() {
         if (Kind.INPUT == _kind) {
-            final var input = (InputDescriptor) _owner;
+            final var input = (InputDescriptor) getOwner();
             return ((TypeElement) _element).getQualifiedName() + "." + input.name() + "/" + input.service();
         } else if (Kind.INJECTABLE == _kind) {
-            return ((TypeElement) _element.getEnclosingElement())
+            return ((TypeElement) Objects.requireNonNull(_element.getEnclosingElement()))
                     .getQualifiedName()
                     .toString();
         } else {
             assert Kind.PROVIDES == _kind;
-            return ((TypeElement) _element.getEnclosingElement()).getQualifiedName() + "." + _element.getSimpleName();
+            return ((TypeElement) Objects.requireNonNull(_element.getEnclosingElement())).getQualifiedName() + "."
+                    + _element.getSimpleName();
         }
     }
 
-    @Nonnull
     String getTypeLabel() {
         if (Kind.INPUT == _kind) {
             return "[Input]      ";

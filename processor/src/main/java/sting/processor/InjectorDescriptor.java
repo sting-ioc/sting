@@ -3,7 +3,6 @@ package sting.processor;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import javax.annotation.Nonnull;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.TypeElement;
 
@@ -12,7 +11,6 @@ final class InjectorDescriptor {
      * The element that defined the Injector.
      * It may be either an interface or an abstract class.
      */
-    @Nonnull
     private final TypeElement _element;
     /**
      * Should the injector be optimized for GWT.
@@ -29,17 +27,14 @@ final class InjectorDescriptor {
     /**
      * The list of types included by Injector.
      */
-    @Nonnull
     private final Collection<IncludeDescriptor> _includes;
     /**
      * The collection of services that must be supplied to the injector during creation.
      */
-    @Nonnull
     private final List<InputDescriptor> _inputs;
     /**
      * The collection of services made available from the injector.
      */
-    @Nonnull
     private final List<ServiceRequest> _outputs;
     /**
      * True if the injector has a fatal error and should not be reprocessed.
@@ -47,13 +42,13 @@ final class InjectorDescriptor {
     private boolean _containsError;
 
     InjectorDescriptor(
-            @Nonnull final TypeElement element,
+            final TypeElement element,
             final boolean gwt,
             final boolean injectable,
             final boolean fragmentOnly,
-            @Nonnull final Collection<IncludeDescriptor> includes,
-            @Nonnull final List<InputDescriptor> inputs,
-            @Nonnull final List<ServiceRequest> outputs) {
+            final Collection<IncludeDescriptor> includes,
+            final List<InputDescriptor> inputs,
+            final List<ServiceRequest> outputs) {
         _element = Objects.requireNonNull(element);
         _gwt = gwt;
         _injectable = injectable;
@@ -63,7 +58,6 @@ final class InjectorDescriptor {
         _outputs = Objects.requireNonNull(outputs);
     }
 
-    @Nonnull
     TypeElement getElement() {
         return _element;
     }
@@ -80,17 +74,14 @@ final class InjectorDescriptor {
         return _fragmentOnly;
     }
 
-    @Nonnull
     Collection<IncludeDescriptor> getIncludes() {
         return _includes;
     }
 
-    @Nonnull
     List<InputDescriptor> getInputs() {
         return _inputs;
     }
 
-    @Nonnull
     List<ServiceRequest> getOutputs() {
         return _outputs;
     }

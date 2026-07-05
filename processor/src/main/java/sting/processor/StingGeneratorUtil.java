@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -23,24 +22,15 @@ import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
 
 final class StingGeneratorUtil {
-    @Nonnull
     static final String FRAMEWORK_PREFIX = "$sting$_";
-
-    @Nonnull
     private static final ClassName OBJECT = ClassName.get("java.lang", "Object");
-
-    @Nonnull
     private static final ClassName COLLECTION = ClassName.get(Collection.class);
-
-    @Nonnull
     private static final ClassName OPTIONAL = ClassName.get(Optional.class);
-
-    @Nonnull
     private static final ClassName SUPPLIER = ClassName.get(Supplier.class);
 
     private StingGeneratorUtil() {}
 
-    static TypeName getServiceType(@Nonnull final ServiceRequest serviceRequest) {
+    static TypeName getServiceType(final ServiceRequest serviceRequest) {
         final ServiceRequest.Kind kind = serviceRequest.getKind();
         final var baseType =
                 TypeName.get(serviceRequest.getService().getCoordinate().type());
@@ -63,14 +53,13 @@ final class StingGeneratorUtil {
         }
     }
 
-    @Nonnull
     static MethodSpec buildBindingCreator(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final MethodSpec.Builder method,
-            @Nonnull final StringBuilder code,
-            @Nonnull final List<Object> args,
-            @Nonnull final TypeMirror typeProduced,
-            @Nonnull final Binding binding) {
+            final ProcessingEnvironment processingEnv,
+            final MethodSpec.Builder method,
+            final StringBuilder code,
+            final List<Object> args,
+            final TypeMirror typeProduced,
+            final Binding binding) {
         final ServiceRequest[] dependencies = binding.getDependencies();
 
         final var typesProcessed = new ArrayList<TypeMirror>();
@@ -160,13 +149,11 @@ final class StingGeneratorUtil {
         return method.build();
     }
 
-    @Nonnull
-    static ClassName getGeneratedClassName(@Nonnull final TypeElement element) {
+    static ClassName getGeneratedClassName(final TypeElement element) {
         return GeneratorUtil.getGeneratedClassName(element, "Sting_", "");
     }
 
-    @Nonnull
-    static String getFragmentProvidesStubName(@Nonnull final ExecutableElement element) {
+    static String getFragmentProvidesStubName(final ExecutableElement element) {
         return FRAMEWORK_PREFIX + element.getSimpleName().toString();
     }
 }

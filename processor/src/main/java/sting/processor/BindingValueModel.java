@@ -1,18 +1,16 @@
 package sting.processor;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 record BindingValueModel(
-        @Nonnull String name,
-        @Nonnull BindingValueKind kind,
+        String name,
+        BindingValueKind kind,
         boolean array,
         @Nullable Object scalarValue,
         @Nullable String className,
         @Nullable String enumTypeName,
         @Nullable String enumConstantName,
-        @Nonnull String javaLiteral) {
-    @Nonnull
+        String javaLiteral) {
     public String javaLiteral() {
         if (BindingValueKind.UNSUPPORTED == kind) {
             throw new IllegalStateException("Unsupported binding value " + name + " has no Java literal");

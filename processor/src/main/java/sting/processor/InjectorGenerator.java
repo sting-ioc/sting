@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -27,16 +26,12 @@ import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
 
 final class InjectorGenerator {
-    @Nonnull
     private static final ClassName DO_NOT_INLINE = ClassName.get("javaemul.internal.annotations", "DoNotInline");
-
-    @Nonnull
     private static final ClassName OBJECT = ClassName.get("java.lang", "Object");
 
     private InjectorGenerator() {}
 
-    @Nonnull
-    static TypeSpec buildType(@Nonnull final ProcessingEnvironment processingEnv, @Nonnull final ComponentGraph graph) {
+    static TypeSpec buildType(final ProcessingEnvironment processingEnv, final ComponentGraph graph) {
         final InjectorDescriptor injector = graph.getInjector();
         final TypeElement element = injector.getElement();
         final TypeSpec.Builder builder = TypeSpec.classBuilder(StingGeneratorUtil.getGeneratedClassName(element))
@@ -58,9 +53,7 @@ final class InjectorGenerator {
     }
 
     private static void emitOutputMethods(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final ComponentGraph graph,
-            @Nonnull final TypeSpec.Builder builder) {
+            final ProcessingEnvironment processingEnv, final ComponentGraph graph, final TypeSpec.Builder builder) {
         for (final Edge edge : graph.getRootNode().getDependsOn()) {
             final ServiceRequest service = edge.getServiceRequest();
             final var element = (ExecutableElement) service.getElement();
@@ -93,7 +86,7 @@ final class InjectorGenerator {
         }
     }
 
-    private static void emitConstructor(@Nonnull final ComponentGraph graph, @Nonnull final TypeSpec.Builder builder) {
+    private static void emitConstructor(final ComponentGraph graph, final TypeSpec.Builder builder) {
         final MethodSpec.Builder ctor = MethodSpec.constructorBuilder();
 
         for (final InputDescriptor input : graph.getInjector().getInputs()) {
@@ -134,9 +127,7 @@ final class InjectorGenerator {
     }
 
     private static void emitNodeFields(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final ComponentGraph graph,
-            @Nonnull final TypeSpec.Builder builder) {
+            final ProcessingEnvironment processingEnv, final ComponentGraph graph, final TypeSpec.Builder builder) {
         for (final Node node : graph.getNodes()) {
             final var field = FieldSpec.builder(getPublicTypeName(node), node.getName(), Modifier.PRIVATE);
             if (!node.getType().getKind().isPrimitive()) {
@@ -164,8 +155,7 @@ final class InjectorGenerator {
         }
     }
 
-    private static void emitOutputCollectionFields(
-            @Nonnull final ComponentGraph graph, @Nonnull final TypeSpec.Builder builder) {
+    private static void emitOutputCollectionFields(final ComponentGraph graph, final TypeSpec.Builder builder) {
         for (final Edge edge : graph.getRootNode().getDependsOn()) {
             final ServiceRequest serviceRequest = edge.getServiceRequest();
             if (serviceRequest.getKind().isCollection()) {
@@ -176,21 +166,18 @@ final class InjectorGenerator {
         }
     }
 
-    @Nonnull
-    private static String getOutputCollectionCacheName(@Nonnull final Edge edge) {
+    private static String getOutputCollectionCacheName(final Edge edge) {
         return StingGeneratorUtil.FRAMEWORK_PREFIX
                 + edge.getServiceRequest().getElement().getSimpleName()
                 + "Cache";
     }
 
-    private static TypeName getPublicTypeName(@Nonnull final Node node) {
+    private static TypeName getPublicTypeName(final Node node) {
         return node.isPublic() ? TypeName.get(node.getType()) : OBJECT;
     }
 
     private static void emitNodeAccessorMethod(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final ComponentGraph graph,
-            @Nonnull final TypeSpec.Builder builder) {
+            final ProcessingEnvironment processingEnv, final ComponentGraph graph, final TypeSpec.Builder builder) {
         for (final Node node : graph.getNodes()) {
             if (!node.isEager()) {
                 final MethodSpec.Builder method = MethodSpec.methodBuilder(node.getName())
@@ -198,8 +185,8 @@ final class InjectorGenerator {
                         .returns(getPublicTypeName(node));
                 final Binding binding = node.getProviderBinding();
                 final Element element = binding.getElement();
-                final var types =
-                        Collections.singletonList(element.getEnclosingElement().asType());
+                final var types = Collections.singletonList(
+                        Objects.requireNonNull(element.getEnclosingElement()).asType());
                 final var additionalSuppressions = new ArrayList<String>();
                 if (ElementsUtil.isDeprecated(element)) {
                     additionalSuppressions.add("deprecation");
@@ -248,13 +235,11 @@ final class InjectorGenerator {
         }
     }
 
-    @Nonnull
-    private static String getFlagFieldName(@Nonnull final Node node) {
+    private static String getFlagFieldName(final Node node) {
         return node.getName() + "_allocated";
     }
 
-    private static void provideAndAssign(
-            @Nonnull final Node node, @Nonnull final StringBuilder code, @Nonnull final List<Object> args) {
+    private static void provideAndAssign(final Node node, final StringBuilder code, final List<Object> args) {
         code.append("$N = ");
         args.add(node.getName());
         final boolean isNonnull = node.getProviderBinding().isRequired();
@@ -297,10 +282,7 @@ final class InjectorGenerator {
     }
 
     private static void emitServiceValue(
-            @Nonnull final Edge edge,
-            final boolean isOutput,
-            @Nonnull final StringBuilder code,
-            @Nonnull final List<Object> args) {
+            final Edge edge, final boolean isOutput, final StringBuilder code, final List<Object> args) {
         final Collection<Node> satisfiedBy = edge.getSatisfiedBy();
         final ServiceRequest service = edge.getServiceRequest();
         final ServiceRequest.Kind kind = service.getKind();
@@ -357,11 +339,11 @@ final class InjectorGenerator {
      * @param args the args that passed to javapoet template.
      */
     private static void emitNodeAccessor(
-            @Nonnull final ServiceRequest service,
-            @Nonnull final Node node,
+            final ServiceRequest service,
+            final Node node,
             final boolean isOutput,
-            @Nonnull final StringBuilder code,
-            @Nonnull final List<Object> args) {
+            final StringBuilder code,
+            final List<Object> args) {
         final ServiceRequest.Kind kind = service.getKind();
         if (ServiceRequest.Kind.OPTIONAL == kind) {
             code.append("$T.ofNullable( ");
@@ -383,9 +365,7 @@ final class InjectorGenerator {
     }
 
     private static void emitAbsentServiceValue(
-            @Nonnull final ServiceRequest service,
-            @Nonnull final StringBuilder code,
-            @Nonnull final List<Object> args) {
+            final ServiceRequest service, final StringBuilder code, final List<Object> args) {
         final ServiceRequest.Kind kind = service.getKind();
         if (ServiceRequest.Kind.OPTIONAL == kind) {
             code.append("$T.empty()");
@@ -399,11 +379,11 @@ final class InjectorGenerator {
     }
 
     private static void emitDirectNodeAccess(
-            @Nonnull final ServiceRequest service,
-            @Nonnull final Node node,
+            final ServiceRequest service,
+            final Node node,
             final boolean isOutput,
-            @Nonnull final StringBuilder code,
-            @Nonnull final List<Object> args) {
+            final StringBuilder code,
+            final List<Object> args) {
         if ((isOutput && !service.getService().isPublic())
                 || (!node.isPublic() && service.getService().isPublic())) {
             code.append("($T) ");
@@ -414,9 +394,7 @@ final class InjectorGenerator {
     }
 
     private static void emitFragmentFields(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final TypeSpec.Builder builder,
-            @Nonnull final ComponentGraph graph) {
+            final ProcessingEnvironment processingEnv, final TypeSpec.Builder builder, final ComponentGraph graph) {
         for (final FragmentNode node : graph.getFragments()) {
             final var type =
                     StingGeneratorUtil.getGeneratedClassName(node.fragment().getElement());

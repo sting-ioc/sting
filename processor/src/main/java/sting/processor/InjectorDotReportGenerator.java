@@ -5,17 +5,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.type.TypeMirror;
 
 final class InjectorDotReportGenerator {
     private InjectorDotReportGenerator() {}
 
-    @Nonnull
-    static String buildDotReport(
-            @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final ComponentGraph graph) {
+    static String buildDotReport(final ProcessingEnvironment processingEnv, final ComponentGraph graph) {
         final Map<String, Set<String>> types = buildTypeMap(graph);
 
         final var sb = new StringBuilder();
@@ -72,34 +70,34 @@ final class InjectorDotReportGenerator {
     }
 
     private static void emitDependencyLinks(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final Map<String, Set<String>> types,
-            @Nonnull final StringBuilder sb,
-            @Nonnull final Node node,
-            @Nonnull final String fromName) {
+            final ProcessingEnvironment processingEnv,
+            final Map<String, Set<String>> types,
+            final StringBuilder sb,
+            final Node node,
+            final String fromName) {
         for (final Edge edge : node.getDependsOn()) {
             emitNodeLinks(processingEnv, types, sb, edge, fromName);
         }
     }
 
     private static void emitNodeLinks(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final Map<String, Set<String>> types,
-            @Nonnull final StringBuilder sb,
-            @Nonnull final Edge edge,
-            @Nonnull final String fromName) {
+            final ProcessingEnvironment processingEnv,
+            final Map<String, Set<String>> types,
+            final StringBuilder sb,
+            final Edge edge,
+            final String fromName) {
         for (final Node other : edge.getSatisfiedBy()) {
             emitNodeLink(processingEnv, types, sb, edge, other, fromName);
         }
     }
 
     private static void emitNodeLink(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final Map<String, Set<String>> types,
-            @Nonnull final StringBuilder sb,
-            @Nonnull final Edge edge,
-            @Nonnull final Node toNode,
-            @Nonnull final String fromName) {
+            final ProcessingEnvironment processingEnv,
+            final Map<String, Set<String>> types,
+            final StringBuilder sb,
+            final Edge edge,
+            final Node toNode,
+            final String fromName) {
         sb.append("  ").append(fromName).append(" -> ").append(toNode.getName()).append(" [");
         boolean hasAttributes = false;
         final ServiceRequest serviceRequest = edge.getServiceRequest();
@@ -142,8 +140,7 @@ final class InjectorDotReportGenerator {
         sb.append("];\n");
     }
 
-    @Nonnull
-    private static Map<String, Set<String>> buildTypeMap(@Nonnull final ComponentGraph graph) {
+    private static Map<String, Set<String>> buildTypeMap(final ComponentGraph graph) {
         // Map used to try and generate the shortest name for a node
         // SimpleName -> [FQN]
         final var types = new HashMap<String, Set<String>>();
@@ -156,7 +153,7 @@ final class InjectorDotReportGenerator {
         return types;
     }
 
-    private static void recordDependencyTypes(@Nonnull final Map<String, Set<String>> types, @Nonnull final Node node) {
+    private static void recordDependencyTypes(final Map<String, Set<String>> types, final Node node) {
         for (final Edge edge : node.getDependsOn()) {
             recordType(
                     types,
@@ -164,15 +161,13 @@ final class InjectorDotReportGenerator {
         }
     }
 
-    private static void recordType(@Nonnull final Map<String, Set<String>> types, @Nonnull final String type) {
+    private static void recordType(final Map<String, Set<String>> types, final String type) {
         types.computeIfAbsent(extractSimpleName(type), v -> new HashSet<>()).add(type);
     }
 
-    @Nonnull
-    private static String extractShortestUniqueName(
-            @Nonnull final Map<String, Set<String>> types, @Nonnull final String typeName) {
+    private static String extractShortestUniqueName(final Map<String, Set<String>> types, final String typeName) {
         final String simpleName = extractSimpleName(typeName);
-        final Set<String> matches = types.get(simpleName);
+        final Set<String> matches = Objects.requireNonNull(types.get(simpleName));
         if (1 == matches.size()) {
             return simpleName;
         } else {
@@ -208,8 +203,7 @@ final class InjectorDotReportGenerator {
         }
     }
 
-    @Nonnull
-    private static String extractSimpleName(@Nonnull final String type) {
+    private static String extractSimpleName(final String type) {
         final String[] parts = type.split("\\.");
         return parts[parts.length - 1];
     }

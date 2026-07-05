@@ -13,51 +13,42 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
+import org.jspecify.annotations.Nullable;
 
 final class ComponentGraph {
     /**
      * The processor building the graph.
      */
-    @Nonnull
     private final StingProcessor _processor;
     /**
      * The injector that defines the graph.
      */
-    @Nonnull
     private final InjectorDescriptor _injector;
 
-    @Nonnull
     private final Registry _registry;
     /**
      * The list of types included in the graph.
      * This is used to skip registers for types that are already present.
      * This can occur when we have diamond dependency chains.
      */
-    @Nonnull
     private final Set<String> _includedTypes = new HashSet<>();
     /**
      * A mapping of the root include element to the bindings.
      * It is used to verify that a particular include root is used within an injector.
      */
-    @Nonnull
     private final Map<IncludeDescriptor, Set<Binding>> _includeRootToBindingMap = new HashMap<>();
     /**
      * The types that are published in the component graph.
      */
-    @Nonnull
     private final Map<ServiceKey, List<Binding>> _publishedTypes = new LinkedHashMap<>();
     /**
      * The index of ids to Node.
      */
-    @Nonnull
     private final Map<String, Node> _nodesById = new HashMap<>();
     /**
      * The node that represents the Injector.
      */
-    @Nonnull
     private final Node _rootNode;
     /**
      * true when the graph has been completely built.
@@ -76,33 +67,26 @@ final class ComponentGraph {
     @Nullable
     private List<FragmentNode> _fragmentNodes;
 
-    ComponentGraph(
-            @Nonnull final StingProcessor processor,
-            @Nonnull final InjectorDescriptor injector,
-            @Nonnull final Registry registry) {
+    ComponentGraph(final StingProcessor processor, final InjectorDescriptor injector, final Registry registry) {
         _processor = Objects.requireNonNull(processor);
         _injector = Objects.requireNonNull(injector);
         _registry = Objects.requireNonNull(registry);
         _rootNode = new Node(this);
     }
 
-    @Nonnull
     InjectorDescriptor getInjector() {
         return _injector;
     }
 
-    @Nonnull
     Node getRootNode() {
         return _rootNode;
     }
 
-    @Nonnull
     Collection<Node> getRawNodeCollection() {
         return _nodesById.values();
     }
 
-    @Nonnull
-    Node findOrCreateNode(@Nonnull final Binding binding) {
+    Node findOrCreateNode(final Binding binding) {
         assert !_complete;
         final String id = binding.getId();
         final Node node = _nodesById.get(id);
@@ -115,8 +99,7 @@ final class ComponentGraph {
         }
     }
 
-    @Nonnull
-    private Node createNode(@Nonnull final Binding binding) {
+    private Node createNode(final Binding binding) {
         final String id = binding.getId();
         assert !_nodesById.containsKey(id);
         final var node = new Node(this, binding);
@@ -124,16 +107,12 @@ final class ComponentGraph {
         return node;
     }
 
-    @Nonnull
     List<Node> getNodes() {
-        assert null != _orderedNodes;
-        return _orderedNodes;
+        return Objects.requireNonNull(_orderedNodes);
     }
 
-    @Nonnull
     List<FragmentNode> getFragments() {
-        assert null != _fragmentNodes;
-        return _fragmentNodes;
+        return Objects.requireNonNull(_fragmentNodes);
     }
 
     void complete() {
@@ -154,13 +133,13 @@ final class ComponentGraph {
             node.setName("node" + index.incrementAndGet());
             if (node.isFromProvides()) {
                 //noinspection SuspiciousMethodCalls
-                node.setFragment(fragmentMap.get(node.getBinding().getOwner()));
+                node.setFragment(
+                        Objects.requireNonNull(fragmentMap.get(node.getBinding().getOwner())));
             }
         }
     }
 
-    @Nonnull
-    private List<Node> sortNodes(@Nonnull final Collection<Node> nodes) {
+    private List<Node> sortNodes(final Collection<Node> nodes) {
         final var results = new ArrayList<Node>(nodes.size());
         final var workList = new ArrayList<Node>(nodes);
         final var done = new HashSet<Node>();
@@ -171,8 +150,7 @@ final class ComponentGraph {
         return results;
     }
 
-    private void processNode(
-            @Nonnull final Node node, @Nonnull final List<Node> results, @Nonnull final Set<Node> done) {
+    private void processNode(final Node node, final List<Node> results, final Set<Node> done) {
         if (!done.contains(node)) {
             done.add(node);
             for (final Edge edge : node.getDependsOn()) {
@@ -189,7 +167,7 @@ final class ComponentGraph {
      *
      * @param binding the binding.
      */
-    private void registerBinding(@Nonnull final Binding binding) {
+    private void registerBinding(final Binding binding) {
         for (final var service : binding.getPublishedServices()) {
             _publishedTypes
                     .computeIfAbsent(new ServiceKey(service.getCoordinate()), c -> new ArrayList<>())
@@ -197,7 +175,7 @@ final class ComponentGraph {
         }
     }
 
-    private void registerEagerBinding(@Nonnull final Binding binding) {
+    private void registerEagerBinding(final Binding binding) {
         _processor.processInterceptorBindings(binding);
         var proxiedService = false;
         for (final var service : binding.getPublishedServices()) {
@@ -214,18 +192,15 @@ final class ComponentGraph {
         }
     }
 
-    @Nonnull
     Map<IncludeDescriptor, Set<Binding>> getIncludeRootToBindingMap() {
         return _includeRootToBindingMap;
     }
 
-    @Nonnull
-    List<Binding> findAllBindingsByCoordinate(@Nonnull final Coordinate coordinate) {
+    List<Binding> findAllBindingsByCoordinate(final Coordinate coordinate) {
         return _publishedTypes.getOrDefault(new ServiceKey(coordinate), Collections.emptyList());
     }
 
-    @Nonnull
-    Node findOrCreateProviderNode(@Nonnull final Binding binding, @Nonnull final Coordinate coordinate) {
+    Node findOrCreateProviderNode(final Binding binding, final Coordinate coordinate) {
         _processor.processInterceptorBindings(binding);
         final var interceptedService = binding.findInterceptedService(coordinate);
         return null == interceptedService
@@ -233,8 +208,7 @@ final class ComponentGraph {
                 : findOrCreateNode(_registry.findOrCreateInterceptorProxy(interceptedService));
     }
 
-    @Nonnull
-    Node findOrCreateNode(@Nonnull final InterceptorProxyDescriptor proxy) {
+    Node findOrCreateNode(final InterceptorProxyDescriptor proxy) {
         assert !_complete;
         final var id = proxy.getId();
         final var node = _nodesById.get(id);
@@ -247,7 +221,7 @@ final class ComponentGraph {
         }
     }
 
-    void attachProxyDependencies(@Nonnull final Node proxyNode) {
+    void attachProxyDependencies(final Node proxyNode) {
         assert proxyNode.isProxy();
         if (proxyNode.getDependsOn().isEmpty()) {
             final var proxy = proxyNode.getProxy();
@@ -274,7 +248,7 @@ final class ComponentGraph {
      *
      * @param input the input.
      */
-    void registerInput(@Nonnull final InputDescriptor input) {
+    void registerInput(final InputDescriptor input) {
         final Binding binding = input.binding();
         registerBinding(binding);
         findOrCreateNode(binding);
@@ -286,19 +260,18 @@ final class ComponentGraph {
      * @param includeRoot the root include that included the injectable.
      * @param injectable  the injectable.
      */
-    void registerInjectable(
-            @Nonnull final IncludeDescriptor includeRoot, @Nonnull final InjectableDescriptor injectable) {
+    void registerInjectable(final IncludeDescriptor includeRoot, final InjectableDescriptor injectable) {
         _includeRootToBindingMap
                 .computeIfAbsent(includeRoot, r -> new HashSet<>())
                 .add(injectable.getBinding());
         doRegisterInjectable(injectable);
     }
 
-    void registerInjectable(@Nonnull final InjectableDescriptor injectable) {
+    void registerInjectable(final InjectableDescriptor injectable) {
         doRegisterInjectable(injectable);
     }
 
-    private void doRegisterInjectable(@Nonnull final InjectableDescriptor injectable) {
+    private void doRegisterInjectable(final InjectableDescriptor injectable) {
         final String typeName = injectable.getElement().getQualifiedName().toString();
         if (_includedTypes.add(typeName)) {
             final Binding binding = injectable.getBinding();
@@ -316,18 +289,18 @@ final class ComponentGraph {
      * @param includeRoot the root include that ultimately included the fragment.
      * @param fragment    the fragment.
      */
-    void registerFragment(@Nonnull final IncludeDescriptor includeRoot, @Nonnull final FragmentDescriptor fragment) {
+    void registerFragment(final IncludeDescriptor includeRoot, final FragmentDescriptor fragment) {
         _includeRootToBindingMap
                 .computeIfAbsent(includeRoot, r -> new HashSet<>())
                 .addAll(fragment.getBindings());
         doRegisterFragment(fragment);
     }
 
-    void registerFragment(@Nonnull final FragmentDescriptor fragment) {
+    void registerFragment(final FragmentDescriptor fragment) {
         doRegisterFragment(fragment);
     }
 
-    private void doRegisterFragment(@Nonnull final FragmentDescriptor fragment) {
+    private void doRegisterFragment(final FragmentDescriptor fragment) {
         final String typeName = fragment.getElement().getQualifiedName().toString();
         if (_includedTypes.add(typeName)) {
             for (final Binding binding : fragment.getBindings()) {

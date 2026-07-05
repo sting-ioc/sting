@@ -1,16 +1,13 @@
 package sting.processor;
 
 import java.util.Map;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.lang.model.element.TypeElement;
+import org.jspecify.annotations.Nullable;
 
 record InterceptorDescriptor(
-        @Nonnull TypeElement element,
-        @Nonnull Map<InterceptorPhase, InterceptorMethodDescriptor> methods,
-        @Nonnull Binding binding) {
+        TypeElement element, Map<InterceptorPhase, InterceptorMethodDescriptor> methods, Binding binding) {
     @Nullable
-    InterceptorMethodDescriptor findMethod(@Nonnull final InterceptorPhase phase) {
+    InterceptorMethodDescriptor findMethod(final InterceptorPhase phase) {
         return methods.get(phase);
     }
 

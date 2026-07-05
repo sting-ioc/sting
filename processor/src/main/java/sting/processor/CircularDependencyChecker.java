@@ -3,14 +3,13 @@ package sting.processor;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import org.realityforge.proton.ProcessorException;
 
 final class CircularDependencyChecker {
     private CircularDependencyChecker() {}
 
-    static void verifyNoCircularDependencyLoops(@Nonnull final ComponentGraph graph) {
+    static void verifyNoCircularDependencyLoops(final ComponentGraph graph) {
         final var completed = new HashSet<Node>();
 
         verifyNoCircularDependenciesForRootNode(graph, graph.getRootNode(), completed);
@@ -23,7 +22,7 @@ final class CircularDependencyChecker {
     }
 
     private static void verifyNoCircularDependenciesForRootNode(
-            @Nonnull final ComponentGraph graph, @Nonnull final Node node, @Nonnull final Set<Node> completed) {
+            final ComponentGraph graph, final Node node, final Set<Node> completed) {
         final var stack = new Stack<PathEntry>();
         final var entry = new PathEntry(node, null);
         verifyNoCircularDependenciesForNode(graph, entry, stack, completed);
@@ -31,10 +30,10 @@ final class CircularDependencyChecker {
     }
 
     private static void verifyNoCircularDependenciesForNode(
-            @Nonnull final ComponentGraph graph,
-            @Nonnull final PathEntry entry,
-            @Nonnull final Stack<PathEntry> stack,
-            @Nonnull final Set<Node> completed) {
+            final ComponentGraph graph,
+            final PathEntry entry,
+            final Stack<PathEntry> stack,
+            final Set<Node> completed) {
         stack.add(entry);
         for (final Edge edge : entry.node().getDependsOn()) {
             for (final Node node : edge.getSatisfiedBy()) {
@@ -60,7 +59,7 @@ final class CircularDependencyChecker {
         stack.pop();
     }
 
-    private static int detectCircularDependency(@Nonnull final Stack<PathEntry> stack, @Nonnull final Node node) {
+    private static int detectCircularDependency(final Stack<PathEntry> stack, final Node node) {
         int index = stack.size() - 1;
         while (index > 0) {
             final PathEntry entry = stack.get(index);
@@ -92,9 +91,7 @@ final class CircularDependencyChecker {
      * @param badEntry the entry that depends upon itself.
      * @return a string description.
      */
-    @Nonnull
-    private static String describeCircularDependencyPath(
-            @Nonnull final Stack<PathEntry> stack, @Nonnull final PathEntry badEntry) {
+    private static String describeCircularDependencyPath(final Stack<PathEntry> stack, final PathEntry badEntry) {
         final var sb = new StringBuilder();
 
         boolean matched = false;

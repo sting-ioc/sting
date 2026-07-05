@@ -5,25 +5,22 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import org.jspecify.annotations.Nullable;
 
 final class ServiceRequest {
     /**
      * The kind of the service request.
      */
-    @Nonnull
     private final Kind _kind;
     /**
      * The service to match.
      */
-    @Nonnull
     private final ServiceSpec _service;
     /**
      * The element that declares the service request.
@@ -34,26 +31,22 @@ final class ServiceRequest {
      *   <li>a {@link javax.lang.model.element.ExecutableElement} for a service exposed via a method on the @Injector annotated type</li>
      * </ul>
      */
-    @Nonnull
     private final Element _element;
 
-    ServiceRequest(@Nonnull final Kind kind, @Nonnull final ServiceSpec service, @Nonnull final Element element) {
+    ServiceRequest(final Kind kind, final ServiceSpec service, final Element element) {
         _kind = Objects.requireNonNull(kind);
         _service = Objects.requireNonNull(service);
         _element = Objects.requireNonNull(element);
     }
 
-    @Nonnull
     Kind getKind() {
         return _kind;
     }
 
-    @Nonnull
     ServiceSpec getService() {
         return _service;
     }
 
-    @Nonnull
     Element getElement() {
         return _element;
     }
@@ -70,7 +63,7 @@ final class ServiceRequest {
         return _service.isOptional() || _kind.canConsumeOptionalBindings();
     }
 
-    void write(@Nonnull final JsonGenerator g) {
+    void write(final JsonGenerator g) {
         g.writeStartObject();
         if (Kind.INSTANCE != _kind) {
             g.write("kind", _kind.name());
@@ -130,7 +123,7 @@ final class ServiceRequest {
          * If this kind does not match the type supplied then return null.
          */
         @Nullable
-        TypeMirror extractType(@Nonnull final TypeMirror type) {
+        TypeMirror extractType(final TypeMirror type) {
             if (TypeKind.DECLARED != type.getKind()) {
                 return !_collection && !_supplier && !_optional ? type : null;
             } else {
@@ -200,15 +193,14 @@ final class ServiceRequest {
         }
 
         @Nullable
-        private TypeMirror extractDependencyType(@Nonnull final TypeMirror type) {
+        private TypeMirror extractDependencyType(final TypeMirror type) {
             return TypeKind.DECLARED == type.getKind()
                             && !((DeclaredType) type).getTypeArguments().isEmpty()
                     ? null
                     : type;
         }
 
-        @Nonnull
-        private String getClassname(@Nonnull final DeclaredType declaredType) {
+        private String getClassname(final DeclaredType declaredType) {
             return ((TypeElement) declaredType.asElement()).getQualifiedName().toString();
         }
     }

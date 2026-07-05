@@ -1,6 +1,8 @@
 load("@rules_java//java:defs.bzl", _java_binary = "java_binary", _java_library = "java_library", _java_plugin = "java_plugin", _java_test = "java_test")
 
 _JAVA_RELEASE = "17"
+_JSPECIFY = "//third_party/java:jspecify"
+_NULLAWAY_PLUGIN = "//third_party/java:nullaway_plugin"
 
 _FORMATTER_JDK_EXPORTS = [
     "--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED",
@@ -106,6 +108,12 @@ _JAVA_JAVACOPTS = [
     "10000",
 ] + _ERROR_PRONE_JAVACOPTS
 
+_NULLAWAY_JAVACOPTS = [
+    "-Xep:NullAway:ERROR",
+    "-Xep:RequireExplicitNullMarking:ERROR",
+    "-XepOpt:NullAway:OnlyNullMarked=true",
+]
+
 _DOC_EXAMPLES_RELAXED_ERROR_PRONE_JAVACOPTS = [
     "-Xep:EmptyBlock:OFF",
     "-Xep:FieldMissingNullable:OFF",
@@ -118,13 +126,19 @@ _JAVA_TEST_JVM_FLAGS = [
     "-ea",
 ]
 
-def java_library(name, srcs = [], javacopts = [], deps = [], plugins = [], **kwargs):
+def _with_jspecify(deps):
+    return [_JSPECIFY] + deps if _JSPECIFY not in deps else deps
+
+def _with_nullaway(plugins):
+    return [_NULLAWAY_PLUGIN] + plugins if _NULLAWAY_PLUGIN not in plugins else plugins
+
+def java_library(name, srcs = [], javacopts = [], deps = [], plugins = [], nullaway = False, **kwargs):
     _java_library(
         name = name,
         srcs = srcs,
-        deps = deps,
-        javacopts = _JAVA_JAVACOPTS + javacopts,
-        plugins = plugins,
+        deps = _with_jspecify(deps) if nullaway else deps,
+        javacopts = _JAVA_JAVACOPTS + (_NULLAWAY_JAVACOPTS if nullaway else []) + javacopts,
+        plugins = _with_nullaway(plugins) if nullaway else plugins,
         **kwargs
     )
 

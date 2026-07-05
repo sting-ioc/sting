@@ -5,7 +5,6 @@ import com.palantir.javapoet.MethodSpec;
 import com.palantir.javapoet.TypeName;
 import com.palantir.javapoet.TypeSpec;
 import java.util.ArrayList;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -16,14 +15,11 @@ import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
 
 final class InjectableGenerator {
-    @Nonnull
     private static final ClassName OBJECT = ClassName.get("java.lang", "Object");
 
     private InjectableGenerator() {}
 
-    @Nonnull
-    static TypeSpec buildType(
-            @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final InjectableDescriptor injectable) {
+    static TypeSpec buildType(final ProcessingEnvironment processingEnv, final InjectableDescriptor injectable) {
         final TypeElement element = injectable.getElement();
         final TypeSpec.Builder builder = TypeSpec.classBuilder(StingGeneratorUtil.getGeneratedClassName(element))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL);

@@ -32,6 +32,11 @@ artifacts:
     includeSource: false
   - coord: org.testng:testng:7.10.2
     includeSource: false
+  - coord: org.jspecify:jspecify:1.0.0
+  - coord: com.uber.nullaway:nullaway:0.13.7
+    includeSource: false
+  - coord: org.checkerframework:checker-qual:4.0.0
+    includeSource: false
   - coord: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
     includeSource: false
     excludes:

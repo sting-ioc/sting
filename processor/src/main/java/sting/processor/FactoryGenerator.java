@@ -10,7 +10,7 @@ import com.palantir.javapoet.TypeSpec;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import javax.annotation.Nonnull;
+import java.util.Objects;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -22,9 +22,7 @@ import org.realityforge.proton.SuppressWarningsUtil;
 final class FactoryGenerator {
     private FactoryGenerator() {}
 
-    @Nonnull
-    static TypeSpec buildType(
-            @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final FactoryDescriptor factory) {
+    static TypeSpec buildType(final ProcessingEnvironment processingEnv, final FactoryDescriptor factory) {
         final TypeElement element = factory.getElement();
         final TypeMirror type = element.asType();
         final TypeSpec.Builder builder = TypeSpec.classBuilder(StingGeneratorUtil.getGeneratedClassName(element))
@@ -48,9 +46,9 @@ final class FactoryGenerator {
     }
 
     private static void emitFields(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final FactoryDescriptor factory,
-            @Nonnull final TypeSpec.Builder builder) {
+            final ProcessingEnvironment processingEnv,
+            final FactoryDescriptor factory,
+            final TypeSpec.Builder builder) {
         for (final FactoryDependencyDescriptor dependency : factory.getDependencies()) {
             final ServiceRequest serviceRequest = dependency.serviceRequest();
             final ServiceSpec service = serviceRequest.getService();
@@ -66,8 +64,7 @@ final class FactoryGenerator {
         }
     }
 
-    private static void emitConstructor(
-            @Nonnull final FactoryDescriptor factory, @Nonnull final TypeSpec.Builder builder) {
+    private static void emitConstructor(final FactoryDescriptor factory, final TypeSpec.Builder builder) {
         final MethodSpec.Builder ctor = MethodSpec.constructorBuilder();
         for (final FactoryDependencyDescriptor dependency : factory.getDependencies()) {
             final ServiceRequest serviceRequest = dependency.serviceRequest();
@@ -82,9 +79,9 @@ final class FactoryGenerator {
     }
 
     private static void emitMethods(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final FactoryDescriptor factory,
-            @Nonnull final TypeSpec.Builder builder) {
+            final ProcessingEnvironment processingEnv,
+            final FactoryDescriptor factory,
+            final TypeSpec.Builder builder) {
         for (final FactoryMethodDescriptor methodDescriptor : factory.getMethods()) {
             final MethodSpec.Builder method = MethodSpec.methodBuilder(
                             methodDescriptor.method().getSimpleName().toString())
@@ -122,8 +119,7 @@ final class FactoryGenerator {
                     code.append("$N");
                     args.add(factoryParameter.getSimpleName().toString());
                 } else {
-                    final FactoryDependencyDescriptor dependency = dependenciesByIndex.get(i);
-                    assert null != dependency;
+                    final FactoryDependencyDescriptor dependency = Objects.requireNonNull(dependenciesByIndex.get(i));
                     code.append("$N");
                     args.add(dependency.fieldName());
                 }

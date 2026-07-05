@@ -10,7 +10,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -22,8 +21,7 @@ import org.realityforge.proton.SuppressWarningsUtil;
 final class InjectorProviderGenerator {
     private InjectorProviderGenerator() {}
 
-    @Nonnull
-    static TypeSpec buildType(@Nonnull final ProcessingEnvironment processingEnv, @Nonnull final ComponentGraph graph) {
+    static TypeSpec buildType(final ProcessingEnvironment processingEnv, final ComponentGraph graph) {
         final InjectorDescriptor injector = graph.getInjector();
         final TypeElement element = injector.getElement();
         final TypeSpec.Builder builder = TypeSpec.interfaceBuilder(
@@ -44,8 +42,7 @@ final class InjectorProviderGenerator {
         return builder.build();
     }
 
-    private static void emitInjectorProvide(
-            @Nonnull final ComponentGraph graph, @Nonnull final TypeSpec.Builder builder) {
+    private static void emitInjectorProvide(final ComponentGraph graph, final TypeSpec.Builder builder) {
         final InjectorDescriptor injector = graph.getInjector();
         final TypeElement element = injector.getElement();
 
@@ -77,9 +74,7 @@ final class InjectorProviderGenerator {
     }
 
     private static void emitOutputProvides(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final ComponentGraph graph,
-            @Nonnull final TypeSpec.Builder builder) {
+            final ProcessingEnvironment processingEnv, final ComponentGraph graph, final TypeSpec.Builder builder) {
         final InjectorDescriptor injector = graph.getInjector();
         final TypeElement element = injector.getElement();
 

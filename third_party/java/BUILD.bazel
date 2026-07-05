@@ -1,13 +1,23 @@
-load("@rules_java//java:defs.bzl", _java_binary = "java_binary", _java_import = "java_import", _java_test = "java_test")
+load("@rules_java//java:defs.bzl", _java_binary = "java_binary", _java_import = "java_import", _java_plugin = "java_plugin", _java_test = "java_test")
 
 package(default_visibility = ["//visibility:public"])
+
+_java_plugin(
+    name = "nullaway_plugin",
+    deps = [
+        ":checker_qual",
+        ":dataflow_nullaway",
+        ":guava",
+        ":nullaway",
+    ],
+)
 
 # --- depgen-generated targets start ---
 
 # DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
 
 # SHA256 of the configuration content that generated this content
-_CONFIG_SHA256 = "8B3810AB0E94B685E726DCCD6C6A71B56A7C68F3CC157B9690FD09FF6BEA7B4D"
+_CONFIG_SHA256 = "5CA3EC5F8F316D3C5E92C556BCABEFC68E2F0584E90816F9E422857C8137DD97"
 
 exports_files(["dependencies.yml"])
 
@@ -22,7 +32,7 @@ exports_files(["dependencies.yml"])
 # |     +- com.google.guava:failureaccess:jar:1.0.1 [compile] (conflicts with 1.0.3)
 # |     +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
 # |     +- com.google.code.findbugs:jsr305:jar:3.0.2 [compile]
-# |     +- org.checkerframework:checker-qual:jar:2.5.2 [compile]
+# |     +- org.checkerframework:checker-qual:jar:2.5.2 [compile] (conflicts with 4.0.0)
 # |     +- com.google.errorprone:error_prone_annotations:jar:2.2.0 [compile] (conflicts with 2.49.0)
 # |     +- com.google.j2objc:j2objc-annotations:jar:1.1 [compile] (conflicts with 3.1)
 # |     \- org.codehaus.mojo:animal-sniffer-annotations:jar:1.17 [compile]
@@ -77,6 +87,13 @@ exports_files(["dependencies.yml"])
 # |  +- org.webjars:jquery:jar:3.7.1 [runtime]
 # |  +- com.google.inject:guice:jar:5.1.0 [compile, optional]
 # |  \- org.yaml:snakeyaml:jar:2.2 [runtime, optional]
+# +- org.jspecify:jspecify:jar:1.0.0 [compile]
+# +- com.uber.nullaway:nullaway:jar:0.13.7 [compile]
+# |  +- org.jspecify:jspecify:jar:1.0.0 [compile]
+# |  +- org.checkerframework:dataflow-nullaway:jar:4.0.0 [runtime]
+# |  |  \- org.checkerframework:checker-qual:jar:4.0.0 [runtime]
+# |  \- com.google.guava:guava:jar:31.1-jre [runtime] (conflicts with 27.1-jre)
+# +- org.checkerframework:checker-qual:jar:4.0.0 [compile]
 # \- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
 
 _java_test(
@@ -277,6 +294,17 @@ _java_import(
 )
 
 _java_import(
+    name = "nullaway",
+    jars = ["@nullaway//file"],
+    tags = ["maven_coordinates=com.uber.nullaway:nullaway:0.13.7"],
+    runtime_deps = [
+        ":dataflow_nullaway",
+        ":guava",
+    ],
+    deps = [":jspecify"],
+)
+
+_java_import(
     name = "jakarta_transaction_api",
     jars = ["@jakarta_transaction_api//file"],
     tags = ["maven_coordinates=jakarta.transaction:jakarta.transaction-api:2.0.1"],
@@ -404,9 +432,16 @@ _java_import(
 _java_import(
     name = "checker_qual",
     jars = ["@checker_qual//file"],
-    srcjar = "@checker_qual__sources//file",
-    tags = ["maven_coordinates=org.checkerframework:checker-qual:2.5.2"],
+    tags = ["maven_coordinates=org.checkerframework:checker-qual:4.0.0"],
+)
+
+_java_import(
+    name = "dataflow_nullaway",
+    jars = ["@dataflow_nullaway//file"],
+    srcjar = "@dataflow_nullaway__sources//file",
+    tags = ["maven_coordinates=org.checkerframework:dataflow-nullaway:4.0.0"],
     visibility = ["//visibility:private"],
+    runtime_deps = [":checker_qual"],
 )
 
 _java_import(
@@ -456,7 +491,6 @@ _java_import(
     jars = ["@jspecify//file"],
     srcjar = "@jspecify__sources//file",
     tags = ["maven_coordinates=org.jspecify:jspecify:1.0.0"],
-    visibility = ["//visibility:private"],
 )
 
 _java_import(

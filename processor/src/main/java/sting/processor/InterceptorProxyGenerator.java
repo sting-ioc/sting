@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.Objects;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -23,22 +22,18 @@ import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import org.jspecify.annotations.Nullable;
 import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
 
 final class InterceptorProxyGenerator {
-    @Nonnull
     private static final String TARGET_FIELD_NAME = "_target";
-
-    @Nonnull
     private static final String JETBRAINS_UNMODIFIABLE_CLASSNAME = "org.jetbrains.annotations.Unmodifiable";
 
     private InterceptorProxyGenerator() {}
 
-    @Nonnull
-    static TypeSpec buildType(
-            @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final InterceptorProxyDescriptor proxy) {
+    static TypeSpec buildType(final ProcessingEnvironment processingEnv, final InterceptorProxyDescriptor proxy) {
         final var serviceElement = (TypeElement)
                 ((DeclaredType) proxy.getService().service().getCoordinate().type()).asElement();
         final var builder = TypeSpec.classBuilder(proxy.getClassName().simpleName())
@@ -55,8 +50,7 @@ final class InterceptorProxyGenerator {
         return builder.build();
     }
 
-    private static void emitFields(
-            @Nonnull final TypeSpec.Builder builder, @Nonnull final InterceptorProxyDescriptor proxy) {
+    private static void emitFields(final TypeSpec.Builder builder, final InterceptorProxyDescriptor proxy) {
         builder.addField(FieldSpec.builder(
                         TypeName.get(
                                 proxy.getService().service().getCoordinate().type()),
@@ -77,8 +71,7 @@ final class InterceptorProxyGenerator {
         }
     }
 
-    private static void emitConstructor(
-            @Nonnull final TypeSpec.Builder builder, @Nonnull final InterceptorProxyDescriptor proxy) {
+    private static void emitConstructor(final TypeSpec.Builder builder, final InterceptorProxyDescriptor proxy) {
         final var ctor = MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE);
         ctor.addParameter(ParameterSpec.builder(
                         TypeName.get(
@@ -105,9 +98,9 @@ final class InterceptorProxyGenerator {
     }
 
     private static void emitCreateMethod(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final TypeSpec.Builder builder,
-            @Nonnull final InterceptorProxyDescriptor proxy) {
+            final ProcessingEnvironment processingEnv,
+            final TypeSpec.Builder builder,
+            final InterceptorProxyDescriptor proxy) {
         final var method = MethodSpec.methodBuilder("create")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .addAnnotation(GeneratorUtil.NONNULL_CLASSNAME)
@@ -142,10 +135,10 @@ final class InterceptorProxyGenerator {
     }
 
     private static void emitServiceMethods(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final TypeSpec.Builder builder,
-            @Nonnull final InterceptorProxyDescriptor proxy,
-            @Nonnull final TypeElement serviceElement) {
+            final ProcessingEnvironment processingEnv,
+            final TypeSpec.Builder builder,
+            final InterceptorProxyDescriptor proxy,
+            final TypeElement serviceElement) {
         final var emitted = new HashSet<String>();
         final var methods =
                 ElementsUtil.getMethods(serviceElement, processingEnv.getElementUtils(), processingEnv.getTypeUtils());
@@ -166,28 +159,23 @@ final class InterceptorProxyGenerator {
         }
     }
 
-    private static boolean shouldProxyMethod(
-            @Nonnull final TypeElement serviceElement, @Nonnull final ExecutableElement method) {
+    private static boolean shouldProxyMethod(final TypeElement serviceElement, final ExecutableElement method) {
         final var modifiers = method.getModifiers();
         if (!modifiers.contains(Modifier.STATIC) && !modifiers.contains(Modifier.PRIVATE)) {
-            final var element = method.getEnclosingElement();
-            return !Object.class
-                            .getName()
-                            .equals(((TypeElement) element).getQualifiedName().toString())
-                    || element == serviceElement;
+            final var element = (TypeElement) Objects.requireNonNull(method.getEnclosingElement());
+            return !Object.class.getName().equals(element.getQualifiedName().toString()) || element == serviceElement;
         } else {
             return false;
         }
     }
 
-    @Nonnull
     private static MethodSpec buildServiceMethod(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final InterceptorProxyDescriptor proxy,
-            @Nonnull final TypeElement serviceElement,
-            @Nonnull final ExecutableElement method,
+            final ProcessingEnvironment processingEnv,
+            final InterceptorProxyDescriptor proxy,
+            final TypeElement serviceElement,
+            final ExecutableElement method,
             final boolean around,
-            @Nonnull final String invocationName) {
+            final String invocationName) {
         final var builder = GeneratorUtil.overrideMethod(processingEnv, serviceElement, method);
         if (around) {
             emitAroundServiceMethod(builder, processingEnv, method, invocationName);
@@ -209,10 +197,10 @@ final class InterceptorProxyGenerator {
     }
 
     private static void emitAroundServiceMethod(
-            @Nonnull final MethodSpec.Builder builder,
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final ExecutableElement method,
-            @Nonnull final String invocationName) {
+            final MethodSpec.Builder builder,
+            final ProcessingEnvironment processingEnv,
+            final ExecutableElement method,
+            final String invocationName) {
         emitInitialArguments(builder, method.getParameters(), "arguments");
         builder.beginControlFlow("try");
         final var methodName = invocationMethodName(invocationName, false, 1);
@@ -234,23 +222,22 @@ final class InterceptorProxyGenerator {
     }
 
     private static void emitAroundInvocationMethods(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final TypeSpec.Builder builder,
-            @Nonnull final InterceptorProxyDescriptor proxy,
-            @Nonnull final ExecutableElement method,
-            @Nonnull final String invocationName) {
+            final ProcessingEnvironment processingEnv,
+            final TypeSpec.Builder builder,
+            final InterceptorProxyDescriptor proxy,
+            final ExecutableElement method,
+            final String invocationName) {
         final var interceptors = proxy.getService().interceptors();
         for (var index = 0; index <= interceptors.size(); index++) {
             builder.addMethod(buildAroundInvocationMethod(processingEnv, proxy, method, invocationName, index));
         }
     }
 
-    @Nonnull
     private static MethodSpec buildAroundInvocationMethod(
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final InterceptorProxyDescriptor proxy,
-            @Nonnull final ExecutableElement method,
-            @Nonnull final String invocationName,
+            final ProcessingEnvironment processingEnv,
+            final InterceptorProxyDescriptor proxy,
+            final ExecutableElement method,
+            final String invocationName,
             final int index) {
         final var interceptors = proxy.getService().interceptors();
         final var isTarget = index == interceptors.size();
@@ -327,14 +314,13 @@ final class InterceptorProxyGenerator {
     }
 
     @Nullable
-    private static AnnotationSpec findUnmodifiableAnnotation(@Nonnull final ProcessingEnvironment processingEnv) {
+    private static AnnotationSpec findUnmodifiableAnnotation(final ProcessingEnvironment processingEnv) {
         final var element = processingEnv.getElementUtils().getTypeElement(JETBRAINS_UNMODIFIABLE_CLASSNAME);
         return null == element
                 ? null
                 : AnnotationSpec.builder(ClassName.get(element)).build();
     }
 
-    @Nonnull
     private static TypeName aroundInvocationReturnType(
             final boolean voidReturn, @Nullable final AnnotationSpec unmodifiableAnnotation) {
         if (voidReturn) {
@@ -346,7 +332,6 @@ final class InterceptorProxyGenerator {
         }
     }
 
-    @Nonnull
     private static TypeName aroundInvocationArgumentsType(@Nullable final AnnotationSpec unmodifiableAnnotation) {
         final var componentType =
                 null == unmodifiableAnnotation ? ClassName.OBJECT : ClassName.OBJECT.annotated(unmodifiableAnnotation);
@@ -354,7 +339,7 @@ final class InterceptorProxyGenerator {
     }
 
     private static void propagateAroundInvocationNullability(
-            @Nonnull final MethodSpec.Builder builder, @Nonnull final ExecutableElement method) {
+            final MethodSpec.Builder builder, final ExecutableElement method) {
         final var returnType = method.getReturnType();
         if (TypeKind.VOID != returnType.getKind()) {
             if (returnType.getKind().isPrimitive()) {
@@ -373,13 +358,13 @@ final class InterceptorProxyGenerator {
     }
 
     private static void emitAroundInvocationStep(
-            @Nonnull final MethodSpec.Builder builder,
-            @Nonnull final InterceptorProxyDescriptor proxy,
-            @Nonnull final ExecutableElement method,
-            @Nonnull final InterceptorBindingDescriptor interceptor,
-            @Nonnull final String invocationName,
+            final MethodSpec.Builder builder,
+            final InterceptorProxyDescriptor proxy,
+            final ExecutableElement method,
+            final InterceptorBindingDescriptor interceptor,
+            final String invocationName,
             final int index,
-            @Nonnull final ArgumentState arguments,
+            final ArgumentState arguments,
             final boolean voidReturn) {
         final var aroundMethod = interceptor.getInterceptor().findMethod(InterceptorPhase.AROUND);
         final var nextIndex = index + 1;
@@ -427,11 +412,11 @@ final class InterceptorProxyGenerator {
 
     @SuppressWarnings("SameParameterValue")
     private static void emitResultAssignment(
-            @Nonnull final MethodSpec.Builder builder,
-            @Nonnull final ExecutableElement method,
-            @Nonnull final String resultName,
-            @Nonnull final String expression,
-            @Nonnull final Object... expressionArgs) {
+            final MethodSpec.Builder builder,
+            final ExecutableElement method,
+            final String resultName,
+            final String expression,
+            final Object... expressionArgs) {
         final var args = new ArrayList<>();
         args.add(resultName);
         args.add(method.getReturnType());
@@ -439,8 +424,7 @@ final class InterceptorProxyGenerator {
         builder.addStatement("$N = ($T) " + expression, args.toArray());
     }
 
-    private static void emitAroundTargetCall(
-            @Nonnull final MethodSpec.Builder builder, @Nonnull final ExecutableElement method) {
+    private static void emitAroundTargetCall(final MethodSpec.Builder builder, final ExecutableElement method) {
         final var code = new StringBuilder();
         final var args = new ArrayList<>();
         if (TypeKind.VOID == method.getReturnType().getKind()) {
@@ -456,9 +440,7 @@ final class InterceptorProxyGenerator {
     }
 
     private static void appendActiveArgumentList(
-            @Nonnull final StringBuilder code,
-            @Nonnull final List<Object> args,
-            @Nonnull final ExecutableElement method) {
+            final StringBuilder code, final List<Object> args, final ExecutableElement method) {
         final var parameters = method.getParameters();
         for (var i = 0; i < parameters.size(); i++) {
             if (0 != i) {
@@ -473,9 +455,9 @@ final class InterceptorProxyGenerator {
 
     @SuppressWarnings("SameParameterValue")
     private static void emitInitialArguments(
-            @Nonnull final MethodSpec.Builder builder,
-            @Nonnull final List<? extends VariableElement> parameters,
-            @Nonnull final String argumentsName) {
+            final MethodSpec.Builder builder,
+            final List<? extends VariableElement> parameters,
+            final String argumentsName) {
         if (parameters.isEmpty()) {
             builder.addStatement("final $T[] $N = new $T[0]", Object.class, argumentsName, Object.class);
         } else {
@@ -498,9 +480,9 @@ final class InterceptorProxyGenerator {
     }
 
     private static void emitPublicBoundaryCatches(
-            @Nonnull final MethodSpec.Builder builder,
-            @Nonnull final ProcessingEnvironment processingEnv,
-            @Nonnull final ExecutableElement method) {
+            final MethodSpec.Builder builder,
+            final ProcessingEnvironment processingEnv,
+            final ExecutableElement method) {
         final var catchTypes = catchTypes(processingEnv, method);
         for (final var catchType : catchTypes) {
             builder.nextControlFlow("catch ( $T t )", catchType);
@@ -513,12 +495,12 @@ final class InterceptorProxyGenerator {
     }
 
     private static void emitInterceptorBlock(
-            @Nonnull final MethodSpec.Builder builder,
-            @Nonnull final InterceptorProxyDescriptor proxy,
-            @Nonnull final ExecutableElement method,
+            final MethodSpec.Builder builder,
+            final InterceptorProxyDescriptor proxy,
+            final ExecutableElement method,
             final int index,
-            @Nonnull final List<TypeMirror> catchTypes,
-            @Nonnull final ArgumentState arguments) {
+            final List<TypeMirror> catchTypes,
+            final ArgumentState arguments) {
         final var interceptors = proxy.getService().interceptors();
         if (index == interceptors.size()) {
             emitTargetCall(builder, method);
@@ -548,26 +530,23 @@ final class InterceptorProxyGenerator {
         }
     }
 
-    private static boolean hasAfterException(@Nonnull final InterceptorBindingDescriptor interceptor) {
+    private static boolean hasAfterException(final InterceptorBindingDescriptor interceptor) {
         return null != interceptor.getInterceptor().findMethod(InterceptorPhase.AFTER_EXCEPTION);
     }
 
-    private static boolean hasAround(@Nonnull final InterceptorProxyDescriptor proxy) {
+    private static boolean hasAround(final InterceptorProxyDescriptor proxy) {
         return proxy.getService().interceptors().stream().anyMatch(InterceptorProxyGenerator::hasAround);
     }
 
-    private static boolean hasAround(@Nonnull final InterceptorBindingDescriptor interceptor) {
+    private static boolean hasAround(final InterceptorBindingDescriptor interceptor) {
         return null != interceptor.getInterceptor().findMethod(InterceptorPhase.AROUND);
     }
 
-    @Nonnull
-    private static String invocationMethodName(
-            @Nonnull final String invocationName, final boolean isTarget, final int index) {
+    private static String invocationMethodName(final String invocationName, final boolean isTarget, final int index) {
         return invocationName + "_" + (isTarget ? "target" : "interceptor" + (index + 1));
     }
 
-    private static void emitTargetCall(
-            @Nonnull final MethodSpec.Builder builder, @Nonnull final ExecutableElement method) {
+    private static void emitTargetCall(final MethodSpec.Builder builder, final ExecutableElement method) {
         final var code = new StringBuilder();
         final var args = new ArrayList<>();
         if (TypeKind.VOID != method.getReturnType().getKind()) {
@@ -589,27 +568,27 @@ final class InterceptorProxyGenerator {
     }
 
     private static void emitLifecycle(
-            @Nonnull final MethodSpec.Builder builder,
-            @Nonnull final InterceptorProxyDescriptor proxy,
-            @Nonnull final ExecutableElement method,
-            @Nonnull final InterceptorBindingDescriptor interceptor,
-            @Nonnull final InterceptorPhase phase,
+            final MethodSpec.Builder builder,
+            final InterceptorProxyDescriptor proxy,
+            final ExecutableElement method,
+            final InterceptorBindingDescriptor interceptor,
+            final InterceptorPhase phase,
             @Nullable final String thrownName,
-            @Nonnull final ArgumentState arguments) {
+            final ArgumentState arguments) {
         emitLifecycle(builder, proxy, method, interceptor, phase, thrownName, "result", null, arguments);
     }
 
     @SuppressWarnings("SameParameterValue")
     private static void emitLifecycle(
-            @Nonnull final MethodSpec.Builder builder,
-            @Nonnull final InterceptorProxyDescriptor proxy,
-            @Nonnull final ExecutableElement method,
-            @Nonnull final InterceptorBindingDescriptor interceptor,
-            @Nonnull final InterceptorPhase phase,
+            final MethodSpec.Builder builder,
+            final InterceptorProxyDescriptor proxy,
+            final ExecutableElement method,
+            final InterceptorBindingDescriptor interceptor,
+            final InterceptorPhase phase,
             @Nullable final String thrownName,
             @Nullable final String resultName,
             @Nullable final String proceedName,
-            @Nonnull final ArgumentState arguments) {
+            final ArgumentState arguments) {
         final var lifecycleMethod = interceptor.getInterceptor().findMethod(phase);
         if (null != lifecycleMethod) {
             emitGenericLifecycle(
@@ -626,31 +605,30 @@ final class InterceptorProxyGenerator {
     }
 
     private static void emitGenericLifecycle(
-            @Nonnull final MethodSpec.Builder builder,
-            @Nonnull final InterceptorProxyDescriptor proxy,
-            @Nonnull final ExecutableElement method,
-            @Nonnull final InterceptorBindingDescriptor interceptor,
-            @Nonnull final InterceptorMethodDescriptor lifecycleMethod,
+            final MethodSpec.Builder builder,
+            final InterceptorProxyDescriptor proxy,
+            final ExecutableElement method,
+            final InterceptorBindingDescriptor interceptor,
+            final InterceptorMethodDescriptor lifecycleMethod,
             @Nullable final String thrownName,
             @Nullable final String resultName,
             @Nullable final String proceedName,
-            @Nonnull final ArgumentState arguments) {
+            final ArgumentState arguments) {
         final var call = lifecycleCall(
                 builder, proxy, method, interceptor, lifecycleMethod, thrownName, resultName, proceedName, arguments);
         builder.addStatement(call.code(), call.args().toArray());
     }
 
-    @Nonnull
     private static CodeFragment lifecycleCall(
-            @Nonnull final MethodSpec.Builder builder,
-            @Nonnull final InterceptorProxyDescriptor proxy,
-            @Nonnull final ExecutableElement method,
-            @Nonnull final InterceptorBindingDescriptor interceptor,
-            @Nonnull final InterceptorMethodDescriptor lifecycleMethod,
+            final MethodSpec.Builder builder,
+            final InterceptorProxyDescriptor proxy,
+            final ExecutableElement method,
+            final InterceptorBindingDescriptor interceptor,
+            final InterceptorMethodDescriptor lifecycleMethod,
             @Nullable final String thrownName,
             @Nullable final String resultName,
             @Nullable final String proceedName,
-            @Nonnull final ArgumentState arguments) {
+            final ArgumentState arguments) {
         final var code = new StringBuilder();
         final var args = new ArrayList<>();
         code.append("$N.$N(");
@@ -678,17 +656,17 @@ final class InterceptorProxyGenerator {
     }
 
     private static void appendLifecycleParameter(
-            @Nonnull final StringBuilder code,
-            @Nonnull final List<Object> args,
-            @Nonnull final MethodSpec.Builder builder,
-            @Nonnull final InterceptorProxyDescriptor proxy,
-            @Nonnull final ExecutableElement method,
-            @Nonnull final InterceptorBindingDescriptor interceptor,
-            @Nonnull final LifecycleParameterDescriptor parameter,
+            final StringBuilder code,
+            final List<Object> args,
+            final MethodSpec.Builder builder,
+            final InterceptorProxyDescriptor proxy,
+            final ExecutableElement method,
+            final InterceptorBindingDescriptor interceptor,
+            final LifecycleParameterDescriptor parameter,
             @Nullable final String thrownName,
             @Nullable final String resultName,
             @Nullable final String proceedName,
-            @Nonnull final ArgumentState arguments) {
+            final ArgumentState arguments) {
         switch (parameter.kind()) {
             case SERVICE_TYPE -> {
                 code.append("$S");
@@ -699,7 +677,8 @@ final class InterceptorProxyGenerator {
                 args.add(method.getSimpleName().toString());
             }
             case BINDING_VALUE ->
-                code.append(interceptor.values().get(parameter.name()).javaLiteral());
+                code.append(Objects.requireNonNull(interceptor.values().get(parameter.name()))
+                        .javaLiteral());
             case ARGUMENTS -> arguments.appendExpression(code, args, builder);
             case PROCEED -> {
                 assert null != proceedName;
@@ -723,9 +702,8 @@ final class InterceptorProxyGenerator {
         }
     }
 
-    @Nonnull
     private static String fieldNameFor(
-            @Nonnull final InterceptorProxyDescriptor proxy, @Nonnull final InterceptorBindingDescriptor descriptor) {
+            final InterceptorProxyDescriptor proxy, final InterceptorBindingDescriptor descriptor) {
         var index = 1;
         for (final var interceptor : proxy.getService().interceptors()) {
             if (interceptor == descriptor) {
@@ -737,19 +715,17 @@ final class InterceptorProxyGenerator {
         throw new IllegalStateException();
     }
 
-    @Nonnull
     private static String interceptorFieldName(final int index) {
         return "_interceptor" + index;
     }
 
-    private static boolean mayRequestArguments(@Nonnull final InterceptorProxyDescriptor proxy) {
+    private static boolean mayRequestArguments(final InterceptorProxyDescriptor proxy) {
         return proxy.getService().interceptors().stream()
                 .anyMatch(i -> i.getInterceptor().requestsArguments());
     }
 
-    @Nonnull
     private static List<TypeMirror> catchTypes(
-            @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final ExecutableElement method) {
+            final ProcessingEnvironment processingEnv, final ExecutableElement method) {
         final var types = new ArrayList<TypeMirror>();
         types.add(processingEnv
                 .getElementUtils()
@@ -768,8 +744,7 @@ final class InterceptorProxyGenerator {
         return types;
     }
 
-    private static boolean isUncheckedThrowable(
-            @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final TypeMirror type) {
+    private static boolean isUncheckedThrowable(final ProcessingEnvironment processingEnv, final TypeMirror type) {
         final var elementUtils = processingEnv.getElementUtils();
         final var runtimeException = elementUtils.getTypeElement(RuntimeException.class.getName());
         final var error = elementUtils.getTypeElement(Error.class.getName());
@@ -777,27 +752,24 @@ final class InterceptorProxyGenerator {
         return typeUtils.isAssignable(type, runtimeException.asType()) || typeUtils.isAssignable(type, error.asType());
     }
 
-    private record CodeFragment(
-            @Nonnull String code, @Nonnull List<Object> args) {}
+    private record CodeFragment(String code, List<Object> args) {}
 
     private record ArgumentState(
-            @Nonnull List<? extends VariableElement> parameters,
+            List<? extends VariableElement> parameters,
             boolean required,
             @Nullable String activeArgumentsName) {
-        private ArgumentState(@Nonnull final List<? extends VariableElement> parameters, final boolean required) {
+        private ArgumentState(final List<? extends VariableElement> parameters, final boolean required) {
             this(parameters, required, null);
         }
 
-        private void declareIfRequired(@Nonnull final MethodSpec.Builder builder) {
+        private void declareIfRequired(final MethodSpec.Builder builder) {
             if (required && null == activeArgumentsName) {
                 builder.addStatement("$T[] arguments = null", Object.class);
             }
         }
 
         private void appendExpression(
-                @Nonnull final StringBuilder code,
-                @Nonnull final List<Object> args,
-                @Nonnull final MethodSpec.Builder builder) {
+                final StringBuilder code, final List<Object> args, final MethodSpec.Builder builder) {
             assert required;
             if (null != activeArgumentsName) {
                 code.append("$N");

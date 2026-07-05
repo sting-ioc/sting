@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -17,6 +15,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import org.jspecify.annotations.Nullable;
 import org.realityforge.proton.ElementsUtil;
 
 final class Node {
@@ -29,7 +28,6 @@ final class Node {
     /**
      * The component graph that created this node.
      */
-    @Nonnull
     private final ComponentGraph _componentGraph;
     /**
      * The binding for the node.
@@ -45,12 +43,10 @@ final class Node {
     /**
      * The edges to nodes that this node depends upon.
      */
-    @Nonnull
     private final Map<ServiceRequest, Edge> _dependsOn = new LinkedHashMap<>();
     /**
      * The edges to nodes that use this node.
      */
-    @Nonnull
     private final Set<Edge> _usedBy = new HashSet<>();
     /**
      * True if the node is explicitly from an eager binding or implicitly eager by being
@@ -88,7 +84,7 @@ final class Node {
      *
      * @param componentGraph the object graph
      */
-    Node(@Nonnull final ComponentGraph componentGraph) {
+    Node(final ComponentGraph componentGraph) {
         this(
                 componentGraph,
                 null,
@@ -101,7 +97,7 @@ final class Node {
      *
      * @param binding the binding.
      */
-    Node(final ComponentGraph componentGraph, @Nonnull final Binding binding) {
+    Node(final ComponentGraph componentGraph, final Binding binding) {
         this(componentGraph, binding, null, binding.getDependencies());
     }
 
@@ -111,15 +107,15 @@ final class Node {
      * @param componentGraph the object graph.
      * @param proxy          the proxy descriptor.
      */
-    Node(final ComponentGraph componentGraph, @Nonnull final InterceptorProxyDescriptor proxy) {
+    Node(final ComponentGraph componentGraph, final InterceptorProxyDescriptor proxy) {
         this(componentGraph, null, proxy, new ServiceRequest[0]);
     }
 
     private Node(
-            @Nonnull final ComponentGraph componentGraph,
+            final ComponentGraph componentGraph,
             @Nullable final Binding binding,
             @Nullable final InterceptorProxyDescriptor proxy,
-            @Nonnull final ServiceRequest[] dependencies) {
+            final ServiceRequest[] dependencies) {
         _componentGraph = Objects.requireNonNull(componentGraph);
         _binding = binding;
         _proxy = proxy;
@@ -127,13 +123,14 @@ final class Node {
         for (final ServiceRequest dependency : dependencies) {
             _dependsOn.put(dependency, new Edge(this, dependency));
         }
-        if (null != _binding) {
+        if (null != binding) {
             final Element element = binding.getElement();
             final Binding.Kind kind = binding.getKind();
             _type = Binding.Kind.INPUT == kind
                     ? binding.getPublishedServices().get(0).getCoordinate().type()
                     : Binding.Kind.INJECTABLE == kind
-                            ? element.getEnclosingElement().asType()
+                            ? Objects.requireNonNull(element.getEnclosingElement())
+                                    .asType()
                             : ((ExecutableElement) element).getReturnType();
             _public = TypeKind.DECLARED != _type.getKind()
                     || ElementsUtil.isEffectivelyPublic((TypeElement) ((DeclaredType) _type).asElement());
@@ -150,7 +147,6 @@ final class Node {
         return isBinding() && Binding.Kind.PROVIDES == getBinding().getKind();
     }
 
-    @Nonnull
     Kind getKind() {
         return null != _binding ? Kind.BINDING : null != _proxy ? Kind.PROXY : Kind.ROOT;
     }
@@ -163,7 +159,6 @@ final class Node {
         return Kind.PROXY == getKind();
     }
 
-    @Nonnull
     String getId() {
         if (null != _binding) {
             return _binding.getId();
@@ -174,20 +169,16 @@ final class Node {
         }
     }
 
-    @Nonnull
     String getName() {
-        assert null != _name;
-        return _name;
+        return Objects.requireNonNull(_name);
     }
 
-    void setName(@Nonnull final String name) {
+    void setName(final String name) {
         _name = Objects.requireNonNull(name);
     }
 
-    @Nonnull
     TypeMirror getType() {
-        assert null != _type;
-        return _type;
+        return Objects.requireNonNull(_type);
     }
 
     boolean isPublic() {
@@ -222,29 +213,22 @@ final class Node {
         return null == _binding;
     }
 
-    @Nonnull
     Binding getBinding() {
-        assert null != _binding;
-        return _binding;
+        return Objects.requireNonNull(_binding);
     }
 
-    @Nonnull
     Binding getProviderBinding() {
         return null != _binding ? _binding : getProxy().getService().binding();
     }
 
-    @Nonnull
     InterceptorProxyDescriptor getProxy() {
-        assert null != _proxy;
-        return _proxy;
+        return Objects.requireNonNull(_proxy);
     }
 
-    @Nonnull
     Collection<Edge> getDependsOn() {
         return _dependsOn.values();
     }
 
-    @Nonnull
     Set<Edge> getUsedBy() {
         return _usedBy;
     }
@@ -261,21 +245,19 @@ final class Node {
         _depth = depth;
     }
 
-    void usedBy(@Nonnull final Edge edge) {
+    void usedBy(final Edge edge) {
         assert !_usedBy.contains(edge);
         _usedBy.add(edge);
     }
 
-    void setFragment(@Nonnull final FragmentNode fragment) {
+    void setFragment(final FragmentNode fragment) {
         assert isFromProvides();
         assert null == _fragment;
         _fragment = fragment;
     }
 
-    @Nonnull
     FragmentNode getFragment() {
-        assert null != _fragment;
-        return _fragment;
+        return Objects.requireNonNull(_fragment);
     }
 
     /**
@@ -286,17 +268,14 @@ final class Node {
      *                  used for describing connectors between successive nodes.
      * @return the string description.
      */
-    @Nonnull
-    String describe(@Nonnull final String connector) {
+    String describe(final String connector) {
         return "  " + getTypeLabel() + connector + " " + describeBinding();
     }
 
-    @Nonnull
     String getTypeLabel() {
         return null != _binding ? _binding.getTypeLabel() : null != _proxy ? "[Proxy]      " : "[Injector]   ";
     }
 
-    @Nonnull
     String describeBinding() {
         return null != _binding
                 ? _binding.describe()
@@ -309,23 +288,23 @@ final class Node {
                                 .toString();
     }
 
-    void addResolvedDependency(@Nonnull final ServiceRequest serviceRequest, @Nonnull final Node node) {
+    void addResolvedDependency(final ServiceRequest serviceRequest, final Node node) {
         final var edge = new Edge(this, serviceRequest);
         edge.setSatisfiedBy(Collections.singletonList(node));
         _dependsOn.put(serviceRequest, edge);
     }
 
-    void write(@Nonnull final JsonGenerator g) {
+    void write(final JsonGenerator g) {
         g.writeStartObject();
         g.write("id", getId());
         if (null != _binding) {
             final Binding.Kind kind = _binding.getKind();
             g.write("kind", kind.name());
         } else {
-            assert null != _proxy;
+            final var proxy = getProxy();
             g.write("kind", "PROXY");
             g.writeStartObject("service");
-            _proxy.getService().service().getCoordinate().write(g);
+            proxy.getService().service().getCoordinate().write(g);
             g.writeEnd();
         }
         if (_eager) {

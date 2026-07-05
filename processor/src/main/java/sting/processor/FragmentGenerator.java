@@ -6,7 +6,6 @@ import com.palantir.javapoet.TypeName;
 import com.palantir.javapoet.TypeSpec;
 import java.util.ArrayList;
 import java.util.Collections;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
@@ -19,14 +18,11 @@ import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
 
 final class FragmentGenerator {
-    @Nonnull
     private static final ClassName OBJECT = ClassName.get("java.lang", "Object");
 
     private FragmentGenerator() {}
 
-    @Nonnull
-    static TypeSpec buildType(
-            @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final FragmentDescriptor fragment) {
+    static TypeSpec buildType(final ProcessingEnvironment processingEnv, final FragmentDescriptor fragment) {
         final TypeElement element = fragment.getElement();
         final TypeSpec.Builder builder = TypeSpec.classBuilder(StingGeneratorUtil.getGeneratedClassName(element))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
@@ -46,9 +42,7 @@ final class FragmentGenerator {
         return builder.build();
     }
 
-    @Nonnull
-    private static MethodSpec buildProvidesStub(
-            @Nonnull final ProcessingEnvironment processingEnv, @Nonnull final Binding binding) {
+    private static MethodSpec buildProvidesStub(final ProcessingEnvironment processingEnv, final Binding binding) {
         final var element = (ExecutableElement) binding.getElement();
         final TypeMirror returnType = element.getReturnType();
         final boolean isPublic = TypeKind.DECLARED != returnType.getKind()
