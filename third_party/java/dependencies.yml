@@ -21,7 +21,9 @@ artifacts:
   - coord: org.realityforge.proton:proton-core:0.72
   - coord: org.realityforge.proton:proton-qa:0.72
   - coord: org.glassfish:javax.json:1.1
-  - coord: org.gwtproject:gwt-user:2.11.0
+  # Processor tests need javaemul.internal.annotations.DoNotInline to exercise @Injector.gwt
+  # AUTODETECT/ENABLE output without pulling the full GWT user jar into Bazel builds.
+  - coord: org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:0.01
     includeSource: false
   - coord: javax:javaee-api:8.0
     includeSource: false

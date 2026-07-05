@@ -63,7 +63,7 @@ define 'sting' do
                  :jspecify
 
     test.with :proton_qa,
-              :gwt_user,
+              :javaemul_internal_annotations,
               :javaee_api,
               project('core').package(:jar),
               project('core').compile.dependencies

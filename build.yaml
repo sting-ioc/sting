@@ -19,6 +19,7 @@ artifacts:
   javax_json: org.glassfish:javax.json:jar:1.1
 
   gir: org.realityforge.gir:gir-core:jar:0.12
+  javaemul_internal_annotations: org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:jar:0.01
 
   # GWT deps
   gwt_user: org.gwtproject:gwt-user:jar:2.11.0

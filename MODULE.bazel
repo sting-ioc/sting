@@ -207,20 +207,6 @@ _http_file(
 )
 
 _http_file(
-    name = "jsinterop_annotations",
-    downloaded_file_path = "com/google/jsinterop/jsinterop-annotations/2.0.0/jsinterop-annotations-2.0.0.jar",
-    sha256 = "ce01f48439240e46521b99cc4c889dcb6793f7a0b0a3e238a38359093f457b49",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/jsinterop/jsinterop-annotations/2.0.0/jsinterop-annotations-2.0.0.jar"],
-)
-
-_http_file(
-    name = "jsinterop_annotations__sources",
-    downloaded_file_path = "com/google/jsinterop/jsinterop-annotations/2.0.0/jsinterop-annotations-2.0.0-sources.jar",
-    sha256 = "27fd725393e1129dc9ca7c3712cb7ae9716ac613e82b00753139aa4b2325a67b",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/jsinterop/jsinterop-annotations/2.0.0/jsinterop-annotations-2.0.0-sources.jar"],
-)
-
-_http_file(
     name = "palantir_java_format",
     downloaded_file_path = "com/palantir/javaformat/palantir-java-format/2.92.0/palantir-java-format-2.92.0.jar",
     sha256 = "120a07aeff9c2395a7842730dc49815fe5b61c01c04c76b23289e2dccebedb3f",
@@ -410,34 +396,6 @@ _http_file(
 )
 
 _http_file(
-    name = "javax_servlet_api",
-    downloaded_file_path = "javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar",
-    sha256 = "af456b2dd41c4e82cf54f3e743bc678973d9fe35bd4d3071fa05c7e5333b8482",
-    urls = ["https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar"],
-)
-
-_http_file(
-    name = "javax_servlet_api__sources",
-    downloaded_file_path = "javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0-sources.jar",
-    sha256 = "5c6d640f01e8e7ffdba21b2b75c0f64f0c30fd1fc3372123750c034cb363012a",
-    urls = ["https://repo.maven.apache.org/maven2/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0-sources.jar"],
-)
-
-_http_file(
-    name = "validation_api",
-    downloaded_file_path = "javax/validation/validation-api/1.0.0.GA/validation-api-1.0.0.GA.jar",
-    sha256 = "e459f313ebc6db2483f8ceaad39af07086361b474fa92e40f442e8de5d9895dc",
-    urls = ["https://repo.maven.apache.org/maven2/javax/validation/validation-api/1.0.0.GA/validation-api-1.0.0.GA.jar"],
-)
-
-_http_file(
-    name = "validation_api__sources",
-    downloaded_file_path = "javax/validation/validation-api/1.0.0.GA/validation-api-1.0.0.GA-sources.jar",
-    sha256 = "a394d52a9b7fe2bb14f0718d2b3c8308ffe8f37e911956012398d55c9f9f9b54",
-    urls = ["https://repo.maven.apache.org/maven2/javax/validation/validation-api/1.0.0.GA/validation-api-1.0.0.GA-sources.jar"],
-)
-
-_http_file(
     name = "javax_xml_registry_api",
     downloaded_file_path = "javax/xml/registry/javax.xml.registry-api/1.0.7/javax.xml.registry-api-1.0.7.jar",
     sha256 = "40447a4af4ce702b2f1905225d6ae377686523700daa8e6f9795fc1e9ce7e6f9",
@@ -564,13 +522,6 @@ _http_file(
 )
 
 _http_file(
-    name = "gwt_user",
-    downloaded_file_path = "org/gwtproject/gwt-user/2.11.0/gwt-user-2.11.0.jar",
-    sha256 = "ce970506ac4f80682bae5f5ae54fa4b907715adf30a0490615290b016b3ea735",
-    urls = ["https://repo.maven.apache.org/maven2/org/gwtproject/gwt-user/2.11.0/gwt-user-2.11.0.jar"],
-)
-
-_http_file(
     name = "jspecify",
     downloaded_file_path = "org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
     sha256 = "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
@@ -589,6 +540,13 @@ _http_file(
     downloaded_file_path = "org/realityforge/bazel/depgen/bazel-depgen/0.26/bazel-depgen-0.26-all.jar",
     sha256 = "217987b5d60162bf6afe78a838b64818abef511852e39b094824e0b01a9bbd8c",
     urls = ["https://repo.maven.apache.org/maven2/org/realityforge/bazel/depgen/bazel-depgen/0.26/bazel-depgen-0.26-all.jar"],
+)
+
+_http_file(
+    name = "javaemul_internal_annotations",
+    downloaded_file_path = "org/realityforge/javaemul/internal/annotations/javaemul.internal.annotations/0.01/javaemul.internal.annotations-0.01.jar",
+    sha256 = "220413df4d2e0e606d8d89d4c0694649cad68267815e0ed18c475cc9a4d628e5",
+    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/javaemul/internal/annotations/javaemul.internal.annotations/0.01/javaemul.internal.annotations-0.01.jar"],
 )
 
 _http_file(
@@ -645,20 +603,6 @@ _http_file(
     downloaded_file_path = "org/testng/testng/7.10.2/testng-7.10.2.jar",
     sha256 = "225fd56447f2e5e439db3b483a79cd9f294fad9f357f8352b12ee6a3411ebb15",
     urls = ["https://repo.maven.apache.org/maven2/org/testng/testng/7.10.2/testng-7.10.2.jar"],
-)
-
-_http_file(
-    name = "sac",
-    downloaded_file_path = "org/w3c/css/sac/1.3/sac-1.3.jar",
-    sha256 = "003785669f921aafe4f137468dd20a01a36111e94fd7449f26c16e7924d82d23",
-    urls = ["https://repo.maven.apache.org/maven2/org/w3c/css/sac/1.3/sac-1.3.jar"],
-)
-
-_http_file(
-    name = "sac__sources",
-    downloaded_file_path = "org/w3c/css/sac/1.3/sac-1.3-sources.jar",
-    sha256 = "9ca0ff97617e9fe28fcdcf60f48c6cc1125cdce451e1a797dbce3bb5d3fcc398",
-    urls = ["https://repo.maven.apache.org/maven2/org/w3c/css/sac/1.3/sac-1.3-sources.jar"],
 )
 
 _http_file(
