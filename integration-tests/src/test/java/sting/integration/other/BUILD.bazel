@@ -2,13 +2,12 @@ load("//third_party/java:rules.bzl", "java_testng")
 
 java_testng(
     name = "all_tests",
+    size = "small",
     srcs = [
         "MyInjector.java",
         "PackageAccessInDifferentPackagesIntegrationTest.java",
     ],
-    plugins = [
-        "//processor:sting_processor_plugin",
-    ],
+    plugins = ["//processor:sting_processor_plugin"],
     test_class = "sting.integration.other.PackageAccessInDifferentPackagesIntegrationTest",
     deps = [
         "//core",

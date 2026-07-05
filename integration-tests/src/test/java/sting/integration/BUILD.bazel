@@ -12,6 +12,7 @@ java_library(
 
 java_testng(
     name = "all_tests",
+    size = "small",
     srcs = [
         "BasicIntegrationTest.java",
         "CollectionOutputCachedIntegrationTest.java",

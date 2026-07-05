@@ -2,6 +2,7 @@ load("//third_party/java:rules.bzl", "java_testng")
 
 java_testng(
     name = "all_tests",
+    size = "small",
     srcs = [
         "TransactionInterceptorTest.java",
     ],

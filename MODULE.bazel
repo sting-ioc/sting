@@ -242,6 +242,13 @@ _http_file(
 )
 
 _http_file(
+    name = "javapoet__sources",
+    downloaded_file_path = "com/palantir/javapoet/javapoet/0.14.0/javapoet-0.14.0-sources.jar",
+    sha256 = "096e3221fe31009b6e2bed3b9eceba0b4412994296c072bcc6c4dfcbe9eeb40c",
+    urls = ["https://repo.maven.apache.org/maven2/com/palantir/javapoet/javapoet/0.14.0/javapoet-0.14.0-sources.jar"],
+)
+
+_http_file(
     name = "javax_mail",
     downloaded_file_path = "com/sun/mail/javax.mail/1.6.0/javax.mail-1.6.0.jar",
     sha256 = "e338cd5cb4ab79a94cc2ebb6291c23c4e2334901490c131b700bf50c1115dd55",
@@ -263,10 +270,24 @@ _http_file(
 )
 
 _http_file(
+    name = "nullaway__sources",
+    downloaded_file_path = "com/uber/nullaway/nullaway/0.13.7/nullaway-0.13.7-sources.jar",
+    sha256 = "dded4e9757854d213d0d23c74ba832608686a579f46a51c20b2623a4dec9e88a",
+    urls = ["https://repo.maven.apache.org/maven2/com/uber/nullaway/nullaway/0.13.7/nullaway-0.13.7-sources.jar"],
+)
+
+_http_file(
     name = "jakarta_transaction_api",
     downloaded_file_path = "jakarta/transaction/jakarta.transaction-api/2.0.1/jakarta.transaction-api-2.0.1.jar",
     sha256 = "50c0a7c760c13ae6c042acf182b28f0047413db95b4636fb8879bcffab5ba875",
     urls = ["https://repo.maven.apache.org/maven2/jakarta/transaction/jakarta.transaction-api/2.0.1/jakarta.transaction-api-2.0.1.jar"],
+)
+
+_http_file(
+    name = "jakarta_transaction_api__sources",
+    downloaded_file_path = "jakarta/transaction/jakarta.transaction-api/2.0.1/jakarta.transaction-api-2.0.1-sources.jar",
+    sha256 = "fef60299cebc6f83d6ac0d7feb025ba23a0b85cc5908769869cd741f4e482614",
+    urls = ["https://repo.maven.apache.org/maven2/jakarta/transaction/jakarta.transaction-api/2.0.1/jakarta.transaction-api-2.0.1-sources.jar"],
 )
 
 _http_file(
@@ -431,6 +452,13 @@ _http_file(
 )
 
 _http_file(
+    name = "javaee_api__sources",
+    downloaded_file_path = "javax/javaee-api/8.0/javaee-api-8.0-sources.jar",
+    sha256 = "1cad641e5769223b5d2faa9704dbf3092103f5979d0f9d2fc504f55027444fd1",
+    urls = ["https://repo.maven.apache.org/maven2/javax/javaee-api/8.0/javaee-api-8.0-sources.jar"],
+)
+
+_http_file(
     name = "javaee_web_api",
     downloaded_file_path = "javax/javaee-web-api/8.0/javaee-web-api-8.0.jar",
     sha256 = "f14fa9cb08a8603af80734d71e887eea1d25739b72f790d6416e112581f8e9d4",
@@ -449,6 +477,13 @@ _http_file(
     downloaded_file_path = "org/checkerframework/checker-qual/4.0.0/checker-qual-4.0.0.jar",
     sha256 = "a06f08bc5dfa51d751cc5bd2453443a99a14825d57bd3c576de2648d2c99fcb8",
     urls = ["https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/4.0.0/checker-qual-4.0.0.jar"],
+)
+
+_http_file(
+    name = "checker_qual__sources",
+    downloaded_file_path = "org/checkerframework/checker-qual/4.0.0/checker-qual-4.0.0-sources.jar",
+    sha256 = "2c205702e5ee27b2f45f06fd9dfa5a05c6d3b7192e0c280cd6869d756601d70e",
+    urls = ["https://repo.maven.apache.org/maven2/org/checkerframework/checker-qual/4.0.0/checker-qual-4.0.0-sources.jar"],
 )
 
 _http_file(
@@ -550,10 +585,24 @@ _http_file(
 )
 
 _http_file(
+    name = "javaemul_internal_annotations__sources",
+    downloaded_file_path = "org/realityforge/javaemul/internal/annotations/javaemul.internal.annotations/0.01/javaemul.internal.annotations-0.01-sources.jar",
+    sha256 = "0969e9b9a3fe398868826fab43754fed7817f98c168281c0f783465f798ec319",
+    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/javaemul/internal/annotations/javaemul.internal.annotations/0.01/javaemul.internal.annotations-0.01-sources.jar"],
+)
+
+_http_file(
     name = "javax_annotation",
     downloaded_file_path = "org/realityforge/javax/annotation/javax.annotation/1.1.1/javax.annotation-1.1.1.jar",
     sha256 = "147d086711cd48670097ac626bfe1ed137786144c2a2c46b2aa1bb7292adc77b",
     urls = ["https://repo.maven.apache.org/maven2/org/realityforge/javax/annotation/javax.annotation/1.1.1/javax.annotation-1.1.1.jar"],
+)
+
+_http_file(
+    name = "javax_annotation__sources",
+    downloaded_file_path = "org/realityforge/javax/annotation/javax.annotation/1.1.1/javax.annotation-1.1.1-sources.jar",
+    sha256 = "1c1af94b554daa452a2b2bc8c3df1dd0d847bb4f20b9ec5cc9c7a1d41e03c39e",
+    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/javax/annotation/javax.annotation/1.1.1/javax.annotation-1.1.1-sources.jar"],
 )
 
 _http_file(
@@ -603,6 +652,13 @@ _http_file(
     downloaded_file_path = "org/testng/testng/7.10.2/testng-7.10.2.jar",
     sha256 = "225fd56447f2e5e439db3b483a79cd9f294fad9f357f8352b12ee6a3411ebb15",
     urls = ["https://repo.maven.apache.org/maven2/org/testng/testng/7.10.2/testng-7.10.2.jar"],
+)
+
+_http_file(
+    name = "testng__sources",
+    downloaded_file_path = "org/testng/testng/7.10.2/testng-7.10.2-sources.jar",
+    sha256 = "9cf959063f8403144d0606c36884adfe97e57129caac92aec8bbe4d9cb618bc3",
+    urls = ["https://repo.maven.apache.org/maven2/org/testng/testng/7.10.2/testng-7.10.2-sources.jar"],
 )
 
 _http_file(
