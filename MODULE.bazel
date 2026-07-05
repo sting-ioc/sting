@@ -557,6 +557,13 @@ _http_file(
 )
 
 _http_file(
+    name = "javax_json__sources",
+    downloaded_file_path = "org/glassfish/javax.json/1.1/javax.json-1.1-sources.jar",
+    sha256 = "2766ebfa95ca7499149d480d2c475874e2c573109a145d6f93b4495187d7469c",
+    urls = ["https://repo.maven.apache.org/maven2/org/glassfish/javax.json/1.1/javax.json-1.1-sources.jar"],
+)
+
+_http_file(
     name = "gwt_user",
     downloaded_file_path = "org/gwtproject/gwt-user/2.11.0/gwt-user-2.11.0.jar",
     sha256 = "ce970506ac4f80682bae5f5ae54fa4b907715adf30a0490615290b016b3ea735",
@@ -599,10 +606,24 @@ _http_file(
 )
 
 _http_file(
+    name = "proton_core__sources",
+    downloaded_file_path = "org/realityforge/proton/proton-core/0.72/proton-core-0.72-sources.jar",
+    sha256 = "aaf6ecff25e47189202e05793eaea6957a38e6ca74b031a1b2da6f48b1eb0861",
+    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-core/0.72/proton-core-0.72-sources.jar"],
+)
+
+_http_file(
     name = "proton_qa",
     downloaded_file_path = "org/realityforge/proton/proton-qa/0.72/proton-qa-0.72.jar",
     sha256 = "75de7e6cc73b029e1a221305fdd1e7d8050acff76ba7b1f5166ae15c859e3320",
     urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-qa/0.72/proton-qa-0.72.jar"],
+)
+
+_http_file(
+    name = "proton_qa__sources",
+    downloaded_file_path = "org/realityforge/proton/proton-qa/0.72/proton-qa-0.72-sources.jar",
+    sha256 = "944e4a391a7acf14c33a5c8be2dea0117448502e6c8c9c29c0b52da5a197ab70",
+    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-qa/0.72/proton-qa-0.72-sources.jar"],
 )
 
 _http_file(

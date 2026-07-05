@@ -19,11 +19,8 @@ artifacts:
     excludes:
       - com.palantir.javapoet:javapoet-root
   - coord: org.realityforge.proton:proton-core:0.72
-    includeSource: false
   - coord: org.realityforge.proton:proton-qa:0.72
-    includeSource: false
   - coord: org.glassfish:javax.json:1.1
-    includeSource: false
   - coord: org.gwtproject:gwt-user:2.11.0
     includeSource: false
   - coord: javax:javaee-api:8.0
