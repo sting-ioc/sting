@@ -24,7 +24,7 @@ exports_files(["dependencies.yml"])
 # Dependency Graph Generated from the input data
 # +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
 # +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
-# +- org.realityforge.proton:proton-core:jar:0.72 [compile]
+# +- org.realityforge.proton:proton-core:jar:0.73-SNAPSHOT [compile]
 # |  +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
 # |  +- org.glassfish:javax.json:jar:1.1 [compile]
 # |  +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
@@ -36,10 +36,10 @@ exports_files(["dependencies.yml"])
 # |     +- com.google.errorprone:error_prone_annotations:jar:2.2.0 [compile] (conflicts with 2.49.0)
 # |     +- com.google.j2objc:j2objc-annotations:jar:1.1 [compile] (conflicts with 3.1)
 # |     \- org.codehaus.mojo:animal-sniffer-annotations:jar:1.17 [compile]
-# +- org.realityforge.proton:proton-qa:jar:0.72 [compile]
-# |  +- org.realityforge.proton:proton-core:jar:0.72 [compile]
-# |  +- org.realityforge.proton:proton-core:jar:sources:0.72 [compile]
-# |  +- org.realityforge.proton:proton-core:jar:javadoc:0.72 [compile]
+# +- org.realityforge.proton:proton-qa:jar:0.73-SNAPSHOT [compile]
+# |  +- org.realityforge.proton:proton-core:jar:0.73-SNAPSHOT [compile]
+# |  +- org.realityforge.proton:proton-core:jar:sources:0.73-SNAPSHOT [compile]
+# |  +- org.realityforge.proton:proton-core:jar:javadoc:0.73-SNAPSHOT [compile]
 # |  +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
 # |  +- org.glassfish:javax.json:jar:1.1 [compile]
 # |  +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
@@ -482,7 +482,7 @@ _java_import(
     name = "proton_core",
     jars = ["@proton_core//file"],
     srcjar = "@proton_core__sources//file",
-    tags = ["maven_coordinates=org.realityforge.proton:proton-core:0.72"],
+    tags = ["maven_coordinates=org.realityforge.proton:proton-core:0.73-SNAPSHOT"],
     deps = [
         ":guava",
         ":javapoet",
@@ -495,7 +495,7 @@ _java_import(
     name = "proton_qa",
     jars = ["@proton_qa//file"],
     srcjar = "@proton_qa__sources//file",
-    tags = ["maven_coordinates=org.realityforge.proton:proton-qa:0.72"],
+    tags = ["maven_coordinates=org.realityforge.proton:proton-qa:0.73-SNAPSHOT"],
     deps = [
         ":error_prone_annotations",
         ":failureaccess",

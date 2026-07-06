@@ -162,7 +162,7 @@ final class InterceptorProxyGenerator {
     private static boolean shouldProxyMethod(final TypeElement serviceElement, final ExecutableElement method) {
         final var modifiers = method.getModifiers();
         if (!modifiers.contains(Modifier.STATIC) && !modifiers.contains(Modifier.PRIVATE)) {
-            final var element = (TypeElement) Objects.requireNonNull(method.getEnclosingElement());
+            final var element = ElementsUtil.getOwningType(method);
             return !Object.class.getName().equals(element.getQualifiedName().toString()) || element == serviceElement;
         } else {
             return false;

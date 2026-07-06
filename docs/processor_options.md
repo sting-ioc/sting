@@ -35,7 +35,8 @@ the options supported by the annotation processor.
     <td>sting.format_generated_source</td>
     <td>
     A flag that will format Sting generated Java source before writing it if set to <code>true</code>. Formatting
-    is disabled by default and requires additional JDK exports on JDK 16 and later. See
+    is enabled by default and requires additional JDK exports on JDK 16 and later. Set this to <code>false</code> to
+    disable generated source formatting. See
     <a href="project_setup.html">Project Setup</a> for further details.
     </td>
   </tr>

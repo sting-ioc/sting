@@ -11,6 +11,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import org.jspecify.annotations.Nullable;
+import org.realityforge.proton.ElementsUtil;
 
 final class Binding {
     /**
@@ -210,13 +211,10 @@ final class Binding {
             final var input = (InputDescriptor) getOwner();
             return ((TypeElement) _element).getQualifiedName() + "." + input.name() + "/" + input.service();
         } else if (Kind.INJECTABLE == _kind) {
-            return ((TypeElement) Objects.requireNonNull(_element.getEnclosingElement()))
-                    .getQualifiedName()
-                    .toString();
+            return ElementsUtil.getOwningType(_element).getQualifiedName().toString();
         } else {
             assert Kind.PROVIDES == _kind;
-            return ((TypeElement) Objects.requireNonNull(_element.getEnclosingElement())).getQualifiedName() + "."
-                    + _element.getSimpleName();
+            return ElementsUtil.getOwningType(_element).getQualifiedName() + "." + _element.getSimpleName();
         }
     }
 

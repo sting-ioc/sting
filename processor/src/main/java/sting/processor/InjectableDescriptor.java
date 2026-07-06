@@ -3,6 +3,7 @@ package sting.processor;
 import java.util.Objects;
 import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.TypeElement;
+import org.realityforge.proton.ElementsUtil;
 
 final class InjectableDescriptor {
     private final Binding _binding;
@@ -27,7 +28,7 @@ final class InjectableDescriptor {
     }
 
     TypeElement getElement() {
-        return (TypeElement) Objects.requireNonNull(_binding.getElement().getEnclosingElement());
+        return ElementsUtil.getOwningType(_binding.getElement());
     }
 
     Binding getBinding() {
