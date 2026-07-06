@@ -2,12 +2,6 @@
 
 This guide helps contributors work effectively on the Sting codebase.
 
-## User Interaction
-
-When asked to perform a task, ask the user questions one at a time until you have enough context. Feel free to make
-reasonable assumptions based on patterns present in the code and ask the user to confirm the assumptions if there are
-reasonable alternatives.
-
 ## Project Structure & Module Organization
 
 - Java modules: `core/` (runtime/annotations), `processor/` (annotation processor).
