@@ -1,0 +1,38 @@
+load("//third_party/java:rules.bzl", "java_binary")
+
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "migrated_data",
+    srcs = [
+        "//performance-benchmarks/data/sting-0.05__dagger-2.25.2:data",
+        "//performance-benchmarks/data/sting-0.06__dagger-2.25.2:data",
+        "//performance-benchmarks/data/sting-0.07__dagger-2.25.2:data",
+        "//performance-benchmarks/data/sting-0.09__dagger-2.25.2:data",
+        "//performance-benchmarks/data/sting-0.10__dagger-2.25.2:data",
+        "//performance-benchmarks/data/sting-0.14__dagger-2.25.2:data",
+        "//performance-benchmarks/data/sting-0.15__dagger-2.25.2:data",
+        "//performance-benchmarks/data/sting-0.17__dagger-2.25.2:data",
+        "//performance-benchmarks/data/sting-0.21__dagger-2.25.2:data",
+        "//performance-benchmarks/data/sting-0.25__dagger-2.25.2:data",
+        "//performance-benchmarks/data/sting-0.28__dagger-2.25.2:data",
+        "//performance-benchmarks/data/sting-0.29__dagger-2.25.2:data",
+        "//performance-benchmarks/data/sting-0.30__dagger-2.25.2:data",
+        "//performance-benchmarks/data/sting-0.38__dagger-2.25.2:data",
+    ],
+)
+
+java_binary(
+    name = "benchmark",
+    data = [
+        "@dagger__sources//file",
+        "@javax_inject__sources//file",
+    ],
+    main_class = "sting.performance.benchmarks.BenchmarkRunner",
+    runtime_deps = ["//performance-benchmarks/src/main/java/sting/performance/benchmarks:benchmark_lib"],
+)
+
+test_suite(
+    name = "all_tests",
+    tests = ["//performance-benchmarks/src/test/java/sting/performance/benchmarks:all_tests"],
+)

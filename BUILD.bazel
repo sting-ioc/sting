@@ -35,6 +35,7 @@ buildifier(
 test_suite(
     name = "unit_tests",
     tests = [
+        "//performance-benchmarks:all_tests",
         "//processor/src/test/java/sting/processor:all_tests",
         "//server/src/test/java/sting/server/interceptors:all_tests",
     ],

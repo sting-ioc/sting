@@ -1,0 +1,24 @@
+load("//third_party/java:rules.bzl", "java_testng")
+
+java_testng(
+    name = "all_tests",
+    size = "small",
+    srcs = [
+        "BenchmarkCommandTest.java",
+        "BenchmarkDataValidatorTest.java",
+        "BenchmarkTableRendererTest.java",
+        "BuildTimeBenchmarkTest.java",
+        "CodeSizeBenchmarkTest.java",
+        "MigratedBenchmarkDataTest.java",
+    ],
+    data = ["//performance-benchmarks:migrated_data"],
+    test_classes = [
+        "sting.performance.benchmarks.BenchmarkCommandTest",
+        "sting.performance.benchmarks.BenchmarkTableRendererTest",
+        "sting.performance.benchmarks.BuildTimeBenchmarkTest",
+        "sting.performance.benchmarks.CodeSizeBenchmarkTest",
+        "sting.performance.benchmarks.BenchmarkDataValidatorTest",
+        "sting.performance.benchmarks.MigratedBenchmarkDataTest",
+    ],
+    deps = ["//performance-benchmarks/src/main/java/sting/performance/benchmarks:benchmark_lib"],
+)
