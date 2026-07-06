@@ -8,13 +8,18 @@ Buildr::ReleaseTool.define_release_task do |t|
   t.stage('PerformanceDataPresent', 'Verify that performance data is present for current version') do
     unless ENV['SKIP_PERF_DATA'] == 'true'
       derive_versions
-
-      %w(build-times code-size).each do |type|
-        filename = "#{WORKSPACE_DIR}/performance-tests/src/test/fixtures/#{type}.properties"
-        unless IO.read(filename).split("\n").any? { |line| line.split('=')[0] =~ /^#{ENV['PRODUCT_VERSION']}\./ }
-          raise "No performance data for version #{ENV['PRODUCT_VERSION']} present for performance type #{type}. Add performance data or suppress this check by passing SKIP_PERF_DATA=true"
-        end
-      end
+      validation_dir = 'tmp/perf-release-validation'
+      rm_rf validation_dir
+      run_performance_benchmark([
+                                  '--mode=render-tables',
+                                  "--data-dir=#{PERFORMANCE_DATA_DIR}",
+                                  "--build-times-comparison=#{performance_comparison}",
+                                  '--build-times-output=tmp/perf-release-validation/BuildTimesTable.html',
+                                  '--build-times-profile=generated-release',
+                                  "--code-size-comparison=#{performance_comparison}",
+                                  '--code-size-output=tmp/perf-release-validation/CodeSizeTable.html'
+                                ])
+      rm_rf validation_dir
     end
   end
   t.build(:additional_tasks => "do_test_api_diff J2CL=#{ENV['J2CL']} STAGE_RELEASE=true")

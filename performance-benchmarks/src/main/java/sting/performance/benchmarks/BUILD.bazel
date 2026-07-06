@@ -1,0 +1,51 @@
+load("//third_party/java:rules.bzl", "java_library")
+
+package(default_visibility = ["//visibility:public"])
+
+java_library(
+    name = "benchmark_lib",
+    srcs = [
+        "BenchmarkCommand.java",
+        "BenchmarkDataFile.java",
+        "BenchmarkDataValidator.java",
+        "BenchmarkMode.java",
+        "BenchmarkRunner.java",
+        "BenchmarkTableRenderer.java",
+        "BuildTimeBenchmark.java",
+        "BuildTimeCompilerResults.java",
+        "BuildTimeResults.java",
+        "BuildTimeVariant.java",
+        "CodeSizeBenchmark.java",
+        "CodeSizeResults.java",
+        "CodeSizeVariant.java",
+        "ComparisonId.java",
+        "DaggerSourceGenerator.java",
+        "FileUtil.java",
+        "InvalidCommandLineException.java",
+        "JavacTestEngine.java",
+        "MetricKind.java",
+        "OrderedProperties.java",
+        "Scenario.java",
+        "StingSourceGenerator.java",
+        "ValidationException.java",
+        "ValidationProfile.java",
+        "package-info.java",
+    ],
+    runtime_deps = [
+        "//third_party/java:braincheck_core",
+        "//third_party/java:dagger_compiler__plugin_library",
+        "//third_party/java:dagger_gwt",
+        "//third_party/java:gwt_dev",
+    ],
+    deps = [
+        "//core",
+        "//processor",
+        "//third_party/java:akasha_gwt",
+        "//third_party/java:dagger",
+        "//third_party/java:gwt_user",
+        "//third_party/java:javaemul_internal_annotations",
+        "//third_party/java:javapoet",
+        "//third_party/java:javax_inject",
+        "//third_party/java:jspecify",
+    ],
+)

@@ -1,0 +1,526 @@
+meta:
+  project: bazel-performance-tests
+  status: accepted
+  last_updated: "2026-07-05"
+  required_full_gates:
+    - tools/check.sh
+    - bazel test //performance-benchmarks:all_tests
+    - bazel run //performance-benchmarks:benchmark -- --mode=build-times --variant=tiny --warmup-seconds=0 --trials=1 --output-dir=tmp/perf-smoke --sting-version=0.0-smoke --dagger-version=2.25.2
+    - bazel run //performance-benchmarks:benchmark -- --mode=code-size --variant=tiny --output-dir=tmp/perf-smoke --sting-version=0.0-smoke --dagger-version=2.25.2
+    - bundle exec buildr update_build_time_statistics PERF_SMOKE=true PRODUCT_VERSION=0.0-smoke
+    - bundle exec buildr update_code_size_statistics PERF_SMOKE=true PRODUCT_VERSION=0.0-smoke
+  statuses:
+    - pending
+    - in_progress
+    - completed
+    - cancelled
+
+current_focus: T07
+
+tasks:
+  - id: PLAN-DRAFT
+    title: Create structured planning artifacts
+    status: completed
+    priority: high
+    depends_on: []
+    acceptance_criteria:
+      - Requirements, implementation plan, task board, compatibility matrix, and test strategy exist.
+      - Resolved grill-me decisions are recorded with stable Q-* IDs.
+      - Plan acceptance remains pending user review.
+    files_touched:
+      - plans/bazel-performance-tests/00-requirements.md
+      - plans/bazel-performance-tests/01-data-and-output-contract.md
+      - plans/bazel-performance-tests/10-implementation-plan.md
+      - plans/bazel-performance-tests/20-task-board.yaml
+      - plans/bazel-performance-tests/30-compatibility-matrix.md
+      - plans/bazel-performance-tests/40-test-strategy.md
+    evidence:
+      - command: >-
+          ruby -e "require 'yaml'; data = YAML.load_file('plans/bazel-performance-tests/20-task-board.yaml'); raise 'missing tasks' unless data['tasks'].is_a?(Array); puts 'task board yaml ok'"
+        result: pass
+      - command: >-
+          ruby -e "require 'yaml'; data = YAML.load_file('plans/bazel-performance-tests/20-task-board.yaml'); bad = data['tasks'].select { |t| t['status'] == 'completed' && t.dig('commit', 'hash') == 'pending' }; raise bad.map { |t| t['id'] }.join(', ') unless bad.empty?; puts 'completed task commit metadata ok'"
+        result: pass
+      - command: >-
+          rg -n "status: open|Status: accepted|current_focus" plans/bazel-performance-tests
+        result: "pass; no open questions or accepted status found, current_focus is PLAN-DRAFT before closeout update"
+    commit:
+      hash: not_required
+      message: Planning artifact draft created without commit.
+
+  - id: PLAN-REVIEW
+    title: User review and approval
+    status: completed
+    priority: high
+    depends_on:
+      - PLAN-DRAFT
+    acceptance_criteria:
+      - User is explicitly asked to review the latest plan.
+      - User feedback is incorporated or explicitly deferred.
+      - Plan status is updated from draft to accepted only after approval.
+    files_touched:
+      - plans/bazel-performance-tests/00-requirements.md
+      - plans/bazel-performance-tests/10-implementation-plan.md
+      - plans/bazel-performance-tests/20-task-board.yaml
+    evidence:
+      - command: User message
+        result: "User requested implementation in subagent after iterative plan review returned no findings."
+    commit:
+      hash: not_required
+      message: Plan accepted by user approval; no commit required for approval metadata.
+
+  - id: T01
+    title: Import benchmark dependencies
+    status: completed
+    priority: high
+    depends_on:
+      - PLAN-REVIEW
+    acceptance_criteria:
+      - Missing Dagger/GWT/Akasha/BrainCheck and related dependencies are declared in depgen config.
+      - Generated Bazel dependency files are refreshed, including every file checked by `tools/check.sh`.
+      - Dagger remains pinned to 2.25.2.
+    files_touched:
+      - third_party/java/dependencies.yml
+      - MODULE.bazel
+      - MODULE.bazel.lock
+      - third_party/java/BUILD.bazel
+    evidence:
+      - command: >-
+          tools/update_java_deps.sh
+        result: "pass; regenerated dependency outputs locally with existing depgen warning about excluded com.palantir.javapoet:javapoet-root"
+      - command: >-
+          bazel test //third_party/java:verify_config_sha256
+        result: pass
+      - command: >-
+          bazel query 'set(//third_party/java:gwt_user //third_party/java:gwt_dev //third_party/java:dagger //third_party/java:dagger_compiler //third_party/java:akasha_gwt //third_party/java:braincheck_core //third_party/java:squareup_javapoet //third_party/java:javac_shaded //third_party/java:validation_api //third_party/java:javax_inject)' --output=label_kind
+        result: pass
+      - command: >-
+          bazel test //:all_tests
+        result: "pass; 5 tests pass"
+      - command: >-
+          rg -n "coord: org.realityforge.gir|name = \"gir|maven_coordinates=org.realityforge.gir" third_party/java/dependencies.yml third_party/java/BUILD.bazel MODULE.bazel
+        result: "pass; no GIR dependency matches"
+    commit:
+      hash: not_required
+      message: "T01 completed without commit; user requested subagent implementation and worker made no commit."
+
+  - id: T02
+    title: Add benchmark project skeleton
+    status: completed
+    priority: high
+    depends_on:
+      - T01
+    acceptance_criteria:
+      - "`performance-benchmarks` package builds under Bazel."
+      - Runner CLI exposes planned modes and validates invalid arguments.
+      - GIR is not used.
+    files_touched:
+      - performance-benchmarks/BUILD.bazel
+      - performance-benchmarks/src/main/java/**
+      - performance-benchmarks/src/test/java/**
+    evidence:
+      - command: >-
+          bazel run //tools/java-format:palantir_java_format -- --palantir --replace $(find "$PWD/performance-benchmarks/src" -type f -name '*.java' | sort)
+        result: pass
+      - command: >-
+          bazel build //performance-benchmarks:benchmark
+        result: pass
+      - command: >-
+          bazel test //performance-benchmarks:all_tests
+        result: "pass; 1 test target passes"
+      - command: >-
+          bazel run //performance-benchmarks:benchmark -- --mode=build-times
+        result: "pass; runner accepts the planned mode and exits 1 with the intentional not-implemented message"
+      - command: >-
+          rg -n "gir|org\\.realityforge\\.gir" performance-benchmarks
+        result: "pass; no GIR references"
+    commit:
+      hash: not_required
+      message: "T02 completed without commit; implementation remains uncommitted while subagent delivery continues."
+
+  - id: T03
+    title: Implement data model and migrate history
+    status: completed
+    priority: high
+    depends_on:
+      - T02
+    acceptance_criteria:
+      - New per-comparison layout is implemented.
+      - Existing monolithic build-time and code-size data is migrated.
+      - Legacy migrated build-time rows validate without raw timing keys absent from old fixtures.
+      - Newly generated release data validation catches missing required metadata, variants, and keys.
+    files_touched:
+      - performance-benchmarks/data/**
+      - performance-benchmarks/src/main/java/**
+      - performance-benchmarks/src/test/java/**
+      - performance-tests/src/test/fixtures/**
+    evidence:
+      - command: >-
+          bazel run //tools/java-format:palantir_java_format -- --palantir --replace $(find "$PWD/performance-benchmarks/src" -type f -name '*.java' | sort)
+        result: pass
+      - command: >-
+          bazel build //performance-benchmarks:benchmark
+        result: pass
+      - command: >-
+          bazel test //performance-benchmarks:all_tests
+        result: "pass; 1 test target passes"
+      - command: >-
+          rg -n "gir|org\\.realityforge\\.gir" performance-benchmarks
+        result: "pass; no GIR references"
+      - command: >-
+          ruby - <<'RUBY'
+          old_files = {
+            'build-times.properties' => 'performance-tests/src/test/fixtures/build-times.properties',
+            'code-size.properties' => 'performance-tests/src/test/fixtures/code-size.properties'
+          }
+          old_files.each do |metric, old_path|
+            by_version = Hash.new { |h, k| h[k] = [] }
+            File.readlines(old_path, chomp: true).each do |line|
+              next if line.strip.empty? || line.start_with?('#')
+              key, value = line.split('=', 2)
+              match = /\A(\d+\.\d+)\.(.+)\z/.match(key)
+              raise "unparseable key #{key}" unless match
+              by_version[match[1]] << [match[2], value]
+            end
+            by_version.each do |version, entries|
+              new_path = File.join('performance-benchmarks/data', "sting-#{version}__dagger-2.25.2", metric)
+              raise "missing #{new_path}" unless File.file?(new_path)
+              new_entries = File.readlines(new_path, chomp: true).reject { |line| line.strip.empty? || line.start_with?('#') }.map { |line| line.split('=', 2) }
+              expected = [
+                ['sting.version', version],
+                ['dagger.version', '2.25.2'],
+                ['generated.by', 'bazel-performance-benchmarks']
+              ] + entries
+              raise "mismatch #{new_path}" unless new_entries == expected
+            end
+          end
+          puts 'legacy fixture migration parity ok'
+          RUBY
+        result: "pass; migrated data matches stripped legacy fixture rows with required metadata"
+    commit:
+      hash: not_required
+      message: "T03 completed without commit; implementation remains uncommitted while subagent delivery continues."
+
+  - id: T04
+    title: Port build-time benchmark behavior
+    status: completed
+    priority: high
+    depends_on:
+      - T03
+    acceptance_criteria:
+      - "Build-time mode uses in-process `javac`, not Bazel build timing."
+      - Release defaults remain 20 seconds warmup and 10 trials.
+      - Reduced warmup/trial flags work for smoke runs.
+      - Raw measured trials and derived ratios are written.
+    files_touched:
+      - performance-benchmarks/src/main/java/**
+      - performance-benchmarks/src/test/java/**
+      - performance-benchmarks/data/**
+    evidence:
+      - command: >-
+          bazel run //tools/java-format:palantir_java_format -- --palantir --replace $(find "$PWD/performance-benchmarks/src" -type f -name '*.java' | sort)
+        result: pass
+      - command: >-
+          bazel run //:buildifier_check
+        result: pass
+      - command: >-
+          bazel build //performance-benchmarks:benchmark
+        result: pass
+      - command: >-
+          bazel test //performance-benchmarks:all_tests
+        result: "pass; 1 test target passes"
+      - command: >-
+          bazel run //performance-benchmarks:benchmark -- --mode=build-times --variant=tiny --warmup-seconds=0 --trials=1 --output-dir=tmp/perf-smoke --sting-version=0.0-smoke --dagger-version=2.25.2
+        result: "pass; exercised in-process Sting and Dagger javac runs and wrote tmp/perf-smoke/sting-0.0-smoke__dagger-2.25.2/build-times.properties"
+      - command: >-
+          ruby - <<'RUBY'
+          file = 'tmp/perf-smoke/sting-0.0-smoke__dagger-2.25.2/build-times.properties'
+          required = %w[
+            sting.version
+            dagger.version
+            generated.by
+            tiny.output.sting.all.min
+            tiny.output.sting.all.trial.1
+            tiny.output.dagger.all.min
+            tiny.output.dagger.all.trial.1
+            tiny.output.sting.incremental.min
+            tiny.output.sting.incremental.trial.1
+            tiny.output.dagger.incremental.min
+            tiny.output.dagger.incremental.trial.1
+            tiny.output.sting2dagger.all.min
+            tiny.output.sting2dagger.incremental.min
+          ]
+          keys = File.readlines(file, chomp: true).map { |line| line.split('=', 2).first }
+          missing = required - keys
+          raise missing.join("\n") unless missing.empty?
+          puts 'build-time smoke keys ok'
+          RUBY
+        result: "pass; smoke output contains raw trial keys, min timing keys, and derived ratio keys"
+      - command: >-
+          rg -n "gir|org\\.realityforge\\.gir" performance-benchmarks
+        result: "pass; no GIR references"
+      - command: >-
+          rm -rf tmp/perf-smoke && test ! -e tmp/perf-smoke
+        result: pass
+    commit:
+      hash: not_required
+      message: "T04 completed without commit; implementation remains uncommitted while subagent delivery continues."
+
+  - id: T05
+    title: Port code-size benchmark behavior
+    status: completed
+    priority: high
+    depends_on:
+      - T03
+    acceptance_criteria:
+      - Code-size mode compiles generated scenarios and runs GWT.
+      - GWT output size is recorded for Sting and Dagger.
+      - Archive output is disabled by default and available only through explicit debug option.
+    files_touched:
+      - performance-benchmarks/src/main/java/**
+      - performance-benchmarks/src/test/java/**
+      - performance-benchmarks/data/**
+    evidence:
+      - command: >-
+          bazel run //tools/java-format:palantir_java_format -- --palantir --replace $(find "$PWD/performance-benchmarks/src" -type f -name '*.java' | sort)
+        result: pass
+      - command: >-
+          bazel run //:buildifier_check
+        result: pass
+      - command: >-
+          bazel build //performance-benchmarks:benchmark
+        result: pass
+      - command: >-
+          bazel test //performance-benchmarks:all_tests
+        result: "pass; 1 test target passes"
+      - command: >-
+          bazel run //performance-benchmarks:benchmark -- --mode=code-size --variant=tiny --output-dir=tmp/perf-smoke --sting-version=0.0-smoke --dagger-version=2.25.2
+        result: "pass; GWT compiled Sting and Dagger tiny scenarios and wrote tmp/perf-smoke/sting-0.0-smoke__dagger-2.25.2/code-size.properties"
+      - command: >-
+          ruby - <<'RUBY'
+          file = 'tmp/perf-smoke/sting-0.0-smoke__dagger-2.25.2/code-size.properties'
+          required = %w[
+            sting.version
+            dagger.version
+            generated.by
+            tiny.input.layerCount
+            tiny.input.nodesPerLayer
+            tiny.input.inputsPerNode
+            tiny.input.eagerCount
+            tiny.output.sting.size
+            tiny.output.dagger.size
+          ]
+          keys = File.readlines(file, chomp: true).map { |line| line.split('=', 2).first }
+          missing = required - keys
+          raise missing.join("\n") unless missing.empty?
+          puts 'code-size smoke keys ok'
+          RUBY
+        result: "pass; smoke output contains Sting and Dagger size keys"
+      - command: >-
+          if [ -e tmp/perf-archive ]; then find tmp/perf-archive -maxdepth 4 -type f | sort; exit 1; fi
+          if find tmp/perf-smoke -path '*archive*' -print -quit | grep -q .; then find tmp/perf-smoke -path '*archive*' -print; exit 1; fi
+          printf 'no default archive output\n'
+        result: "pass; default code-size smoke produced no archive output"
+      - command: >-
+          bazel run //performance-benchmarks:benchmark -- --mode=code-size --variant=tiny --output-dir=tmp/perf-smoke --sting-version=0.0-smoke --dagger-version=2.25.2 --archive-dir=tmp/perf-archive
+        result: "pass; explicit archive option wrote per-implementation debug artifacts"
+      - command: >-
+          ruby - <<'RUBY'
+          required = [
+            'tmp/perf-archive/tiny/sting/statistics.properties',
+            'tmp/perf-archive/tiny/dagger/statistics.properties'
+          ]
+          missing = required.reject { |path| File.file?(path) }
+          raise missing.join("\n") unless missing.empty?
+          raise 'missing sting archive size' unless File.read(required[0]).include?('output.sting.size=')
+          raise 'missing dagger archive size' unless File.read(required[1]).include?('output.dagger.size=')
+          puts 'archive smoke output ok'
+          RUBY
+        result: pass
+      - command: >-
+          bazel run //performance-benchmarks:benchmark -- --mode=build-times --variant=tiny --warmup-seconds=0 --trials=1 --output-dir=tmp/perf-smoke --sting-version=0.0-smoke --dagger-version=2.25.2
+        result: "pass; build-time mode still works after shared CLI changes"
+      - command: >-
+          rg -n "gir|org\\.realityforge\\.gir" performance-benchmarks
+        result: "pass; no GIR references"
+      - command: >-
+          rm -rf tmp/perf-smoke tmp/perf-archive && test ! -e tmp/perf-smoke && test ! -e tmp/perf-archive
+        result: pass
+    commit:
+      hash: not_required
+      message: "T05 completed without commit; implementation remains uncommitted while delivery continues."
+
+  - id: T06
+    title: Render website tables and update wrappers
+    status: completed
+    priority: high
+    depends_on:
+      - T04
+      - T05
+    acceptance_criteria:
+      - Website include tables render from new data layout with separate build-time and code-size comparison selections.
+      - Existing Rake task names invoke Bazel runner.
+      - Rake wrappers support and pass a `PERF_SMOKE=true` validation path.
+      - Normal `tools/check.sh` runs benchmark schema/unit tests either directly or through the root suite.
+      - Reduced tiny compiler/GWT smoke remains an implementation full-gate check, not a normal `tools/check.sh` check.
+      - Release validation checks complete schema for current comparison.
+    files_touched:
+      - tasks/perf.rake
+      - tasks/release.rake
+      - tools/check.sh
+      - BUILD.bazel
+      - buildfile
+      - website/includes/BuildTimesTable.html
+      - website/includes/CodeSizeTable.html
+      - performance-benchmarks/src/main/java/**
+    evidence:
+      - command: >-
+          bazel run //tools/java-format:palantir_java_format -- --palantir --replace $(find "$PWD/performance-benchmarks/src" -type f -name '*.java' | sort)
+        result: pass
+      - command: >-
+          bazel run //:buildifier_check
+        result: pass
+      - command: >-
+          bazel build //performance-benchmarks:benchmark
+        result: pass
+      - command: >-
+          bazel test //performance-benchmarks:all_tests
+        result: "pass; 1 test target passes"
+      - command: >-
+          bazel run //performance-benchmarks:benchmark -- --mode=render-tables --data-dir=performance-benchmarks/data --build-times-comparison=sting-0.30__dagger-2.25.2 --build-times-output=website/includes/BuildTimesTable.html --code-size-comparison=sting-0.38__dagger-2.25.2 --code-size-output=website/includes/CodeSizeTable.html
+        result: "pass; rendered checked-in tables from separate migrated build-time and code-size comparisons"
+      - command: >-
+          git diff --exit-code -- website/includes/BuildTimesTable.html website/includes/CodeSizeTable.html
+        result: "pass; renderer output matches checked-in historical tables"
+      - command: >-
+          bazel query 'tests(//:all_tests)' --output=label | sort
+        result: "pass; root suite includes //performance-benchmarks/src/test/java/sting/performance/benchmarks:all_tests"
+      - command: >-
+          bazel test //:all_tests
+        result: "pass; 6 test targets pass including performance-benchmarks"
+      - command: >-
+          bundle exec buildr update_build_time_statistics PERF_SMOKE=true PRODUCT_VERSION=0.0-smoke
+        result: "pass; existing Rake task invokes Bazel build-time tiny smoke"
+      - command: >-
+          bundle exec buildr update_code_size_statistics PERF_SMOKE=true PRODUCT_VERSION=0.0-smoke
+        result: "pass; existing Rake task invokes Bazel code-size tiny smoke"
+      - command: >-
+          ruby - <<'RUBY'
+          base = 'tmp/perf-smoke/sting-0.0-smoke__dagger-2.25.2'
+          required = [
+            File.join(base, 'build-times.properties'),
+            File.join(base, 'code-size.properties')
+          ]
+          missing = required.reject { |path| File.file?(path) }
+          raise missing.join("\n") unless missing.empty?
+          raise 'missing build raw trial' unless File.read(required[0]).include?('tiny.output.sting.all.trial.1=')
+          raise 'missing code-size sting size' unless File.read(required[1]).include?('tiny.output.sting.size=')
+          puts 'rake smoke files ok'
+          RUBY
+        result: pass
+      - command: >-
+          bundle exec buildr gen_build_time_table PRODUCT_VERSION=0.30
+        result: "pass; existing table-generation task invokes Bazel renderer"
+      - command: >-
+          bundle exec buildr gen_code_size_table PRODUCT_VERSION=0.38
+        result: "pass; existing table-generation task invokes Bazel renderer"
+      - command: >-
+          ruby -c tasks/perf.rake && ruby -c tasks/release.rake
+        result: pass
+      - command: >-
+          rg -n "performance-tests/src/test/fixtures|generate_build_time_statistics|generate_size_statistics|BuildTimePerformanceTest|CodeSizePerformanceTest" tasks/perf.rake tasks/release.rake tools/check.sh BUILD.bazel
+        result: "pass; no old performance fixture or Java-main references remain in wrapper/release/check wiring"
+      - command: >-
+          rg -n "gir|org\\.realityforge\\.gir" performance-benchmarks
+        result: "pass; no GIR references"
+      - command: >-
+          rm -rf tmp/perf-smoke tmp/perf-archive tmp/perf-release-validation && test ! -e tmp/perf-smoke && test ! -e tmp/perf-archive && test ! -e tmp/perf-release-validation
+        result: pass
+    commit:
+      hash: not_required
+      message: "T06 completed without commit; implementation remains uncommitted while delivery continues."
+
+  - id: T07
+    title: Remove old Buildr performance-tests module
+    status: pending
+    priority: medium
+    depends_on:
+      - T06
+    acceptance_criteria:
+      - Full all-variant Rake wrapper generation has passed, or user-approved deletion deferral is recorded.
+      - "Old `performance-tests` Java sources and fixture files are removed or migrated."
+      - Buildr no longer defines the old performance-tests module.
+      - No release or docs references point at the old fixture paths.
+    files_touched:
+      - buildfile
+      - performance-tests/**
+      - tasks/**
+      - docs/**
+    evidence: []
+    commit:
+      hash: pending
+      message: pending
+
+  - id: T08
+    title: Final validation and documentation alignment
+    status: pending
+    priority: high
+    depends_on:
+      - T07
+    acceptance_criteria:
+      - Required full gates pass.
+      - Contributor docs mention the new manual performance workflow if needed.
+      - Task board evidence and commit metadata are complete.
+    files_touched:
+      - docs/development_process.md
+      - plans/bazel-performance-tests/**
+    evidence: []
+    commit:
+      hash: pending
+      message: pending
+
+history:
+  - timestamp: "2026-07-05"
+    task: PLAN-DRAFT
+    commit: not_required
+    note: Initial structured planning artifacts created and validated; plan remains draft pending user review.
+  - timestamp: "2026-07-05"
+    task: PLAN-REVIEW
+    commit: not_required
+    note: Round 1 plan-review findings incorporated into schema, render selection, normal-check, wrapper-smoke, and depgen-output requirements.
+  - timestamp: "2026-07-05"
+    task: PLAN-REVIEW
+    commit: not_required
+    note: Round 2 plan-review findings incorporated into normal-check task ownership and old-module deletion parity gate.
+  - timestamp: "2026-07-05"
+    task: PLAN-REVIEW
+    commit: not_required
+    note: Round 3 plan-review reported no actionable findings.
+  - timestamp: "2026-07-05"
+    task: PLAN-REVIEW
+    commit: not_required
+    note: User approved implementation by requesting implementation in a subagent; plan marked accepted.
+  - timestamp: "2026-07-05"
+    task: T01
+    commit: not_required
+    note: Benchmark dependency imports added and validated; no GIR dependency imported.
+  - timestamp: "2026-07-05"
+    task: T02
+    commit: not_required
+    note: Benchmark Bazel project skeleton, CLI mode parser, and focused TestNG coverage added and validated.
+  - timestamp: "2026-07-05"
+    task: T03
+    commit: not_required
+    note: Per-comparison data model, validators, and migrated historical benchmark data added and validated.
+  - timestamp: "2026-07-05"
+    task: T04
+    commit: not_required
+    note: Build-time benchmark mode ported to Bazel runner with in-process javac, raw trial output, and reduced smoke validation.
+  - timestamp: "2026-07-05"
+    task: T05
+    commit: not_required
+    note: Code-size benchmark mode ported to Bazel runner with GWT smoke validation and opt-in archive output.
+  - timestamp: "2026-07-05"
+    task: T06
+    commit: not_required
+    note: Website table rendering, Rake wrappers, release validation, and root-suite benchmark test integration completed.

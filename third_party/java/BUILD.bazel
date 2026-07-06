@@ -1,4 +1,4 @@
-load("@rules_java//java:defs.bzl", _java_binary = "java_binary", _java_import = "java_import", _java_plugin = "java_plugin", _java_test = "java_test")
+load("@rules_java//java:defs.bzl", _java_binary = "java_binary", _java_import = "java_import", _java_library = "java_library", _java_plugin = "java_plugin", _java_test = "java_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -17,7 +17,7 @@ _java_plugin(
 # DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
 
 # SHA256 of the configuration content that generated this content
-_CONFIG_SHA256 = "46FDB051DD06159E826D74533E20887F782236AA240E661B8AA201CB8D5B2905"
+_CONFIG_SHA256 = "1DBD4F09E2397A4F4535002B0A092F22727FB7D7A0CDAF932297374ABFCFEA29"
 
 exports_files(["dependencies.yml"])
 
@@ -29,13 +29,6 @@ exports_files(["dependencies.yml"])
 # |  +- org.glassfish:javax.json:jar:1.1 [compile]
 # |  +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
 # |  \- com.google.guava:guava:jar:27.1-jre [compile]
-# |     +- com.google.guava:failureaccess:jar:1.0.1 [compile] (conflicts with 1.0.3)
-# |     +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
-# |     +- com.google.code.findbugs:jsr305:jar:3.0.2 [compile]
-# |     +- org.checkerframework:checker-qual:jar:2.5.2 [compile] (conflicts with 4.0.0)
-# |     +- com.google.errorprone:error_prone_annotations:jar:2.2.0 [compile] (conflicts with 2.49.0)
-# |     +- com.google.j2objc:j2objc-annotations:jar:1.1 [compile] (conflicts with 3.1)
-# |     \- org.codehaus.mojo:animal-sniffer-annotations:jar:1.17 [compile]
 # +- org.realityforge.proton:proton-qa:jar:0.72 [compile]
 # |  +- org.realityforge.proton:proton-core:jar:0.72 [compile]
 # |  +- org.realityforge.proton:proton-core:jar:sources:0.72 [compile]
@@ -46,7 +39,7 @@ exports_files(["dependencies.yml"])
 # |  +- com.google.guava:guava:jar:33.6.0-jre [compile] (conflicts with 27.1-jre)
 # |  +- com.palantir.javaformat:palantir-java-format:jar:2.92.0 [compile]
 # |  +- com.palantir.javaformat:palantir-java-format-spi:jar:2.92.0 [compile]
-# |  +- com.google.guava:failureaccess:jar:1.0.3 [compile]
+# |  +- com.google.guava:failureaccess:jar:1.0.3 [compile] (conflicts with 1.0.1)
 # |  +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
 # |  +- org.jspecify:jspecify:jar:1.0.0 [compile]
 # |  +- com.google.errorprone:error_prone_annotations:jar:2.49.0 [compile]
@@ -60,7 +53,185 @@ exports_files(["dependencies.yml"])
 # |  \- com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.21.1 [compile]
 # +- org.glassfish:javax.json:jar:1.1 [compile]
 # |  \- javax.json:javax.json-api:jar:1.1 [compile, optional]
+# +- com.google.guava:guava:jar:27.1-jre [compile]
+# |  +- com.google.guava:failureaccess:jar:1.0.1 [compile]
+# |  +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
+# |  +- com.google.code.findbugs:jsr305:jar:3.0.2 [compile]
+# |  +- org.checkerframework:checker-qual:jar:2.5.2 [compile] (conflicts with 4.0.0)
+# |  +- com.google.errorprone:error_prone_annotations:jar:2.2.0 [compile] (conflicts with 2.49.0)
+# |  +- com.google.j2objc:j2objc-annotations:jar:1.1 [compile] (conflicts with 3.1)
+# |  \- org.codehaus.mojo:animal-sniffer-annotations:jar:1.17 [compile]
+# +- com.google.guava:failureaccess:jar:1.0.1 [compile]
 # +- org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:jar:0.01 [compile]
+# +- org.gwtproject:gwt-user:jar:2.11.0 [compile]
+# |  +- com.google.jsinterop:jsinterop-annotations:jar:2.0.0 [compile]
+# |  +- javax.validation:validation-api:jar:1.0.0.GA [compile]
+# |  +- javax.validation:validation-api:jar:sources:1.0.0.GA [compile]
+# |  +- javax.servlet:javax.servlet-api:jar:3.1.0 [compile]
+# |  \- org.w3c.css:sac:jar:1.3 [compile]
+# +- org.gwtproject:gwt-dev:jar:2.11.0 [compile]
+# |  +- com.google.code.findbugs:jsr305:jar:1.3.9 [compile] (conflicts with 3.0.2)
+# |  +- com.google.code.gson:gson:jar:2.6.2 [compile]
+# |  +- org.ow2.asm:asm:jar:9.2 [compile]
+# |  +- org.ow2.asm:asm-util:jar:9.2 [compile]
+# |  |  +- org.ow2.asm:asm:jar:9.2 [compile]
+# |  |  +- org.ow2.asm:asm-tree:jar:9.2 [compile]
+# |  |  |  \- org.ow2.asm:asm:jar:9.2 [compile]
+# |  |  \- org.ow2.asm:asm-analysis:jar:9.2 [compile]
+# |  |     \- org.ow2.asm:asm-tree:jar:9.2 [compile]
+# |  +- org.ow2.asm:asm-commons:jar:9.2 [compile]
+# |  |  +- org.ow2.asm:asm:jar:9.2 [compile]
+# |  |  +- org.ow2.asm:asm-tree:jar:9.2 [compile]
+# |  |  \- org.ow2.asm:asm-analysis:jar:9.2 [compile]
+# |  +- colt:colt:jar:1.2.0 [compile]
+# |  +- commons-collections:commons-collections:jar:3.2.2 [compile]
+# |  +- commons-io:commons-io:jar:2.4 [compile]
+# |  +- com.ibm.icu:icu4j:jar:63.1 [compile]
+# |  +- tapestry:tapestry:jar:4.0.2 [compile]
+# |  +- net.sourceforge.htmlunit:htmlunit:jar:2.55.0 [compile]
+# |  |  +- xalan:xalan:jar:2.7.2 [compile]
+# |  |  |  \- xalan:serializer:jar:2.7.2 [compile]
+# |  |  +- org.apache.commons:commons-lang3:jar:3.12.0 [compile]
+# |  |  +- org.apache.commons:commons-text:jar:1.9 [compile]
+# |  |  +- org.apache.httpcomponents:httpmime:jar:4.5.13 [compile]
+# |  |  |  \- org.apache.httpcomponents:httpclient:jar:4.5.13 [compile]
+# |  |  |     +- org.apache.httpcomponents:httpcore:jar:4.4.13 [compile]
+# |  |  |     +- commons-logging:commons-logging:jar:1.2 [compile]
+# |  |  |     \- commons-codec:commons-codec:jar:1.11 [compile]
+# |  |  +- net.sourceforge.htmlunit:htmlunit-core-js:jar:2.55.0 [compile]
+# |  |  +- net.sourceforge.htmlunit:neko-htmlunit:jar:2.55.0 [compile]
+# |  |  |  \- xerces:xercesImpl:jar:2.12.1 [compile]
+# |  |  |     +- xml-apis:xml-apis:jar:1.4.01 [compile]
+# |  |  |     \- xml-resolver:xml-resolver:jar:1.2 [compile, optional]
+# |  |  +- net.sourceforge.htmlunit:htmlunit-cssparser:jar:1.10.0 [compile]
+# |  |  +- commons-io:commons-io:jar:2.10.0 [compile] (conflicts with 2.4)
+# |  |  +- commons-logging:commons-logging:jar:1.2 [compile]
+# |  |  |  +- log4j:log4j:jar:1.2.17 [compile, optional]
+# |  |  |  +- logkit:logkit:jar:1.0.1 [compile, optional]
+# |  |  |  \- avalon-framework:avalon-framework:jar:4.1.5 [compile, optional]
+# |  |  +- commons-net:commons-net:jar:3.8.0 [compile]
+# |  |  +- org.brotli:dec:jar:0.1.2 [compile]
+# |  |  +- com.shapesecurity:salvation2:jar:3.0.0 [compile]
+# |  |  \- org.eclipse.jetty.websocket:websocket-client:jar:9.4.44.v20210927 [compile]
+# |  |     +- org.eclipse.jetty:jetty-client:jar:9.4.44.v20210927 [compile]
+# |  |     |  +- org.eclipse.jetty:jetty-http:jar:9.4.44.v20210927 [compile]
+# |  |     |  +- org.eclipse.jetty:jetty-io:jar:9.4.44.v20210927 [compile]
+# |  |     |  \- org.eclipse.jetty:jetty-jmx:jar:9.4.44.v20210927 [compile, optional]
+# |  |     +- org.eclipse.jetty:jetty-xml:jar:9.4.44.v20210927 [compile, optional]
+# |  |     +- org.eclipse.jetty:jetty-util:jar:9.4.44.v20210927 [compile]
+# |  |     +- org.eclipse.jetty:jetty-io:jar:9.4.44.v20210927 [compile]
+# |  |     \- org.eclipse.jetty.websocket:websocket-common:jar:9.4.44.v20210927 [compile]
+# |  |        +- org.eclipse.jetty.websocket:websocket-api:jar:9.4.44.v20210927 [compile]
+# |  |        +- org.eclipse.jetty:jetty-util:jar:9.4.44.v20210927 [compile]
+# |  |        \- org.eclipse.jetty:jetty-io:jar:9.4.44.v20210927 [compile]
+# |  +- org.eclipse.jetty:jetty-webapp:jar:9.4.44.v20210927 [compile]
+# |  |  +- org.eclipse.jetty:jetty-xml:jar:9.4.44.v20210927 [compile]
+# |  |  |  \- org.eclipse.jetty:jetty-util:jar:9.4.44.v20210927 [compile]
+# |  |  +- org.eclipse.jetty:jetty-servlet:jar:9.4.44.v20210927 [compile]
+# |  |  |  +- org.eclipse.jetty:jetty-security:jar:9.4.44.v20210927 [compile]
+# |  |  |  |  \- org.eclipse.jetty:jetty-server:jar:9.4.44.v20210927 [compile]
+# |  |  |  |     +- javax.servlet:javax.servlet-api:jar:3.1.0 [compile]
+# |  |  |  |     +- org.eclipse.jetty:jetty-http:jar:9.4.44.v20210927 [compile]
+# |  |  |  |     +- org.eclipse.jetty:jetty-io:jar:9.4.44.v20210927 [compile]
+# |  |  |  |     \- org.eclipse.jetty:jetty-jmx:jar:9.4.44.v20210927 [compile, optional]
+# |  |  |  +- org.eclipse.jetty:jetty-util-ajax:jar:9.4.44.v20210927 [compile]
+# |  |  |  |  \- org.eclipse.jetty:jetty-util:jar:9.4.44.v20210927 [compile]
+# |  |  |  \- org.eclipse.jetty:jetty-jmx:jar:9.4.44.v20210927 [compile, optional]
+# |  |  \- org.eclipse.jetty:jetty-jmx:jar:9.4.44.v20210927 [compile, optional]
+# |  +- org.eclipse.jetty:jetty-servlets:jar:9.4.44.v20210927 [compile]
+# |  |  +- org.eclipse.jetty:jetty-continuation:jar:9.4.44.v20210927 [compile]
+# |  |  +- org.eclipse.jetty:jetty-http:jar:9.4.44.v20210927 [compile]
+# |  |  |  +- org.eclipse.jetty:jetty-util:jar:9.4.44.v20210927 [compile]
+# |  |  |  \- org.eclipse.jetty:jetty-io:jar:9.4.44.v20210927 [compile]
+# |  |  +- org.eclipse.jetty:jetty-util:jar:9.4.44.v20210927 [compile]
+# |  |  \- org.eclipse.jetty:jetty-io:jar:9.4.44.v20210927 [compile]
+# |  |     +- org.eclipse.jetty:jetty-util:jar:9.4.44.v20210927 [compile]
+# |  |     \- org.eclipse.jetty:jetty-jmx:jar:9.4.44.v20210927 [compile, optional]
+# |  +- org.eclipse.jetty:jetty-annotations:jar:9.4.44.v20210927 [compile]
+# |  |  +- org.eclipse.jetty:jetty-plus:jar:9.4.44.v20210927 [compile]
+# |  |  |  +- org.eclipse.jetty:jetty-webapp:jar:9.4.44.v20210927 [compile]
+# |  |  |  \- org.eclipse.jetty:jetty-jndi:jar:9.4.44.v20210927 [compile]
+# |  |  |     \- org.eclipse.jetty:jetty-util:jar:9.4.44.v20210927 [compile]
+# |  |  +- org.eclipse.jetty:jetty-webapp:jar:9.4.44.v20210927 [compile]
+# |  |  +- javax.annotation:javax.annotation-api:jar:1.3.2 [compile]
+# |  |  +- org.ow2.asm:asm:jar:9.2 [compile]
+# |  |  \- org.ow2.asm:asm-commons:jar:9.2 [compile]
+# |  \- org.eclipse.jetty:apache-jsp:jar:9.4.44.v20210927 [compile]
+# |     +- org.eclipse.jetty:jetty-util:jar:9.4.44.v20210927 [compile]
+# |     +- org.eclipse.jetty.toolchain:jetty-schemas:jar:3.1.2 [compile]
+# |     +- javax.servlet:javax.servlet-api:jar:3.1.0 [compile]
+# |     +- org.mortbay.jasper:apache-jsp:jar:8.5.70 [compile]
+# |     |  +- org.eclipse.jetty.toolchain:jetty-schemas:jar:3.1.2 [compile]
+# |     |  +- org.mortbay.jasper:apache-el:jar:8.5.70 [compile]
+# |     |  |  +- javax.servlet:javax.servlet-api:jar:3.1.0 [compile, optional]
+# |     |  |  \- org.apache.tomcat:tomcat-jasper-el:jar:8.5.70 [compile, optional]
+# |     |  +- org.apache.tomcat:tomcat-jasper:jar:8.5.70 [compile, optional]
+# |     |  \- org.eclipse.jdt:ecj:jar:3.19.0 [compile]
+# |     \- org.eclipse.jetty:jetty-annotations:jar:9.4.44.v20210927 [compile]
+# +- javax.validation:validation-api:jar:1.0.0.GA [compile]
+# +- com.google.jsinterop:base:jar:1.0.0 [compile]
+# |  \- com.google.jsinterop:jsinterop-annotations:jar:1.0.2 [compile] (conflicts with 2.0.0)
+# +- org.realityforge.akasha:akasha-gwt:jar:0.30 [compile]
+# |  +- org.realityforge.javax.annotation:javax.annotation:jar:1.0.1 [compile] (conflicts with 1.1.1)
+# |  +- org.realityforge.org.jetbrains.annotations:org.jetbrains.annotations:jar:1.7.0 [compile]
+# |  +- com.google.jsinterop:jsinterop-annotations:jar:2.0.0 [compile]
+# |  +- org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:jar:0.01 [compile]
+# |  \- com.google.jsinterop:base:jar:1.0.0 [compile]
+# +- org.realityforge.braincheck:braincheck-core:jar:1.33.0 [compile]
+# |  +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
+# |  \- com.google.jsinterop:jsinterop-annotations:jar:2.0.0 [compile]
+# +- javax.inject:javax.inject:jar:1 [compile]
+# +- com.squareup:javapoet:jar:1.13.0 [compile]
+# +- com.google.dagger:dagger:jar:2.25.2 [compile]
+# |  \- javax.inject:javax.inject:jar:1 [compile]
+# +- com.google.dagger:dagger-gwt:jar:2.25.2 [compile]
+# |  +- com.google.dagger:dagger:jar:2.25.2 [compile]
+# |  +- com.google.dagger:dagger:jar:sources:2.25.2 [compile]
+# |  |  \- javax.inject:javax.inject:jar:1 [compile]
+# |  +- javax.inject:javax.inject:jar:1 [compile]
+# |  \- javax.inject:javax.inject:jar:sources:1 [compile]
+# +- com.google.dagger:dagger-producers:jar:2.25.2 [compile]
+# |  +- com.google.dagger:dagger:jar:2.25.2 [compile]
+# |  +- com.google.guava:failureaccess:jar:1.0.1 [compile]
+# |  +- com.google.guava:guava:jar:27.1-jre [compile]
+# |  +- javax.inject:javax.inject:jar:1 [compile]
+# |  \- org.checkerframework:checker-compat-qual:jar:2.5.3 [compile]
+# +- com.google.dagger:dagger-spi:jar:2.25.2 [compile]
+# |  +- com.google.dagger:dagger:jar:2.25.2 [compile]
+# |  +- com.google.dagger:dagger-producers:jar:2.25.2 [compile]
+# |  +- com.google.guava:failureaccess:jar:1.0.1 [compile]
+# |  +- com.google.guava:guava:jar:27.1-jre [compile]
+# |  +- com.squareup:javapoet:jar:1.11.1 [compile] (conflicts with 1.13.0)
+# |  \- javax.inject:javax.inject:jar:1 [compile]
+# +- com.google.dagger:dagger-compiler:jar:2.25.2 [compile]
+# |  +- com.google.dagger:dagger:jar:2.25.2 [compile]
+# |  +- com.google.dagger:dagger-producers:jar:2.25.2 [compile]
+# |  +- com.google.dagger:dagger-spi:jar:2.25.2 [compile]
+# |  +- com.google.googlejavaformat:google-java-format:jar:1.5 [compile]
+# |  +- com.google.guava:failureaccess:jar:1.0.1 [compile]
+# |  +- com.google.guava:guava:jar:27.1-jre [compile]
+# |  +- com.squareup:javapoet:jar:1.11.1 [compile] (conflicts with 1.13.0)
+# |  +- javax.annotation:jsr250-api:jar:1.0 [compile]
+# |  +- javax.inject:javax.inject:jar:1 [compile]
+# |  +- net.ltgt.gradle.incap:incap:jar:0.2 [compile]
+# |  +- org.checkerframework:checker-compat-qual:jar:2.5.3 [compile]
+# |  +- org.jetbrains.kotlin:kotlin-stdlib:jar:1.3.50 [compile]
+# |  \- org.jetbrains.kotlinx:kotlinx-metadata-jvm:jar:0.1.0 [compile]
+# +- com.google.auto:auto-common:jar:0.10 [compile]
+# |  +- com.google.guava:guava:jar:23.5-jre [compile] (conflicts with 27.1-jre)
+# |  \- com.squareup:javapoet:jar:1.9.0 [compile, optional] (conflicts with 1.13.0)
+# +- org.jetbrains.kotlinx:kotlinx-metadata-jvm:jar:0.1.0 [compile]
+# |  \- org.jetbrains.kotlin:kotlin-stdlib:jar:1.3.31 [compile] (conflicts with 1.3.50)
+# +- org.jetbrains.kotlin:kotlin-stdlib:jar:1.3.50 [compile]
+# |  +- org.jetbrains.kotlin:kotlin-stdlib-common:jar:1.3.50 [compile]
+# |  \- org.jetbrains:annotations:jar:13.0 [compile]
+# +- org.jetbrains.kotlin:kotlin-stdlib-common:jar:1.3.50 [compile]
+# +- com.google.googlejavaformat:google-java-format:jar:1.5 [compile]
+# |  +- com.google.guava:guava:jar:22.0 [compile] (conflicts with 27.1-jre)
+# |  +- com.google.errorprone:javac-shaded:jar:9-dev-r4023-3 [compile]
+# |  +- com.google.code.findbugs:jsr305:jar:2.0.1 [compile, optional] (conflicts with 3.0.2)
+# |  \- com.google.errorprone:error_prone_annotations:jar:2.0.8 [compile, optional] (conflicts with 2.49.0)
+# +- com.google.errorprone:javac-shaded:jar:9-dev-r4023-3 [compile]
 # +- javax:javaee-api:jar:8.0 [compile]
 # |  +- javax:javaee-web-api:jar:8.0 [compile, optional]
 # |  +- org.glassfish:javax.faces:jar:2.3.2 [compile, optional]
@@ -131,6 +302,18 @@ _java_binary(
 )
 
 _java_import(
+    name = "avalon_framework",
+    jars = ["@avalon_framework//file"],
+    tags = ["maven_coordinates=avalon-framework:avalon-framework:4.1.5"],
+)
+
+_java_import(
+    name = "colt",
+    jars = ["@colt//file"],
+    tags = ["maven_coordinates=colt:colt:1.2.0"],
+)
+
+_java_import(
     name = "jcommander",
     jars = ["@jcommander//file"],
     srcjar = "@jcommander__sources//file",
@@ -187,11 +370,110 @@ _java_import(
 )
 
 _java_import(
+    name = "auto_common",
+    jars = ["@auto_common//file"],
+    srcjar = "@auto_common__sources//file",
+    tags = ["maven_coordinates=com.google.auto:auto-common:0.10"],
+    deps = [":guava"],
+)
+
+_java_import(
     name = "jsr305",
     jars = ["@jsr305//file"],
     srcjar = "@jsr305__sources//file",
     tags = ["maven_coordinates=com.google.code.findbugs:jsr305:3.0.2"],
     visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "gson",
+    jars = ["@gson//file"],
+    srcjar = "@gson__sources//file",
+    tags = ["maven_coordinates=com.google.code.gson:gson:2.6.2"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "dagger",
+    jars = ["@dagger//file"],
+    srcjar = "@dagger__sources//file",
+    tags = ["maven_coordinates=com.google.dagger:dagger:2.25.2"],
+    deps = [":javax_inject"],
+)
+
+_java_import(
+    name = "dagger_compiler__plugin_library",
+    jars = ["@dagger_compiler//file"],
+    srcjar = "@dagger_compiler__sources//file",
+    tags = ["maven_coordinates=com.google.dagger:dagger-compiler:2.25.2"],
+    deps = [
+        ":checker_compat_qual",
+        ":dagger",
+        ":dagger_producers",
+        ":dagger_spi",
+        ":failureaccess",
+        ":google_java_format",
+        ":guava",
+        ":incap",
+        ":javax_inject",
+        ":jsr250_api",
+        ":kotlin_stdlib",
+        ":kotlinx_metadata_jvm",
+        ":squareup_javapoet",
+    ],
+)
+
+_java_plugin(
+    name = "dagger_compiler__dagger_internal_codegen_componentprocessor__plugin",
+    generates_api = True,
+    processor_class = "dagger.internal.codegen.ComponentProcessor",
+    visibility = ["//visibility:private"],
+    deps = [":dagger_compiler__plugin_library"],
+)
+
+_java_library(
+    name = "dagger_compiler",
+    exported_plugins = ["dagger_compiler__dagger_internal_codegen_componentprocessor__plugin"],
+)
+
+_java_import(
+    name = "dagger_gwt",
+    jars = ["@dagger_gwt//file"],
+    srcjar = "@dagger_gwt__sources//file",
+    tags = ["maven_coordinates=com.google.dagger:dagger-gwt:2.25.2"],
+    deps = [
+        ":dagger",
+        ":javax_inject",
+    ],
+)
+
+_java_import(
+    name = "dagger_producers",
+    jars = ["@dagger_producers//file"],
+    srcjar = "@dagger_producers__sources//file",
+    tags = ["maven_coordinates=com.google.dagger:dagger-producers:2.25.2"],
+    deps = [
+        ":checker_compat_qual",
+        ":dagger",
+        ":failureaccess",
+        ":guava",
+        ":javax_inject",
+    ],
+)
+
+_java_import(
+    name = "dagger_spi",
+    jars = ["@dagger_spi//file"],
+    srcjar = "@dagger_spi__sources//file",
+    tags = ["maven_coordinates=com.google.dagger:dagger-spi:2.25.2"],
+    deps = [
+        ":dagger",
+        ":dagger_producers",
+        ":failureaccess",
+        ":guava",
+        ":javax_inject",
+        ":squareup_javapoet",
+    ],
 )
 
 _java_import(
@@ -203,11 +485,28 @@ _java_import(
 )
 
 _java_import(
+    name = "javac_shaded",
+    jars = ["@javac_shaded//file"],
+    srcjar = "@javac_shaded__sources//file",
+    tags = ["maven_coordinates=com.google.errorprone:javac-shaded:9-dev-r4023-3"],
+)
+
+_java_import(
+    name = "google_java_format",
+    jars = ["@google_java_format//file"],
+    srcjar = "@google_java_format__sources//file",
+    tags = ["maven_coordinates=com.google.googlejavaformat:google-java-format:1.5"],
+    deps = [
+        ":guava",
+        ":javac_shaded",
+    ],
+)
+
+_java_import(
     name = "failureaccess",
     jars = ["@failureaccess//file"],
     srcjar = "@failureaccess__sources//file",
-    tags = ["maven_coordinates=com.google.guava:failureaccess:1.0.3"],
-    visibility = ["//visibility:private"],
+    tags = ["maven_coordinates=com.google.guava:failureaccess:1.0.1"],
 )
 
 _java_import(
@@ -215,7 +514,6 @@ _java_import(
     jars = ["@guava//file"],
     srcjar = "@guava__sources//file",
     tags = ["maven_coordinates=com.google.guava:guava:27.1-jre"],
-    visibility = ["//visibility:private"],
     deps = [
         ":animal_sniffer_annotations",
         ":checker_qual",
@@ -250,6 +548,30 @@ _java_import(
 )
 
 _java_import(
+    name = "base",
+    jars = ["@base//file"],
+    srcjar = "@base__sources//file",
+    tags = ["maven_coordinates=com.google.jsinterop:base:1.0.0"],
+    deps = [":jsinterop_annotations"],
+)
+
+_java_import(
+    name = "jsinterop_annotations",
+    jars = ["@jsinterop_annotations//file"],
+    srcjar = "@jsinterop_annotations__sources//file",
+    tags = ["maven_coordinates=com.google.jsinterop:jsinterop-annotations:2.0.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "icu4j",
+    jars = ["@icu4j//file"],
+    srcjar = "@icu4j__sources//file",
+    tags = ["maven_coordinates=com.ibm.icu:icu4j:63.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
     name = "palantir_java_format",
     jars = ["@palantir_java_format//file"],
     srcjar = "@palantir_java_format__sources//file",
@@ -270,6 +592,21 @@ _java_import(
     jars = ["@javapoet//file"],
     srcjar = "@javapoet__sources//file",
     tags = ["maven_coordinates=com.palantir.javapoet:javapoet:0.14.0"],
+)
+
+_java_import(
+    name = "salvation2",
+    jars = ["@salvation2//file"],
+    srcjar = "@salvation2__sources//file",
+    tags = ["maven_coordinates=com.shapesecurity:salvation2:3.0.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "squareup_javapoet",
+    jars = ["@squareup_javapoet//file"],
+    srcjar = "@squareup_javapoet__sources//file",
+    tags = ["maven_coordinates=com.squareup:javapoet:1.13.0"],
 )
 
 _java_import(
@@ -294,6 +631,46 @@ _java_import(
 )
 
 _java_import(
+    name = "commons_codec",
+    jars = ["@commons_codec//file"],
+    srcjar = "@commons_codec__sources//file",
+    tags = ["maven_coordinates=commons-codec:commons-codec:1.11"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "commons_collections",
+    jars = ["@commons_collections//file"],
+    srcjar = "@commons_collections__sources//file",
+    tags = ["maven_coordinates=commons-collections:commons-collections:3.2.2"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "commons_io",
+    jars = ["@commons_io//file"],
+    srcjar = "@commons_io__sources//file",
+    tags = ["maven_coordinates=commons-io:commons-io:2.4"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "commons_logging",
+    jars = ["@commons_logging//file"],
+    srcjar = "@commons_logging__sources//file",
+    tags = ["maven_coordinates=commons-logging:commons-logging:1.2"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "commons_net",
+    jars = ["@commons_net//file"],
+    srcjar = "@commons_net__sources//file",
+    tags = ["maven_coordinates=commons-net:commons-net:3.8.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
     name = "jakarta_transaction_api",
     jars = ["@jakarta_transaction_api//file"],
     srcjar = "@jakarta_transaction_api__sources//file",
@@ -305,6 +682,22 @@ _java_import(
     jars = ["@activation//file"],
     srcjar = "@activation__sources//file",
     tags = ["maven_coordinates=javax.activation:activation:1.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javax_annotation_api",
+    jars = ["@javax_annotation_api//file"],
+    srcjar = "@javax_annotation_api__sources//file",
+    tags = ["maven_coordinates=javax.annotation:javax.annotation-api:1.3.2"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "jsr250_api",
+    jars = ["@jsr250_api//file"],
+    srcjar = "@jsr250_api__sources//file",
+    tags = ["maven_coordinates=javax.annotation:jsr250-api:1.0"],
     visibility = ["//visibility:private"],
 )
 
@@ -330,6 +723,13 @@ _java_import(
     srcjar = "@javax_enterprise_deploy_api__sources//file",
     tags = ["maven_coordinates=javax.enterprise.deploy:javax.enterprise.deploy-api:1.6"],
     visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "javax_inject",
+    jars = ["@javax_inject//file"],
+    srcjar = "@javax_inject__sources//file",
+    tags = ["maven_coordinates=javax.inject:javax.inject:1"],
 )
 
 _java_import(
@@ -373,6 +773,21 @@ _java_import(
 )
 
 _java_import(
+    name = "javax_servlet_api",
+    jars = ["@javax_servlet_api//file"],
+    srcjar = "@javax_servlet_api__sources//file",
+    tags = ["maven_coordinates=javax.servlet:javax.servlet-api:3.1.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "validation_api",
+    jars = ["@validation_api//file"],
+    srcjar = "@validation_api__sources//file",
+    tags = ["maven_coordinates=javax.validation:validation-api:1.0.0.GA"],
+)
+
+_java_import(
     name = "javax_xml_registry_api",
     jars = ["@javax_xml_registry_api//file"],
     srcjar = "@javax_xml_registry_api__sources//file",
@@ -405,6 +820,156 @@ _java_import(
 )
 
 _java_import(
+    name = "log4j",
+    jars = ["@log4j//file"],
+    srcjar = "@log4j__sources//file",
+    tags = ["maven_coordinates=log4j:log4j:1.2.17"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "logkit",
+    jars = ["@logkit//file"],
+    srcjar = "@logkit__sources//file",
+    tags = ["maven_coordinates=logkit:logkit:1.0.1"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "incap",
+    jars = ["@incap//file"],
+    srcjar = "@incap__sources//file",
+    tags = ["maven_coordinates=net.ltgt.gradle.incap:incap:0.2"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "htmlunit",
+    jars = ["@htmlunit//file"],
+    srcjar = "@htmlunit__sources//file",
+    tags = ["maven_coordinates=net.sourceforge.htmlunit:htmlunit:2.55.0"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":commons_io",
+        ":commons_lang3",
+        ":commons_logging",
+        ":commons_net",
+        ":commons_text",
+        ":dec",
+        ":htmlunit_core_js",
+        ":htmlunit_cssparser",
+        ":httpmime",
+        ":neko_htmlunit",
+        ":salvation2",
+        ":websocket_client",
+        ":xalan",
+    ],
+)
+
+_java_import(
+    name = "htmlunit_core_js",
+    jars = ["@htmlunit_core_js//file"],
+    srcjar = "@htmlunit_core_js__sources//file",
+    tags = ["maven_coordinates=net.sourceforge.htmlunit:htmlunit-core-js:2.55.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "htmlunit_cssparser",
+    jars = ["@htmlunit_cssparser//file"],
+    srcjar = "@htmlunit_cssparser__sources//file",
+    tags = ["maven_coordinates=net.sourceforge.htmlunit:htmlunit-cssparser:1.10.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "neko_htmlunit",
+    jars = ["@neko_htmlunit//file"],
+    srcjar = "@neko_htmlunit__sources//file",
+    tags = ["maven_coordinates=net.sourceforge.htmlunit:neko-htmlunit:2.55.0"],
+    visibility = ["//visibility:private"],
+    deps = [":xercesimpl"],
+)
+
+_java_import(
+    name = "commons_lang3",
+    jars = ["@commons_lang3//file"],
+    srcjar = "@commons_lang3__sources//file",
+    tags = ["maven_coordinates=org.apache.commons:commons-lang3:3.12.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "commons_text",
+    jars = ["@commons_text//file"],
+    srcjar = "@commons_text__sources//file",
+    tags = ["maven_coordinates=org.apache.commons:commons-text:1.9"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "httpclient",
+    jars = ["@httpclient//file"],
+    srcjar = "@httpclient__sources//file",
+    tags = ["maven_coordinates=org.apache.httpcomponents:httpclient:4.5.13"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":commons_codec",
+        ":commons_logging",
+        ":httpcore",
+    ],
+)
+
+_java_import(
+    name = "httpcore",
+    jars = ["@httpcore//file"],
+    srcjar = "@httpcore__sources//file",
+    tags = ["maven_coordinates=org.apache.httpcomponents:httpcore:4.4.13"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "httpmime",
+    jars = ["@httpmime//file"],
+    srcjar = "@httpmime__sources//file",
+    tags = ["maven_coordinates=org.apache.httpcomponents:httpmime:4.5.13"],
+    visibility = ["//visibility:private"],
+    deps = [":httpclient"],
+)
+
+_java_import(
+    name = "tomcat_jasper",
+    jars = ["@tomcat_jasper//file"],
+    srcjar = "@tomcat_jasper__sources//file",
+    tags = ["maven_coordinates=org.apache.tomcat:tomcat-jasper:8.5.70"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "tomcat_jasper_el",
+    jars = ["@tomcat_jasper_el//file"],
+    srcjar = "@tomcat_jasper_el__sources//file",
+    tags = ["maven_coordinates=org.apache.tomcat:tomcat-jasper-el:8.5.70"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "dec",
+    jars = ["@dec//file"],
+    srcjar = "@dec__sources//file",
+    tags = ["maven_coordinates=org.brotli:dec:0.1.2"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "checker_compat_qual",
+    jars = ["@checker_compat_qual//file"],
+    srcjar = "@checker_compat_qual__sources//file",
+    tags = ["maven_coordinates=org.checkerframework:checker-compat-qual:2.5.3"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
     name = "checker_qual",
     jars = ["@checker_qual//file"],
     srcjar = "@checker_qual__sources//file",
@@ -426,6 +991,242 @@ _java_import(
     srcjar = "@animal_sniffer_annotations__sources//file",
     tags = ["maven_coordinates=org.codehaus.mojo:animal-sniffer-annotations:1.17"],
     visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "ecj",
+    jars = ["@ecj//file"],
+    srcjar = "@ecj__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jdt:ecj:3.19.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "jetty_schemas",
+    jars = ["@jetty_schemas//file"],
+    srcjar = "@jetty_schemas__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty.toolchain:jetty-schemas:3.1.2"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "websocket_api",
+    jars = ["@websocket_api//file"],
+    srcjar = "@websocket_api__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty.websocket:websocket-api:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "websocket_client",
+    jars = ["@websocket_client//file"],
+    srcjar = "@websocket_client__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty.websocket:websocket-client:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":jetty_client",
+        ":jetty_io",
+        ":jetty_util",
+        ":websocket_common",
+    ],
+)
+
+_java_import(
+    name = "websocket_common",
+    jars = ["@websocket_common//file"],
+    srcjar = "@websocket_common__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty.websocket:websocket-common:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":jetty_io",
+        ":jetty_util",
+        ":websocket_api",
+    ],
+)
+
+_java_import(
+    name = "jetty_apache_jsp",
+    jars = ["@jetty_apache_jsp//file"],
+    srcjar = "@jetty_apache_jsp__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:apache-jsp:9.4.44.v20210927"],
+    deps = [
+        ":javax_servlet_api",
+        ":jetty_annotations",
+        ":jetty_schemas",
+        ":jetty_util",
+        ":mortbay_apache_jsp",
+    ],
+)
+
+_java_import(
+    name = "jetty_annotations",
+    jars = ["@jetty_annotations//file"],
+    srcjar = "@jetty_annotations__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-annotations:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":asm",
+        ":asm_commons",
+        ":javax_annotation_api",
+        ":jetty_plus",
+        ":jetty_webapp",
+    ],
+)
+
+_java_import(
+    name = "jetty_client",
+    jars = ["@jetty_client//file"],
+    srcjar = "@jetty_client__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-client:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":jetty_http",
+        ":jetty_io",
+    ],
+)
+
+_java_import(
+    name = "jetty_continuation",
+    jars = ["@jetty_continuation//file"],
+    srcjar = "@jetty_continuation__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-continuation:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "jetty_http",
+    jars = ["@jetty_http//file"],
+    srcjar = "@jetty_http__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-http:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":jetty_io",
+        ":jetty_util",
+    ],
+)
+
+_java_import(
+    name = "jetty_io",
+    jars = ["@jetty_io//file"],
+    srcjar = "@jetty_io__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-io:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+    deps = [":jetty_util"],
+)
+
+_java_import(
+    name = "jetty_jmx",
+    jars = ["@jetty_jmx//file"],
+    srcjar = "@jetty_jmx__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-jmx:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "jetty_jndi",
+    jars = ["@jetty_jndi//file"],
+    srcjar = "@jetty_jndi__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-jndi:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+    deps = [":jetty_util"],
+)
+
+_java_import(
+    name = "jetty_plus",
+    jars = ["@jetty_plus//file"],
+    srcjar = "@jetty_plus__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-plus:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":jetty_jndi",
+        ":jetty_webapp",
+    ],
+)
+
+_java_import(
+    name = "jetty_security",
+    jars = ["@jetty_security//file"],
+    srcjar = "@jetty_security__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-security:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+    deps = [":jetty_server"],
+)
+
+_java_import(
+    name = "jetty_server",
+    jars = ["@jetty_server//file"],
+    srcjar = "@jetty_server__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-server:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":javax_servlet_api",
+        ":jetty_http",
+        ":jetty_io",
+    ],
+)
+
+_java_import(
+    name = "jetty_servlet",
+    jars = ["@jetty_servlet//file"],
+    srcjar = "@jetty_servlet__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-servlet:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":jetty_security",
+        ":jetty_util_ajax",
+    ],
+)
+
+_java_import(
+    name = "jetty_servlets",
+    jars = ["@jetty_servlets//file"],
+    srcjar = "@jetty_servlets__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-servlets:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":jetty_continuation",
+        ":jetty_http",
+        ":jetty_io",
+        ":jetty_util",
+    ],
+)
+
+_java_import(
+    name = "jetty_util",
+    jars = ["@jetty_util//file"],
+    srcjar = "@jetty_util__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-util:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "jetty_util_ajax",
+    jars = ["@jetty_util_ajax//file"],
+    srcjar = "@jetty_util_ajax__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-util-ajax:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+    deps = [":jetty_util"],
+)
+
+_java_import(
+    name = "jetty_webapp",
+    jars = ["@jetty_webapp//file"],
+    srcjar = "@jetty_webapp__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-webapp:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":jetty_servlet",
+        ":jetty_xml",
+    ],
+)
+
+_java_import(
+    name = "jetty_xml",
+    jars = ["@jetty_xml//file"],
+    srcjar = "@jetty_xml__sources//file",
+    tags = ["maven_coordinates=org.eclipse.jetty:jetty-xml:9.4.44.v20210927"],
+    visibility = ["//visibility:private"],
+    deps = [":jetty_util"],
 )
 
 _java_import(
@@ -452,6 +1253,77 @@ _java_import(
 )
 
 _java_import(
+    name = "gwt_dev",
+    jars = ["@gwt_dev//file"],
+    srcjar = "@gwt_dev__sources//file",
+    tags = ["maven_coordinates=org.gwtproject:gwt-dev:2.11.0"],
+    deps = [
+        ":asm",
+        ":asm_commons",
+        ":asm_util",
+        ":colt",
+        ":commons_collections",
+        ":commons_io",
+        ":gson",
+        ":htmlunit",
+        ":icu4j",
+        ":jetty_annotations",
+        ":jetty_apache_jsp",
+        ":jetty_servlets",
+        ":jetty_webapp",
+        ":jsr305",
+        ":tapestry",
+    ],
+)
+
+_java_import(
+    name = "gwt_user",
+    jars = ["@gwt_user//file"],
+    srcjar = "@gwt_user__sources//file",
+    tags = ["maven_coordinates=org.gwtproject:gwt-user:2.11.0"],
+    deps = [
+        ":javax_servlet_api",
+        ":jsinterop_annotations",
+        ":sac",
+        ":validation_api",
+    ],
+)
+
+_java_import(
+    name = "kotlin_stdlib",
+    jars = ["@kotlin_stdlib//file"],
+    srcjar = "@kotlin_stdlib__sources//file",
+    tags = ["maven_coordinates=org.jetbrains.kotlin:kotlin-stdlib:1.3.50"],
+    deps = [
+        ":annotations",
+        ":kotlin_stdlib_common",
+    ],
+)
+
+_java_import(
+    name = "kotlin_stdlib_common",
+    jars = ["@kotlin_stdlib_common//file"],
+    srcjar = "@kotlin_stdlib_common__sources//file",
+    tags = ["maven_coordinates=org.jetbrains.kotlin:kotlin-stdlib-common:1.3.50"],
+)
+
+_java_import(
+    name = "kotlinx_metadata_jvm",
+    jars = ["@kotlinx_metadata_jvm//file"],
+    srcjar = "@kotlinx_metadata_jvm__sources//file",
+    tags = ["maven_coordinates=org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.1.0"],
+    deps = [":kotlin_stdlib"],
+)
+
+_java_import(
+    name = "annotations",
+    jars = ["@annotations//file"],
+    srcjar = "@annotations__sources//file",
+    tags = ["maven_coordinates=org.jetbrains:annotations:13.0"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
     name = "jspecify",
     jars = ["@jspecify//file"],
     srcjar = "@jspecify__sources//file",
@@ -459,9 +1331,106 @@ _java_import(
 )
 
 _java_import(
+    name = "apache_el",
+    jars = ["@apache_el//file"],
+    srcjar = "@apache_el__sources//file",
+    tags = ["maven_coordinates=org.mortbay.jasper:apache-el:8.5.70"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "mortbay_apache_jsp",
+    jars = ["@mortbay_apache_jsp//file"],
+    srcjar = "@mortbay_apache_jsp__sources//file",
+    tags = ["maven_coordinates=org.mortbay.jasper:apache-jsp:8.5.70"],
+    deps = [
+        ":apache_el",
+        ":ecj",
+        ":jetty_schemas",
+    ],
+)
+
+_java_import(
+    name = "asm",
+    jars = ["@asm//file"],
+    srcjar = "@asm__sources//file",
+    tags = ["maven_coordinates=org.ow2.asm:asm:9.2"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "asm_analysis",
+    jars = ["@asm_analysis//file"],
+    srcjar = "@asm_analysis__sources//file",
+    tags = ["maven_coordinates=org.ow2.asm:asm-analysis:9.2"],
+    visibility = ["//visibility:private"],
+    deps = [":asm_tree"],
+)
+
+_java_import(
+    name = "asm_commons",
+    jars = ["@asm_commons//file"],
+    srcjar = "@asm_commons__sources//file",
+    tags = ["maven_coordinates=org.ow2.asm:asm-commons:9.2"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":asm",
+        ":asm_analysis",
+        ":asm_tree",
+    ],
+)
+
+_java_import(
+    name = "asm_tree",
+    jars = ["@asm_tree//file"],
+    srcjar = "@asm_tree__sources//file",
+    tags = ["maven_coordinates=org.ow2.asm:asm-tree:9.2"],
+    visibility = ["//visibility:private"],
+    deps = [":asm"],
+)
+
+_java_import(
+    name = "asm_util",
+    jars = ["@asm_util//file"],
+    srcjar = "@asm_util__sources//file",
+    tags = ["maven_coordinates=org.ow2.asm:asm-util:9.2"],
+    visibility = ["//visibility:private"],
+    deps = [
+        ":asm",
+        ":asm_analysis",
+        ":asm_tree",
+    ],
+)
+
+_java_import(
+    name = "akasha_gwt",
+    jars = ["@akasha_gwt//file"],
+    srcjar = "@akasha_gwt__sources//file",
+    tags = ["maven_coordinates=org.realityforge.akasha:akasha-gwt:0.30"],
+    deps = [
+        ":base",
+        ":javaemul_internal_annotations",
+        ":javax_annotation",
+        ":jsinterop_annotations",
+        ":org_jetbrains_annotations",
+    ],
+)
+
+_java_import(
     name = "bazel_depgen",
     jars = ["@bazel_depgen//file"],
     tags = ["maven_coordinates=org.realityforge.bazel.depgen:bazel-depgen:0.26"],
+)
+
+_java_import(
+    name = "braincheck_core",
+    jars = ["@braincheck_core//file"],
+    srcjar = "@braincheck_core__sources//file",
+    tags = ["maven_coordinates=org.realityforge.braincheck:braincheck-core:1.33.0"],
+    deps = [
+        ":javax_annotation",
+        ":jsinterop_annotations",
+    ],
 )
 
 _java_import(
@@ -476,6 +1445,14 @@ _java_import(
     jars = ["@javax_annotation//file"],
     srcjar = "@javax_annotation__sources//file",
     tags = ["maven_coordinates=org.realityforge.javax.annotation:javax.annotation:1.1.1"],
+)
+
+_java_import(
+    name = "org_jetbrains_annotations",
+    jars = ["@org_jetbrains_annotations//file"],
+    srcjar = "@org_jetbrains_annotations__sources//file",
+    tags = ["maven_coordinates=org.realityforge.org.jetbrains.annotations:org.jetbrains.annotations:1.7.0"],
+    visibility = ["//visibility:private"],
 )
 
 _java_import(
@@ -540,6 +1517,14 @@ _java_import(
 )
 
 _java_import(
+    name = "sac",
+    jars = ["@sac//file"],
+    srcjar = "@sac__sources//file",
+    tags = ["maven_coordinates=org.w3c.css:sac:1.3"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
     name = "jquery",
     jars = ["@jquery//file"],
     srcjar = "@jquery__sources//file",
@@ -552,6 +1537,54 @@ _java_import(
     jars = ["@snakeyaml//file"],
     srcjar = "@snakeyaml__sources//file",
     tags = ["maven_coordinates=org.yaml:snakeyaml:2.2"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "tapestry",
+    jars = ["@tapestry//file"],
+    tags = ["maven_coordinates=tapestry:tapestry:4.0.2"],
+)
+
+_java_import(
+    name = "serializer",
+    jars = ["@serializer//file"],
+    srcjar = "@serializer__sources//file",
+    tags = ["maven_coordinates=xalan:serializer:2.7.2"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "xalan",
+    jars = ["@xalan//file"],
+    srcjar = "@xalan__sources//file",
+    tags = ["maven_coordinates=xalan:xalan:2.7.2"],
+    visibility = ["//visibility:private"],
+    deps = [":serializer"],
+)
+
+_java_import(
+    name = "xercesimpl",
+    jars = ["@xercesimpl//file"],
+    srcjar = "@xercesimpl__sources//file",
+    tags = ["maven_coordinates=xerces:xercesImpl:2.12.1"],
+    visibility = ["//visibility:private"],
+    deps = [":xml_apis"],
+)
+
+_java_import(
+    name = "xml_apis",
+    jars = ["@xml_apis//file"],
+    srcjar = "@xml_apis__sources//file",
+    tags = ["maven_coordinates=xml-apis:xml-apis:1.4.01"],
+    visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "xml_resolver",
+    jars = ["@xml_resolver//file"],
+    srcjar = "@xml_resolver__sources//file",
+    tags = ["maven_coordinates=xml-resolver:xml-resolver:1.2"],
     visibility = ["//visibility:private"],
 )
 
