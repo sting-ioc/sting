@@ -47,8 +47,6 @@ Prerequisites: JDK 17+, Ruby 2.7.x with Bundler, Node.js (for docs site) and Yar
 
 ## Coding Style & Naming Conventions
 
-- Language: Java 17; compilation uses `-Xlint:all` and `-Werror` (warnings must be fixed).
-- Indentation: 2 spaces; braces on a new line for types/methods; keep imports ordered and minimal.
 - Annotations: processor internals use JSpecify (`@NullMarked` packages and `@Nullable` only where needed);
   generated code, public examples, and annotation-processor input fixtures may still use `javax.annotation`.
   Use `final` where practical.
