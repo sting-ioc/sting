@@ -607,30 +607,30 @@ _http_file(
 
 _http_file(
     name = "proton_core",
-    downloaded_file_path = "org/realityforge/proton/proton-core/0.73-SNAPSHOT/proton-core-0.73-SNAPSHOT.jar",
-    sha256 = "2c134f48590f48d72e40a967247b39348b0b296f7d153ed5eee0f72da975cd5a",
-    urls = ["file:///Users/peter/.m2/repository/org/realityforge/proton/proton-core/0.73-SNAPSHOT/proton-core-0.73-SNAPSHOT.jar"],
+    downloaded_file_path = "org/realityforge/proton/proton-core/0.74/proton-core-0.74.jar",
+    sha256 = "45d18db460b24e37bd37a25c4680c3f45d77a7f05ae0153d524a2f5f4cd2e72d",
+    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-core/0.74/proton-core-0.74.jar"],
 )
 
 _http_file(
     name = "proton_core__sources",
-    downloaded_file_path = "org/realityforge/proton/proton-core/0.73-SNAPSHOT/proton-core-0.73-SNAPSHOT-sources.jar",
-    sha256 = "6c040682231c8ad640b78ee8901ee993bd73986ace69cb2a6cb1225896d67386",
-    urls = ["file:///Users/peter/.m2/repository/org/realityforge/proton/proton-core/0.73-SNAPSHOT/proton-core-0.73-SNAPSHOT-sources.jar"],
+    downloaded_file_path = "org/realityforge/proton/proton-core/0.74/proton-core-0.74-sources.jar",
+    sha256 = "7cb00ca7dc2485a254b01da9c6cd479d84f648786be54d31423797722c6a0cdc",
+    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-core/0.74/proton-core-0.74-sources.jar"],
 )
 
 _http_file(
     name = "proton_qa",
-    downloaded_file_path = "org/realityforge/proton/proton-qa/0.73-SNAPSHOT/proton-qa-0.73-SNAPSHOT.jar",
-    sha256 = "abd8319119e764770c89db30acf3a425e644688f3f5881ee783e1a7651e4bca6",
-    urls = ["file:///Users/peter/.m2/repository/org/realityforge/proton/proton-qa/0.73-SNAPSHOT/proton-qa-0.73-SNAPSHOT.jar"],
+    downloaded_file_path = "org/realityforge/proton/proton-qa/0.74/proton-qa-0.74.jar",
+    sha256 = "a004182042e8f395ab26fb3056c6761e0814ee3a4f05aa6afe84d128b927b883",
+    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-qa/0.74/proton-qa-0.74.jar"],
 )
 
 _http_file(
     name = "proton_qa__sources",
-    downloaded_file_path = "org/realityforge/proton/proton-qa/0.73-SNAPSHOT/proton-qa-0.73-SNAPSHOT-sources.jar",
-    sha256 = "99a9253349f938cd1e664dda9260e3c24b5bf1d2218dedc6ef91b59902a5b677",
-    urls = ["file:///Users/peter/.m2/repository/org/realityforge/proton/proton-qa/0.73-SNAPSHOT/proton-qa-0.73-SNAPSHOT-sources.jar"],
+    downloaded_file_path = "org/realityforge/proton/proton-qa/0.74/proton-qa-0.74-sources.jar",
+    sha256 = "d4cfaa74bd03393b3c6ecc738a23309db36d71fe99839fb522413b9b4cdc95e3",
+    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-qa/0.74/proton-qa-0.74-sources.jar"],
 )
 
 _http_file(

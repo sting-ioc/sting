@@ -10,8 +10,8 @@ artifacts:
 
   javapoet: com.palantir.javapoet:javapoet:jar:0.14.0
 
-  proton_core: org.realityforge.proton:proton-core:jar:0.73-SNAPSHOT
-  proton_qa: org.realityforge.proton:proton-qa:jar:0.73-SNAPSHOT
+  proton_core: org.realityforge.proton:proton-core:jar:0.74
+  proton_qa: org.realityforge.proton:proton-qa:jar:0.74
 
   guava: com.google.guava:guava:jar:27.1-jre
   guava_failureaccess: com.google.guava:failureaccess:jar:1.0.1
