@@ -62,13 +62,12 @@ compiler plugin from within the `pom.xml`:
 
 ### Optional Generated Source Formatting
 
-By default, the Sting processor writes the standard JavaPoet generated source. To format generated
-Sting source, pass the literal annotation processor option `-Asting.format_generated_source=true`.
-Any other value, or omitting the option, leaves generated source unformatted.
+By default, the Sting processor formats generated Java source before writing it. To disable generated
+source formatting, pass the literal annotation processor option `-Asting.format_generated_source=false`.
 
 The formatter support is supplied by Proton and shaded inside the `sting-processor` artifact, but the
 formatter uses JDK compiler internals. On JDK 16 and later, the JVM running `javac` and annotation
-processing must receive these exports when formatting is enabled:
+processing must receive these exports unless generated source formatting is disabled:
 
 ```text
 --add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED

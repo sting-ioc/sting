@@ -50,10 +50,12 @@ import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.JsonUtil;
 import org.realityforge.proton.MemberChecks;
+import org.realityforge.proton.NamesUtil;
 import org.realityforge.proton.ProcessorException;
 import org.realityforge.proton.ResourceUtil;
 import org.realityforge.proton.StopWatch;
 import org.realityforge.proton.SuperficialValidation;
+import org.realityforge.proton.SuppressWarningsUtil;
 import org.realityforge.proton.TypesUtil;
 
 /**
@@ -952,7 +954,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             if (!include.auto()
                     && !injectable.getBinding().isEager()
                     && injectable.isAutoDiscoverable()
-                    && ElementsUtil.isWarningNotSuppressed(originator, Constants.WARNING_AUTO_DISCOVERABLE_INCLUDED)) {
+                    && SuppressWarningsUtil.isNotSuppressed(originator, Constants.WARNING_AUTO_DISCOVERABLE_INCLUDED)) {
                 final String message = MemberChecks.shouldNot(
                         annotationClassname,
                         "include an auto-discoverable type " + classname + ". "
@@ -965,11 +967,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
 
     private void processInjectorFragment(final TypeElement element) {
         debug(() -> "Processing Injector Fragment: " + element);
-        final ElementKind kind = element.getKind();
-        if (ElementKind.INTERFACE != kind) {
-            throw new ProcessorException(
-                    MemberChecks.must(Constants.INJECTOR_FRAGMENT_CLASSNAME, "be an interface"), element);
-        }
+        MemberChecks.mustBeInterface(Constants.INJECTOR_FRAGMENT_CLASSNAME, element);
         final var methods =
                 ElementsUtil.getMethods(element, processingEnv.getElementUtils(), processingEnv.getTypeUtils());
         for (final ExecutableElement method : methods) {
@@ -989,14 +987,8 @@ public final class StingProcessor extends AbstractStandardProcessor {
 
     private void processInjector(final TypeElement element) throws Exception {
         debug(() -> "Processing Injector: " + element);
-        final ElementKind kind = element.getKind();
-        if (ElementKind.INTERFACE != kind) {
-            throw new ProcessorException(MemberChecks.must(Constants.INJECTOR_CLASSNAME, "be an interface"), element);
-        }
-        if (!element.getTypeParameters().isEmpty()) {
-            throw new ProcessorException(
-                    MemberChecks.mustNot(Constants.INJECTOR_CLASSNAME, "have type parameters"), element);
-        }
+        MemberChecks.mustBeInterface(Constants.INJECTOR_CLASSNAME, element);
+        MemberChecks.mustNotHaveTypeParameters(Constants.INJECTOR_CLASSNAME, element);
         final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations(element);
         if (!scopedAnnotations.isEmpty()) {
             throw new ProcessorException(
@@ -1446,12 +1438,9 @@ public final class StingProcessor extends AbstractStandardProcessor {
 
     private void processFragment(final TypeElement element) {
         debug(() -> "Processing Fragment: " + element);
-        if (ElementKind.INTERFACE != element.getKind()) {
-            throw new ProcessorException(MemberChecks.must(Constants.FRAGMENT_CLASSNAME, "be an interface"), element);
-        } else if (!element.getTypeParameters().isEmpty()) {
-            throw new ProcessorException(
-                    MemberChecks.mustNot(Constants.FRAGMENT_CLASSNAME, "have type parameters"), element);
-        } else if (!element.getInterfaces().isEmpty()) {
+        MemberChecks.mustBeInterface(Constants.FRAGMENT_CLASSNAME, element);
+        MemberChecks.mustNotHaveTypeParameters(Constants.FRAGMENT_CLASSNAME, element);
+        if (!element.getInterfaces().isEmpty()) {
             throw new ProcessorException(
                     MemberChecks.mustNot(Constants.FRAGMENT_CLASSNAME, "extend any interfaces"), element);
         }
@@ -1490,12 +1479,9 @@ public final class StingProcessor extends AbstractStandardProcessor {
 
     private void processFactory(final TypeElement element) {
         debug(() -> "Processing Factory: " + element);
-        if (ElementKind.INTERFACE != element.getKind()) {
-            throw new ProcessorException(MemberChecks.must(Constants.FACTORY_CLASSNAME, "be an interface"), element);
-        } else if (!element.getTypeParameters().isEmpty()) {
-            throw new ProcessorException(
-                    MemberChecks.mustNot(Constants.FACTORY_CLASSNAME, "have type parameters"), element);
-        } else if (!element.getInterfaces().isEmpty()) {
+        MemberChecks.mustBeInterface(Constants.FACTORY_CLASSNAME, element);
+        MemberChecks.mustNotHaveTypeParameters(Constants.FACTORY_CLASSNAME, element);
+        if (!element.getInterfaces().isEmpty()) {
             throw new ProcessorException(
                     MemberChecks.mustNot(Constants.FACTORY_CLASSNAME, "extend any interfaces"), element);
         }
@@ -2218,7 +2204,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                 if (name.isEmpty()) {
                     throw new ProcessorException(
                             "implementedBy template contains an empty placeholder", element, annotation);
-                } else if (!SourceVersion.isIdentifier(name) || SourceVersion.isKeyword(name)) {
+                } else if (!NamesUtil.isJavaIdentifier(name)) {
                     throw new ProcessorException(
                             "implementedBy template placeholder {" + name + "} must be a Java identifier",
                             element,
@@ -2660,11 +2646,8 @@ public final class StingProcessor extends AbstractStandardProcessor {
     }
 
     private boolean isUncheckedThrowable(final TypeMirror type) {
-        final var elementUtils = processingEnv.getElementUtils();
-        final var runtimeException = elementUtils.getTypeElement(RuntimeException.class.getName());
-        final var error = elementUtils.getTypeElement(Error.class.getName());
-        final var typeUtils = processingEnv.getTypeUtils();
-        return typeUtils.isAssignable(type, runtimeException.asType()) || typeUtils.isAssignable(type, error.asType());
+        return ElementsUtil.isAssignableTo(processingEnv, type, RuntimeException.class.getName())
+                || ElementsUtil.isAssignableTo(processingEnv, type, Error.class.getName());
     }
 
     private void validateNoInheritedLifecycleMethods(final TypeElement element) {
@@ -2894,7 +2877,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             return false;
         } else {
             for (final var part : name.split("\\.")) {
-                if (part.isEmpty() || !SourceVersion.isIdentifier(part) || SourceVersion.isKeyword(part)) {
+                if (!NamesUtil.isJavaIdentifier(part)) {
                     return false;
                 }
             }
@@ -2966,17 +2949,12 @@ public final class StingProcessor extends AbstractStandardProcessor {
 
     private void processInjectable(final TypeElement element) {
         debug(() -> "Processing Injectable: " + element);
-        if (ElementKind.CLASS != element.getKind()) {
-            throw new ProcessorException(MemberChecks.must(Constants.INJECTABLE_CLASSNAME, "be a class"), element);
-        } else if (element.getModifiers().contains(Modifier.ABSTRACT)) {
+        MemberChecks.mustBeClass(Constants.INJECTABLE_CLASSNAME, element);
+        if (element.getModifiers().contains(Modifier.ABSTRACT)) {
             throw new ProcessorException(MemberChecks.mustNot(Constants.INJECTABLE_CLASSNAME, "be abstract"), element);
-        } else if (ElementsUtil.isNonStaticNestedClass(element)) {
-            throw new ProcessorException(
-                    MemberChecks.mustNot(Constants.INJECTABLE_CLASSNAME, "be a non-static nested class"), element);
-        } else if (!element.getTypeParameters().isEmpty()) {
-            throw new ProcessorException(
-                    MemberChecks.mustNot(Constants.INJECTABLE_CLASSNAME, "have type parameters"), element);
         }
+        MemberChecks.mustNotBeNonStaticNestedType(Constants.INJECTABLE_CLASSNAME, element);
+        MemberChecks.mustNotHaveTypeParameters(Constants.INJECTABLE_CLASSNAME, element);
         final List<ExecutableElement> constructors = ElementsUtil.getConstructors(element);
         final ExecutableElement constructor = constructors.get(0);
         if (constructors.size() > 1) {
@@ -3002,7 +2980,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
 
         final String qualifier = getQualifier(element);
         if (AnnotationsUtil.hasAnnotationOfType(element, Constants.JSR_330_NAMED_CLASSNAME)
-                && ElementsUtil.isWarningNotSuppressed(element, Constants.WARNING_JSR_330_NAMED)) {
+                && SuppressWarningsUtil.isNotSuppressed(element, Constants.WARNING_JSR_330_NAMED)) {
             final String message = MemberChecks.mustNot(
                     Constants.INJECTABLE_CLASSNAME,
                     "be annotated with the " + Constants.JSR_330_NAMED_CLASSNAME + " annotation. " + "Use the "
@@ -3011,7 +2989,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             warning(message, element);
         }
         if (AnnotationsUtil.hasAnnotationOfType(element, Constants.CDI_TYPED_CLASSNAME)
-                && ElementsUtil.isWarningNotSuppressed(element, Constants.WARNING_CDI_TYPED)) {
+                && SuppressWarningsUtil.isNotSuppressed(element, Constants.WARNING_CDI_TYPED)) {
             final String message = MemberChecks.mustNot(
                     Constants.INJECTABLE_CLASSNAME,
                     "be annotated with the " + Constants.CDI_TYPED_CLASSNAME + " annotation. " + "Use the "
@@ -3020,7 +2998,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             warning(message, element);
         }
         if (AnnotationsUtil.hasAnnotationOfType(constructor, Constants.JSR_330_INJECT_CLASSNAME)
-                && ElementsUtil.isWarningNotSuppressed(constructor, Constants.WARNING_JSR_330_INJECT)) {
+                && SuppressWarningsUtil.isNotSuppressed(constructor, Constants.WARNING_JSR_330_INJECT)) {
             final String message = MemberChecks.mustNot(
                     Constants.INJECTABLE_CLASSNAME,
                     "be annotated with the " + Constants.JSR_330_INJECT_CLASSNAME + " annotation. "
@@ -3131,7 +3109,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                     MemberChecks.mustNot(
                             Constants.FACTORY_CLASSNAME, "contain abstract methods that return an abstract class"),
                     method);
-        } else if (ElementsUtil.isNonStaticNestedClass(producedType)) {
+        } else if (ElementsUtil.isNonStaticNestedType(producedType)) {
             throw new ProcessorException(
                     MemberChecks.mustNot(
                             Constants.FACTORY_CLASSNAME,
@@ -3152,7 +3130,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                     method);
         }
         final ExecutableElement constructor = constructors.get(0);
-        if (!isFactoryAccessible(factory, constructor)) {
+        if (!ElementsUtil.isElementAccessibleFrom(factory, constructor)) {
             throw new ProcessorException(
                     MemberChecks.must(
                             Constants.FACTORY_CLASSNAME,
@@ -3251,20 +3229,6 @@ public final class StingProcessor extends AbstractStandardProcessor {
         return candidate;
     }
 
-    private boolean isFactoryAccessible(final TypeElement factory, final ExecutableElement constructor) {
-        final Set<Modifier> modifiers = constructor.getModifiers();
-        if (modifiers.contains(Modifier.PRIVATE)) {
-            return false;
-        } else if (modifiers.contains(Modifier.PUBLIC)) {
-            return true;
-        } else {
-            final String factoryPackage = GeneratorUtil.getQualifiedPackageName(factory);
-            final var targetPackage =
-                    GeneratorUtil.getQualifiedPackageName((TypeElement) constructor.getEnclosingElement());
-            return factoryPackage.equals(targetPackage);
-        }
-    }
-
     // Binary descriptor writing and verification removed
 
     private void emitInjectableJsonDescriptor(final InjectableDescriptor injectable) throws IOException {
@@ -3330,7 +3294,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                 }
                 final String qualifier = getQualifier(parameter);
                 if (AnnotationsUtil.hasAnnotationOfType(parameter, Constants.JSR_330_NAMED_CLASSNAME)
-                        && ElementsUtil.isWarningNotSuppressed(parameter, Constants.WARNING_JSR_330_NAMED)) {
+                        && SuppressWarningsUtil.isNotSuppressed(parameter, Constants.WARNING_JSR_330_NAMED)) {
                     final String message = MemberChecks.mustNot(
                             Constants.INJECTABLE_CLASSNAME,
                             "contain a constructor with a parameter annotated with the "
@@ -3355,7 +3319,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
     private void injectableShouldNotHaveScopedAnnotation(final TypeElement element) {
         final List<? extends AnnotationMirror> scopedAnnotations = getScopedAnnotations(element);
         if (!scopedAnnotations.isEmpty()
-                && ElementsUtil.isWarningNotSuppressed(element, Constants.WARNING_JSR_330_SCOPED)) {
+                && SuppressWarningsUtil.isNotSuppressed(element, Constants.WARNING_JSR_330_SCOPED)) {
             final String message = MemberChecks.shouldNot(
                     Constants.INJECTABLE_CLASSNAME,
                     "be annotated with an annotation that is annotated with the " + Constants.JSR_330_SCOPE_CLASSNAME
@@ -3368,7 +3332,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
     private void injectableConstructorShouldNotBePublic(final ExecutableElement constructor) {
         if (Elements.Origin.EXPLICIT == processingEnv.getElementUtils().getOrigin(constructor)
                 && constructor.getModifiers().contains(Modifier.PUBLIC)
-                && ElementsUtil.isWarningNotSuppressed(constructor, Constants.WARNING_PUBLIC_CONSTRUCTOR)) {
+                && SuppressWarningsUtil.isNotSuppressed(constructor, Constants.WARNING_PUBLIC_CONSTRUCTOR)) {
             final String message = MemberChecks.shouldNot(
                     Constants.INJECTABLE_CLASSNAME,
                     "have a public constructor. The type is instantiated by the injector "
@@ -3380,7 +3344,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
 
     private void injectableConstructorShouldNotBeProtected(final ExecutableElement constructor) {
         if (constructor.getModifiers().contains(Modifier.PROTECTED)
-                && ElementsUtil.isWarningNotSuppressed(constructor, Constants.WARNING_PROTECTED_CONSTRUCTOR)) {
+                && SuppressWarningsUtil.isNotSuppressed(constructor, Constants.WARNING_PROTECTED_CONSTRUCTOR)) {
             final String message = MemberChecks.shouldNot(
                     Constants.INJECTABLE_CLASSNAME,
                     "have a protected constructor. The type is instantiated by the "
@@ -3455,7 +3419,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
         }
 
         if (element.getModifiers().contains(Modifier.ABSTRACT)
-                || ElementsUtil.isNonStaticNestedClass(element)
+                || ElementsUtil.isNonStaticNestedType(element)
                 || !element.getTypeParameters().isEmpty()) {
             // Invalid injectable; let normal processing flag this if encountered as source.
             return null;
@@ -3550,7 +3514,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             final TypeElement originator,
             final String annotationClassname,
             final Collection<IncludeDescriptor> includes) {
-        if (!ElementsUtil.isWarningNotSuppressed(originator, Constants.WARNING_REDUNDANT_DIRECT_INJECTABLE_INCLUDE)) {
+        if (SuppressWarningsUtil.isSuppressed(originator, Constants.WARNING_REDUNDANT_DIRECT_INJECTABLE_INCLUDE)) {
             return;
         }
 
@@ -3611,7 +3575,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
 
     private void maybeWarnOnFragmentIncludeCycle(
             final TypeElement originator, final Collection<IncludeDescriptor> includes) {
-        if (!ElementsUtil.isWarningNotSuppressed(originator, Constants.WARNING_FRAGMENT_INCLUDE_CYCLE)) {
+        if (SuppressWarningsUtil.isSuppressed(originator, Constants.WARNING_FRAGMENT_INCLUDE_CYCLE)) {
             return;
         }
         final String originClassname = originator.getQualifiedName().toString();
