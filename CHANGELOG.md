@@ -3,6 +3,8 @@
 ### Unreleased
 
 * Add a suppressible warning for redundant singleton `@Typed` annotations that only restate the default published type.
+* Rely on Proton to declare common annotation processor options while continuing to declare Sting-specific descriptor
+  and graph report options.
 
 ### [v0.39](https://github.com/sting-ioc/sting/tree/v0.39) (2026-06-23) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.38...v0.39)
 

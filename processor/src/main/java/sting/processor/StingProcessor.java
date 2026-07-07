@@ -78,15 +78,8 @@ import org.realityforge.proton.TypesUtil;
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
 @SupportedOptions({
-    "sting.defer.unresolved",
-    "sting.defer.errors",
-    "sting.debug",
-    "sting.format_generated_source",
-    "sting.profile",
     "sting.emit_json_descriptors",
-    "sting.emit_dot_reports",
-    "sting.verbose_out_of_round.errors",
-    "sting.warnings_as_errors"
+    "sting.emit_dot_reports"
 })
 public final class StingProcessor extends AbstractStandardProcessor {
     private enum AnnotationUsageKind {
