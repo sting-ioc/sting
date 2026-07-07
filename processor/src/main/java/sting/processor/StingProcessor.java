@@ -1450,7 +1450,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
         for (final Element enclosedElement : element.getEnclosedElements()) {
             final ElementKind enclosedElementKind = enclosedElement.getKind();
             if (ElementKind.METHOD == enclosedElementKind) {
-                processProvidesMethod(element, bindings, (ExecutableElement) enclosedElement);
+                processProvidesMethod(element, bindings, (ExecutableElement) enclosedElement, true);
             }
             if (enclosedElementKind.isClass() || enclosedElementKind.isInterface()) {
                 throw new ProcessorException(
@@ -1871,7 +1871,10 @@ public final class StingProcessor extends AbstractStandardProcessor {
     }
 
     private void processProvidesMethod(
-            final TypeElement element, final Map<ExecutableElement, Binding> bindings, final ExecutableElement method) {
+            final TypeElement element,
+            final Map<ExecutableElement, Binding> bindings,
+            final ExecutableElement method,
+            final boolean emitWarnings) {
         if (TypeKind.VOID == method.getReturnType().getKind()) {
             throw new ProcessorException(
                     MemberChecks.must(Constants.FRAGMENT_CLASSNAME, "only contain methods that return a value"),
@@ -1962,6 +1965,20 @@ public final class StingProcessor extends AbstractStandardProcessor {
                         value);
             }
             specs[i] = new ServiceSpec(new Coordinate(qualifier, type), nullablePresent);
+        }
+        if (emitWarnings) {
+            maybeWarnOnRedundantTypedAnnotation(
+                    method,
+                    method.getReturnType(),
+                    annotation,
+                    types,
+                    MemberChecks.shouldNot(
+                            Constants.FRAGMENT_CLASSNAME,
+                            "contain a method annotated with the "
+                                    + MemberChecks.toSimpleName(Constants.TYPED_CLASSNAME)
+                                    + " annotation that only specifies the method return type. The annotation is"
+                                    + " redundant. "
+                                    + MemberChecks.suppressedBy(Constants.WARNING_REDUNDANT_TYPED_ANNOTATION)));
         }
 
         if (0 == specs.length && !eager) {
@@ -3031,6 +3048,17 @@ public final class StingProcessor extends AbstractStandardProcessor {
             }
             specs[i] = new ServiceSpec(new Coordinate(qualifier, type), false);
         }
+        maybeWarnOnRedundantTypedAnnotation(
+                element,
+                element.asType(),
+                annotation,
+                types,
+                MemberChecks.shouldNot(
+                        Constants.INJECTABLE_CLASSNAME,
+                        "be annotated with the "
+                                + MemberChecks.toSimpleName(Constants.TYPED_CLASSNAME)
+                                + " annotation that only specifies the injectable type. The annotation is redundant. "
+                                + MemberChecks.suppressedBy(Constants.WARNING_REDUNDANT_TYPED_ANNOTATION)));
 
         if (0 == specs.length && !eager) {
             throw new ProcessorException(
@@ -3360,6 +3388,20 @@ public final class StingProcessor extends AbstractStandardProcessor {
                 .isEmpty();
     }
 
+    private void maybeWarnOnRedundantTypedAnnotation(
+            final Element element,
+            final TypeMirror defaultType,
+            @Nullable final AnnotationMirror annotation,
+            final List<TypeMirror> types,
+            final String message) {
+        if (null != annotation
+                && 1 == types.size()
+                && processingEnv.getTypeUtils().isSameType(defaultType, types.get(0))
+                && SuppressWarningsUtil.isNotSuppressed(element, Constants.WARNING_REDUNDANT_TYPED_ANNOTATION)) {
+            warning(message, element);
+        }
+    }
+
     private List<? extends AnnotationMirror> getScopedAnnotations(final Element element) {
         return element.getAnnotationMirrors().stream()
                 .filter(a -> AnnotationsUtil.hasAnnotationOfType(
@@ -3386,7 +3428,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             final var bindings = new LinkedHashMap<ExecutableElement, Binding>();
             for (final Element enclosedElement : element.getEnclosedElements()) {
                 if (ElementKind.METHOD == enclosedElement.getKind()) {
-                    processProvidesMethod(element, bindings, (ExecutableElement) enclosedElement);
+                    processProvidesMethod(element, bindings, (ExecutableElement) enclosedElement, false);
                 }
             }
             final var fragment = new FragmentDescriptor(element, includes, localOnly, bindings.values());

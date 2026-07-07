@@ -25,6 +25,8 @@ import javax.annotation.Nonnull;
  * types specified by this annotation. If the annotation is applied to a method then the return type
  * of the method must be able to be assigned to the types specified by this annotation. The method
  * return type is not implicitly published unless it is listed in {@link #value()}.</p>
+ *
+ * <p>Specifying only the default published type is redundant and should be omitted.</p>
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

@@ -40,6 +40,7 @@ final class Constants {
     static final String WARNING_JSR_330_INJECT = "Sting:Jsr330InjectPresent";
     static final String WARNING_JSR_330_SCOPED = "Sting:Jsr330ScopedPresent";
     static final String WARNING_CDI_TYPED = "Sting:CdiTypedPresent";
+    static final String WARNING_REDUNDANT_TYPED_ANNOTATION = "Sting:RedundantTypedAnnotation";
     static final String WARNING_AUTO_DISCOVERABLE_INCLUDED = "Sting:AutoDiscoverableIncluded";
     static final String WARNING_REDUNDANT_DIRECT_INJECTABLE_INCLUDE = "Sting:RedundantExplicitInjectableInclude";
     static final String WARNING_FRAGMENT_INCLUDE_CYCLE = "Sting:FragmentIncludeCycle";

@@ -12,6 +12,8 @@ The {@link: sting.Typed @Typed} annotation can be applied to either the injectab
 declared inside a {@link: sting.Fragment @Fragment}. Zero or more types can be specified and thus a single
 component can publish multiple services or no services.
 
+Specifying {@link: sting.Typed @Typed} with only the default published type is redundant and should be omitted.
+
 It should be noted that if a component does not publish any services then it must be annotated with
 {@link: sting.Eager @Eager}. If a component publishes zero services that it will never be a dependency of any
 other component and if the component is not annotated with the {@link: sting.Eager @Eager} annotation, it would

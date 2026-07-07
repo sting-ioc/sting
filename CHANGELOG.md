@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Add a suppressible warning for redundant singleton `@Typed` annotations that only restate the default published type.
+
 ### [v0.39](https://github.com/sting-ioc/sting/tree/v0.39) (2026-06-23) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.38...v0.39)
 
 Changes in this release:

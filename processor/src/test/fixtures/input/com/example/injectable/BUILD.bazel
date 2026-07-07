@@ -14,11 +14,13 @@ filegroup(
         "PackageAccessModel.java",
         "ProtectedConstructorModel.java",
         "PublicConstructorModel.java",
+        "RedundantTypedAnnotationModel.java",
         "SuppressedCdiTypedModel.java",
         "SuppressedJsr330InjectModel.java",
         "SuppressedJsr330ScopedModel.java",
         "SuppressedProtectedConstructorModel.java",
         "SuppressedPublicConstructorModel.java",
+        "SuppressedRedundantTypedAnnotationModel.java",
     ],
 )
 

@@ -6,6 +6,8 @@ filegroup(
         "BasicTypesModel.java",
         "MyModel.java",
         "NoTypesModel.java",
+        "RedundantTypedProviderMethodModel.java",
+        "SuppressedRedundantTypedProviderMethodModel.java",
         "TypedProviderMethodModel.java",
     ],
 )

@@ -2324,6 +2324,12 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                     + " @SuppressWarnings( \"Sting:CdiTypedPresent\" )"
             },
             new Object[] {
+                "com.example.injectable.RedundantTypedAnnotationModel",
+                "@Injectable target should not be annotated with the @Typed annotation that only specifies the"
+                        + " injectable type. The annotation is redundant. This warning can be suppressed by annotating"
+                        + " the element with @SuppressWarnings( \"Sting:RedundantTypedAnnotation\" )"
+            },
+            new Object[] {
                 "com.example.injectable.Jsr330InjectModel",
                 "@Injectable target must not be annotated with the javax.inject.Inject annotation. This warning can be"
                     + " suppressed by annotating the element with @SuppressWarnings( \"Sting:Jsr330InjectPresent\" )"
@@ -2366,6 +2372,27 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         assertCompilesWithSingleWarningThatCanBeUpgradedToError(classname, messageFragment);
     }
 
+    @Test
+    public void redundantTypedProviderMethodWarning() {
+        final Compilation compilation = assertCompilesWithoutErrors(Arrays.asList(
+                input("input", "com.example.fragment.types.RedundantTypedProviderMethodModel"),
+                input("input", "com.example.fragment.types.MyModel")));
+        assertWarningDiagnostic(
+                compilation,
+                "@Fragment target should not contain a method annotated with the @Typed annotation that only specifies"
+                        + " the method return type. The annotation is redundant. This warning can be suppressed by"
+                        + " annotating the element with @SuppressWarnings( \"Sting:RedundantTypedAnnotation\" )");
+        assertDiagnosticCount(compilation, Diagnostic.Kind.WARNING, 1);
+    }
+
+    @Test
+    public void suppressedRedundantTypedProviderMethodWarning() {
+        final Compilation compilation = assertCompilesWithoutErrors(Arrays.asList(
+                input("input", "com.example.fragment.types.SuppressedRedundantTypedProviderMethodModel"),
+                input("input", "com.example.fragment.types.MyModel")));
+        assertDiagnosticCount(compilation, Diagnostic.Kind.WARNING, 0);
+    }
+
     @DataProvider(name = "compileWithoutWarnings")
     @Nonnull
     public Object[][] compileWithoutWarnings() {
@@ -2390,6 +2417,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
             new Object[] {"com.example.injectable.PackageAccessModel"},
             new Object[] {"com.example.injectable.SuppressedCdiTypedModel"},
             new Object[] {"com.example.injectable.SuppressedJsr330InjectModel"},
+            new Object[] {"com.example.injectable.SuppressedRedundantTypedAnnotationModel"},
             new Object[] {"com.example.injectable.SuppressedJsr330ScopedModel"},
             new Object[] {"com.example.injectable.SuppressedProtectedConstructorModel"},
             new Object[] {"com.example.injectable.SuppressedPublicConstructorModel"},
