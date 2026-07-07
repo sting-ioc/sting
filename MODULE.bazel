@@ -32,90 +32,6 @@ _http_file(
 )
 
 _http_file(
-    name = "jackson_annotations",
-    downloaded_file_path = "com/fasterxml/jackson/core/jackson-annotations/2.21/jackson-annotations-2.21.jar",
-    sha256 = "53ca085f4a150f703f49e1aabd935bd03b43e1ea3d55d135438292af22cef56b",
-    urls = ["https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.21/jackson-annotations-2.21.jar"],
-)
-
-_http_file(
-    name = "jackson_annotations__sources",
-    downloaded_file_path = "com/fasterxml/jackson/core/jackson-annotations/2.21/jackson-annotations-2.21-sources.jar",
-    sha256 = "71fe6323d91b16d5d1007fd1e1533fa06bb369abde74f68a42a68c0f8f061a8b",
-    urls = ["https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.21/jackson-annotations-2.21-sources.jar"],
-)
-
-_http_file(
-    name = "jackson_core",
-    downloaded_file_path = "com/fasterxml/jackson/core/jackson-core/2.21.1/jackson-core-2.21.1.jar",
-    sha256 = "1edd5f2e49dca5f8e4519957c24b7b3050bd1c7ee883920da33cff031ff1f7c0",
-    urls = ["https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-core/2.21.1/jackson-core-2.21.1.jar"],
-)
-
-_http_file(
-    name = "jackson_core__sources",
-    downloaded_file_path = "com/fasterxml/jackson/core/jackson-core/2.21.1/jackson-core-2.21.1-sources.jar",
-    sha256 = "50d16c835cd81fd829036d551c73c40196a988dd6c55d00590e3e0bb41deda32",
-    urls = ["https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-core/2.21.1/jackson-core-2.21.1-sources.jar"],
-)
-
-_http_file(
-    name = "jackson_databind",
-    downloaded_file_path = "com/fasterxml/jackson/core/jackson-databind/2.21.1/jackson-databind-2.21.1.jar",
-    sha256 = "b011eb5202d9ec889e27f1dcbdf6c63f06a76e7a16c0a1b30c6048d556c9a28e",
-    urls = ["https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.21.1/jackson-databind-2.21.1.jar"],
-)
-
-_http_file(
-    name = "jackson_databind__sources",
-    downloaded_file_path = "com/fasterxml/jackson/core/jackson-databind/2.21.1/jackson-databind-2.21.1-sources.jar",
-    sha256 = "f9f1f15b07eed9bc0fa2a3ab0ee0f7e9ebe3c17dd4ea519cc7509625a57777ca",
-    urls = ["https://repo.maven.apache.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.21.1/jackson-databind-2.21.1-sources.jar"],
-)
-
-_http_file(
-    name = "jackson_datatype_guava",
-    downloaded_file_path = "com/fasterxml/jackson/datatype/jackson-datatype-guava/2.21.1/jackson-datatype-guava-2.21.1.jar",
-    sha256 = "4c1b5f7034a3179c6ade358627c5007631188ac807ebb2b0c7fcb06287527b75",
-    urls = ["https://repo.maven.apache.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-guava/2.21.1/jackson-datatype-guava-2.21.1.jar"],
-)
-
-_http_file(
-    name = "jackson_datatype_guava__sources",
-    downloaded_file_path = "com/fasterxml/jackson/datatype/jackson-datatype-guava/2.21.1/jackson-datatype-guava-2.21.1-sources.jar",
-    sha256 = "9dd57ddb811204ce43c4c3db6027b9928c9d86dcdbe3d1f718bc22791b147a7a",
-    urls = ["https://repo.maven.apache.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-guava/2.21.1/jackson-datatype-guava-2.21.1-sources.jar"],
-)
-
-_http_file(
-    name = "jackson_datatype_jdk8",
-    downloaded_file_path = "com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.21.1/jackson-datatype-jdk8-2.21.1.jar",
-    sha256 = "e39839e058fa982d3899a5698107d4ed1425c08ebade43e9a1cd308472a80587",
-    urls = ["https://repo.maven.apache.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.21.1/jackson-datatype-jdk8-2.21.1.jar"],
-)
-
-_http_file(
-    name = "jackson_datatype_jdk8__sources",
-    downloaded_file_path = "com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.21.1/jackson-datatype-jdk8-2.21.1-sources.jar",
-    sha256 = "b98cdc889a8dae82f1fb5f5446375363901b4e3fac700b6273115f58b43cc2fb",
-    urls = ["https://repo.maven.apache.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.21.1/jackson-datatype-jdk8-2.21.1-sources.jar"],
-)
-
-_http_file(
-    name = "jackson_module_parameter_names",
-    downloaded_file_path = "com/fasterxml/jackson/module/jackson-module-parameter-names/2.21.1/jackson-module-parameter-names-2.21.1.jar",
-    sha256 = "1eb87d27c27fade5a21414c57fe9fcd2b11f54b8c43549ae5e25731b5c304234",
-    urls = ["https://repo.maven.apache.org/maven2/com/fasterxml/jackson/module/jackson-module-parameter-names/2.21.1/jackson-module-parameter-names-2.21.1.jar"],
-)
-
-_http_file(
-    name = "jackson_module_parameter_names__sources",
-    downloaded_file_path = "com/fasterxml/jackson/module/jackson-module-parameter-names/2.21.1/jackson-module-parameter-names-2.21.1-sources.jar",
-    sha256 = "b3fc9211e9ed52422e797a07b347e0356f06985f223c2d264c77df073de20efd",
-    urls = ["https://repo.maven.apache.org/maven2/com/fasterxml/jackson/module/jackson-module-parameter-names/2.21.1/jackson-module-parameter-names-2.21.1-sources.jar"],
-)
-
-_http_file(
     name = "jsr305",
     downloaded_file_path = "com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar",
     sha256 = "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
@@ -131,30 +47,30 @@ _http_file(
 
 _http_file(
     name = "error_prone_annotations",
-    downloaded_file_path = "com/google/errorprone/error_prone_annotations/2.49.0/error_prone_annotations-2.49.0.jar",
-    sha256 = "3b1003e51b8ae56fdbd7c71073e81d1683b97e6c4dff5a9151164d59b769d13c",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.49.0/error_prone_annotations-2.49.0.jar"],
+    downloaded_file_path = "com/google/errorprone/error_prone_annotations/2.2.0/error_prone_annotations-2.2.0.jar",
+    sha256 = "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.2.0/error_prone_annotations-2.2.0.jar"],
 )
 
 _http_file(
     name = "error_prone_annotations__sources",
-    downloaded_file_path = "com/google/errorprone/error_prone_annotations/2.49.0/error_prone_annotations-2.49.0-sources.jar",
-    sha256 = "69d2de7f69033ff914ba06f0858adb96ac7b1436959f04fca7de5805c834b281",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.49.0/error_prone_annotations-2.49.0-sources.jar"],
+    downloaded_file_path = "com/google/errorprone/error_prone_annotations/2.2.0/error_prone_annotations-2.2.0-sources.jar",
+    sha256 = "626adccd4894bee72c3f9a0384812240dcc1282fb37a87a3f6cb94924a089496",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.2.0/error_prone_annotations-2.2.0-sources.jar"],
 )
 
 _http_file(
     name = "failureaccess",
-    downloaded_file_path = "com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar",
-    sha256 = "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3.jar"],
+    downloaded_file_path = "com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar",
+    sha256 = "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar"],
 )
 
 _http_file(
     name = "failureaccess__sources",
-    downloaded_file_path = "com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3-sources.jar",
-    sha256 = "6fef4dfd2eb9f961655f2a3c4ea87c023618d9fcbfb6b104c17862e5afe66b97",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.3/failureaccess-1.0.3-sources.jar"],
+    downloaded_file_path = "com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1-sources.jar",
+    sha256 = "092346eebbb1657b51aa7485a246bf602bb464cc0b0e2e1c7e7201fadce1e98f",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1-sources.jar"],
 )
 
 _http_file(
@@ -194,44 +110,16 @@ _http_file(
 
 _http_file(
     name = "j2objc_annotations",
-    downloaded_file_path = "com/google/j2objc/j2objc-annotations/3.1/j2objc-annotations-3.1.jar",
-    sha256 = "84d3a150518485f8140ea99b8a985656749629f6433c92b80c75b36aba3b099b",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/3.1/j2objc-annotations-3.1.jar"],
+    downloaded_file_path = "com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar",
+    sha256 = "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar"],
 )
 
 _http_file(
     name = "j2objc_annotations__sources",
-    downloaded_file_path = "com/google/j2objc/j2objc-annotations/3.1/j2objc-annotations-3.1-sources.jar",
-    sha256 = "295938307f4016b3f128f7347101b236ada1394808104519c9e93cd61b64602b",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/3.1/j2objc-annotations-3.1-sources.jar"],
-)
-
-_http_file(
-    name = "palantir_java_format",
-    downloaded_file_path = "com/palantir/javaformat/palantir-java-format/2.92.0/palantir-java-format-2.92.0.jar",
-    sha256 = "120a07aeff9c2395a7842730dc49815fe5b61c01c04c76b23289e2dccebedb3f",
-    urls = ["https://repo.maven.apache.org/maven2/com/palantir/javaformat/palantir-java-format/2.92.0/palantir-java-format-2.92.0.jar"],
-)
-
-_http_file(
-    name = "palantir_java_format__sources",
-    downloaded_file_path = "com/palantir/javaformat/palantir-java-format/2.92.0/palantir-java-format-2.92.0-sources.jar",
-    sha256 = "87264698eeb2ae28e8935df7ae5483a15c07acec6b0cbedf1a5b230a4da5c2a5",
-    urls = ["https://repo.maven.apache.org/maven2/com/palantir/javaformat/palantir-java-format/2.92.0/palantir-java-format-2.92.0-sources.jar"],
-)
-
-_http_file(
-    name = "palantir_java_format_spi",
-    downloaded_file_path = "com/palantir/javaformat/palantir-java-format-spi/2.92.0/palantir-java-format-spi-2.92.0.jar",
-    sha256 = "7700ddb01432f164cc9a721f9b9b9de7581baf577afc550a5feeac374367abad",
-    urls = ["https://repo.maven.apache.org/maven2/com/palantir/javaformat/palantir-java-format-spi/2.92.0/palantir-java-format-spi-2.92.0.jar"],
-)
-
-_http_file(
-    name = "palantir_java_format_spi__sources",
-    downloaded_file_path = "com/palantir/javaformat/palantir-java-format-spi/2.92.0/palantir-java-format-spi-2.92.0-sources.jar",
-    sha256 = "8a1a9c5197435fe7fd0b3d58cf305f242a9a55199eec8dfe86649b9a06626641",
-    urls = ["https://repo.maven.apache.org/maven2/com/palantir/javaformat/palantir-java-format-spi/2.92.0/palantir-java-format-spi-2.92.0-sources.jar"],
+    downloaded_file_path = "com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1-sources.jar",
+    sha256 = "2cd9022a77151d0b574887635cdfcdf3b78155b602abc89d7f8e62aba55cfb4f",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1-sources.jar"],
 )
 
 _http_file(
@@ -515,20 +403,6 @@ _http_file(
 )
 
 _http_file(
-    name = "functionaljava",
-    downloaded_file_path = "org/functionaljava/functionaljava/5.0/functionaljava-5.0.jar",
-    sha256 = "377ad140e7d26ba04fadf219b09d7e1c74bc0232fa4010b20c1c79db11f9670e",
-    urls = ["https://repo.maven.apache.org/maven2/org/functionaljava/functionaljava/5.0/functionaljava-5.0.jar"],
-)
-
-_http_file(
-    name = "functionaljava__sources",
-    downloaded_file_path = "org/functionaljava/functionaljava/5.0/functionaljava-5.0-sources.jar",
-    sha256 = "6a27c0262420cb71d2087d7f40046de1fbc9d9ab4776d33bbdddf7e1b4aa6d39",
-    urls = ["https://repo.maven.apache.org/maven2/org/functionaljava/functionaljava/5.0/functionaljava-5.0-sources.jar"],
-)
-
-_http_file(
     name = "javax_faces",
     downloaded_file_path = "org/glassfish/javax.faces/2.3.2/javax.faces-2.3.2.jar",
     sha256 = "48c231e67e1fe3aa88be2867bada4df46ea79960e01e4c66f4bf3a9eb5b55f7d",
@@ -607,30 +481,30 @@ _http_file(
 
 _http_file(
     name = "proton_core",
-    downloaded_file_path = "org/realityforge/proton/proton-core/0.74/proton-core-0.74.jar",
-    sha256 = "45d18db460b24e37bd37a25c4680c3f45d77a7f05ae0153d524a2f5f4cd2e72d",
-    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-core/0.74/proton-core-0.74.jar"],
+    downloaded_file_path = "org/realityforge/proton/proton-core/0.75/proton-core-0.75.jar",
+    sha256 = "5aa909d0fa6ce437a6a70dad8f5eea7509b4c608da4e8fa41a1cef1a20c7d9ea",
+    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-core/0.75/proton-core-0.75.jar"],
 )
 
 _http_file(
     name = "proton_core__sources",
-    downloaded_file_path = "org/realityforge/proton/proton-core/0.74/proton-core-0.74-sources.jar",
-    sha256 = "7cb00ca7dc2485a254b01da9c6cd479d84f648786be54d31423797722c6a0cdc",
-    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-core/0.74/proton-core-0.74-sources.jar"],
+    downloaded_file_path = "org/realityforge/proton/proton-core/0.75/proton-core-0.75-sources.jar",
+    sha256 = "0fba608913ee1ea146da930583f11d70f57e423c6e6250655ab5901747065d4d",
+    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-core/0.75/proton-core-0.75-sources.jar"],
 )
 
 _http_file(
     name = "proton_qa",
-    downloaded_file_path = "org/realityforge/proton/proton-qa/0.74/proton-qa-0.74.jar",
-    sha256 = "a004182042e8f395ab26fb3056c6761e0814ee3a4f05aa6afe84d128b927b883",
-    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-qa/0.74/proton-qa-0.74.jar"],
+    downloaded_file_path = "org/realityforge/proton/proton-qa/0.75/proton-qa-0.75.jar",
+    sha256 = "df882b5da1a6ef4e680af396a740fb578b71db5375369745774059c23c166e7c",
+    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-qa/0.75/proton-qa-0.75.jar"],
 )
 
 _http_file(
     name = "proton_qa__sources",
-    downloaded_file_path = "org/realityforge/proton/proton-qa/0.74/proton-qa-0.74-sources.jar",
-    sha256 = "d4cfaa74bd03393b3c6ecc738a23309db36d71fe99839fb522413b9b4cdc95e3",
-    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-qa/0.74/proton-qa-0.74-sources.jar"],
+    downloaded_file_path = "org/realityforge/proton/proton-qa/0.75/proton-qa-0.75-sources.jar",
+    sha256 = "016bfb25bcdd8bbb7c6cb5ede9a4871e008c9b895188a1ea246d20ee37e984c2",
+    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-qa/0.75/proton-qa-0.75-sources.jar"],
 )
 
 _http_file(

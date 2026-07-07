@@ -2,6 +2,7 @@
 
 ### Unreleased
 
+* Update the `org.realityforge.proton` artifacts to version `0.75`.
 * Add a suppressible warning for redundant singleton `@Typed` annotations that only restate the default published type.
 * Rely on Proton to declare common annotation processor options while continuing to declare Sting-specific descriptor
   and graph report options.

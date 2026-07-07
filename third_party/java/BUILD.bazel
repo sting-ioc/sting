@@ -17,47 +17,34 @@ _java_plugin(
 # DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
 
 # SHA256 of the configuration content that generated this content
-_CONFIG_SHA256 = "ECA3D231F8807A73340B9F08AD256446BE8BF642FAF22738428BBB83623160DF"
+_CONFIG_SHA256 = "57CF8F8D8C0464679E0002BC76A8508F1764D57DE6D3075600E6154D7247FAFC"
 
 exports_files(["dependencies.yml"])
 
 # Dependency Graph Generated from the input data
 # +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
 # +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
-# +- org.realityforge.proton:proton-core:jar:0.74 [compile]
+# +- org.realityforge.proton:proton-core:jar:0.75 [compile]
 # |  +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
 # |  +- org.glassfish:javax.json:jar:1.1 [compile]
 # |  +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
-# |  \- com.google.guava:guava:jar:27.1-jre [compile]
-# |     +- com.google.guava:failureaccess:jar:1.0.1 [compile] (conflicts with 1.0.3)
-# |     +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
-# |     +- com.google.code.findbugs:jsr305:jar:3.0.2 [compile]
-# |     +- org.checkerframework:checker-qual:jar:2.5.2 [compile] (conflicts with 4.0.0)
-# |     +- com.google.errorprone:error_prone_annotations:jar:2.2.0 [compile] (conflicts with 2.49.0)
-# |     +- com.google.j2objc:j2objc-annotations:jar:1.1 [compile] (conflicts with 3.1)
-# |     \- org.codehaus.mojo:animal-sniffer-annotations:jar:1.17 [compile]
-# +- org.realityforge.proton:proton-qa:jar:0.74 [compile]
-# |  +- org.realityforge.proton:proton-core:jar:0.74 [compile]
-# |  +- org.realityforge.proton:proton-core:jar:sources:0.74 [compile]
-# |  +- org.realityforge.proton:proton-core:jar:javadoc:0.74 [compile]
+# |  +- com.google.guava:guava:jar:27.1-jre [compile]
+# |  |  +- com.google.guava:failureaccess:jar:1.0.1 [compile]
+# |  |  +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
+# |  |  +- com.google.code.findbugs:jsr305:jar:3.0.2 [compile]
+# |  |  +- org.checkerframework:checker-qual:jar:2.5.2 [compile] (conflicts with 4.0.0)
+# |  |  +- com.google.errorprone:error_prone_annotations:jar:2.2.0 [compile]
+# |  |  +- com.google.j2objc:j2objc-annotations:jar:1.1 [compile]
+# |  |  \- org.codehaus.mojo:animal-sniffer-annotations:jar:1.17 [compile]
+# |  \- org.jspecify:jspecify:jar:1.0.0 [compile]
+# +- org.realityforge.proton:proton-qa:jar:0.75 [compile]
+# |  +- org.realityforge.proton:proton-core:jar:0.75 [compile]
 # |  +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
 # |  +- org.glassfish:javax.json:jar:1.1 [compile]
 # |  +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
-# |  +- com.google.guava:guava:jar:33.6.0-jre [compile] (conflicts with 27.1-jre)
-# |  +- com.palantir.javaformat:palantir-java-format:jar:2.92.0 [compile]
-# |  +- com.palantir.javaformat:palantir-java-format-spi:jar:2.92.0 [compile]
-# |  +- com.google.guava:failureaccess:jar:1.0.3 [compile]
-# |  +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
+# |  +- com.google.guava:guava:jar:27.1-jre [compile]
 # |  +- org.jspecify:jspecify:jar:1.0.0 [compile]
-# |  +- com.google.errorprone:error_prone_annotations:jar:2.49.0 [compile]
-# |  +- com.google.j2objc:j2objc-annotations:jar:3.1 [compile]
-# |  +- org.functionaljava:functionaljava:jar:5.0 [compile]
-# |  +- com.fasterxml.jackson.core:jackson-core:jar:2.21.1 [compile]
-# |  +- com.fasterxml.jackson.core:jackson-databind:jar:2.21.1 [compile]
-# |  +- com.fasterxml.jackson.core:jackson-annotations:jar:2.21 [compile]
-# |  +- com.fasterxml.jackson.datatype:jackson-datatype-jdk8:jar:2.21.1 [compile]
-# |  +- com.fasterxml.jackson.datatype:jackson-datatype-guava:jar:2.21.1 [compile]
-# |  \- com.fasterxml.jackson.module:jackson-module-parameter-names:jar:2.21.1 [compile]
+# |  \- org.testng:testng:jar:6.8 [compile] (conflicts with 7.10.2)
 # +- org.glassfish:javax.json:jar:1.1 [compile]
 # |  \- javax.json:javax.json-api:jar:1.1 [compile, optional]
 # +- org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:jar:0.01 [compile]
@@ -139,54 +126,6 @@ _java_import(
 )
 
 _java_import(
-    name = "jackson_annotations",
-    jars = ["@jackson_annotations//file"],
-    srcjar = "@jackson_annotations__sources//file",
-    tags = ["maven_coordinates=com.fasterxml.jackson.core:jackson-annotations:2.21"],
-    visibility = ["//visibility:private"],
-)
-
-_java_import(
-    name = "jackson_core",
-    jars = ["@jackson_core//file"],
-    srcjar = "@jackson_core__sources//file",
-    tags = ["maven_coordinates=com.fasterxml.jackson.core:jackson-core:2.21.1"],
-    visibility = ["//visibility:private"],
-)
-
-_java_import(
-    name = "jackson_databind",
-    jars = ["@jackson_databind//file"],
-    srcjar = "@jackson_databind__sources//file",
-    tags = ["maven_coordinates=com.fasterxml.jackson.core:jackson-databind:2.21.1"],
-    visibility = ["//visibility:private"],
-)
-
-_java_import(
-    name = "jackson_datatype_guava",
-    jars = ["@jackson_datatype_guava//file"],
-    srcjar = "@jackson_datatype_guava__sources//file",
-    tags = ["maven_coordinates=com.fasterxml.jackson.datatype:jackson-datatype-guava:2.21.1"],
-    visibility = ["//visibility:private"],
-)
-
-_java_import(
-    name = "jackson_datatype_jdk8",
-    jars = ["@jackson_datatype_jdk8//file"],
-    srcjar = "@jackson_datatype_jdk8__sources//file",
-    tags = ["maven_coordinates=com.fasterxml.jackson.datatype:jackson-datatype-jdk8:2.21.1"],
-    visibility = ["//visibility:private"],
-)
-
-_java_import(
-    name = "jackson_module_parameter_names",
-    jars = ["@jackson_module_parameter_names//file"],
-    srcjar = "@jackson_module_parameter_names__sources//file",
-    tags = ["maven_coordinates=com.fasterxml.jackson.module:jackson-module-parameter-names:2.21.1"],
-    visibility = ["//visibility:private"],
-)
-
-_java_import(
     name = "jsr305",
     jars = ["@jsr305//file"],
     srcjar = "@jsr305__sources//file",
@@ -198,7 +137,7 @@ _java_import(
     name = "error_prone_annotations",
     jars = ["@error_prone_annotations//file"],
     srcjar = "@error_prone_annotations__sources//file",
-    tags = ["maven_coordinates=com.google.errorprone:error_prone_annotations:2.49.0"],
+    tags = ["maven_coordinates=com.google.errorprone:error_prone_annotations:2.2.0"],
     visibility = ["//visibility:private"],
 )
 
@@ -206,7 +145,7 @@ _java_import(
     name = "failureaccess",
     jars = ["@failureaccess//file"],
     srcjar = "@failureaccess__sources//file",
-    tags = ["maven_coordinates=com.google.guava:failureaccess:1.0.3"],
+    tags = ["maven_coordinates=com.google.guava:failureaccess:1.0.1"],
     visibility = ["//visibility:private"],
 )
 
@@ -245,23 +184,7 @@ _java_import(
     name = "j2objc_annotations",
     jars = ["@j2objc_annotations//file"],
     srcjar = "@j2objc_annotations__sources//file",
-    tags = ["maven_coordinates=com.google.j2objc:j2objc-annotations:3.1"],
-    visibility = ["//visibility:private"],
-)
-
-_java_import(
-    name = "palantir_java_format",
-    jars = ["@palantir_java_format//file"],
-    srcjar = "@palantir_java_format__sources//file",
-    tags = ["maven_coordinates=com.palantir.javaformat:palantir-java-format:2.92.0"],
-    visibility = ["//visibility:private"],
-)
-
-_java_import(
-    name = "palantir_java_format_spi",
-    jars = ["@palantir_java_format_spi//file"],
-    srcjar = "@palantir_java_format_spi__sources//file",
-    tags = ["maven_coordinates=com.palantir.javaformat:palantir-java-format-spi:2.92.0"],
+    tags = ["maven_coordinates=com.google.j2objc:j2objc-annotations:1.1"],
     visibility = ["//visibility:private"],
 )
 
@@ -429,14 +352,6 @@ _java_import(
 )
 
 _java_import(
-    name = "functionaljava",
-    jars = ["@functionaljava//file"],
-    srcjar = "@functionaljava__sources//file",
-    tags = ["maven_coordinates=org.functionaljava:functionaljava:5.0"],
-    visibility = ["//visibility:private"],
-)
-
-_java_import(
     name = "javax_faces",
     jars = ["@javax_faces//file"],
     srcjar = "@javax_faces__sources//file",
@@ -482,12 +397,13 @@ _java_import(
     name = "proton_core",
     jars = ["@proton_core//file"],
     srcjar = "@proton_core__sources//file",
-    tags = ["maven_coordinates=org.realityforge.proton:proton-core:0.74"],
+    tags = ["maven_coordinates=org.realityforge.proton:proton-core:0.75"],
     deps = [
         ":guava",
         ":javapoet",
         ":javax_annotation",
         ":javax_json",
+        ":jspecify",
     ],
 )
 
@@ -495,27 +411,15 @@ _java_import(
     name = "proton_qa",
     jars = ["@proton_qa//file"],
     srcjar = "@proton_qa__sources//file",
-    tags = ["maven_coordinates=org.realityforge.proton:proton-qa:0.74"],
+    tags = ["maven_coordinates=org.realityforge.proton:proton-qa:0.75"],
     deps = [
-        ":error_prone_annotations",
-        ":failureaccess",
-        ":functionaljava",
         ":guava",
-        ":j2objc_annotations",
-        ":jackson_annotations",
-        ":jackson_core",
-        ":jackson_databind",
-        ":jackson_datatype_guava",
-        ":jackson_datatype_jdk8",
-        ":jackson_module_parameter_names",
         ":javapoet",
         ":javax_annotation",
         ":javax_json",
         ":jspecify",
-        ":listenablefuture",
-        ":palantir_java_format",
-        ":palantir_java_format_spi",
         ":proton_core",
+        ":testng",
     ],
 )
 

@@ -77,10 +77,7 @@ import org.realityforge.proton.TypesUtil;
     Constants.ACT_AS_STING_COMPONENT_CLASSNAME
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
-@SupportedOptions({
-    "sting.emit_json_descriptors",
-    "sting.emit_dot_reports"
-})
+@SupportedOptions({"sting.emit_json_descriptors", "sting.emit_dot_reports"})
 public final class StingProcessor extends AbstractStandardProcessor {
     private enum AnnotationUsageKind {
         PROCESSED,
@@ -1276,7 +1273,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                 return AnnotationUsageKind.INVALID;
             }
         } else if (ElementKind.METHOD == element.getKind()) {
-            final Element enclosingType = element.getEnclosingElement();
+            final Element enclosingType = Objects.requireNonNull(element.getEnclosingElement());
             if (AnnotationsUtil.hasAnnotationOfType(enclosingType, Constants.FRAGMENT_CLASSNAME)
                     || AnnotationsUtil.hasAnnotationOfType(enclosingType, Constants.INJECTOR_CLASSNAME)) {
                 return AnnotationUsageKind.PROCESSED;
@@ -1366,7 +1363,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                 return AnnotationUsageKind.INVALID;
             }
         } else if (ElementKind.METHOD == element.getKind()) {
-            final Element enclosingType = element.getEnclosingElement();
+            final Element enclosingType = Objects.requireNonNull(element.getEnclosingElement());
             if (AnnotationsUtil.hasAnnotationOfType(enclosingType, Constants.FRAGMENT_CLASSNAME)) {
                 return AnnotationUsageKind.PROCESSED;
             } else {
@@ -1421,9 +1418,13 @@ public final class StingProcessor extends AbstractStandardProcessor {
             } else {
                 return AnnotationUsageKind.INVALID;
             }
-        } else if (ElementKind.METHOD == element.getKind()
-                && AnnotationsUtil.hasAnnotationOfType(element.getEnclosingElement(), Constants.FRAGMENT_CLASSNAME)) {
-            return AnnotationUsageKind.PROCESSED;
+        } else if (ElementKind.METHOD == element.getKind()) {
+            final Element enclosingType = Objects.requireNonNull(element.getEnclosingElement());
+            if (AnnotationsUtil.hasAnnotationOfType(enclosingType, Constants.FRAGMENT_CLASSNAME)) {
+                return AnnotationUsageKind.PROCESSED;
+            } else {
+                return AnnotationUsageKind.INVALID;
+            }
         } else {
             return AnnotationUsageKind.INVALID;
         }
@@ -1506,8 +1507,8 @@ public final class StingProcessor extends AbstractStandardProcessor {
     private List<InputDescriptor> extractInputs(final TypeElement element) {
         final var results = new ArrayList<InputDescriptor>();
         final AnnotationMirror annotation = AnnotationsUtil.getAnnotationByType(element, Constants.INJECTOR_CLASSNAME);
-        final AnnotationValue inputsAnnotationValue = AnnotationsUtil.findAnnotationValue(annotation, "inputs");
-        assert null != inputsAnnotationValue;
+        final AnnotationValue inputsAnnotationValue =
+                Objects.requireNonNull(AnnotationsUtil.findAnnotationValue(annotation, "inputs"));
         final var inputs = (List<AnnotationMirror>) inputsAnnotationValue.getValue();
 
         final int size = inputs.size();
