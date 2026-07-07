@@ -1,6 +1,8 @@
 # Change Log
 
-### Unreleased
+### [v0.40](https://github.com/sting-ioc/sting/tree/v0.40) (2026-07-07) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.39...v0.40)
+
+Changes in this release:
 
 * Update the `org.realityforge.proton` artifacts to version `0.75`.
 * Add a suppressible warning for redundant singleton `@Typed` annotations that only restate the default published type.
