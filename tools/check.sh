@@ -5,7 +5,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 cd "${ROOT}"
 tools/update_java_deps.sh
-if ! git diff --exit-code -- MODULE.bazel MODULE.bazel.lock third_party/java/BUILD.bazel tools/java-format/BUILD.bazel; then
+if ! git diff --exit-code -- MODULE.bazel MODULE.bazel.lock third_party/java/BUILD.bazel; then
   echo "depgen generated outputs are stale; run tools/update_java_deps.sh" >&2
   exit 1
 fi

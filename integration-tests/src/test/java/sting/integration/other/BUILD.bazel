@@ -9,6 +9,7 @@ java_testng(
     ],
     plugins = ["//processor:sting_processor_plugin"],
     test_class = "sting.integration.other.PackageAccessInDifferentPackagesIntegrationTest",
+    visibility = ["//:__pkg__"],
     deps = [
         "//core",
         "//integration-tests/src/test/java/sting/integration:test_support",

@@ -6,6 +6,7 @@ java_testng(
     srcs = ["ServerTransactionalIntegrationTest.java"],
     plugins = ["//processor:sting_processor_plugin"],
     test_class = "sting.server.integration.ServerTransactionalIntegrationTest",
+    visibility = ["//:__pkg__"],
     deps = [
         "//core",
         "//server",

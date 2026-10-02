@@ -25,14 +25,25 @@ Use the Bazel CI-equivalent check before submitting Bazel changes:
 The check regenerates bazel-depgen outputs, runs buildifier and Java format checks, builds the phase-1 modules,
 runs the TestNG targets, and enforces the processor/server unit coverage gate.
 
-When changing Java dependencies, edit `third_party/java/dependencies.yml` or
-`tools/java-format/dependencies.yml`, then run:
+When changing Java dependencies, edit `third_party/java/dependencies.yml`, then run:
 
     $ tools/update_java_deps.sh
 
 When changing Java source in the Bazel formatting scope, use:
 
     $ tools/java_format.sh write
+
+The check uses `bazel build //:java_format_check` and persistent Palantir formatting workers. It covers workspace
+Java sources owned by targets reachable from the phase-1 modules and test suites. Fixture data filegroups and
+GWT/J2CL sources outside that Java target graph are excluded. `bazel test //...` alone does not enforce formatting.
+The formatter dependencies are owned by `rules_palantir_java_format`, pinned in `MODULE.bazel`.
+
+To format Java as you save it, run:
+
+    $ tools/java_format_watch.sh
+
+Write and watch retain the existing source roots, including input and bad-input fixtures. They exclude expected
+generated fixtures, which remain managed by the processor tests.
 
 The coverage gate intentionally uses only the processor and server unit-test targets. Integration tests still run in
 `tools/check.sh`, but they are not part of the coverage threshold.

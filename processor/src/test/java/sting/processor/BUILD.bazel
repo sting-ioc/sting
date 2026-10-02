@@ -30,6 +30,7 @@ java_testng(
         "sting.processor.StingProcessorRuntimeDeriveTest",
         "sting.processor.StingProcessorTest",
     ],
+    visibility = ["//:__pkg__"],
     deps = [
         ":test_support",
         "//core",
