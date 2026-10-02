@@ -7,6 +7,7 @@ java_testng(
         "TransactionInterceptorTest.java",
     ],
     test_class = "sting.server.interceptors.TransactionInterceptorTest",
+    visibility = ["//:__pkg__"],
     deps = [
         "//core",
         "//server",

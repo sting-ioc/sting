@@ -1,8 +1,8 @@
 # Task Map
 
 - Spec: [SPEC.md](../SPEC.md)
-- Status: planned
-- Current frontier: T01
+- Status: implementation-review
+- Current frontier: None (implementation review)
 - Planning reviewer: /root/planning_reviewer (1/3 rounds; Findings: none)
 - Plan checkpoint: automatic (explicit user evidence-settled grill exception and passing planning review)
 - Implementation reviewer: pending (0/5 rounds)
@@ -10,13 +10,13 @@
 ## Full-scope validation
 
 - Gate: tools/check.sh; bundle exec buildr test attempt; diff and action/behavior audit
-- Evidence: pending
+- Evidence: tools/check.sh exited 0 after resume; all five test targets and both coverage suites passed; line 94.74%, branch 86.51%. Task-local integrity/graph/worker/dirty/write/watch checks passed. Buildr retry exited 0 with cached outputs; initial disk-space coverage failure resolved. See T01 evidence.
 
 ## Tasks
 
 | ID | Task | Status | Blocked by |
 | --- | --- | --- | --- |
-| T01 | [Migrate formatting and verify enforcement](T01-migrate-formatting.md) | pending | None |
+| T01 | [Migrate formatting and verify enforcement](T01-migrate-formatting.md) | complete | None |
 
 ## Sequencing notes
 

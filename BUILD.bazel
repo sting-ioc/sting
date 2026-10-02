@@ -1,4 +1,5 @@
 load("@buildifier_prebuilt//:rules.bzl", "buildifier")
+load("@rules_palantir_java_format//:defs.bzl", "java_format_check")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -54,5 +55,18 @@ test_suite(
     tests = [
         ":integration_tests",
         ":unit_tests",
+    ],
+)
+
+java_format_check(
+    name = "java_format_check",
+    testonly = True,
+    remediation = "tools/java_format.sh write",
+    targets = [
+        ":all_tests",
+        "//core",
+        "//doc-examples",
+        "//processor",
+        "//server",
     ],
 )
