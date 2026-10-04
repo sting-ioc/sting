@@ -2,6 +2,8 @@
 
 ### Unreleased
 
+* Use Bazel's default workspace symlink and repository cache locations.
+
 ### [v0.40](https://github.com/sting-ioc/sting/tree/v0.40) (2026-07-07) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.39...v0.40)
 
 Changes in this release:
