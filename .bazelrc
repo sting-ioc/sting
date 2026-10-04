@@ -9,7 +9,3 @@ build --worker_max_instances=PalantirJavaFormat=1
 build --nojava_header_compilation
 build --experimental_strict_java_deps=error
 test --explicit_java_test_deps
-
-# Generate the symlink tree as a peer directory.
-# Keeping it out of the repository avoids IDEs scanning Bazel outputs.
-common --symlink_prefix=../.bazel/sting/

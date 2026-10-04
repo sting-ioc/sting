@@ -7,6 +7,7 @@
 /_buildr.rb
 /reports
 /target
+/bazel-*
 /tmp
 /node_modules
 /website/translated_docs

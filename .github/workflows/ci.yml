@@ -25,7 +25,6 @@ jobs:
         uses: bazel-contrib/setup-bazel@0.15.0
         with:
           bazelisk-cache: true
-          repository-cache: true
 
       - name: Check
         run: tools/check.sh
