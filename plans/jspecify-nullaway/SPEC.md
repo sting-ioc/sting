@@ -65,7 +65,7 @@ All owned production, test and example code and valid generated output use JSpec
 - Use model-based annotation-independent service identity and lookup rather than annotated TypeMirror display strings.
 - Use Proton's annotation-preserving conversion and exact JSpecify outer type-use recognition. Distinguish array root nullness from element nullness.
 - Use a Bazel local module override targeting Proton's source module and owned core/QA targets; release packaging must use those targets' jars rather than the old Maven jar.
-- Consume current local Proton revision 32fc6cb (Java 21 core/QA). Keep Sting javac --release 17, select Java 21 test/consumer-compiler runtime and Java 25 tool runtime. Artifact checks must verify owned/generated Java 17 bytecode separately from the shaded Proton Java 21 classes.
+- Consume local Proton Java 21 core/QA (32fc6cb, now merged as c70b0e1 with an identical source tree). Keep Sting javac --release 17, select Java 21 test/consumer-compiler runtime and Java 25 tool runtime. Artifact checks must verify owned/generated Java 17 bytecode separately from the shaded Proton Java 21 classes.
 - Resolve processor-classloader runtime annotation needs inside the processor artifact while preserving canonical JSpecify names and the no-runtime-POM-dependency contract. Archive shape checks alone do not establish an isolated processorpath.
 - Keep legacy rejection fixtures isolated from the positive checked fixture pipeline; legitimate javax.annotation.processing and Java EE names are unrelated to this migration.
 - Wide generator/fixture migration is one coherent cutover because Proton's removed legacy emission constants and generator APIs are shared across generation families.

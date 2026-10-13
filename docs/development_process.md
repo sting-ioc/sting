@@ -3,7 +3,7 @@ title: Development Process
 ---
 ## Build and test
 
-Bazel is the build for the Java modules. Install Bazel 9.3.0 and JDK 17 or newer. Run the complete local check before submitting changes:
+Bazel is the build for the Java modules. Install Bazel 9.3.0 and JDK 21 or newer. Run the complete local check before submitting changes:
 
     $ tools/check.sh
 
@@ -29,16 +29,18 @@ fixtures use an Error Prone 2.42.0 compiler in process, so their generated bodie
 invalid processor fixtures use a separate plain-javac diagnostics target. The generated negative control in
 `StingNullabilityTest` must fail with NullAway for both a nullable dereference and a nested generic mismatch.
 
-The build keeps Java 17 bytecode and enables `NullAway:JSpecifyMode=true`, `NullAway:OnlyNullMarked=true` and
-`-XDaddTypeAnnotationsToSymbol=true`. Full JSpecify mode needs a supported compiler: JDK 22+, patched JDK
-17.0.19+, or patched JDK 21.0.8+ with the symbol flag. Bazel resolves the compiler and runtime; check the resolved
-versions before changing toolchains. The repository's checked Java 17 runtime is 17.0.20. See
+Sting and generated sources target Java 17 bytecode. Annotation processing and the QA compiler run on Java 21
+because the local Proton implementation requires it; Bazel tools run on Java 25. The build enables
+`NullAway:JSpecifyMode=true`, `NullAway:OnlyNullMarked=true` and `-XDaddTypeAnnotationsToSymbol=true`.
+Use JDK 22+ or patched JDK 21.0.8+ with the symbol flag when reading compiled type-use contracts. Bazel resolves
+the compiler and runtime; check the resolved versions before changing toolchains. The checked test/processor
+runtime is Zulu 21.0.12, and the tools runtime is Zulu 25.0.4. See
 [NullAway's JSpecify support](https://github.com/uber/NullAway/wiki/JSpecify-Support) for requirements.
 
-`MODULE.bazel` temporarily overrides `proton_project` with `/Users/peter/Code/realityforge/proton`, on branch
-`codex/jspecify-nullaway`. The processor, QA harness and shaded release jar consume that checkout immediately.
-Set the override path to your checkout when building elsewhere. Proton's changes are in
-[PR 10](https://github.com/realityforge/proton/pull/10); a release is not required for this build.
+`MODULE.bazel` temporarily overrides `proton_project` with `/Users/peter/Code/realityforge/proton`.
+The processor, QA harness and shaded release jar consume that checkout immediately. Set the override path to
+your checkout when building elsewhere. Proton's changes from
+[PR 10](https://github.com/realityforge/proton/pull/10) are on master; a release is not required for this build.
 
 After Proton is released, remove the local module dependency/override, add the released `proton-core` and
 `proton-qa` coordinates to `third_party/java/dependencies.yml`, and regenerate dependencies. Replace the local
@@ -46,7 +48,8 @@ core/QA imports and release/Javadoc jar labels with the released artifacts. Re-r
 the packaged consumer compilation, before removing the local checkout.
 
 `tools/release/check_artifacts.py` checks published JSpecify metadata and compiles a consumer with only the shaded
-processor jar on the processorpath. This catches processor classloader dependencies that archive shape checks miss.
+processor jar on the processorpath. It verifies owned and generated Java 17 bytecode separately from shaded
+Proton Java 21 classes, and catches processor classloader dependencies that archive shape checks miss.
 
 ## Hermeticity
 

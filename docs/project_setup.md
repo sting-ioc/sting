@@ -68,9 +68,9 @@ compiler plugin from within the `pom.xml`:
 
 ### Compiler and JSpecify
 
-Use JDK 22+, patched JDK 17.0.19+, or patched JDK 21.0.8+ when reading JSpecify contracts from compiled
-classes. The symbol flag in the example makes type-use annotations available to Sting on the patched older
-compilers. The Java output remains at version 17. `sting-core` publishes a dependency on
+The Sting processor requires Java 21 or newer. Use JDK 22+ or patched JDK 21.0.8+ when reading JSpecify
+contracts from compiled classes. The symbol flag in the example makes type-use annotations available to Sting
+on patched Java 21 compilers. Library and generated output remain at version 17. `sting-core` publishes a dependency on
 `org.jspecify:jspecify:1.0.0`, which supplies the annotations on the compilation classpath. The shaded
 processor contains its own canonical JSpecify runtime classes for the isolated processorpath.
 

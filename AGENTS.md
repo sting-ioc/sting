@@ -32,7 +32,7 @@ This guide helps contributors work effectively on the Sting codebase.
 
 ## Build, Test, and Development Commands
 
-Prerequisites: Bazel 9.3.0, JDK 17+, Node 24 and npm for the docs site.
+Prerequisites: Bazel 9.3.0, JDK 21+, Node 24 and npm for the docs site.
 
 - Bootstrap site dependencies: `npm ci`.
 - Build Java modules: `bazel build //core //processor //server //doc-examples`.

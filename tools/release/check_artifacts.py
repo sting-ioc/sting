@@ -48,11 +48,18 @@ def check_nullness_metadata(path: Path) -> None:
             if name.endswith(".class") and name.startswith("sting/") and "/vendor/proton/vendor/" not in name:
                 if LEGACY_DESCRIPTOR.search(jar.read(name)):
                     raise SystemExit(f"Legacy nullability annotation descriptor in {path.name}: {name}")
+            if name.endswith(".class") and name.startswith("sting/") and "/vendor/" not in name:
+                check_java_17_bytecode(jar.read(name), f"{path.name}: {name}")
         if b"Lorg/jspecify/annotations/NullMarked;" not in jar.read(
             "sting/processor/package-info.class" if path.name == "sting-processor.jar" else
             "sting/server/package-info.class" if path.name == "sting-server.jar" else "sting/package-info.class"
         ):
             raise SystemExit(f"Missing NullMarked package contract in {path.name}")
+
+
+def check_java_17_bytecode(data: bytes, name: str) -> None:
+    if data[:4] != b"\xca\xfe\xba\xbe" or int.from_bytes(data[6:8], "big") != 61:
+        raise SystemExit(f"Expected Java 17 bytecode: {name}")
 
 
 def run(command: list[str], cwd: Path) -> str:
@@ -64,12 +71,11 @@ def run(command: list[str], cwd: Path) -> str:
 
 def check_packaged_consumer(workspace: Path, artifacts: Path) -> None:
     execution_root = Path(run(["bazel", "info", "execution_root"], workspace))
-    java_home_paths = run(
-        ["bazel", "cquery", "@rules_java//toolchains:current_java_runtime", "--output=starlark",
+    java_home = execution_root / run(
+        ["bazel", "cquery", "config(@rules_java//toolchains:current_java_runtime, target)", "--output=starlark",
          '--starlark:expr=providers(target)["ToolchainInfo"].java_runtime.java_home'], workspace
-    ).splitlines()
-    java_home, = {execution_root / path for path in java_home_paths}
-    jspecify = execution_root / run(["bazel", "cquery", "@jspecify//file", "--output=files"], workspace)
+    )
+    jspecify = execution_root / run(["bazel", "cquery", "config(@jspecify//file, target)", "--output=files"], workspace)
     compiler = str(java_home / "bin" / "javac")
     with tempfile.TemporaryDirectory(prefix="sting-packaged-consumer-") as directory:
         work = Path(directory)
@@ -135,8 +141,10 @@ def check_packaged_consumer(workspace: Path, artifacts: Path) -> None:
         source = proxies[0].read_text()
         if "List<@Nullable String>" not in source or "@Nullable String @Nullable []" not in source:
             raise SystemExit("Packaged processor lost compiled inherited type-use nullness:\n" + source)
+        for path in classes.rglob("*.class"):
+            check_java_17_bytecode(path.read_bytes(), str(path.relative_to(classes)))
         run([str(java_home / "bin" / "java"), "-ea", "-classpath", classpath, "packaged.Consumer"], workspace)
-    print("Compiled and ran a consumer with an isolated shaded processorpath and compiled JSpecify contracts")
+    print("Compiled Java 17 consumer bytecode and ran it with an isolated shaded processorpath and compiled JSpecify contracts")
 
 
 def entries(path: Path) -> set[str]:
@@ -194,6 +202,8 @@ def main() -> None:
                 raise SystemExit(f"Missing canonical processor runtime annotation: {annotation}")
         if b"getTypeName" not in jar.read("sting/processor/vendor/proton/GeneratorUtil.class"):
             raise SystemExit("Processor jar does not contain the local Proton type-use converter")
+        if int.from_bytes(jar.read("sting/processor/vendor/proton/GeneratorUtil.class")[6:8], "big") != 65:
+            raise SystemExit("Expected the local Java 21 Proton implementation in the processor")
     with zipfile.ZipFile(root / "sting-core.jar") as jar:
         if b"Lorg/jspecify/annotations/Nullable;" not in jar.read("sting/interceptors/Invocation.class"):
             raise SystemExit("Missing JSpecify Invocation nullness metadata")

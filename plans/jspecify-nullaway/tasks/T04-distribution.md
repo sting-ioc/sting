@@ -1,6 +1,6 @@
 # T04 — Distribution, documentation and full validation
 
-- Status: pending
+- Status: complete
 - Blocked by: T03
 - Spec coverage: R6, R7, AC5 (packaging/rollout), AC6
 
@@ -18,8 +18,8 @@ Release artifacts, documentation and examples expose the JSpecify contract and l
 - [x] Update changelog and repository annotation guidance; do no GWT/J2CL work.
 - [x] Run and record the strongest full-scope gate before committing this task.
 
-- [ ] Document the Java 21 processor requirement and verify owned/generated Java 17 bytecode independently of shaded Proton Java 21 classes.
-- [ ] Refresh full-gate evidence against current local Proton 32fc6cb after runtime reconciliation.
+- [x] Document the Java 21 processor requirement and verify owned/generated Java 17 bytecode independently of shaded Proton Java 21 classes.
+- [x] Refresh full-gate evidence against current local Proton 32fc6cb after runtime reconciliation.
 
 ## Validation
 
@@ -39,3 +39,11 @@ Release artifacts, documentation and examples expose the JSpecify contract and l
 - Packaging validation exposed unchecked parameterized casts in around proxies; scoped javac unchecked suppressions preserve their existing runtime casts while NullAway remains active. Inherited signature tests now also require no warnings.
 - A regression reproduced missed legacy annotations on factory runtime constructor parameters; matched constructor parameters now receive migration validation, and the focused diagnostic test/full gate passed.
 - Packaging/docs landed in b6d78302 while T04 remained in progress. This completion snapshot includes the final fixture scan and missing golden coverage.
+
+## Reconciliation evidence
+
+- Maven artifacts and the isolated processorpath consumer passed against local Proton c70b0e1 (identical tree to reviewed 32fc6cb). Published owned Sting classes and all compiled consumer/generated classes are Java 17 (major 61); the shaded local Proton converter is Java 21 (major 65). A bytecode negative control rejects major 65 where owned Java 17 output is required.
+- Artifact runtime lookup now selects the target configuration explicitly: Java 21 and Java 25 configurations coexist after tools reconciliation. Python syntax validation passed.
+- Refreshed `tools/check.sh` passed under Node 24.19.0: formatting, unchanged Ahab baseline, strict builds, 12 Maven artifacts, owned legacy scan, isolated consumer, all 16 test targets, coverage and Javadocs/site. Coverage: 95.18% lines (4403/4626), 86.23% branches (1816/2106); 2,236 local links checked, zero broken.
+- Java 21 processor/compiler requirement and Java 17 output distinction are documented in setup, development guidance, changelog, README and contributor prerequisites; CI selects Java 21. The local source override remains until a maintainer releases Proton.
+- Proton PR 10 is merged, both CI checks passed, local master is clean. No GWT/J2CL changes or probes were performed. Git diff --check passed.
