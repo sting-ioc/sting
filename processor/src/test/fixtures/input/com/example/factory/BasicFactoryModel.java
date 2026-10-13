@@ -1,20 +1,20 @@
 package com.example.factory;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 import sting.Factory;
 import sting.Injectable;
 
+@NullMarked
 public final class BasicFactoryModel {
     @Injectable
     public static class SomeService {}
 
     public static class MyComponent {
-        MyComponent(@Nonnull final SomeService someService, final int someParameter) {}
+        MyComponent(final SomeService someService, final int someParameter) {}
     }
 
     @Factory
     public interface MyComponentFactory {
-        @Nonnull
         MyComponent create(int someParameter);
 
         default int increment(final int value) {

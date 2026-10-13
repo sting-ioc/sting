@@ -17,6 +17,6 @@ java_library(
         "//core",
         "//integration-tests/src/test/java/sting/integration:test_support",
         "//integration-tests/src/test/java/sting/integration/other/pkg2:api",
-        "//third_party/java:javax_annotation",
+        "//third_party/java:jspecify",
     ],
 )

@@ -5,11 +5,11 @@ import static org.testng.Assert.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 import org.testng.annotations.BeforeMethod;
 
+@NullMarked
 public abstract class AbstractIntegrationTest {
-    @Nonnull
     private static final List<String> c_trace = new ArrayList<>();
 
     public abstract static class BaseModel {
@@ -32,7 +32,7 @@ public abstract class AbstractIntegrationTest {
         c_trace.clear();
     }
 
-    protected final void assertCreateTrace(@Nonnull final String trace) {
+    protected final void assertCreateTrace(final String trace) {
         assertEquals(String.join(" ", c_trace), trace);
     }
 }

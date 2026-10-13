@@ -1,16 +1,15 @@
 package com.example.interceptor;
 
 import java.io.IOException;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_com_example_interceptor_ResultAndThrownModel_Model_Service_InterceptorProxy
     implements ResultAndThrownModel.Service {
-  @Nonnull
   private final ResultAndThrownModel.Service _target;
 
-  @Nonnull
   private final ResultAndThrownModel.TraceInterceptor _interceptor1;
 
   private Sting_com_example_interceptor_ResultAndThrownModel_Model_Service_InterceptorProxy(
@@ -20,7 +19,6 @@ public final class Sting_com_example_interceptor_ResultAndThrownModel_Model_Serv
     _interceptor1 = interceptor1;
   }
 
-  @Nonnull
   public static Object create(final Object target, final Object interceptor1) {
     return new Sting_com_example_interceptor_ResultAndThrownModel_Model_Service_InterceptorProxy(
         (ResultAndThrownModel.Service) target,

@@ -1,9 +1,10 @@
 package com.example.injectable.dependency;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 import sting.Injectable;
 
 @Injectable
+@NullMarked
 public class NonnullDependencyModel {
-    NonnullDependencyModel(@Nonnull Runnable runnable) {}
+    NonnullDependencyModel(Runnable runnable) {}
 }

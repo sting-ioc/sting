@@ -6,8 +6,8 @@ java_library(
     srcs = ["AbstractStingProcessorTest.java"],
     deps = [
         "//processor",
-        "//third_party/java:javax_annotation",
-        "//third_party/java:proton_qa",
+        "//third_party/java:jspecify",
+        "@proton_project//qa/src/main/java/org/realityforge/proton/qa",
     ],
 )
 
@@ -15,6 +15,7 @@ java_library(
     name = "test_classes",
     testonly = True,
     srcs = [
+        "StingNullabilityTest.java",
         "StingProcessorMultiStageCompilesTest.java",
         "StingProcessorRuntimeDeriveTest.java",
         "StingProcessorTest.java",
@@ -25,9 +26,9 @@ java_library(
         "//processor",
         "//third_party/java:javaee_api",
         "//third_party/java:javaemul_internal_annotations",
-        "//third_party/java:javax_annotation",
-        "//third_party/java:proton_qa",
+        "//third_party/java:jspecify",
         "//third_party/java:testng",
+        "@proton_project//qa/src/main/java/org/realityforge/proton/qa",
     ],
 )
 
@@ -182,8 +183,15 @@ test_suite(
         ":model_goldens",
         ":multi_round",
         ":multi_stage",
+        ":nullability",
         ":runtime_derive",
         ":warnings",
     ],
     visibility = ["//:__pkg__"],
+)
+
+processor_test(
+    name = "nullability",
+    data = [],
+    test_class = "sting.processor.StingNullabilityTest",
 )

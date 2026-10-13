@@ -2,7 +2,7 @@ package sting.integration;
 
 import static org.testng.Assert.*;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 import org.testng.annotations.Test;
 import sting.ActAsStingProvider;
 import sting.Eager;
@@ -12,6 +12,7 @@ import sting.Named;
 import sting.StingProvider;
 import sting.Typed;
 
+@NullMarked
 public final class ProviderInjectableAnnotatedAutoDiscoveryIntegrationTest extends AbstractIntegrationTest {
     public interface MyService {}
 
@@ -27,15 +28,13 @@ public final class ProviderInjectableAnnotatedAutoDiscoveryIntegrationTest exten
     @Named("someName")
     @Typed(MyService.class)
     public abstract static class Model1 extends BaseModel implements MyService {
-        @Nonnull
         private final Model2 _model2;
 
-        Model1(@Nonnull final Model2 model2) {
+        Model1(final Model2 model2) {
             super(model2);
             _model2 = model2;
         }
 
-        @Nonnull
         Model2 getModel2() {
             return _model2;
         }
@@ -44,22 +43,19 @@ public final class ProviderInjectableAnnotatedAutoDiscoveryIntegrationTest exten
     @Injectable
     @Typed(Model1.class)
     public static class Model1Impl extends Model1 {
-        Model1Impl(@Nonnull final Model2 model2) {
+        Model1Impl(final Model2 model2) {
             super(model2);
         }
     }
 
     @Injector
     public interface MyInjector {
-        @Nonnull
         static MyInjector create() {
             return new ProviderInjectableAnnotatedAutoDiscoveryIntegrationTest_Sting_MyInjector();
         }
 
-        @Nonnull
         Model1 getModel1();
 
-        @Nonnull
         Model2 getModel2();
     }
 

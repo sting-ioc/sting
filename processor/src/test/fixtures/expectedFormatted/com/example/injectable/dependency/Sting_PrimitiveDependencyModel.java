@@ -1,14 +1,14 @@
 package com.example.injectable.dependency;
 
 import java.util.Objects;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_PrimitiveDependencyModel {
   private Sting_PrimitiveDependencyModel() {}
 
-  @Nonnull
   public static PrimitiveDependencyModel create(
       final boolean bool,
       final char ch,

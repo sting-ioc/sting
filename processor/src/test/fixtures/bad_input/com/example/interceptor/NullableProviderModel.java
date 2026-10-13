@@ -4,13 +4,15 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
+@NullMarked
 public final class NullableProviderModel {
     private NullableProviderModel() {}
 

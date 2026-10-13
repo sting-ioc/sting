@@ -4,7 +4,9 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Supplier;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_PublicAccessDependencyModel implements PublicAccessDependencyModel {
   public MyType1 $sting$_provideMyType1(final MyType2 v) {

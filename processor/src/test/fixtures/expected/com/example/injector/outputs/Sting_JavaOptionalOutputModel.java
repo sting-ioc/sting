@@ -3,19 +3,18 @@ package com.example.injector.outputs;
 import java.util.Objects;
 import java.util.Optional;
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_JavaOptionalOutputModel implements JavaOptionalOutputModel {
-  @Nullable
-  private Object node1;
+  private @Nullable Object node1;
 
   Sting_JavaOptionalOutputModel() {
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Object node1() {
     if ( null == node1 ) {

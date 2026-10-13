@@ -1,33 +1,26 @@
 package com.example.injector.outputs;
 
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
-  @Nonnull
   private final PrimitiveOutputModel_Sting_MyFragment fragment1 = new PrimitiveOutputModel_Sting_MyFragment();
 
-  @Nonnull
   private final PrimitiveOutputModel_Sting_MyFragment fragment2 = new PrimitiveOutputModel_Sting_MyFragment();
 
-  @Nonnull
   private final PrimitiveOutputModel_Sting_MyFragment fragment3 = new PrimitiveOutputModel_Sting_MyFragment();
 
-  @Nonnull
   private final PrimitiveOutputModel_Sting_MyFragment fragment4 = new PrimitiveOutputModel_Sting_MyFragment();
 
-  @Nonnull
   private final PrimitiveOutputModel_Sting_MyFragment fragment5 = new PrimitiveOutputModel_Sting_MyFragment();
 
-  @Nonnull
   private final PrimitiveOutputModel_Sting_MyFragment fragment6 = new PrimitiveOutputModel_Sting_MyFragment();
 
-  @Nonnull
   private final PrimitiveOutputModel_Sting_MyFragment fragment7 = new PrimitiveOutputModel_Sting_MyFragment();
 
-  @Nonnull
   private final PrimitiveOutputModel_Sting_MyFragment fragment8 = new PrimitiveOutputModel_Sting_MyFragment();
 
   private double node1;

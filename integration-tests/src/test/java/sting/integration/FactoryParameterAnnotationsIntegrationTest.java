@@ -2,20 +2,20 @@ package sting.integration;
 
 import static org.testng.Assert.*;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.Test;
 import sting.Factory;
 import sting.Injectable;
 import sting.Injector;
 
+@NullMarked
 public final class FactoryParameterAnnotationsIntegrationTest extends AbstractIntegrationTest {
     private static final class StableRunnable implements Runnable {
         @Override
         public void run() {}
 
         @Override
-        @Nonnull
         public String toString() {
             return "StableRunnable";
         }
@@ -25,22 +25,17 @@ public final class FactoryParameterAnnotationsIntegrationTest extends AbstractIn
     public static class SomeService extends BaseModel {}
 
     public static class MyComponent extends BaseModel {
-        @Nonnull
         private final SomeService _someService;
 
         @Nullable
         private final String _name;
 
-        @Nonnull
         private final Runnable _action;
 
         private final int _count;
 
         MyComponent(
-                @Nonnull final SomeService someService,
-                @Nullable final String name,
-                @Nonnull final Runnable action,
-                final int count) {
+                final SomeService someService, @Nullable final String name, final Runnable action, final int count) {
             super(someService, name, action, count);
             _someService = someService;
             _name = name;
@@ -48,7 +43,6 @@ public final class FactoryParameterAnnotationsIntegrationTest extends AbstractIn
             _count = count;
         }
 
-        @Nonnull
         SomeService getSomeService() {
             return _someService;
         }
@@ -58,7 +52,6 @@ public final class FactoryParameterAnnotationsIntegrationTest extends AbstractIn
             return _name;
         }
 
-        @Nonnull
         Runnable getAction() {
             return _action;
         }
@@ -70,18 +63,15 @@ public final class FactoryParameterAnnotationsIntegrationTest extends AbstractIn
 
     @Factory
     public interface MyComponentFactory {
-        @Nonnull
-        MyComponent create(@Nullable String name, @Nonnull Runnable action, int count);
+        MyComponent create(@Nullable String name, Runnable action, int count);
     }
 
     @Injector(fragmentOnly = false, includes = MyComponentFactory.class)
     public interface MyInjector {
-        @Nonnull
         static MyInjector create() {
             return new FactoryParameterAnnotationsIntegrationTest_Sting_MyInjector();
         }
 
-        @Nonnull
         MyComponentFactory getFactory();
     }
 

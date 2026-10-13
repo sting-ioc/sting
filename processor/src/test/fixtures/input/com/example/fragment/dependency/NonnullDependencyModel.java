@@ -1,11 +1,12 @@
 package com.example.fragment.dependency;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 import sting.Fragment;
 
 @Fragment
+@NullMarked
 public interface NonnullDependencyModel {
-    default Runnable provideRunnable(@Nonnull String name) {
+    default Runnable provideRunnable(String name) {
         return null;
     }
 }

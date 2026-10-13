@@ -4,31 +4,28 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_PrimitiveAndBoxedCollectionOutputModel implements PrimitiveAndBoxedCollectionOutputModel {
-  @Nonnull
   private final PrimitiveAndBoxedCollectionOutputModel_Sting_MyFragment1 fragment1 = new PrimitiveAndBoxedCollectionOutputModel_Sting_MyFragment1();
 
-  @Nonnull
   private final PrimitiveAndBoxedCollectionOutputModel_Sting_MyFragment2 fragment2 = new PrimitiveAndBoxedCollectionOutputModel_Sting_MyFragment2();
 
-  @Nullable
-  private Integer node1;
+  private @Nullable Integer node1;
 
   private int node2;
 
   private boolean node2_allocated;
 
-  private Collection<Integer> $sting$_getValuesCache;
+  private @Nullable Collection<Integer> $sting$_getValuesCache;
 
   Sting_PrimitiveAndBoxedCollectionOutputModel() {
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Integer node1() {
     if ( null == node1 ) {

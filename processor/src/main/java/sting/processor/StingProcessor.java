@@ -40,6 +40,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.ExecutableType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.tools.Diagnostic;
 import org.jspecify.annotations.Nullable;
@@ -637,7 +638,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             final var bindings = new ArrayList<>(graph.findAllBindingsByCoordinate(coordinate));
 
             if (bindings.isEmpty() && coordinate.qualifier().isEmpty()) {
-                final String typename = coordinate.type().toString();
+                final String typename = ServiceKey.typeName(coordinate.type());
                 final InjectableDescriptor injectable = _registry.findInjectableByClassName(typename);
                 if (null != injectable && injectable.isAutoDiscoverable()) {
                     bindings.add(injectable.getBinding());
@@ -1074,6 +1075,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
 
     private ServiceRequest processOutputMethod(final ExecutableElement method) {
         final TypeMirror type = method.getReturnType();
+        validateNullability(method, type, true);
         if (TypesUtil.containsArrayType(type)) {
             throw new ProcessorException(
                     MemberChecks.mustNot(
@@ -1821,6 +1823,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             final Map<ExecutableElement, Binding> bindings,
             final ExecutableElement method,
             final boolean emitWarnings) {
+        validateNullability(method, method.getReturnType(), true);
         if (TypeKind.VOID == method.getReturnType().getKind()) {
             throw new ProcessorException(
                     MemberChecks.must(Constants.FRAGMENT_CLASSNAME, "only contain methods that return a value"),
@@ -2432,6 +2435,8 @@ public final class StingProcessor extends AbstractStandardProcessor {
             final var methods = ElementsUtil.getMethods(
                     serviceElement, processingEnv.getElementUtils(), processingEnv.getTypeUtils());
             for (final var method : methods) {
+                validateNullability(method, method.getReturnType(), false);
+                method.getParameters().forEach(parameter -> validateNullability(parameter, parameter.asType(), false));
                 if (!method.getTypeParameters().isEmpty()) {
                     throw new ProcessorException(
                             "Intercepted service methods must not declare type parameters", method);
@@ -2579,6 +2584,8 @@ public final class StingProcessor extends AbstractStandardProcessor {
     }
 
     private void validateLifecycleMethodShape(final ExecutableElement method, final InterceptorPhase phase) {
+        validateNullability(method, method.getReturnType(), false);
+        method.getParameters().forEach(parameter -> validateNullability(parameter, parameter.asType(), false));
         final var modifiers = method.getModifiers();
         if (!modifiers.contains(Modifier.PUBLIC)
                 || modifiers.contains(Modifier.STATIC)
@@ -2704,7 +2711,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                 requireType(parameter, type, String.class.getName(), "@MethodName");
                 return new LifecycleParameterDescriptor(LifecycleParameterDescriptor.Kind.METHOD_NAME, "");
             } else if (Constants.INTERCEPTOR_ARGUMENTS_CLASSNAME.equals(markerType)) {
-                if (TypeKind.ARRAY != type.getKind() || !"java.lang.Object[]".equals(type.toString())) {
+                if (TypeKind.ARRAY != type.getKind() || !"java.lang.Object[]".equals(ServiceKey.typeName(type))) {
                     throw new ProcessorException("@Arguments lifecycle parameter must have type Object[]", parameter);
                 } else {
                     return new LifecycleParameterDescriptor(LifecycleParameterDescriptor.Kind.ARGUMENTS, "");
@@ -2797,7 +2804,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
     }
 
     private boolean isArrayMatch(final TypeMirror type, final BindingValueKind kind) {
-        final var name = type.toString();
+        final var name = ServiceKey.typeName(type);
         return switch (kind) {
             case STRING, ENUM, CLASS -> "java.lang.String[]".equals(name);
             case BOOLEAN -> "boolean[]".equals(name);
@@ -2813,7 +2820,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
     }
 
     private boolean isPrimitiveOrBoxedMatch(final TypeMirror type, final BindingValueKind kind) {
-        final var name = type.toString();
+        final var name = ServiceKey.typeName(type);
         return switch (kind) {
             case BOOLEAN -> "boolean".equals(name) || Boolean.class.getName().equals(name);
             case BYTE -> "byte".equals(name) || Byte.class.getName().equals(name);
@@ -2849,6 +2856,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
     }
 
     private ServiceRequest processFragmentServiceParameter(final VariableElement parameter, final TypeMirror type) {
+        validateNullability(parameter, type, true);
         if (TypesUtil.containsArrayType(type)) {
             throw new ProcessorException(
                     MemberChecks.mustNot(
@@ -3044,6 +3052,8 @@ public final class StingProcessor extends AbstractStandardProcessor {
             final ExecutableElement method,
             final List<FactoryDependencyDescriptor> dependencies,
             final Set<String> usedFieldNames) {
+        validateNullability(method, method.getReturnType(), false);
+        method.getParameters().forEach(parameter -> validateNullability(parameter, parameter.asType(), false));
         if (!findInterceptorBindingAnnotations(method).isEmpty()) {
             throw new ProcessorException("Interceptor bindings on non-fragment methods are not supported", method);
         }
@@ -3210,6 +3220,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
     }
 
     private ServiceRequest handleConstructorParameter(final VariableElement parameter, final TypeMirror type) {
+        validateNullability(parameter, type, true);
         if (TypesUtil.containsArrayType(type)) {
             throw new ProcessorException(
                     MemberChecks.mustNot(
@@ -3271,6 +3282,63 @@ public final class StingProcessor extends AbstractStandardProcessor {
                 final var coordinate = new Coordinate(qualifier, Objects.requireNonNull(dependencyType));
                 final var service = new ServiceSpec(coordinate, optional);
                 return new ServiceRequest(kind, service, parameter);
+            }
+        }
+    }
+
+    private void validateNullability(final Element element, final TypeMirror type, final boolean dependency) {
+        rejectLegacyNullability(element, element);
+        rejectLegacyNullabilityType(element, type);
+        if (dependency && containsNullableTypeArgument(type)) {
+            throw new ProcessorException(
+                    "Nullable type arguments are not supported in DI requests. Use Optional<T> or"
+                            + " Supplier<Optional<T>> instead",
+                    element);
+        }
+    }
+
+    private boolean containsNullableTypeArgument(final TypeMirror type) {
+        return type instanceof DeclaredType declared
+                && declared.getTypeArguments().stream()
+                        .anyMatch(argument -> AnnotationsUtil.hasNullableAnnotation(argument)
+                                || containsNullableTypeArgument(argument));
+    }
+
+    private void rejectLegacyNullabilityType(final Element element, final TypeMirror type) {
+        rejectLegacyNullability(element, type);
+        if (type instanceof DeclaredType declared) {
+            declared.getTypeArguments().forEach(argument -> rejectLegacyNullabilityType(element, argument));
+        } else if (type instanceof ArrayType array) {
+            rejectLegacyNullabilityType(element, array.getComponentType());
+        } else if (type instanceof WildcardType wildcard) {
+            final TypeMirror upper = wildcard.getExtendsBound();
+            final TypeMirror lower = wildcard.getSuperBound();
+            if (null != upper) {
+                rejectLegacyNullabilityType(element, upper);
+            }
+            if (null != lower) {
+                rejectLegacyNullabilityType(element, lower);
+            }
+        }
+    }
+
+    private void rejectLegacyNullability(final Element element, final AnnotatedConstruct annotated) {
+        for (final AnnotationMirror annotation : annotated.getAnnotationMirrors()) {
+            final String name = ((TypeElement) annotation.getAnnotationType().asElement())
+                    .getQualifiedName()
+                    .toString();
+            if (switch (name) {
+                case "javax.annotation.Nonnull",
+                        "javax.annotation.Nullable",
+                        "javax.annotation.CheckForNull",
+                        "org.jetbrains.annotations.NotNull",
+                        "org.jetbrains.annotations.Nullable" -> true;
+                default -> false;
+            }) {
+                throw new ProcessorException(
+                        "Legacy nullability annotation " + name
+                                + " is not supported. Use org.jspecify.annotations.Nullable and @NullMarked instead",
+                        element);
             }
         }
     }

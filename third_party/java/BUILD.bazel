@@ -13,6 +13,17 @@ _java_plugin(
     ],
 )
 
+_java_import(
+    name = "local_proton_core",
+    jars = ["@proton_project//tools/release:proton_core_jar"],
+    srcjar = "@proton_project//tools/release:proton_core_sources_jar",
+    deps = [
+        ":guava",
+        ":javapoet",
+        ":jspecify",
+    ],
+)
+
 # --- depgen-generated targets start ---
 
 # DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26

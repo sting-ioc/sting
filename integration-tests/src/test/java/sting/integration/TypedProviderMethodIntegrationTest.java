@@ -2,13 +2,14 @@ package sting.integration;
 
 import static org.testng.Assert.*;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.Test;
 import sting.Fragment;
 import sting.Injector;
 import sting.Typed;
 
+@NullMarked
 public final class TypedProviderMethodIntegrationTest extends AbstractIntegrationTest {
     public interface MyService {}
 
@@ -24,12 +25,10 @@ public final class TypedProviderMethodIntegrationTest extends AbstractIntegratio
 
     @Injector(includes = MyFragment.class)
     public interface MyInjector {
-        @Nonnull
         static MyInjector create() {
             return new TypedProviderMethodIntegrationTest_Sting_MyInjector();
         }
 
-        @Nonnull
         MyService getMyService();
 
         @Nullable

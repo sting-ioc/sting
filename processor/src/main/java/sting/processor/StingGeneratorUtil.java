@@ -1,5 +1,6 @@
 package sting.processor;
 
+import com.palantir.javapoet.AnnotationSpec;
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.MethodSpec;
 import com.palantir.javapoet.ParameterSpec;
@@ -30,12 +31,20 @@ final class StingGeneratorUtil {
 
     private StingGeneratorUtil() {}
 
+    static TypeName asNullable(final TypeName type) {
+        return type.annotations().stream()
+                        .anyMatch(annotation -> annotation.type().equals(GeneratorUtil.NULLABLE_CLASSNAME))
+                ? type
+                : type.annotated(
+                        AnnotationSpec.builder(GeneratorUtil.NULLABLE_CLASSNAME).build());
+    }
+
     static TypeName getServiceType(final ServiceRequest serviceRequest) {
         final ServiceRequest.Kind kind = serviceRequest.getKind();
-        final var baseType =
-                TypeName.get(serviceRequest.getService().getCoordinate().type());
+        final var baseType = GeneratorUtil.getTypeName(
+                serviceRequest.getService().getCoordinate().type());
         if (ServiceRequest.Kind.INSTANCE == kind) {
-            return baseType;
+            return serviceRequest.getService().isOptional() ? asNullable(baseType) : baseType;
         } else if (ServiceRequest.Kind.OPTIONAL == kind) {
             return ParameterizedTypeName.get(OPTIONAL, baseType);
         } else if (ServiceRequest.Kind.SUPPLIER == kind) {
@@ -106,7 +115,8 @@ final class StingGeneratorUtil {
                 anyNonPublicNonInstance = true;
                 paramType = COLLECTION;
             }
-            final ParameterSpec.Builder param = ParameterSpec.builder(paramType, paramName, Modifier.FINAL);
+            final ParameterSpec.Builder param = ParameterSpec.builder(
+                    service.getService().isOptional() ? asNullable(paramType) : paramType, paramName, Modifier.FINAL);
             GeneratorUtil.copyWhitelistedAnnotations(parameter, param);
             method.addParameter(param.build());
             if (!firstParam) {

@@ -16,12 +16,13 @@ import jakarta.transaction.TransactionRequiredException;
 import jakarta.transaction.TransactionalException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.transaction.xa.XAResource;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.Test;
 import sting.interceptors.Invocation;
 
+@NullMarked
 public final class TransactionInterceptorTest {
     @Test
     public void requiredStartsTransactionWhenNoneExists() throws Throwable {
@@ -417,16 +418,14 @@ public final class TransactionInterceptorTest {
         manager.assertTrace("getTransaction suspend target getTransaction resume");
     }
 
-    @Nonnull
     private static Invocation invocation(
-            @Nonnull final FakeTransactionManager manager, @Nonnull final String trace, @Nullable final Object result) {
+            final FakeTransactionManager manager, final String trace, @Nullable final Object result) {
         return invocation(manager, trace, result, false);
     }
 
-    @Nonnull
     private static Invocation invocation(
-            @Nonnull final FakeTransactionManager manager,
-            @Nonnull final String trace,
+            final FakeTransactionManager manager,
+            final String trace,
             @Nullable final Object result,
             final boolean markRollback) {
         return new Invocation(
@@ -443,16 +442,12 @@ public final class TransactionInterceptorTest {
                 new Object[0]);
     }
 
-    @Nonnull
     private static Invocation failingInvocation(
-            @Nonnull final FakeTransactionManager manager,
-            @Nonnull final String trace,
-            @Nonnull final Throwable failure) {
+            final FakeTransactionManager manager, final String trace, final Throwable failure) {
         return invocation(manager, trace, failure);
     }
 
     private static final class FakeTransactionManager implements TransactionManager {
-        @Nonnull
         private final List<String> trace = new ArrayList<>();
 
         @Nullable
@@ -521,7 +516,7 @@ public final class TransactionInterceptorTest {
         }
 
         @Override
-        public void resume(@Nonnull final Transaction transaction) throws InvalidTransactionException, SystemException {
+        public void resume(final Transaction transaction) throws InvalidTransactionException, SystemException {
             trace.add("resume");
             if (null != resumeFailure) {
                 throw resumeFailure;
@@ -566,7 +561,7 @@ public final class TransactionInterceptorTest {
             return transaction;
         }
 
-        private void assertTrace(@Nonnull final String expected) {
+        private void assertTrace(final String expected) {
             assertEquals(String.join(" ", trace), expected);
         }
     }
@@ -580,12 +575,12 @@ public final class TransactionInterceptorTest {
         }
 
         @Override
-        public boolean delistResource(@Nonnull final XAResource xaResource, final int flag) {
+        public boolean delistResource(final XAResource xaResource, final int flag) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean enlistResource(@Nonnull final XAResource xaResource) {
+        public boolean enlistResource(final XAResource xaResource) {
             throw new UnsupportedOperationException();
         }
 
@@ -595,7 +590,7 @@ public final class TransactionInterceptorTest {
         }
 
         @Override
-        public void registerSynchronization(@Nonnull final Synchronization synchronization) {
+        public void registerSynchronization(final Synchronization synchronization) {
             throw new UnsupportedOperationException();
         }
 

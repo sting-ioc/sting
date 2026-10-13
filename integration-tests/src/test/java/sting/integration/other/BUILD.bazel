@@ -16,6 +16,6 @@ java_testng(
         "//integration-tests/src/test/java/sting/integration/other/pkg1",
         "//integration-tests/src/test/java/sting/integration/other/pkg2",
         "//integration-tests/src/test/java/sting/integration/other/pkg2:api",
-        "//third_party/java:javax_annotation",
+        "//third_party/java:jspecify",
     ],
 )

@@ -23,6 +23,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import org.jspecify.annotations.Nullable;
+import org.realityforge.proton.AnnotationsUtil;
 import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
@@ -38,8 +39,9 @@ final class InterceptorProxyGenerator {
                 ((DeclaredType) proxy.getService().service().getCoordinate().type()).asElement();
         final var builder = TypeSpec.classBuilder(proxy.getClassName().simpleName())
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addSuperinterface(TypeName.get(serviceElement.asType()));
+                .addSuperinterface(GeneratorUtil.getTypeName(serviceElement.asType()));
         GeneratorUtil.addOriginatingTypes(serviceElement, builder);
+        builder.addAnnotation(ClassName.get("org.jspecify.annotations", "NullMarked"));
         GeneratorUtil.addGeneratedAnnotation(processingEnv, builder, StingProcessor.class.getName());
 
         emitFields(builder, proxy);
@@ -52,21 +54,20 @@ final class InterceptorProxyGenerator {
 
     private static void emitFields(final TypeSpec.Builder builder, final InterceptorProxyDescriptor proxy) {
         builder.addField(FieldSpec.builder(
-                        TypeName.get(
+                        GeneratorUtil.getTypeName(
                                 proxy.getService().service().getCoordinate().type()),
                         TARGET_FIELD_NAME,
                         Modifier.PRIVATE,
                         Modifier.FINAL)
-                .addAnnotation(GeneratorUtil.NONNULL_CLASSNAME)
                 .build());
         var index = 1;
         for (final var interceptor : proxy.getService().interceptors()) {
             builder.addField(FieldSpec.builder(
-                            TypeName.get(interceptor.getInterceptor().element().asType()),
+                            GeneratorUtil.getTypeName(
+                                    interceptor.getInterceptor().element().asType()),
                             interceptorFieldName(index++),
                             Modifier.PRIVATE,
                             Modifier.FINAL)
-                    .addAnnotation(GeneratorUtil.NONNULL_CLASSNAME)
                     .build());
         }
     }
@@ -74,7 +75,7 @@ final class InterceptorProxyGenerator {
     private static void emitConstructor(final TypeSpec.Builder builder, final InterceptorProxyDescriptor proxy) {
         final var ctor = MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE);
         ctor.addParameter(ParameterSpec.builder(
-                        TypeName.get(
+                        GeneratorUtil.getTypeName(
                                 proxy.getService().service().getCoordinate().type()),
                         "target",
                         Modifier.FINAL)
@@ -82,7 +83,8 @@ final class InterceptorProxyGenerator {
         var index = 1;
         for (final var interceptor : proxy.getService().interceptors()) {
             ctor.addParameter(ParameterSpec.builder(
-                            TypeName.get(interceptor.getInterceptor().element().asType()),
+                            GeneratorUtil.getTypeName(
+                                    interceptor.getInterceptor().element().asType()),
                             "interceptor" + index,
                             Modifier.FINAL)
                     .build());
@@ -103,7 +105,6 @@ final class InterceptorProxyGenerator {
             final InterceptorProxyDescriptor proxy) {
         final var method = MethodSpec.methodBuilder("create")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .addAnnotation(GeneratorUtil.NONNULL_CLASSNAME)
                 .returns(Object.class)
                 .addParameter(Object.class, "target", Modifier.FINAL);
         final var suppressTypes = new ArrayList<TypeMirror>();
@@ -187,7 +188,7 @@ final class InterceptorProxyGenerator {
         final var voidReturn = TypeKind.VOID == method.getReturnType().getKind();
         arguments.declareIfRequired(builder);
         if (!voidReturn) {
-            builder.addStatement("$T result", method.getReturnType());
+            builder.addStatement("$T result", GeneratorUtil.getTypeName(method.getReturnType()));
         }
         emitInterceptorBlock(builder, proxy, method, 0, catchTypes(processingEnv, method), arguments);
         if (!voidReturn) {
@@ -250,7 +251,6 @@ final class InterceptorProxyGenerator {
                 .addException(Throwable.class)
                 .addParameter(ParameterSpec.builder(
                                 aroundInvocationArgumentsType(unmodifiableAnnotation), "arguments", Modifier.FINAL)
-                        .addAnnotation(GeneratorUtil.NONNULL_CLASSNAME)
                         .build());
         propagateAroundInvocationNullability(builder, method);
         builder.addStatement(
@@ -335,25 +335,13 @@ final class InterceptorProxyGenerator {
     private static TypeName aroundInvocationArgumentsType(@Nullable final AnnotationSpec unmodifiableAnnotation) {
         final var componentType =
                 null == unmodifiableAnnotation ? ClassName.OBJECT : ClassName.OBJECT.annotated(unmodifiableAnnotation);
-        return ArrayTypeName.of(componentType);
+        return ArrayTypeName.of(StingGeneratorUtil.asNullable(componentType));
     }
 
     private static void propagateAroundInvocationNullability(
             final MethodSpec.Builder builder, final ExecutableElement method) {
-        final var returnType = method.getReturnType();
-        if (TypeKind.VOID != returnType.getKind()) {
-            if (returnType.getKind().isPrimitive()) {
-                builder.addAnnotation(GeneratorUtil.NONNULL_CLASSNAME);
-            } else {
-                final var nonnull = GeneratorUtil.NONNULL_CLASSNAME.canonicalName();
-                final var nullable = GeneratorUtil.NULLABLE_CLASSNAME.canonicalName();
-                for (final var annotation : method.getAnnotationMirrors()) {
-                    final var annotationType = annotation.getAnnotationType().toString();
-                    if (nonnull.equals(annotationType) || nullable.equals(annotationType)) {
-                        builder.addAnnotation(AnnotationSpec.get(annotation));
-                    }
-                }
-            }
+        if (AnnotationsUtil.hasNullableAnnotation(method)) {
+            builder.returns(StingGeneratorUtil.asNullable(builder.build().returnType()));
         }
     }
 
@@ -459,12 +447,16 @@ final class InterceptorProxyGenerator {
             final List<? extends VariableElement> parameters,
             final String argumentsName) {
         if (parameters.isEmpty()) {
-            builder.addStatement("final $T[] $N = new $T[0]", Object.class, argumentsName, Object.class);
+            builder.addStatement(
+                    "final $T[] $N = new $T[0]",
+                    StingGeneratorUtil.asNullable(ClassName.OBJECT),
+                    argumentsName,
+                    Object.class);
         } else {
             final var code = new StringBuilder();
             final var args = new ArrayList<>();
             code.append("final $T[] $N = new $T[] {");
-            args.add(Object.class);
+            args.add(StingGeneratorUtil.asNullable(ClassName.OBJECT));
             args.add(argumentsName);
             args.add(Object.class);
             for (var i = 0; i < parameters.size(); i++) {
@@ -764,7 +756,7 @@ final class InterceptorProxyGenerator {
 
         private void declareIfRequired(final MethodSpec.Builder builder) {
             if (required && null == activeArgumentsName) {
-                builder.addStatement("$T[] arguments = null", Object.class);
+                builder.addStatement("$T[] arguments = null", StingGeneratorUtil.asNullable(ClassName.OBJECT));
             }
         }
 

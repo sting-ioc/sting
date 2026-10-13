@@ -1,12 +1,12 @@
 package com.example.injector.includes.diamond;
 
 import java.util.Objects;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_DiamondDependencyIncludesModel implements DiamondDependencyIncludesModel {
-  @Nonnull
   private final Object node1;
 
   Sting_DiamondDependencyIncludesModel() {

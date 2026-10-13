@@ -1,7 +1,7 @@
 package sting.doc.examples.inputs;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import sting.Injector;
 
 @Injector(
@@ -10,12 +10,10 @@ import sting.Injector;
             @Injector.Input(type = LocalStorage.class, optional = true),
             @Injector.Input(type = String.class, qualifier = "hostname", optional = true)
         })
+@NullMarked
 public interface MyInjector {
-    @Nonnull
     static MyInjector create(
-            @Nonnull final AuthContext authContext,
-            @Nullable final LocalStorage localStorage,
-            @Nullable final String hostname) {
+            final AuthContext authContext, @Nullable final LocalStorage localStorage, @Nullable final String hostname) {
         return new Sting_MyInjector(authContext, localStorage, hostname);
     }
     // DOC ELIDE START

@@ -2,15 +2,15 @@ package com.example.injector.circular;
 
 import java.util.Objects;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class SupplierBrokenChainedCircularDependencyModel_Sting_MyModel3 {
   private SupplierBrokenChainedCircularDependencyModel_Sting_MyModel3() {
   }
 
-  @Nonnull
   @SuppressWarnings({
       "rawtypes",
       "unchecked"

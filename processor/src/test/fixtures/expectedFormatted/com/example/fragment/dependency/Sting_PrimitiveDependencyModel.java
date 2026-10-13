@@ -2,7 +2,9 @@ package com.example.fragment.dependency;
 
 import java.util.Objects;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_PrimitiveDependencyModel implements PrimitiveDependencyModel {
   public Runnable $sting$_provideRunnable(

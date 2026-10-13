@@ -2,39 +2,39 @@ package sting.integration;
 
 import static org.testng.Assert.*;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 import org.testng.annotations.Test;
 import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
 
+@NullMarked
 public final class InputsIntegrationTest extends AbstractIntegrationTest {
     public static class Model1 extends BaseModel {}
 
     @Injectable
     public static class Model2 extends BaseModel {
-        Model2(@Nonnull final Model1 model1) {
+        Model2(final Model1 model1) {
             super(model1);
         }
     }
 
     public static class Model3 extends BaseModel {
-        Model3(@Nonnull final Model1 model1, @Nonnull final Model2 model2) {
+        Model3(final Model1 model1, final Model2 model2) {
             super(model1, model2);
         }
     }
 
     @Fragment
     public interface MyFragment {
-        default Model3 provideModel3(@Nonnull final Model1 model1, @Nonnull final Model2 model2) {
+        default Model3 provideModel3(final Model1 model1, final Model2 model2) {
             return new Model3(model1, model2);
         }
     }
 
     @Injector(includes = MyFragment.class, inputs = @Injector.Input(type = Model1.class))
     public interface MyInjector {
-        @Nonnull
-        static MyInjector create(@Nonnull final Model1 model1) {
+        static MyInjector create(final Model1 model1) {
             return new InputsIntegrationTest_Sting_MyInjector(model1);
         }
 

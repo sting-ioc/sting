@@ -14,18 +14,19 @@ record Coordinate(String qualifier, TypeMirror type) {
 
     @Override
     public String toString() {
-        return "[" + type() + (qualifier().isEmpty() ? "" : ";qualifier='" + qualifier() + "'") + "]";
+        return "[" + ServiceKey.typeName(type()) + (qualifier().isEmpty() ? "" : ";qualifier='" + qualifier() + "'")
+                + "]";
     }
 
     @Override
     public boolean equals(final @Nullable Object o) {
         return o instanceof Coordinate coordinate
                 && qualifier.equals(coordinate.qualifier)
-                && type.toString().equals(coordinate.type.toString());
+                && ServiceKey.typeName(type).equals(ServiceKey.typeName(coordinate.type));
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(qualifier, type.toString());
+        return Objects.hash(qualifier, ServiceKey.typeName(type));
     }
 }

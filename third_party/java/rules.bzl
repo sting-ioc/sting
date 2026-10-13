@@ -148,7 +148,7 @@ def doc_examples_java_library(name, srcs = [], javacopts = [], deps = [], plugin
     _java_library(
         name = name,
         srcs = srcs,
-        deps = deps,
+        deps = _with_jspecify(deps),
         javacopts = _JAVA_JAVACOPTS + _DOC_EXAMPLES_RELAXED_ERROR_PRONE_JAVACOPTS + javacopts,
         plugins = plugins,
         **kwargs

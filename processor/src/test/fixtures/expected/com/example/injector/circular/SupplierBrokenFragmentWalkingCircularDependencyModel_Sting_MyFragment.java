@@ -3,7 +3,9 @@ package com.example.injector.circular;
 import java.util.Objects;
 import java.util.function.Supplier;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyFragment implements SupplierBrokenFragmentWalkingCircularDependencyModel.MyFragment {
   @SuppressWarnings({

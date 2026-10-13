@@ -28,6 +28,7 @@ final class InjectorProviderGenerator {
                         GeneratorUtil.getGeneratedSimpleClassName(element, "Sting_", "_Provider"))
                 .addModifiers(Modifier.PUBLIC);
         GeneratorUtil.addOriginatingTypes(element, builder);
+        builder.addAnnotation(ClassName.get("org.jspecify.annotations", "NullMarked"));
         GeneratorUtil.addGeneratedAnnotation(processingEnv, builder, StingProcessor.class.getName());
 
         GeneratorUtil.copyWhitelistedAnnotations(element, builder);
@@ -47,19 +48,16 @@ final class InjectorProviderGenerator {
         final TypeElement element = injector.getElement();
 
         final MethodSpec.Builder method = MethodSpec.methodBuilder("provide")
-                .addAnnotation(GeneratorUtil.NONNULL_CLASSNAME)
                 .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
-                .returns(TypeName.get(element.asType()));
+                .returns(GeneratorUtil.getTypeName(element.asType()));
 
         final List<InputDescriptor> inputs = graph.getInjector().getInputs();
         for (final InputDescriptor input : inputs) {
             final ServiceSpec service = input.service();
             final Coordinate coordinate = service.getCoordinate();
-            final var parameter = ParameterSpec.builder(TypeName.get(coordinate.type()), input.name(), Modifier.FINAL);
-            if (!coordinate.type().getKind().isPrimitive()) {
-                parameter.addAnnotation(
-                        service.isOptional() ? GeneratorUtil.NULLABLE_CLASSNAME : GeneratorUtil.NONNULL_CLASSNAME);
-            }
+            final TypeName type = GeneratorUtil.getTypeName(coordinate.type());
+            final var parameter = ParameterSpec.builder(
+                    service.isOptional() ? StingGeneratorUtil.asNullable(type) : type, input.name(), Modifier.FINAL);
             method.addParameter(parameter.build());
         }
         method.addStatement(
@@ -84,10 +82,10 @@ final class InjectorProviderGenerator {
                 final MethodSpec.Builder method = MethodSpec.methodBuilder(
                                 serviceRequest.getElement().getSimpleName().toString())
                         .addModifiers(Modifier.PUBLIC, Modifier.DEFAULT)
-                        .returns(TypeName.get(
+                        .returns(GeneratorUtil.getTypeName(
                                 serviceRequest.getService().getCoordinate().type()))
-                        .addParameter(ParameterSpec.builder(TypeName.get(element.asType()), "injector", Modifier.FINAL)
-                                .addAnnotation(GeneratorUtil.NONNULL_CLASSNAME)
+                        .addParameter(ParameterSpec.builder(
+                                        GeneratorUtil.getTypeName(element.asType()), "injector", Modifier.FINAL)
                                 .build());
 
                 GeneratorUtil.copyWhitelistedAnnotations(serviceRequest.getElement(), method);

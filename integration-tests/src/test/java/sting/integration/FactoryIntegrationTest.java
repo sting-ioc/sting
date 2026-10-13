@@ -2,29 +2,28 @@ package sting.integration;
 
 import static org.testng.Assert.*;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 import org.testng.annotations.Test;
 import sting.Factory;
 import sting.Injectable;
 import sting.Injector;
 
+@NullMarked
 public final class FactoryIntegrationTest extends AbstractIntegrationTest {
     @Injectable
     public static class SomeService extends BaseModel {}
 
     public static class MyComponent extends BaseModel {
-        @Nonnull
         private final SomeService _someService;
 
         private final int _someParameter;
 
-        MyComponent(@Nonnull final SomeService someService, final int someParameter) {
+        MyComponent(final SomeService someService, final int someParameter) {
             super(someService, someParameter);
             _someService = someService;
             _someParameter = someParameter;
         }
 
-        @Nonnull
         SomeService getSomeService() {
             return _someService;
         }
@@ -36,18 +35,15 @@ public final class FactoryIntegrationTest extends AbstractIntegrationTest {
 
     @Factory
     public interface MyComponentFactory {
-        @Nonnull
         MyComponent create(int someParameter);
     }
 
     @Injector(fragmentOnly = false, includes = MyComponentFactory.class)
     public interface MyInjector {
-        @Nonnull
         static MyInjector create() {
             return new FactoryIntegrationTest_Sting_MyInjector();
         }
 
-        @Nonnull
         MyComponentFactory getFactory();
     }
 

@@ -2,14 +2,14 @@ package com.example.injector;
 
 import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_PrimitiveProviderOptionalBoxedDependencyModel
     implements PrimitiveProviderOptionalBoxedDependencyModel {
-  @Nonnull
   private final PrimitiveProviderOptionalBoxedDependencyModel_Sting_MyFragment fragment1 =
       new PrimitiveProviderOptionalBoxedDependencyModel_Sting_MyFragment();
 
@@ -17,8 +17,7 @@ final class Sting_PrimitiveProviderOptionalBoxedDependencyModel
 
   private boolean node1_allocated;
 
-  @Nullable
-  private Object node2;
+  private @Nullable Object node2;
 
   Sting_PrimitiveProviderOptionalBoxedDependencyModel() {}
 
@@ -31,7 +30,6 @@ final class Sting_PrimitiveProviderOptionalBoxedDependencyModel
     return node1;
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Object node2() {
     if (null == node2) {

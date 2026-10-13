@@ -2,18 +2,17 @@ package com.example.injector.outputs;
 
 import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_OptionalMissingOutputModel implements OptionalMissingOutputModel {
-  @Nullable
-  private OptionalMissingOutputModel.MyModel2 node1;
+  private OptionalMissingOutputModel.@Nullable MyModel2 node1;
 
   Sting_OptionalMissingOutputModel() {}
 
-  @Nonnull
   @DoNotInline
   private synchronized OptionalMissingOutputModel.MyModel2 node1() {
     if (null == node1) {
@@ -24,8 +23,7 @@ final class Sting_OptionalMissingOutputModel implements OptionalMissingOutputMod
   }
 
   @Override
-  @Nullable
-  public Runnable getRunnable() {
+  public @Nullable Runnable getRunnable() {
     return null;
   }
 

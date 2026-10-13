@@ -1,7 +1,9 @@
 package com.example.injector.inputs;
 
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_PrimitiveInputInjectorModel implements PrimitiveInputInjectorModel {
   private final double node1;

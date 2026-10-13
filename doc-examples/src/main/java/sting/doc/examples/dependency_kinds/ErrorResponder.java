@@ -1,9 +1,11 @@
 package sting.doc.examples.dependency_kinds;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import sting.Injectable;
 
 @Injectable
+@NullMarked
 public class ErrorResponder {
     ErrorResponder(NotificationService notificationService, @Nullable FaultAuditService faultAuditService) {
         // DOC ELIDE START

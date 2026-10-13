@@ -20,7 +20,6 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.DeclaredType;
 import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
@@ -38,9 +37,10 @@ final class InjectorGenerator {
                 .addModifiers(Modifier.FINAL);
         GeneratorUtil.addOriginatingTypes(element, builder);
         GeneratorUtil.copyWhitelistedAnnotations(element, builder);
+        builder.addAnnotation(ClassName.get("org.jspecify.annotations", "NullMarked"));
         GeneratorUtil.addGeneratedAnnotation(processingEnv, builder, StingProcessor.class.getName());
 
-        builder.addSuperinterface(TypeName.get(element.asType()));
+        builder.addSuperinterface(GeneratorUtil.getTypeName(element.asType()));
 
         emitFragmentFields(processingEnv, builder, graph);
         emitNodeFields(processingEnv, graph, builder);
@@ -57,11 +57,8 @@ final class InjectorGenerator {
         for (final Edge edge : graph.getRootNode().getDependsOn()) {
             final ServiceRequest service = edge.getServiceRequest();
             final var element = (ExecutableElement) service.getElement();
-            final MethodSpec.Builder method = MethodSpec.overriding(
-                    element, (DeclaredType) graph.getInjector().getElement().asType(), processingEnv.getTypeUtils());
-            GeneratorUtil.copyWhitelistedAnnotations(element, method);
-            SuppressWarningsUtil.addSuppressWarningsIfRequired(
-                    processingEnv, method, Collections.emptyList(), Collections.singletonList(element.asType()));
+            final MethodSpec.Builder method = GeneratorUtil.overrideMethod(
+                    processingEnv, graph.getInjector().getElement(), element);
             if (service.getKind().isCollection()) {
                 final String name = getOutputCollectionCacheName(edge);
                 final CodeBlock.Builder block = CodeBlock.builder();
@@ -90,15 +87,12 @@ final class InjectorGenerator {
         final MethodSpec.Builder ctor = MethodSpec.constructorBuilder();
 
         for (final InputDescriptor input : graph.getInjector().getInputs()) {
+            final TypeName type =
+                    GeneratorUtil.getTypeName(input.service().getCoordinate().type());
             final ParameterSpec.Builder parameter = ParameterSpec.builder(
-                    TypeName.get(input.service().getCoordinate().type()), input.name(), Modifier.FINAL);
-
-            if (!input.service().getCoordinate().type().getKind().isPrimitive()) {
-                parameter.addAnnotation(
-                        input.service().isOptional()
-                                ? GeneratorUtil.NULLABLE_CLASSNAME
-                                : GeneratorUtil.NONNULL_CLASSNAME);
-            }
+                    input.service().isOptional() ? StingGeneratorUtil.asNullable(type) : type,
+                    input.name(),
+                    Modifier.FINAL);
             ctor.addParameter(parameter.build());
         }
 
@@ -129,13 +123,11 @@ final class InjectorGenerator {
     private static void emitNodeFields(
             final ProcessingEnvironment processingEnv, final ComponentGraph graph, final TypeSpec.Builder builder) {
         for (final Node node : graph.getNodes()) {
-            final var field = FieldSpec.builder(getPublicTypeName(node), node.getName(), Modifier.PRIVATE);
-            if (!node.getType().getKind().isPrimitive()) {
-                field.addAnnotation(
-                        node.isEager() && node.getProviderBinding().isRequired()
-                                ? GeneratorUtil.NONNULL_CLASSNAME
-                                : GeneratorUtil.NULLABLE_CLASSNAME);
-            }
+            final TypeName type = getPublicTypeName(node);
+            final boolean nullable = !node.getType().getKind().isPrimitive()
+                    && (!node.isEager() || node.getProviderBinding().isOptional());
+            final var field = FieldSpec.builder(
+                    nullable ? StingGeneratorUtil.asNullable(type) : type, node.getName(), Modifier.PRIVATE);
             if (node.isPublic()) {
                 SuppressWarningsUtil.addSuppressWarningsIfRequired(
                         processingEnv, field, Collections.emptyList(), Collections.singletonList(node.getType()));
@@ -160,7 +152,10 @@ final class InjectorGenerator {
             final ServiceRequest serviceRequest = edge.getServiceRequest();
             if (serviceRequest.getKind().isCollection()) {
                 final TypeName serviceType = StingGeneratorUtil.getServiceType(serviceRequest);
-                builder.addField(FieldSpec.builder(serviceType, getOutputCollectionCacheName(edge), Modifier.PRIVATE)
+                builder.addField(FieldSpec.builder(
+                                StingGeneratorUtil.asNullable(serviceType),
+                                getOutputCollectionCacheName(edge),
+                                Modifier.PRIVATE)
                         .build());
             }
         }
@@ -173,7 +168,7 @@ final class InjectorGenerator {
     }
 
     private static TypeName getPublicTypeName(final Node node) {
-        return node.isPublic() ? TypeName.get(node.getType()) : OBJECT;
+        return node.isPublic() ? GeneratorUtil.getTypeName(node.getType()) : OBJECT;
     }
 
     private static void emitNodeAccessorMethod(
@@ -196,9 +191,8 @@ final class InjectorGenerator {
 
                 final boolean isNonnull = binding.isRequired();
                 final boolean isNonPrimitive = !node.getType().getKind().isPrimitive();
-                if (isNonPrimitive) {
-                    method.addAnnotation(
-                            isNonnull ? GeneratorUtil.NONNULL_CLASSNAME : GeneratorUtil.NULLABLE_CLASSNAME);
+                if (isNonPrimitive && !isNonnull) {
+                    method.returns(StingGeneratorUtil.asNullable(getPublicTypeName(node)));
                 }
 
                 if (graph.getInjector().isGwt()) {
@@ -399,7 +393,6 @@ final class InjectorGenerator {
             final var type =
                     StingGeneratorUtil.getGeneratedClassName(node.fragment().getElement());
             final FieldSpec.Builder field = FieldSpec.builder(type, node.name(), Modifier.PRIVATE, Modifier.FINAL)
-                    .addAnnotation(GeneratorUtil.NONNULL_CLASSNAME)
                     .initializer("new $T()", type);
             final var types =
                     Collections.singletonList(node.fragment().getElement().asType());

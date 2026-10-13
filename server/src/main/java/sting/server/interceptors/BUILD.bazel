@@ -22,7 +22,6 @@ java_library(
         "//core",
         "//server/src/main/java/sting/server",
         "//third_party/java:jakarta_transaction_api",
-        "//third_party/java:javax_annotation",
         "//third_party/java:jspecify",
     ],
 )

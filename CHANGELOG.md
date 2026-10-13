@@ -2,7 +2,7 @@
 
 ### Unreleased
 
-* Annotate runtime APIs with JSpecify and check them with NullAway's JSpecify mode.
+* Use JSpecify in runtime APIs and generated code, preserve type-use nullness, and reject legacy nullability declarations at Sting boundaries.
 * Make release JAR manifests and generated Javadocs independent of the build time.
 * Make Bazel the sole build, split processor goldens into focused cached targets, and package the three Maven artifacts from Bazel.
 * Build and publish the documentation site with Node and npm; remove legacy API differences, performance reports, and downstream test harnesses.

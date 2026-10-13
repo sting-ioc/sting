@@ -9,32 +9,27 @@ import com.example.integration.todomvc.model.TodoService;
 import com.example.integration.todomvc.model.ViewService;
 import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_TodoInjector implements TodoInjector {
-  @Nonnull
   private final Sting_BrowserLocationFragment fragment1 = new Sting_BrowserLocationFragment();
 
-  @Nullable
-  private Object node1;
+  private @Nullable Object node1;
 
-  @Nullable
-  private Object node2;
+  private @Nullable Object node2;
 
-  @Nonnull
   private final Object node3;
 
-  @Nullable
-  private Object node4;
+  private @Nullable Object node4;
 
   Sting_TodoInjector() {
     node3 = Objects.requireNonNull(fragment1.$sting$_createBrowserLocation());
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Object node1() {
     if (null == node1) {
@@ -44,7 +39,6 @@ final class Sting_TodoInjector implements TodoInjector {
     return node1;
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Object node2() {
     if (null == node2) {
@@ -54,7 +48,6 @@ final class Sting_TodoInjector implements TodoInjector {
     return node2;
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Object node4() {
     if (null == node4) {

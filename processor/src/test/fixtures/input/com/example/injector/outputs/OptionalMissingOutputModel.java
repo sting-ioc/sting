@@ -1,10 +1,12 @@
 package com.example.injector.outputs;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import sting.Injectable;
 import sting.Injector;
 
 @Injector
+@NullMarked
 public interface OptionalMissingOutputModel {
     @Nullable
     Runnable getRunnable();

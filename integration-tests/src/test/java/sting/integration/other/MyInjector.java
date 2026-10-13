@@ -1,7 +1,7 @@
 package sting.integration.other;
 
 import java.util.Collection;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 import sting.Injector;
 import sting.integration.other.pkg1.Model1;
 import sting.integration.other.pkg1.Model2;
@@ -14,8 +14,8 @@ import sting.integration.other.pkg2.MyService3;
 @Injector(
         fragmentOnly = false,
         includes = {Model1.class, Model2.class, MyFragment.class})
+@NullMarked
 public interface MyInjector {
-    @Nonnull
     static MyInjector create() {
         return new Sting_MyInjector();
     }

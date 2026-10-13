@@ -14,6 +14,12 @@ archive_override(
     urls = ["https://github.com/realityforge/rules_palantir_java_format/releases/download/v0.1.1/rules_palantir_java_format-v0.1.1.tar.gz"],
 )
 
+bazel_dep(name = "proton_project", version = "0.0.0")
+local_path_override(
+    module_name = "proton_project",
+    path = "/Users/peter/Code/realityforge/proton",
+)
+
 bazel_dep(name = "rules_java", version = "9.9.0")
 single_version_override(
     module_name = "rules_java",

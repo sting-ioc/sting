@@ -6,22 +6,21 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_SupplierOptionalCollectionOutputModel
     implements SupplierOptionalCollectionOutputModel {
-  @Nullable
-  private Object node1;
+  private @Nullable Object node1;
 
-  private Collection<Supplier<Optional<SupplierOptionalCollectionOutputModel.MyModel>>>
+  private @Nullable Collection<Supplier<Optional<SupplierOptionalCollectionOutputModel.MyModel>>>
       $sting$_getMyModelCache;
 
   Sting_SupplierOptionalCollectionOutputModel() {}
 
-  @Nonnull
   @DoNotInline
   private synchronized Object node1() {
     if (null == node1) {

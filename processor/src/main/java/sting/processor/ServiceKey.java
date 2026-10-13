@@ -1,5 +1,6 @@
 package sting.processor;
 
+import com.palantir.javapoet.TypeName;
 import java.util.Map;
 import java.util.Objects;
 import javax.lang.model.type.TypeKind;
@@ -27,8 +28,12 @@ final class ServiceKey {
         _type = normalizeType(coordinate.type());
     }
 
+    static String typeName(final TypeMirror type) {
+        return TypeName.get(type).toString();
+    }
+
     private static String normalizeType(final TypeMirror type) {
-        return BOXED_TYPES.getOrDefault(type.getKind(), type.toString());
+        return BOXED_TYPES.getOrDefault(type.getKind(), typeName(type));
     }
 
     @Override

@@ -14,9 +14,9 @@ import jakarta.transaction.Transaction;
 import jakarta.transaction.TransactionManager;
 import java.util.ArrayList;
 import java.util.List;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.transaction.xa.XAResource;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import sting.Injectable;
@@ -24,8 +24,8 @@ import sting.Injector;
 import sting.Typed;
 import sting.server.Transactional;
 
+@NullMarked
 public final class ServerTransactionalIntegrationTest {
-    @Nonnull
     private static final List<String> c_trace = new ArrayList<>();
 
     private static boolean c_startWithTransaction;
@@ -97,7 +97,7 @@ public final class ServerTransactionalIntegrationTest {
         }
 
         @Override
-        public void resume(@Nonnull final Transaction transaction) throws InvalidTransactionException, SystemException {
+        public void resume(final Transaction transaction) throws InvalidTransactionException, SystemException {
             c_trace.add("tm:resume");
             current = (TestTransaction) transaction;
         }
@@ -138,12 +138,12 @@ public final class ServerTransactionalIntegrationTest {
         }
 
         @Override
-        public boolean delistResource(@Nonnull final XAResource xaResource, final int flag) {
+        public boolean delistResource(final XAResource xaResource, final int flag) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public boolean enlistResource(@Nonnull final XAResource xaResource) {
+        public boolean enlistResource(final XAResource xaResource) {
             throw new UnsupportedOperationException();
         }
 
@@ -153,7 +153,7 @@ public final class ServerTransactionalIntegrationTest {
         }
 
         @Override
-        public void registerSynchronization(@Nonnull final Synchronization synchronization) {
+        public void registerSynchronization(final Synchronization synchronization) {
             throw new UnsupportedOperationException();
         }
 
@@ -172,12 +172,10 @@ public final class ServerTransactionalIntegrationTest {
             includes = {DefaultServiceImpl.class, TestTransactionManager.class},
             fragmentOnly = false)
     public interface DefaultInjector {
-        @Nonnull
         static DefaultInjector create() {
             return new ServerTransactionalIntegrationTest_Sting_DefaultInjector();
         }
 
-        @Nonnull
         DefaultService service();
     }
 
@@ -185,12 +183,10 @@ public final class ServerTransactionalIntegrationTest {
             includes = {RequiresNewServiceImpl.class, TestTransactionManager.class},
             fragmentOnly = false)
     public interface RequiresNewInjector {
-        @Nonnull
         static RequiresNewInjector create() {
             return new ServerTransactionalIntegrationTest_Sting_RequiresNewInjector();
         }
 
-        @Nonnull
         RequiresNewService service();
     }
 

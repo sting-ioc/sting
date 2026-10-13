@@ -4,11 +4,12 @@ import static org.testng.Assert.*;
 
 import java.util.Collection;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 import org.testng.annotations.Test;
 import sting.Fragment;
 import sting.Injector;
 
+@NullMarked
 public final class PrimitiveBoxedInteropIntegrationTest extends AbstractIntegrationTest {
     @Fragment
     public interface MyFragment {
@@ -47,7 +48,6 @@ public final class PrimitiveBoxedInteropIntegrationTest extends AbstractIntegrat
 
     @Injector(includes = MyFragment.class)
     public interface MyInjector {
-        @Nonnull
         static MyInjector create() {
             return new PrimitiveBoxedInteropIntegrationTest_Sting_MyInjector();
         }
@@ -173,13 +173,12 @@ public final class PrimitiveBoxedInteropIntegrationTest extends AbstractIntegrat
         assertSingletonSupplierCollection(injector.getValue8Suppliers(), 68.5D);
     }
 
-    private <T> void assertSingletonCollection(@Nonnull final Collection<T> values, @Nonnull final T value) {
+    private <T> void assertSingletonCollection(final Collection<T> values, final T value) {
         assertEquals(values.size(), 1);
         assertEquals(values.iterator().next(), value);
     }
 
-    private <T> void assertSingletonSupplierCollection(
-            @Nonnull final Collection<Supplier<T>> suppliers, @Nonnull final T value) {
+    private <T> void assertSingletonSupplierCollection(final Collection<Supplier<T>> suppliers, final T value) {
         assertEquals(suppliers.size(), 1);
         assertEquals(suppliers.iterator().next().get(), value);
     }

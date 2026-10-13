@@ -31,9 +31,10 @@ final class FactoryGenerator {
                 .addAnnotation(AnnotationSpec.builder(ClassName.get("sting", "Typed"))
                         .addMember("value", "$T.class", type)
                         .build())
-                .addSuperinterface(TypeName.get(type));
+                .addSuperinterface(GeneratorUtil.getTypeName(type));
         GeneratorUtil.addOriginatingTypes(element, builder);
         GeneratorUtil.copyWhitelistedAnnotations(element, builder);
+        builder.addAnnotation(ClassName.get("org.jspecify.annotations", "NullMarked"));
         GeneratorUtil.addGeneratedAnnotation(processingEnv, builder, StingProcessor.class.getName());
         SuppressWarningsUtil.addSuppressWarningsIfRequired(
                 processingEnv, builder, Collections.emptyList(), Collections.singletonList(type));
@@ -53,11 +54,11 @@ final class FactoryGenerator {
             final ServiceRequest serviceRequest = dependency.serviceRequest();
             final ServiceSpec service = serviceRequest.getService();
             final TypeName type = StingGeneratorUtil.getServiceType(serviceRequest);
-            final var field = FieldSpec.builder(type, dependency.fieldName(), Modifier.PRIVATE, Modifier.FINAL);
-            if (!type.isPrimitive()) {
-                field.addAnnotation(
-                        service.isOptional() ? GeneratorUtil.NULLABLE_CLASSNAME : GeneratorUtil.NONNULL_CLASSNAME);
-            }
+            final var field = FieldSpec.builder(
+                    service.isOptional() ? StingGeneratorUtil.asNullable(type) : type,
+                    dependency.fieldName(),
+                    Modifier.PRIVATE,
+                    Modifier.FINAL);
             final var types = Collections.singletonList(service.getCoordinate().type());
             SuppressWarningsUtil.addSuppressWarningsIfRequired(processingEnv, field, Collections.emptyList(), types);
             builder.addField(field.build());
@@ -87,12 +88,12 @@ final class FactoryGenerator {
                             methodDescriptor.method().getSimpleName().toString())
                     .addAnnotation(Override.class)
                     .addModifiers(Modifier.PUBLIC)
-                    .returns(TypeName.get(methodDescriptor.method().getReturnType()));
+                    .returns(GeneratorUtil.getTypeName(methodDescriptor.method().getReturnType()));
             GeneratorUtil.copyWhitelistedAnnotations(methodDescriptor.method(), method);
             for (final VariableElement parameterElement :
                     methodDescriptor.method().getParameters()) {
                 final ParameterSpec.Builder parameter = ParameterSpec.builder(
-                        TypeName.get(parameterElement.asType()),
+                        GeneratorUtil.getTypeName(parameterElement.asType()),
                         parameterElement.getSimpleName().toString());
                 GeneratorUtil.copyWhitelistedAnnotations(parameterElement, parameter);
                 method.addParameter(parameter.build());

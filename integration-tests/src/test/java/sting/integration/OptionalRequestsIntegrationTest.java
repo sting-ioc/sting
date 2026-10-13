@@ -5,14 +5,15 @@ import static org.testng.Assert.*;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.Test;
 import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
 import sting.Typed;
 
+@NullMarked
 public final class OptionalRequestsIntegrationTest extends AbstractIntegrationTest {
     private static int c_requiredServiceCreations;
     private static int c_requiredPluginCreations;
@@ -42,45 +43,37 @@ public final class OptionalRequestsIntegrationTest extends AbstractIntegrationTe
 
     @Injectable
     public static final class Consumer {
-        @Nonnull
         private final Optional<RequiredService> _requiredService;
 
-        @Nonnull
         private final Collection<Plugin> _plugins;
 
-        @Nonnull
         private final Supplier<Optional<Runnable>> _optionalRunnableSupplier;
 
-        @Nonnull
         private final Collection<Supplier<Optional<Plugin>>> _pluginSuppliers;
 
         Consumer(
-                @Nonnull final Optional<RequiredService> requiredService,
-                @Nonnull final Collection<Plugin> plugins,
-                @Nonnull final Supplier<Optional<Runnable>> optionalRunnableSupplier,
-                @Nonnull final Collection<Supplier<Optional<Plugin>>> pluginSuppliers) {
+                final Optional<RequiredService> requiredService,
+                final Collection<Plugin> plugins,
+                final Supplier<Optional<Runnable>> optionalRunnableSupplier,
+                final Collection<Supplier<Optional<Plugin>>> pluginSuppliers) {
             _requiredService = requiredService;
             _plugins = plugins;
             _optionalRunnableSupplier = optionalRunnableSupplier;
             _pluginSuppliers = pluginSuppliers;
         }
 
-        @Nonnull
         Optional<RequiredService> getRequiredService() {
             return _requiredService;
         }
 
-        @Nonnull
         Collection<Plugin> getPlugins() {
             return _plugins;
         }
 
-        @Nonnull
         Supplier<Optional<Runnable>> getOptionalRunnableSupplier() {
             return _optionalRunnableSupplier;
         }
 
-        @Nonnull
         Collection<Supplier<Optional<Plugin>>> getPluginSuppliers() {
             return _pluginSuppliers;
         }
@@ -90,7 +83,6 @@ public final class OptionalRequestsIntegrationTest extends AbstractIntegrationTe
             fragmentOnly = false,
             includes = {RequiredServiceNode.class, OptionalRequestsFragment.class})
     public interface MyInjector {
-        @Nonnull
         static MyInjector create() {
             return new OptionalRequestsIntegrationTest_Sting_MyInjector();
         }

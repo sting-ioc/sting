@@ -2,26 +2,23 @@ package com.example.injector.includes.multiple;
 
 import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_MultipleIncludesModel implements MultipleIncludesModel {
-  @Nonnull
   private final Sting_MyFragment fragment1 = new Sting_MyFragment();
 
-  @Nonnull
   private final MyModel node1;
 
-  @Nullable
-  private Runnable node2;
+  private @Nullable Runnable node2;
 
   Sting_MultipleIncludesModel() {
     node1 = Objects.requireNonNull( Sting_MyModel.create() );
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Runnable node2() {
     if ( null == node2 ) {

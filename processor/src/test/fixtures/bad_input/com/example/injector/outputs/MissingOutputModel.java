@@ -1,11 +1,13 @@
 package com.example.injector.outputs;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
 
 @Injector
+@NullMarked
 interface MissingOutputModel {
     MyModel1 getMyModel1();
 

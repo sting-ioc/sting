@@ -1,10 +1,12 @@
 package com.example.injector.outputs;
 
 import java.util.Collection;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import sting.Injector;
 
 @Injector
+@NullMarked
 public interface NullableCollectionOutputModel {
     @Nullable
     Collection<String> getMyThing();

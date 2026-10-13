@@ -1,12 +1,14 @@
 package com.example.injector.outputs;
 
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import sting.Injectable;
 import sting.Injector;
 import sting.Named;
 
 @Injector
+@NullMarked
 interface ComplexOutputModel {
     MyModel1 getMyModel1();
 

@@ -1,6 +1,8 @@
 package com.example.injector.includes.diamond;
 
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_MyFragment2 implements MyFragment2 {}
