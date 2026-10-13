@@ -91,6 +91,30 @@ public final class StingNullabilityTest extends AbstractStingProcessorTest {
     }
 
     @Test
+    public void explicitNonNullProviderUsesNullableLazyStorage() throws IOException {
+        final Compilation compilation = compile(List.of(source("samples.ExplicitNonNull", """
+            package samples;
+            import org.jspecify.annotations.*;
+            import sting.*;
+            @NullMarked final class ExplicitNonNull {
+              @Fragment interface Library {
+                default @NonNull String text() { return "value"; }
+              }
+              @Injector(includes = Library.class)
+              interface Request { String text(); }
+            }
+            """)));
+        assertCompilationSuccessful(compilation);
+        CompileTestUtil.assertNoWarnings(compilation.diagnostics());
+        final String injector = compilation.sourceOutputFilenames().stream()
+                .filter(name -> name.endsWith("Sting_Request.java"))
+                .findFirst()
+                .orElseThrow();
+        final String code = Files.readString(compilation.sourceOutput().resolve(injector));
+        assertTrue(code.contains("private @Nullable String node1;"), code);
+    }
+
+    @Test
     public void nullableRequestMatchesRequiredProvider() {
         final Compilation compilation = compile(List.of(source("samples.Request", """
             package samples;

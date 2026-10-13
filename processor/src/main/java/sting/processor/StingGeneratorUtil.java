@@ -24,6 +24,7 @@ import org.realityforge.proton.SuppressWarningsUtil;
 
 final class StingGeneratorUtil {
     static final String FRAMEWORK_PREFIX = "$sting$_";
+    private static final ClassName NONNULL = ClassName.get("org.jspecify.annotations", "NonNull");
     private static final ClassName OBJECT = ClassName.get("java.lang", "Object");
     private static final ClassName COLLECTION = ClassName.get(Collection.class);
     private static final ClassName OPTIONAL = ClassName.get(Optional.class);
@@ -32,11 +33,14 @@ final class StingGeneratorUtil {
     private StingGeneratorUtil() {}
 
     static TypeName asNullable(final TypeName type) {
-        return type.annotations().stream()
-                        .anyMatch(annotation -> annotation.type().equals(GeneratorUtil.NULLABLE_CLASSNAME))
-                ? type
-                : type.annotated(
-                        AnnotationSpec.builder(GeneratorUtil.NULLABLE_CLASSNAME).build());
+        final var annotations = new ArrayList<>(type.annotations().stream()
+                .filter(annotation -> !annotation.type().equals(NONNULL))
+                .toList());
+        if (annotations.stream().noneMatch(annotation -> annotation.type().equals(GeneratorUtil.NULLABLE_CLASSNAME))) {
+            annotations.add(
+                    AnnotationSpec.builder(GeneratorUtil.NULLABLE_CLASSNAME).build());
+        }
+        return type.withoutAnnotations().annotated(annotations);
     }
 
     static TypeName getServiceType(final ServiceRequest serviceRequest) {

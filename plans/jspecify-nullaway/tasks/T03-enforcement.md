@@ -1,6 +1,6 @@
 # T03 — Default and generated NullAway enforcement
 
-- Status: pending
+- Status: complete
 - Blocked by: T02
 - Spec coverage: R5, AC4
 
@@ -17,7 +17,7 @@ Every sourceful owned target and positive generated fixture is checked in NullAw
 - [x] Migrate test/example contracts exposed by strict checking, including arrays and nullable interception results.
 - [x] Invalid processor fixtures remain in a separate diagnostics path and cannot falsely satisfy positive coverage.
 
-- [ ] Reconcile Java 21 test/processor runtime and Java 25 tools with current local Proton, retaining Sting/generated --release 17 and supported symbol flags.
+- [x] Reconcile Java 21 test/processor runtime and Java 25 tools with current local Proton, retaining Sting/generated --release 17 and supported symbol flags.
 
 ## Validation
 
@@ -40,3 +40,9 @@ Every sourceful owned target and positive generated fixture is checked in NullAw
 ## Reopened validation
 
 Local Proton 32fc6cb invalidated the Java 17 execution assumption after the historical gate. Re-run strict builds/tests and generated controls on Java 21; investigate the reviewer’s explicit NonNull lazy-storage probe after compiler execution is restored.
+
+## Reconciliation evidence
+
+- Resolved Zulu Java 21.0.12 test/processor runtime and Java 25.0.4 tools; owned compiler options remain --release 17. Strict core/processor/server/doc-example build and all 16 test targets passed against local Proton 32fc6cb.
+- The explicit NonNull regression initially printed conflicting `private @NonNull @Nullable String node1;`. Javac/NullAway accepted that source, so the regression asserts generated storage nullness as well as warning-free checked compilation. Nullable conversion now replaces only root NonNull and preserves nested/other annotations. The focused regression and full test suite passed.
+- The generated negative control still observes exactly two NullAway errors; inherited array/generic controls and runtime integrations pass. Formatting and git diff --check passed.
