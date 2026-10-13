@@ -46,4 +46,4 @@ Release artifacts, documentation and examples expose the JSpecify contract and l
 - Artifact runtime lookup now selects the target configuration explicitly: Java 21 and Java 25 configurations coexist after tools reconciliation. Python syntax validation passed.
 - Refreshed `tools/check.sh` passed under Node 24.19.0: formatting, unchanged Ahab baseline, strict builds, 12 Maven artifacts, owned legacy scan, isolated consumer, all 16 test targets, coverage and Javadocs/site. Coverage: 95.18% lines (4403/4626), 86.23% branches (1816/2106); 2,236 local links checked, zero broken.
 - Java 21 processor/compiler requirement and Java 17 output distinction are documented in setup, development guidance, changelog, README and contributor prerequisites; CI selects Java 21. The local source override remains until a maintainer releases Proton.
-- Proton PR 10 is merged, both CI checks passed, local master is clean. No GWT/J2CL changes or probes were performed. Git diff --check passed.
+- Proton PR 10 is merged, both CI checks passed, local master was clean at the gate. No GWT/J2CL changes or probes were performed. Git diff --check passed.

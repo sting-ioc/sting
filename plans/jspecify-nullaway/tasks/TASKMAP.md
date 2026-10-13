@@ -1,11 +1,11 @@
 # Task Map
 
 - Spec: [SPEC.md](../SPEC.md)
-- Status: `implementation-review`
-- Current frontier: `implementation review round 2`
+- Status: `reviewed`
+- Current frontier: `closeout`
 - Planning reviewer: `/root/sting_planning_review` (`3/3` rounds); Findings: none on round 3, including the user-authorized Proton Java 21 reconciliation.
 - Plan checkpoint: `automatic`; authorized by the user's confirmed grill and amendments plus passing planning review.
-- Implementation reviewer: `/root/sting_implementation_review` (`1/5` rounds), round 1 found the Java 17 runtime cannot execute current local Proton; explicit NonNull storage probe remains unconfirmed.
+- Implementation reviewer: `/root/sting_implementation_review` (`2/5` rounds); Findings: none on round 2. Runtime reconciliation and the confirmed explicit NonNull storage defect are resolved. Residual risk: local Proton checkout changes require revalidation until released.
 - External Proton chat: `01a13718-d085-7a71-9872-93caf7fa46cf` on `local`, owned checkout `/Users/peter/Code/realityforge/proton`
 
 ## Full-scope validation
@@ -47,6 +47,12 @@
 
 - T03 runtime reconciliation passed: Java 21.0.12 tests/processor, Java 25.0.4 tools, strict build and all 16 targets. Confirmed/fixed conflicting explicit NonNull on nullable lazy storage; full validation remains with T04.
 
-- The human merged Proton PR 10 and the local checkout is now clean master c70b0e1. `git diff --stat 32fc6cb HEAD` is empty, so implementation inputs are unchanged from the replan.
+- The human merged Proton PR 10 and the local checkout was clean master c70b0e1 at the gate. `git diff --stat 32fc6cb HEAD` is empty, so implementation inputs are unchanged from the replan.
 
-- T04 reconciliation passed the fresh full gate. Implementation round 1 runtime finding is resolved; the pending explicit NonNull hypothesis was confirmed at source level and fixed with a regression. Request same implementation reviewer round 2 after this task commit.
+- T04 reconciliation passed the fresh full gate. Implementation round 1 runtime finding is resolved; the pending explicit NonNull hypothesis was confirmed at source level and fixed with a regression. Same implementation reviewer passed round 2 after this task commit.
+
+## Closeout gate
+
+- All four tasks complete; task-local and fresh full-scope validation passed, implementation review passed round 2/5, and no domain-documentation directories require promotion.
+- Plan, replan and implementation snapshots are committed. Remove only this exact active tree; its committed evidence remains in history.
+- Proton has subsequent unrelated Ahab module/lock/tools changes. The reviewer verified that its only module addition is a development-only dependency and that validated committed source remains identical. Preserve that work; do not report its checkout as currently clean.
