@@ -9,6 +9,7 @@ WARNINGS = [
 
 EXCLUDE_PATTERNS = [
     "./.bazelbsp/*",
+    "./.ci/*",
     "./.git/*",
     "./.idea/*",
     "./dist/*",
