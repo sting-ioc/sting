@@ -3,9 +3,6 @@ package(default_visibility = ["//visibility:public"])
 filegroup(
     name = "local_files",
     srcs = [
-        "BasicQualifierModel.sting.json",
-        "EmptyQualifierModel.sting.json",
-        "NonStandardQualifierModel.sting.json",
         "Sting_BasicQualifierModel.java",
         "Sting_EmptyQualifierModel.java",
         "Sting_NonStandardQualifierModel.java",

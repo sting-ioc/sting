@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
@@ -173,29 +172,6 @@ final class Binding {
 
     ServiceRequest[] getDependencies() {
         return _dependencies;
-    }
-
-    void write(final JsonGenerator g) {
-        g.write("id", _id);
-        if (!_publishedServices.isEmpty()) {
-            g.writeStartArray("publishedServices");
-            for (final ServiceSpec service : _publishedServices) {
-                g.writeStartObject();
-                service.write(g);
-                g.writeEnd();
-            }
-            g.writeEnd();
-        }
-        if (_eager) {
-            g.write("eager", true);
-        }
-        if (_dependencies.length > 0) {
-            g.writeStartArray("dependencies");
-            for (final ServiceRequest dependency : _dependencies) {
-                dependency.write(g);
-            }
-            g.writeEnd();
-        }
     }
 
     void setOwner(final Object owner) {

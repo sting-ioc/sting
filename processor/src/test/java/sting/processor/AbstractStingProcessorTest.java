@@ -5,7 +5,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.processing.Processor;
 import org.realityforge.proton.qa.AbstractProcessorTest;
-import org.realityforge.proton.qa.Compilation;
 
 public abstract class AbstractStingProcessorTest extends AbstractProcessorTest {
     @Nonnull
@@ -37,24 +36,5 @@ public abstract class AbstractStingProcessorTest extends AbstractProcessorTest {
     @Nonnull
     final String graphvizOutput(@Nonnull final String classname) {
         return toFilename(classname, "", StingProcessor.DOT_SUFFIX);
-    }
-
-    @Nonnull
-    final String jsonGraphOutput(@Nonnull final String classname) {
-        return toFilename(classname, "", StingProcessor.GRAPH_SUFFIX);
-    }
-
-    @Nonnull
-    final String jsonOutput(@Nonnull final String classname) {
-        return toFilename(classname, "", StingProcessor.JSON_SUFFIX);
-    }
-
-    @SuppressWarnings("SameParameterValue")
-    final void assertJsonDescriptorCount(@Nonnull final Compilation compilation, final long count) {
-        compilation.assertClassOutputFilenameCount(f -> f.endsWith(".json"), count);
-    }
-
-    final void assertJsonDescriptorFile(@Nonnull final Compilation compilation, @Nonnull final String classname) {
-        compilation.assertClassOutputFilenamePresent(classname.replace(".", "/") + ".json");
     }
 }

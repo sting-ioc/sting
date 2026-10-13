@@ -1,7 +1,6 @@
 package sting.processor;
 
 import java.util.Objects;
-import javax.json.stream.JsonGenerator;
 import javax.lang.model.type.TypeMirror;
 import org.jspecify.annotations.Nullable;
 
@@ -12,12 +11,6 @@ import org.jspecify.annotations.Nullable;
  * @param type      The java type of the service.
  */
 record Coordinate(String qualifier, TypeMirror type) {
-    void write(final JsonGenerator g) {
-        if (!qualifier().isEmpty()) {
-            g.write("qualifier", qualifier());
-        }
-        g.write("type", type().toString());
-    }
 
     @Override
     public String toString() {

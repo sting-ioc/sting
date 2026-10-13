@@ -1,0 +1,15 @@
+load("//third_party/java:rules.bzl", "java_binary")
+
+package(default_visibility = ["//tools/release:__pkg__"])
+
+java_binary(
+    name = "jar_builder",
+    srcs = ["JarBuilder.java"],
+    main_class = "sting.release.JarBuilder",
+)
+
+java_binary(
+    name = "javadoc_jar_builder",
+    srcs = ["JavadocJarBuilder.java"],
+    main_class = "sting.release.JavadocJarBuilder",
+)

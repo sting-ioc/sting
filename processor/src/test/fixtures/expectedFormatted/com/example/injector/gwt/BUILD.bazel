@@ -4,13 +4,9 @@ filegroup(
     name = "local_files",
     srcs = [
         "DisableGwtInjectorModel.gv",
-        "DisableGwtInjectorModel.sting.json",
         "DisableGwtInjectorModel_Sting_MyModel0.java",
-        "DisableGwtInjectorModel__ObjectGraph.sting.json",
         "EnableGwtInjectorModel.gv",
-        "EnableGwtInjectorModel.sting.json",
         "EnableGwtInjectorModel_Sting_MyModel0.java",
-        "EnableGwtInjectorModel__ObjectGraph.sting.json",
         "Sting_DisableGwtInjectorModel.java",
         "Sting_EnableGwtInjectorModel.java",
     ],

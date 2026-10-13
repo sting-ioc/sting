@@ -3,7 +3,6 @@ package sting.processor;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.TypeElement;
 
 final class InjectorDescriptor {
@@ -92,40 +91,5 @@ final class InjectorDescriptor {
 
     void markAsContainsError() {
         _containsError = true;
-    }
-
-    void write(final JsonGenerator g) {
-        g.writeStartObject();
-        g.write("schema", "injector/1");
-        if (_injectable) {
-            g.write("injectable", "true");
-        }
-        if (!_fragmentOnly) {
-            g.write("fragmentOnly", "false");
-        }
-        if (!_includes.isEmpty()) {
-            g.writeStartArray("includes");
-            for (final IncludeDescriptor include : _includes) {
-                g.write(include.includedType().toString());
-            }
-            g.writeEnd();
-        }
-        if (!_inputs.isEmpty()) {
-            g.writeStartArray("inputs");
-            for (final InputDescriptor input : _inputs) {
-                g.writeStartObject();
-                input.service().write(g);
-                g.writeEnd();
-            }
-            g.writeEnd();
-        }
-        if (!_outputs.isEmpty()) {
-            g.writeStartArray("outputs");
-            for (final ServiceRequest dependency : _outputs) {
-                dependency.write(g);
-            }
-            g.writeEnd();
-        }
-        g.writeEnd();
     }
 }

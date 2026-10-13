@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
-import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
@@ -61,15 +60,6 @@ final class ServiceRequest {
 
     boolean canConsumeOptionalBindings() {
         return _service.isOptional() || _kind.canConsumeOptionalBindings();
-    }
-
-    void write(final JsonGenerator g) {
-        g.writeStartObject();
-        if (Kind.INSTANCE != _kind) {
-            g.write("kind", _kind.name());
-        }
-        _service.write(g);
-        g.writeEnd();
     }
 
     enum Kind {

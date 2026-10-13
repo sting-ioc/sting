@@ -1,4 +1,5 @@
-load("//third_party/java:rules.bzl", "FORMATTER_JVM_FLAGS", "java_library", "java_testng")
+load("//third_party/java:rules.bzl", "java_library")
+load(":test_rules.bzl", "FIXTURES", "feature", "processor_test")
 
 java_library(
     name = "test_support",
@@ -10,27 +11,14 @@ java_library(
     ],
 )
 
-java_testng(
-    name = "all_tests",
+java_library(
+    name = "test_classes",
+    testonly = True,
     srcs = [
-        "StingProcessorInjectorGraphTest.java",
         "StingProcessorMultiStageCompilesTest.java",
-        "StingProcessorNoJsonTest.java",
         "StingProcessorRuntimeDeriveTest.java",
         "StingProcessorTest.java",
     ],
-    data = ["//processor/src/test/fixtures:all"],
-    jvm_flags = [
-        "-Dsting.fixture_dir=processor/src/test/fixtures",
-    ] + FORMATTER_JVM_FLAGS,
-    test_classes = [
-        "sting.processor.StingProcessorInjectorGraphTest",
-        "sting.processor.StingProcessorMultiStageCompilesTest",
-        "sting.processor.StingProcessorNoJsonTest",
-        "sting.processor.StingProcessorRuntimeDeriveTest",
-        "sting.processor.StingProcessorTest",
-    ],
-    visibility = ["//:__pkg__"],
     deps = [
         ":test_support",
         "//core",
@@ -38,7 +26,164 @@ java_testng(
         "//third_party/java:javaee_api",
         "//third_party/java:javaemul_internal_annotations",
         "//third_party/java:javax_annotation",
-        "//third_party/java:javax_json",
         "//third_party/java:proton_qa",
+        "//third_party/java:testng",
     ],
+)
+
+processor_test(
+    name = "model_goldens",
+    size = "large",
+    data = feature("fragment") + feature("injectable"),
+    methods = [
+        "processSuccessfulCompile",
+        "nestedInjectable",
+        "nestedNestedInjectable",
+        "nestedFragment",
+        "nestedNestedFragment",
+        "typedProviderMethodSupportsMultiplePublishedServiceTypes",
+        "typedProviderMethodPublishesOnlyDeclaredServiceTypes",
+        "packageAccessFragmentDependency",
+        "publicAccessFragmentDependency",
+    ],
+)
+
+processor_test(
+    name = "factory_goldens",
+    data = feature("factory"),
+    methods = ["processSuccessfulFactoryCompile"],
+)
+
+processor_test(
+    name = "injector_goldens",
+    size = "large",
+    data = feature("injector"),
+    methods = [
+        "processSuccessfulInjectorCompile",
+        "processSuccessfulPrimitiveInteropCompile",
+        "processSuccessfulOptionalRequestInjectorCompile",
+        "singleIncludesInjector",
+        "multipleIncludesInjector",
+        "diamondIncludesInjector",
+        "graphvizNameCollision",
+        "InjectorIncludesInjector",
+    ],
+)
+
+processor_test(
+    name = "interceptor_goldens",
+    size = "large",
+    data = feature("interceptor") + feature(
+        "interceptor",
+        ["bad_input"],
+    ) + [FIXTURES + "/input/org:all"],
+    methods = [
+        "processSuccessfulInterceptorCompile",
+        "processFailedInterceptorCompile",
+        "generatedInterceptorSourceAssertion",
+        "aroundInvocationUsesUnmodifiableWhenJetbrainsAnnotationsPresent",
+        "generatedInterceptorProxyFixture",
+        "interceptorProxyDotReportContainsProxyLabels",
+    ],
+)
+
+processor_test(
+    name = "includes_goldens",
+    data = feature("fragment") + feature("injector") + feature("integration") + feature(
+        "fragment",
+        ["bad_input"],
+    ),
+    methods = [
+        "basicIncludesFragment",
+        "multipleIncludesFragment",
+        "crossPackageIncludeFailsWhenFragmentIsLocalOnly",
+        "crossPackageIncludeAllowedWhenFragmentIsNotLocalOnly",
+        "todomvcIntegrationTest",
+    ],
+)
+
+processor_test(
+    name = "failed_compiles",
+    size = "large",
+    data = [FIXTURES + "/bad_input:all"],
+    methods = ["processFailedCompile"],
+)
+
+processor_test(
+    name = "warnings",
+    size = "large",
+    data = [FIXTURES + "/input:all"],
+    methods = [
+        "processCompileWithWarnings",
+        "redundantTypedProviderMethodWarning",
+        "suppressedRedundantTypedProviderMethodWarning",
+        "supportedAnnotationTypesIncludeMetaAnnotations",
+        "processRedundantInjectableInFragmentModel",
+        "processSuppressedRedundantInjectableInFragmentModel",
+        "processRedundantInjectableInInjectorModel",
+        "processSuppressedRedundantInjectableInInjectorModel",
+        "processFragmentIncludeCycleModel",
+        "processSuppressedFragmentIncludeCycleModel",
+        "processFragmentIncludeLongerCycleModel",
+        "processProviderFragmentIncludeCycleModel",
+        "processSuppressedProviderFragmentIncludeCycleModel",
+        "processCompileWithoutWarnings",
+    ],
+)
+
+processor_test(
+    name = "multi_round",
+    data = [
+        FIXTURES + "/bad_input/com/example/injector:all",
+        FIXTURES + "/input/com/example/multiround:all",
+        FIXTURES + "/unresolved:all",
+    ],
+    methods = [
+        "autodetectInjectableHasNonMatchingQualifier",
+        "unresolvedInjector",
+        "fragmentCreatedInLaterRound",
+        "injectableCreatedInLaterRound",
+    ],
+)
+
+processor_test(
+    name = "formatter_failure",
+    data = feature(
+        "injectable",
+        ["input"],
+    ),
+    methods = ["formatGeneratedSourceFailsClearlyWithoutJdkExports"],
+)
+
+processor_test(
+    name = "multi_stage",
+    data = feature(
+        "multistage",
+        ["input"],
+    ),
+    test_class = "sting.processor.StingProcessorMultiStageCompilesTest",
+)
+
+processor_test(
+    name = "runtime_derive",
+    data = [FIXTURES + "/unresolved:all"],
+    test_class = "sting.processor.StingProcessorRuntimeDeriveTest",
+)
+
+test_suite(
+    name = "all_tests",
+    tests = [
+        ":factory_goldens",
+        ":failed_compiles",
+        ":formatter_failure",
+        ":includes_goldens",
+        ":injector_goldens",
+        ":interceptor_goldens",
+        ":model_goldens",
+        ":multi_round",
+        ":multi_stage",
+        ":runtime_derive",
+        ":warnings",
+    ],
+    visibility = ["//:__pkg__"],
 )

@@ -3,13 +3,8 @@ package(default_visibility = ["//visibility:public"])
 filegroup(
     name = "local_files",
     srcs = [
-        "BasicModel.sting.json",
-        "MultiProvideModel.sting.json",
-        "NestedModel_MyModel.sting.json",
         "NestedModel_Sting_MyModel.java",
-        "NestedNestedModel_Middle_MyModel.sting.json",
         "NestedNestedModel_Middle_Sting_MyModel.java",
-        "NullableProvidesModel.sting.json",
         "Sting_BasicModel.java",
         "Sting_MultiProvideModel.java",
         "Sting_NullableProvidesModel.java",

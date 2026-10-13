@@ -74,12 +74,5 @@ the options supported by the annotation processor.
     code that generated the error. This can be disabled by setting this option to <code>false</code>.
     </td>
   </tr>
-  <tr>
-    <td>sting.emit_json_descriptors</td>
-    <td>
-    A flag that will cause the annotation processor to write json descriptors if set to <code>true</code>.
-    This is primarily used when developing or debugging Sting integrations.
-    </td>
-  </tr>
 </tbody>
 </table>

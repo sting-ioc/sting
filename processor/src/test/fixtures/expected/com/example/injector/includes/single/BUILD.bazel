@@ -3,10 +3,7 @@ package(default_visibility = ["//visibility:public"])
 filegroup(
     name = "local_files",
     srcs = [
-        "MyFragment.sting.json",
         "SingleIncludesModel.gv",
-        "SingleIncludesModel.sting.json",
-        "SingleIncludesModel__ObjectGraph.sting.json",
         "Sting_MyFragment.java",
         "Sting_SingleIncludesModel.java",
     ],

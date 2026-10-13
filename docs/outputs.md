@@ -27,4 +27,4 @@ The injector:
 
 Using the injector from the host application:
 
-{@file_content: file=sting/doc/examples/outputs/Main.java "start_line=  {" "end_line=  }"}
+{@file_content: file=sting/doc/examples/outputs/Main.java "start_line=public static void main" "end_line=^    }"}
