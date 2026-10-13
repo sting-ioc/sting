@@ -6,7 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
 
 /**
  * Annotates an interface for which a dependency-injected implementation is to be generated.
@@ -169,7 +168,6 @@ public @interface Injector {
      *
      * @return a list of types that contribute to the injector's object graph.
      */
-    @Nonnull
     Class<?>[] includes() default {};
 
     /**
@@ -190,7 +188,6 @@ public @interface Injector {
      *
      * @return a list of services that must be passed into the injector.
      */
-    @Nonnull
     Input[] inputs() default {};
 
     /**
@@ -214,7 +211,6 @@ public @interface Injector {
      *
      * @return true to optimize the injector implementation for transpilation to javascript, false otherwise.
      */
-    @Nonnull
     Feature gwt() default Feature.AUTODETECT;
 
     /**
@@ -232,7 +228,6 @@ public @interface Injector {
          *
          * @return an opaque qualifier string.
          */
-        @Nonnull
         String qualifier() default "";
 
         /**

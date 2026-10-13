@@ -109,9 +109,11 @@ _JAVA_JAVACOPTS = [
 ] + _ERROR_PRONE_JAVACOPTS
 
 _NULLAWAY_JAVACOPTS = [
+    "-XDaddTypeAnnotationsToSymbol=true",
     "-Xep:NullAway:ERROR",
     "-Xep:RequireExplicitNullMarking:ERROR",
     "-XepOpt:NullAway:OnlyNullMarked=true",
+    "-XepOpt:NullAway:JSpecifyMode=true",
 ]
 
 _DOC_EXAMPLES_RELAXED_ERROR_PRONE_JAVACOPTS = [

@@ -1,8 +1,8 @@
 # Task Map
 
 - Spec: [SPEC.md](../SPEC.md)
-- Status: `planned`
-- Current frontier: `T01`
+- Status: `implementing`
+- Current frontier: `T02` (requires consumable local Proton APIs)
 - Planning reviewer: `/root/sting_planning_review` (`2/3` rounds); Findings: none on round 2. Round 1's isolated processorpath gap is resolved in AC5/T04.
 - Plan checkpoint: `automatic`; authorized by the user's confirmed grill and amendments plus passing planning review.
 - Implementation reviewer: `pending` (`0/5` rounds)
@@ -18,7 +18,7 @@
 
 | ID | Task | Status | Blocked by |
 | --- | --- | --- | --- |
-| T01 | [Runtime JSpecify contracts](T01-runtime-contracts.md) | pending | None |
+| T01 | [Runtime JSpecify contracts](T01-runtime-contracts.md) | complete | None |
 | T02 | [Local Proton and generated contract cutover](T02-processor-cutover.md) | pending | T01; consumable local Proton generator APIs |
 | T03 | [Default and generated NullAway enforcement](T03-enforcement.md) | pending | T02 |
 | T04 | [Distribution, documentation and full validation](T04-distribution.md) | pending | T03 |

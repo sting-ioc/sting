@@ -14,6 +14,7 @@ java_library(
         "TransactionInterceptorSupport.java",
         "package-info.java",
     ],
+    nullaway = True,
     plugins = [
         "//processor:sting_processor_plugin",
     ],
@@ -22,5 +23,6 @@ java_library(
         "//server/src/main/java/sting/server",
         "//third_party/java:jakarta_transaction_api",
         "//third_party/java:javax_annotation",
+        "//third_party/java:jspecify",
     ],
 )

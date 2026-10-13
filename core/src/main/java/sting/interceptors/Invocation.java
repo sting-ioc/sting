@@ -1,7 +1,6 @@
 package sting.interceptors;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Represents the next step inside an {@link Around} interceptor.
@@ -9,11 +8,8 @@ import javax.annotation.Nullable;
  * <p>Each call proceeds through the remaining interceptor chain and may invoke the target service method.</p>
  */
 public final class Invocation {
-    @Nonnull
     private final Invoker _invoker;
-
-    @Nonnull
-    private final Object[] _arguments;
+    private final @Nullable Object[] _arguments;
 
     /**
      * Create an invocation.
@@ -21,7 +17,7 @@ public final class Invocation {
      * @param invoker the function that continues the invocation.
      * @param arguments the active arguments for this interceptor boundary.
      */
-    public Invocation(@Nonnull final Invoker invoker, @Nonnull final Object[] arguments) {
+    public Invocation(final Invoker invoker, final @Nullable Object[] arguments) {
         _invoker = invoker;
         _arguments = arguments;
     }
@@ -48,7 +44,7 @@ public final class Invocation {
      * @throws Throwable if an inner interceptor or target service method throws.
      */
     @Nullable
-    public Object proceed(@Nonnull final Object[] arguments) throws Throwable {
+    public Object proceed(final @Nullable Object[] arguments) throws Throwable {
         return _invoker.proceed(arguments);
     }
 
@@ -65,6 +61,6 @@ public final class Invocation {
          * @throws Throwable if an inner interceptor or target service method throws.
          */
         @Nullable
-        Object proceed(@Nonnull Object[] arguments) throws Throwable;
+        Object proceed(@Nullable Object[] arguments) throws Throwable;
     }
 }

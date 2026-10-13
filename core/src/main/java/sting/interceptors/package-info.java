@@ -10,4 +10,7 @@
  * {@link sting.interceptors.Proceed @Proceed} so it can wrap, short-circuit, or replace arguments for the inner
  * invocation.</p>
  */
+@NullMarked
 package sting.interceptors;
+
+import org.jspecify.annotations.NullMarked;

@@ -1,8 +1,7 @@
 package sting.server.interceptors;
 
 import jakarta.transaction.TransactionManager;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import sting.Injectable;
 import sting.interceptors.Around;
 import sting.interceptors.Invocation;
@@ -19,7 +18,7 @@ public final class MandatoryTransactionInterceptor extends TransactionIntercepto
      *
      * @param transactionManager the JTA transaction manager.
      */
-    MandatoryTransactionInterceptor(@Nonnull final TransactionManager transactionManager) {
+    MandatoryTransactionInterceptor(final TransactionManager transactionManager) {
         super(transactionManager);
     }
 
@@ -32,7 +31,7 @@ public final class MandatoryTransactionInterceptor extends TransactionIntercepto
      */
     @Around
     @Nullable
-    public Object around(@Proceed @Nonnull final Invocation invocation) throws Throwable {
+    public Object around(@Proceed final Invocation invocation) throws Throwable {
         return mandatory(invocation);
     }
 }

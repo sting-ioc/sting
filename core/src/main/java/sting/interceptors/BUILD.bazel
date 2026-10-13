@@ -20,7 +20,8 @@ java_library(
         "Thrown.java",
         "package-info.java",
     ],
+    nullaway = True,
     deps = [
-        "//third_party/java:javax_annotation",
+        "//third_party/java:jspecify",
     ],
 )

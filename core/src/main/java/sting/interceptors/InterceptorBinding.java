@@ -5,7 +5,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import javax.annotation.Nonnull;
 
 /**
  * Marks an annotation type as an interceptor binding.
@@ -30,7 +29,6 @@ public @interface InterceptorBinding {
      *
      * @return the canonical dotted name or enum-backed template for the interceptor implementation.
      */
-    @Nonnull
     String implementedBy();
 
     /**

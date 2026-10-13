@@ -20,11 +20,12 @@ java_library(
         "Typed.java",
         "package-info.java",
     ],
+    nullaway = True,
     resource_strip_prefix = "core/src/main/java",
     resources = [
         "Sting.gwt.xml",
     ],
     deps = [
-        "//third_party/java:javax_annotation",
+        "//third_party/java:jspecify",
     ],
 )
