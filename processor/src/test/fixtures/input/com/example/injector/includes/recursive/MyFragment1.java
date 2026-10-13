@@ -6,6 +6,6 @@ import sting.Fragment;
 @org.jspecify.annotations.NullMarked
 public interface MyFragment1 {
     default Runnable provideRunnable() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

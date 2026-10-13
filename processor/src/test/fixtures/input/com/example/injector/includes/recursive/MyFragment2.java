@@ -8,6 +8,6 @@ import sting.Named;
 interface MyFragment2 {
     @Named("Fragment2")
     default Runnable provideRunnable() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

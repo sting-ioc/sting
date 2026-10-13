@@ -2,38 +2,31 @@ package com.example.injector.includes.recursive;
 
 import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
+@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
-  @Nonnull
   private final Sting_MyFragment1 fragment1 = new Sting_MyFragment1();
 
-  @Nonnull
   private final Sting_MyFragment2 fragment2 = new Sting_MyFragment2();
 
-  @Nonnull
   private final Sting_MyFragment3 fragment3 = new Sting_MyFragment3();
 
-  @Nonnull
   private final Object node1;
 
-  @Nonnull
   private final MyModel1 node2;
 
-  @Nullable
-  private Runnable node3;
+  private @Nullable Runnable node3;
 
-  @Nonnull
   private final Object node4;
 
-  @Nullable
-  private Runnable node5;
+  private @Nullable Runnable node5;
 
-  @Nullable
-  private Runnable node6;
+  private @Nullable Runnable node6;
 
   Sting_RecursiveIncludesModel() {
     node1 = Objects.requireNonNull( Sting_MyModel3.create() );
@@ -41,7 +34,6 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
     node4 = Objects.requireNonNull( Sting_MyModel2.create() );
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Runnable node3() {
     if ( null == node3 ) {
@@ -51,7 +43,6 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
     return node3;
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Runnable node5() {
     if ( null == node5 ) {
@@ -61,7 +52,6 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
     return node5;
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Runnable node6() {
     if ( null == node6 ) {

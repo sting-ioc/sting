@@ -157,6 +157,59 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         assertSuccessfulCompile(inputs(classname), expectedOutputs, t -> emitInjectorGeneratedFile(classname, t));
     }
 
+    @DataProvider(name = "additionalInjectorCompiles")
+    public Object[][] additionalInjectorCompiles() {
+        return new Object[][] {
+            {"com.example.injector.eager", "BasicEagerDependencyModel", new String[0]},
+            {
+                "com.example.injector.eager.fragment",
+                "EagerInjectableViaIncludesModel",
+                new String[] {"MyFragment1", "MyFragment2", "MyModel1", "MyModel2", "MyModel3"}
+            },
+            {
+                "com.example.injector.includes.recursive",
+                "RecursiveIncludesModel",
+                new String[] {"MyFragment1", "MyFragment2", "MyFragment3", "MyModel1", "MyModel2", "MyModel3"}
+            },
+            {
+                "com.example.injector.includes.provider.naming.compound",
+                "MyInjector",
+                new String[] {"MyFrameworkComponent", "MyModel1", "MyModel1Impl", "Outer"}
+            },
+            {
+                "com.example.injector.includes.provider.naming.enclosing",
+                "MyInjector",
+                new String[] {"MyFrameworkComponent", "MyModel", "MyFramework_MyModel", "Outer"}
+            },
+            {
+                "com.example.injector.includes.provider.naming.flat_enclosing",
+                "MyInjector",
+                new String[] {
+                    "MyFrameworkComponent",
+                    "MyModel",
+                    "MyFramework_MyModel",
+                    "Outer",
+                    "Outer_Middle_Leaf_MyFramework_MyModel2"
+                }
+            }
+        };
+    }
+
+    @Test(dataProvider = "additionalInjectorCompiles")
+    public void processAdditionalInjectorCompile(
+            final String packageName, final String injector, final String[] companions) throws Exception {
+        final String classname = packageName + "." + injector;
+        final var names = new ArrayList<String>();
+        names.add(classname);
+        for (final String companion : companions) {
+            names.add(packageName + "." + companion);
+        }
+        assertSuccessfulCompile(
+                inputs(names.toArray(new String[0])),
+                List.of(javaOutput(classname)),
+                target -> target.endsWith(".java"));
+    }
+
     @DataProvider(name = "successfulPrimitiveInteropCompiles")
     public Object[][] successfulPrimitiveInteropCompiles() {
         return new Object[][] {

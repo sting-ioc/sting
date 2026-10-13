@@ -2,22 +2,21 @@ package com.example.injector.includes.provider.naming.compound;
 
 import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
+@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_MyInjector implements MyInjector {
-  @Nullable
-  private Outer.Middle.Leaf.MyModel2Impl node1;
+  private Outer.Middle.Leaf. @Nullable MyModel2Impl node1;
 
-  @Nullable
-  private Object node2;
+  private @Nullable Object node2;
 
   Sting_MyInjector() {
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Outer.Middle.Leaf.MyModel2Impl node1() {
     if ( null == node1 ) {
@@ -27,7 +26,6 @@ final class Sting_MyInjector implements MyInjector {
     return node1;
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Object node2() {
     if ( null == node2 ) {

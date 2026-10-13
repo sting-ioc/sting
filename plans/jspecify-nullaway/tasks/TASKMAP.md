@@ -1,8 +1,8 @@
 # Task Map
 
 - Spec: [SPEC.md](../SPEC.md)
-- Status: `implementing`
-- Current frontier: `T04`
+- Status: `implementation-review`
+- Current frontier: `implementation review`
 - Planning reviewer: `/root/sting_planning_review` (`2/3` rounds); Findings: none on round 2. Round 1's isolated processorpath gap is resolved in AC5/T04.
 - Plan checkpoint: `automatic`; authorized by the user's confirmed grill and amendments plus passing planning review.
 - Implementation reviewer: `pending` (`0/5` rounds)
@@ -11,7 +11,7 @@
 ## Full-scope validation
 
 - Gate: `tools/check.sh` and explicit generated NullAway positive/negative controls plus owned legacy-reference scan.
-- Evidence: pending.
+- Evidence: final `tools/check.sh` passed under Node 24.19.0; all 16 targets, 95.17% line / 86.22% branch coverage, 12 Maven artifacts and isolated processorpath consumer passed. Site doc follow-up checked 2,116 links, zero broken. Generated negative control produced exactly two NullAway errors; source scan and orphan-golden negative control passed, with legacy spellings only in migration detection/rejection tests.
 - Baseline: `bazel build //core //server` passed; `bazel test //:all_tests` passed all 15 targets before implementation. Resolved Java toolchain release is Zulu OpenJDK 17.0.20.
 
 ## Tasks
@@ -21,7 +21,7 @@
 | T01 | [Runtime JSpecify contracts](T01-runtime-contracts.md) | complete | None |
 | T02 | [Local Proton and generated contract cutover](T02-processor-cutover.md) | complete | T01; consumable local Proton generator APIs |
 | T03 | [Default and generated NullAway enforcement](T03-enforcement.md) | complete | T02 |
-| T04 | [Distribution, documentation and full validation](T04-distribution.md) | in_progress | T03 |
+| T04 | [Distribution, documentation and full validation](T04-distribution.md) | complete | T03 |
 
 ## Sequencing notes
 

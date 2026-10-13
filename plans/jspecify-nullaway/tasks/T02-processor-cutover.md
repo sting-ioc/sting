@@ -33,3 +33,5 @@ Sting consumes the unreleased local Proton source module and processes/generates
 - `bazel test //processor/src/test/java/sting/processor:all_tests` passed all 12 targets. Duplicate Deprecated/SuppressWarnings from applying both overrideMethod and old copy steps were removed after focused warning failures identified them.
 - `bazel test //:integration_tests` passed all three targets after migration and formatting.
 - Targeted Java formatting/buildifier and `git diff --check` passed; generated checking itself remains T03 ownership.
+
+- T04 packaging audit found and fixed legacy constructor annotations on matched factory runtime parameters; the focused migration regression and final full gate passed.

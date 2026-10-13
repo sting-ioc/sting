@@ -66,6 +66,7 @@ processor_test(
     data = feature("injector"),
     methods = [
         "processSuccessfulInjectorCompile",
+        "processAdditionalInjectorCompile",
         "processSuccessfulPrimitiveInteropCompile",
         "processSuccessfulOptionalRequestInjectorCompile",
         "singleIncludesInjector",

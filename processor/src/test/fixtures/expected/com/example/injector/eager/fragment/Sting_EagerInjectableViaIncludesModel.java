@@ -1,12 +1,13 @@
 package com.example.injector.eager.fragment;
 
 import java.util.Objects;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
+@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_EagerInjectableViaIncludesModel implements EagerInjectableViaIncludesModel {
-  @Nonnull
   private final MyModel3 node1;
 
   Sting_EagerInjectableViaIncludesModel() {

@@ -32,3 +32,5 @@ Every sourceful owned target and positive generated fixture is checked in NullAw
 - Effective integration Javac command contains NullAway ERROR, JSpecifyMode and the type-symbol flag, with no generated-path exclusion. `git diff --check` passed.
 - Invocation's erased conversions use one narrowly suppressed cast helper; no generated type or service method suppresses NullAway. Cast/unboxing/null runtime behavior remains covered by integration tests.
 - Error Prone 2.42.0/NullAway 0.14.2 and Guava 33.4.0 match the nested compiler's runtime needs. Local QA is imported from its release jar to avoid mixing upstream TestNG/Guava versions.
+
+- T04 final scan added six previously missing eager/recursive/provider-naming positive fixture cases; their generated goldens now use JSpecify and pass the strict compiler.

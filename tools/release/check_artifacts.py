@@ -23,6 +23,24 @@ LEGACY_DESCRIPTOR = re.compile(
 )
 
 
+def check_owned_nullability(workspace: Path) -> None:
+    legacy = re.compile(
+        r"javax\.annotation\.(?:Nonnull|Nullable|CheckForNull)|org\.jetbrains\.annotations\.(?:NotNull|Nullable)|@Nonnull\b"
+    )
+    allowed = {"processor/src/main/java/sting/processor/StingProcessor.java",
+               "processor/src/test/java/sting/processor/StingNullabilityTest.java"}
+    roots = ["core", "processor", "server", "integration-tests", "server-integration-tests", "doc-examples", "docs"]
+    files = [workspace / "README.md", workspace / "AGENTS.md"]
+    for root in roots:
+        files.extend(path for path in (workspace / root).rglob("*") if path.suffix in (".java", ".md"))
+    for path in files:
+        text = path.read_text()
+        if legacy.search(text) and (str(path.relative_to(workspace)) not in allowed
+                                    or re.search(r"(?m)^\s*import\s+(?:" + legacy.pattern + ")", text)):
+            raise SystemExit(f"Legacy nullability reference in owned source/documentation: {path}")
+    print("Checked owned sources, fixtures, goldens and current documentation for legacy nullability")
+
+
 def check_nullness_metadata(path: Path) -> None:
     with zipfile.ZipFile(path) as jar:
         for name in jar.namelist():
@@ -134,7 +152,9 @@ def entries(path: Path) -> set[str]:
 
 
 def main() -> None:
-    root = Path(__file__).resolve().parents[2] / "bazel-bin" / "tools" / "release"
+    workspace = Path(__file__).resolve().parents[2]
+    check_owned_nullability(workspace)
+    root = workspace / "bazel-bin" / "tools" / "release"
     version = sys.argv[1] if len(sys.argv) > 1 else "0.0.0-SNAPSHOT"
     for artifact, (class_name, source_name) in ARTIFACTS.items():
         jar = entries(root / f"{artifact}.jar")
@@ -184,7 +204,7 @@ def main() -> None:
         if "sting.processor.StingProcessor" not in jar.read(service).decode():
             raise SystemExit("Wrong processor service registration")
     print("Checked 12 Maven artifacts and processor shading")
-    check_packaged_consumer(Path(__file__).resolve().parents[2], root.resolve())
+    check_packaged_consumer(workspace, root.resolve())
 
 
 if __name__ == "__main__":
