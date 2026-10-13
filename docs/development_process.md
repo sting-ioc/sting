@@ -9,6 +9,8 @@ Bazel is the build for the Java modules and documentation site. Install Bazel 9.
 
 This checks Starlark and Java formatting and the Ahab hermeticity baseline, builds the modules and release artifacts, runs all TestNG targets, checks processor and server coverage, and builds and validates the documentation site.
 
+Format Bazel and Starlark files with `bazel run //tools/buildifier:buildifier`. Check formatting and lint without changing files with `bazel run //tools/buildifier:buildifier_check`.
+
 For a shorter feedback loop, run the relevant Bazel target, for example:
 
     $ bazel test //processor/src/test/java/sting/processor:factory_goldens

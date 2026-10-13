@@ -1,39 +1,8 @@
-load("@buildifier_prebuilt//:rules.bzl", "buildifier")
 load("@rules_palantir_java_format//:defs.bzl", "java_format_check")
 
 package(default_visibility = ["//visibility:public"])
 
 exports_files(["LICENSE"])
-
-WARNINGS = [
-    "+unsorted-dict-items",
-    "-module-docstring",
-    "-function-docstring",
-]
-
-buildifier(
-    name = "buildifier",
-    exclude_patterns = [
-        "./.git/*",
-        "./.bazelbsp/*",
-        "./tmp/*",
-    ],
-    lint_mode = "fix",
-    lint_warnings = WARNINGS,
-)
-
-buildifier(
-    name = "buildifier_check",
-    diff_command = "diff -u",
-    exclude_patterns = [
-        "./.git/*",
-        "./.bazelbsp/*",
-        "./tmp/*",
-    ],
-    lint_mode = "warn",
-    lint_warnings = WARNINGS,
-    mode = "diff",
-)
 
 test_suite(
     name = "unit_tests",

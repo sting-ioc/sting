@@ -31,4 +31,4 @@ java -jar "${JAR}" \
   --cache-directory "${CACHE_DIR}" \
   generate
 bazel run //third_party/java:update_depgen_generated_outputs
-bazel run //:buildifier -- MODULE.bazel third_party/java/BUILD.bazel
+bazel run //tools/buildifier:buildifier -- MODULE.bazel third_party/java/BUILD.bazel
