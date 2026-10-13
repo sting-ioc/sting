@@ -79,7 +79,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
 
     @Test(dataProvider = "successfulCompiles")
     public void processSuccessfulCompile(@Nonnull final String classname) throws Exception {
-        assertSuccessfulCompile(classname, jsonOutput(classname));
+        assertSuccessfulCompile(classname, javaOutput(classname));
     }
 
     @Nonnull
@@ -104,17 +104,14 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
     @Test(dataProvider = "successfulFactoryCompiles")
     public void processSuccessfulFactoryCompile(
             @Nonnull final String classname, @Nonnull final String generatedClassname) throws Exception {
-        final List<String> expectedOutputs = new ArrayList<>();
-        expectedOutputs.add(javaOutput(generatedClassname));
-        expectedOutputs.add(javaOutput(generatedClassname));
-        expectedOutputs.add(jsonOutput(generatedClassname));
         assertSuccessfulCompile(
-                inputs(classname), expectedOutputs, t -> emitFactoryGeneratedFile(generatedClassname, t));
+                inputs(classname),
+                Collections.singletonList(javaOutput(generatedClassname)),
+                t -> emitFactoryGeneratedFile(generatedClassname, t));
     }
 
     private boolean emitFactoryGeneratedFile(@Nonnull final String generatedClassname, @Nonnull final String target) {
-        return target.endsWith(toFilename(generatedClassname, "", ".sting.json"))
-                || target.endsWith(toFilename(generatedClassname, "", ".java"))
+        return target.endsWith(toFilename(generatedClassname, "", ".java"))
                 || target.endsWith(toFilename(generatedClassname, "Sting_", ".java"));
     }
 
@@ -160,7 +157,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
     // These tests save less fixtures to the filesystem
     @Test(dataProvider = "successfulInjectorCompiles")
     public void processSuccessfulInjectorCompile(@Nonnull final String classname) throws Exception {
-        final List<String> expectedOutputs = Arrays.asList(jsonOutput(classname), jsonGraphOutput(classname));
+        final List<String> expectedOutputs = Collections.singletonList(javaOutput(classname));
         assertSuccessfulCompile(inputs(classname), expectedOutputs, t -> emitInjectorGeneratedFile(classname, t));
     }
 
@@ -1140,31 +1137,6 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
     }
 
     @Test
-    public void interceptorProxyGraphDescriptorContainsProxyMetadata() throws Exception {
-        final Compilation compilation =
-                compile(Collections.singletonList(input("input", "com.example.interceptor.QualifiedBindingModel")));
-        assertCompilationSuccessful(compilation);
-        final String graph =
-                readClassOutput(compilation, "__ObjectGraph.sting.json").replaceAll("\\s+", "");
-        assertTrue(graph.contains("\"kind\":\"PROXY\""), graph);
-        assertTrue(graph.contains("\"service\""), graph);
-        assertTrue(graph.contains("\"target\":\"com.example.interceptor.QualifiedBindingModel.LeftModel\""), graph);
-        assertTrue(
-                graph.contains("\"interceptors\":[\"com.example.interceptor.QualifiedBindingModel.TraceInterceptor\"]"),
-                graph);
-    }
-
-    @Test
-    public void interceptorProxyGraphDescriptorUsesProviderNodeIdsForProxyDependencies() throws Exception {
-        final Compilation compilation = compile(
-                Collections.singletonList(input("input", "com.example.interceptor.SupplierCycleBoundaryModel")));
-        assertCompilationSuccessful(compilation);
-        final String graph =
-                readClassOutput(compilation, "__ObjectGraph.sting.json").replaceAll("\\s+", "");
-        assertTrue(graph.contains("\"supportedBy\":[\"proxy:"), graph);
-    }
-
-    @Test
     public void interceptorProxyDotReportContainsProxyLabels() throws Exception {
         final Compilation compilation =
                 compile(Collections.singletonList(input("input", "com.example.interceptor.QualifiedBindingModel")));
@@ -1178,52 +1150,47 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
     private boolean emitInjectorGeneratedFile(@Nonnull final String classname, @Nonnull final String target) {
         final int index = classname.lastIndexOf(".");
         final String simpleClassName = -1 == index ? classname : classname.substring(index + 1);
-        return target.endsWith(".java")
-                || target.endsWith(simpleClassName + StingProcessor.JSON_SUFFIX)
-                || target.endsWith(simpleClassName + StingProcessor.DOT_SUFFIX)
-                || target.endsWith(simpleClassName + StingProcessor.GRAPH_SUFFIX);
+        return target.endsWith(".java") || target.endsWith(simpleClassName + StingProcessor.DOT_SUFFIX);
     }
 
     @Test
     public void nestedInjectable() throws Exception {
         assertSuccessfulCompile(
-                "com.example.injectable.NestedModel", jsonOutput("com.example.injectable.NestedModel_MyModel"));
+                "com.example.injectable.NestedModel", "com/example/injectable/NestedModel_Sting_MyModel.java");
     }
 
     @Test
     public void nestedNestedInjectable() throws Exception {
         assertSuccessfulCompile(
                 "com.example.injectable.NestedNestedModel",
-                jsonOutput("com.example.injectable.NestedNestedModel_Middle_MyModel"));
+                "com/example/injectable/NestedNestedModel_Middle_Sting_MyModel.java");
     }
 
     @Test
     public void nestedFragment() throws Exception {
         assertSuccessfulCompile(
-                "com.example.fragment.NestedModel", jsonOutput("com.example.fragment.NestedModel_MyModel"));
+                "com.example.fragment.NestedModel", "com/example/fragment/NestedModel_Sting_MyModel.java");
     }
 
     @Test
     public void nestedNestedFragment() throws Exception {
         assertSuccessfulCompile(
                 "com.example.fragment.NestedNestedModel",
-                jsonOutput("com.example.fragment.NestedNestedModel_Middle_MyModel"));
+                "com/example/fragment/NestedNestedModel_Middle_Sting_MyModel.java");
     }
 
     @Test
     public void typedProviderMethodSupportsMultiplePublishedServiceTypes() throws Exception {
         final String pkg = "com.example.fragment.types";
         final String classname = pkg + ".BasicTypesModel";
-        assertSuccessfulCompile(
-                inputs(classname, pkg + ".MyModel"), Arrays.asList(javaOutput(classname), jsonOutput(classname)));
+        assertSuccessfulCompile(inputs(classname, pkg + ".MyModel"), Collections.singletonList(javaOutput(classname)));
     }
 
     @Test
     public void typedProviderMethodPublishesOnlyDeclaredServiceTypes() throws Exception {
         final String pkg = "com.example.fragment.types";
         final String classname = pkg + ".TypedProviderMethodModel";
-        assertSuccessfulCompile(
-                inputs(classname, pkg + ".MyModel"), Arrays.asList(javaOutput(classname), jsonOutput(classname)));
+        assertSuccessfulCompile(inputs(classname, pkg + ".MyModel"), Collections.singletonList(javaOutput(classname)));
     }
 
     @Test
@@ -1238,7 +1205,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                         pkg + ".MyType3",
                         pkg + ".MyType4",
                         pkg + ".MyType5"),
-                Arrays.asList(javaOutput(classname), jsonOutput(classname)));
+                Collections.singletonList(javaOutput(classname)));
     }
 
     @Test
@@ -1253,7 +1220,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                         pkg + ".MyType3",
                         pkg + ".MyType4",
                         pkg + ".MyType5"),
-                Arrays.asList(javaOutput(classname), jsonOutput(classname)));
+                Collections.singletonList(javaOutput(classname)));
     }
 
     @Test
@@ -1261,7 +1228,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         final String classname = "com.example.fragment.includes.BasicIncludesModel";
         assertSuccessfulCompile(
                 inputs(classname, "com.example.fragment.includes.Included1Model"),
-                Collections.singletonList(jsonOutput(classname)));
+                Collections.singletonList(javaOutput(classname)));
     }
 
     @Test
@@ -1272,7 +1239,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                         classname,
                         "com.example.fragment.includes.Included1Model",
                         "com.example.fragment.includes.Included2Model"),
-                Collections.singletonList(jsonOutput(classname)));
+                Collections.singletonList(javaOutput(classname)));
     }
 
     @Test
@@ -1304,11 +1271,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         final String pkg = "com.example.injector.includes.single";
         assertSuccessfulCompile(
                 inputs(pkg + ".SingleIncludesModel", pkg + ".MyFragment"),
-                Arrays.asList(
-                        jsonOutput(pkg + ".SingleIncludesModel"),
-                        javaOutput(pkg + ".SingleIncludesModel"),
-                        jsonOutput(pkg + ".MyFragment"),
-                        javaOutput(pkg + ".MyFragment")));
+                Arrays.asList(javaOutput(pkg + ".SingleIncludesModel"), javaOutput(pkg + ".MyFragment")));
     }
 
     @Test
@@ -1317,11 +1280,8 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         assertSuccessfulCompile(
                 inputs(pkg + ".MultipleIncludesModel", pkg + ".MyFragment", pkg + ".MyModel"),
                 Arrays.asList(
-                        jsonOutput(pkg + ".MultipleIncludesModel"),
                         javaOutput(pkg + ".MultipleIncludesModel"),
-                        jsonOutput(pkg + ".MyFragment"),
                         javaOutput(pkg + ".MyFragment"),
-                        jsonOutput(pkg + ".MyModel"),
                         javaOutput(pkg + ".MyModel")));
     }
 
@@ -1336,15 +1296,10 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                         pkg + ".MyFragment3",
                         pkg + ".MyModel"),
                 Arrays.asList(
-                        jsonOutput(pkg + ".DiamondDependencyIncludesModel"),
                         javaOutput(pkg + ".DiamondDependencyIncludesModel"),
-                        jsonOutput(pkg + ".MyFragment1"),
                         javaOutput(pkg + ".MyFragment1"),
-                        jsonOutput(pkg + ".MyFragment2"),
                         javaOutput(pkg + ".MyFragment2"),
-                        jsonOutput(pkg + ".MyFragment3"),
                         javaOutput(pkg + ".MyFragment3"),
-                        jsonOutput(pkg + ".MyModel"),
                         javaOutput(pkg + ".MyModel")));
     }
 
@@ -1354,12 +1309,9 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         assertSuccessfulCompile(
                 inputs(pkg + ".NameCollisionInjectorModel", pkg + ".pkg1.MyModel", pkg + ".pkg2.MyModel"),
                 Arrays.asList(
-                        jsonOutput(pkg + ".NameCollisionInjectorModel"),
                         javaOutput(pkg + ".NameCollisionInjectorModel"),
                         graphvizOutput(pkg + ".NameCollisionInjectorModel"),
-                        jsonOutput(pkg + ".pkg1.MyModel"),
                         javaOutput(pkg + ".pkg1.MyModel"),
-                        jsonOutput(pkg + ".pkg2.MyModel"),
                         javaOutput(pkg + ".pkg2.MyModel")));
     }
 
@@ -1369,11 +1321,8 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         assertSuccessfulCompile(
                 inputs(pkg + ".MyInjector", pkg + ".MyOtherInjectorModel", pkg + ".MyFragment", pkg + ".MyModel"),
                 Arrays.asList(
-                        jsonOutput(pkg + ".MyInjector"),
                         javaOutput(pkg + ".MyInjector"),
-                        jsonOutput(pkg + ".MyOtherInjectorModel"),
                         javaOutput(pkg + ".MyOtherInjectorModel"),
-                        jsonOutput(pkg + ".MyFragment"),
                         javaOutput(pkg + ".MyFragment")));
     }
 
@@ -1394,16 +1343,11 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                         pkg + ".model.TodoService",
                         pkg + ".model.ViewService"),
                 Arrays.asList(
-                        jsonOutput(pkg + ".ioc.TodoInjector"),
                         javaOutput(pkg + ".ioc.TodoInjector"),
                         javaOutput(pkg + ".model.Arez_TodoRepository"),
-                        jsonOutput(pkg + ".model.Arez_TodoRepository"),
                         javaOutput(pkg + ".model.Arez_TodoService"),
-                        jsonOutput(pkg + ".model.Arez_TodoService"),
                         javaOutput(pkg + ".model.Arez_ViewService"),
-                        jsonOutput(pkg + ".model.Arez_ViewService"),
-                        javaOutput(pkg + ".model.BrowserLocationFragment"),
-                        jsonOutput(pkg + ".model.BrowserLocationFragment")));
+                        javaOutput(pkg + ".model.BrowserLocationFragment")));
     }
 
     @DataProvider(name = "failedCompiles")
@@ -2787,7 +2731,6 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
     @Override
     protected List<String> getOptions() {
         final List<String> options = new ArrayList<>(super.getOptions());
-        options.add("-Asting.emit_json_descriptors=true");
         options.add("-Asting.emit_dot_reports=true");
         options.add("-Asting.debug=true");
         return options;

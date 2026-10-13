@@ -3,8 +3,6 @@ package(default_visibility = ["//visibility:public"])
 filegroup(
     name = "local_files",
     srcs = [
-        "EagerModel.sting.json",
-        "LazyModel.sting.json",
         "Sting_EagerModel.java",
         "Sting_LazyModel.java",
     ],

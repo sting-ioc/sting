@@ -26,6 +26,7 @@ paths=(
   integration-tests/src/test/java
   server-integration-tests/src/test/java
   doc-examples/src/main/java
+  tools/release/src/main/java
 )
 
 format_roots=()

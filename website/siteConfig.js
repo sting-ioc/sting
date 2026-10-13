@@ -17,11 +17,6 @@ function updateToc(filename) {
 
 updateToc('development_process.md');
 
-const markdownInclude = function(code) {
-  const filename = process.cwd() + '/includes/' + code;
-  return fs.readFileSync(filename, 'utf8');
-};
-
 const javaLink = function(code) {
   const elements = code.trim().split(/ +/);
 
@@ -131,7 +126,10 @@ const fileContent = function(params, options) {
     throw Error(`Failed to specify file parameter ${file}`);
   }
 
-  const filename = process.cwd() + '/../' + project + '/' + path + '/' + file;
+  const filename =
+    path === 'generated/processors/main/java' ?
+      process.cwd() + '/../reports/doc-generated/' + file :
+      process.cwd() + '/../' + project + '/' + path + '/' + file;
   const content = fs.readFileSync(filename, 'utf8');
   const lines = content.split('\n');
 
@@ -179,8 +177,7 @@ embed.reg = /{@(\w+)\s*:\s*((([^\s"'][^\s}]*|"[^"]*"|'[^']*')\s*)+?)}/;
 embed.register({
   youtube: RemarkableEmbed.extensions.youtube,
   file_content: fileContent,
-  link: javaLink,
-  include: markdownInclude
+  link: javaLink
 });
 
 const siteConfig = {

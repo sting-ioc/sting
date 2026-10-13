@@ -17,7 +17,7 @@ _java_plugin(
 # DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
 
 # SHA256 of the configuration content that generated this content
-_CONFIG_SHA256 = "57CF8F8D8C0464679E0002BC76A8508F1764D57DE6D3075600E6154D7247FAFC"
+_CONFIG_SHA256 = "89FC46269D88E7789DAADC45BF28AE5C87D1E5BF430989B7F605851CFF5216F4"
 
 exports_files(["dependencies.yml"])
 
@@ -26,7 +26,6 @@ exports_files(["dependencies.yml"])
 # +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
 # +- org.realityforge.proton:proton-core:jar:0.75 [compile]
 # |  +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
-# |  +- org.glassfish:javax.json:jar:1.1 [compile]
 # |  +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
 # |  +- com.google.guava:guava:jar:27.1-jre [compile]
 # |  |  +- com.google.guava:failureaccess:jar:1.0.1 [compile]
@@ -40,13 +39,10 @@ exports_files(["dependencies.yml"])
 # +- org.realityforge.proton:proton-qa:jar:0.75 [compile]
 # |  +- org.realityforge.proton:proton-core:jar:0.75 [compile]
 # |  +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
-# |  +- org.glassfish:javax.json:jar:1.1 [compile]
 # |  +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
 # |  +- com.google.guava:guava:jar:27.1-jre [compile]
 # |  +- org.jspecify:jspecify:jar:1.0.0 [compile]
 # |  \- org.testng:testng:jar:6.8 [compile] (conflicts with 7.10.2)
-# +- org.glassfish:javax.json:jar:1.1 [compile]
-# |  \- javax.json:javax.json-api:jar:1.1 [compile, optional]
 # +- org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:jar:0.01 [compile]
 # +- javax:javaee-api:jar:8.0 [compile]
 # |  +- javax:javaee-web-api:jar:8.0 [compile, optional]
@@ -264,14 +260,6 @@ _java_import(
 )
 
 _java_import(
-    name = "javax_json_api",
-    jars = ["@javax_json_api//file"],
-    srcjar = "@javax_json_api__sources//file",
-    tags = ["maven_coordinates=javax.json:javax.json-api:1.1"],
-    visibility = ["//visibility:private"],
-)
-
-_java_import(
     name = "javax_management_j2ee_api",
     jars = ["@javax_management_j2ee_api//file"],
     srcjar = "@javax_management_j2ee_api__sources//file",
@@ -360,13 +348,6 @@ _java_import(
 )
 
 _java_import(
-    name = "javax_json",
-    jars = ["@javax_json//file"],
-    srcjar = "@javax_json__sources//file",
-    tags = ["maven_coordinates=org.glassfish:javax.json:1.1"],
-)
-
-_java_import(
     name = "jspecify",
     jars = ["@jspecify//file"],
     srcjar = "@jspecify__sources//file",
@@ -402,7 +383,6 @@ _java_import(
         ":guava",
         ":javapoet",
         ":javax_annotation",
-        ":javax_json",
         ":jspecify",
     ],
 )
@@ -416,7 +396,6 @@ _java_import(
         ":guava",
         ":javapoet",
         ":javax_annotation",
-        ":javax_json",
         ":jspecify",
         ":proton_core",
         ":testng",

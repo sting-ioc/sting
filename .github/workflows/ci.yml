@@ -26,5 +26,14 @@ jobs:
         with:
           bazelisk-cache: true
 
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install site dependencies
+        run: npm ci
+
       - name: Check
         run: tools/check.sh

@@ -14,8 +14,7 @@ integration exceptions, see [Annotation Processing](annotation_processing.md).
 A lazy component is useful when it is only accessed via a [supplier](dependency_kinds.md) dependency or
 if the component is accessed as a result of invoking an [output](outputs.md) method on an injector. Lazy
 components require additional book-keeping to ensure that they are not accessed before they are constructed.
-As a result they can increase the code-size unnecessarily if used inappropriately. See the
-[performance](performance.md) document for further details.
+As a result they can increase the code size unnecessarily if used inappropriately.
 
 The easiest way to understand it is look at example where we have a single component annotated with the
 {@link: sting.Eager @Eager} annotation. The code for this component looks like:

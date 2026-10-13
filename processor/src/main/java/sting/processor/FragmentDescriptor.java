@@ -2,7 +2,6 @@ package sting.processor;
 
 import java.util.Collection;
 import java.util.Objects;
-import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 
@@ -92,27 +91,5 @@ final class FragmentDescriptor {
 
     void markAsResolved() {
         _resolved = true;
-    }
-
-    void write(final JsonGenerator g) {
-        g.writeStartObject();
-        g.write("schema", "fragment/1");
-        if (!_includes.isEmpty()) {
-            g.writeStartArray("includes");
-            for (final IncludeDescriptor include : _includes) {
-                g.write(include.includedType().toString());
-            }
-            g.writeEnd();
-        }
-        if (!_bindings.isEmpty()) {
-            g.writeStartArray("bindings");
-            for (final Binding binding : _bindings) {
-                g.writeStartObject();
-                binding.write(g);
-                g.writeEnd();
-            }
-            g.writeEnd();
-        }
-        g.writeEnd();
     }
 }

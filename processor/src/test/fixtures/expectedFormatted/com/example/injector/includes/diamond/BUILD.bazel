@@ -4,12 +4,6 @@ filegroup(
     name = "local_files",
     srcs = [
         "DiamondDependencyIncludesModel.gv",
-        "DiamondDependencyIncludesModel.sting.json",
-        "DiamondDependencyIncludesModel__ObjectGraph.sting.json",
-        "MyFragment1.sting.json",
-        "MyFragment2.sting.json",
-        "MyFragment3.sting.json",
-        "MyModel.sting.json",
         "Sting_DiamondDependencyIncludesModel.java",
         "Sting_MyFragment1.java",
         "Sting_MyFragment2.java",

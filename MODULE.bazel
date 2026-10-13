@@ -258,20 +258,6 @@ _http_file(
 )
 
 _http_file(
-    name = "javax_json_api",
-    downloaded_file_path = "javax/json/javax.json-api/1.1/javax.json-api-1.1.jar",
-    sha256 = "208746be8ab088e6c4b17e8ecdb07ff7a6f7e62bb2b88bb09b993335ea17c615",
-    urls = ["https://repo.maven.apache.org/maven2/javax/json/javax.json-api/1.1/javax.json-api-1.1.jar"],
-)
-
-_http_file(
-    name = "javax_json_api__sources",
-    downloaded_file_path = "javax/json/javax.json-api/1.1/javax.json-api-1.1-sources.jar",
-    sha256 = "e510cc6b5982d373ef329eec7af3e4cde958909f99dc49812ce895227988ad2a",
-    urls = ["https://repo.maven.apache.org/maven2/javax/json/javax.json-api/1.1/javax.json-api-1.1-sources.jar"],
-)
-
-_http_file(
     name = "javax_management_j2ee_api",
     downloaded_file_path = "javax/management/j2ee/javax.management.j2ee-api/1.1.1/javax.management.j2ee-api-1.1.1.jar",
     sha256 = "efa48cb1b4e986a2e019429adb31d11acc6a6bb52d1a0f6806a93090bd74ea36",
@@ -423,20 +409,6 @@ _http_file(
     downloaded_file_path = "org/glassfish/javax.faces/2.3.2/javax.faces-2.3.2-sources.jar",
     sha256 = "523507d2f13096860dad36f26719148660f2be2d6eb6a23243ef06e86c474f2e",
     urls = ["https://repo.maven.apache.org/maven2/org/glassfish/javax.faces/2.3.2/javax.faces-2.3.2-sources.jar"],
-)
-
-_http_file(
-    name = "javax_json",
-    downloaded_file_path = "org/glassfish/javax.json/1.1/javax.json-1.1.jar",
-    sha256 = "4b1f21bc50b728aaae5f44ff550383182b58b67647362959e31004e4522ee24f",
-    urls = ["https://repo.maven.apache.org/maven2/org/glassfish/javax.json/1.1/javax.json-1.1.jar"],
-)
-
-_http_file(
-    name = "javax_json__sources",
-    downloaded_file_path = "org/glassfish/javax.json/1.1/javax.json-1.1-sources.jar",
-    sha256 = "2766ebfa95ca7499149d480d2c475874e2c573109a145d6f93b4495187d7469c",
-    urls = ["https://repo.maven.apache.org/maven2/org/glassfish/javax.json/1.1/javax.json-1.1-sources.jar"],
 )
 
 _http_file(

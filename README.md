@@ -4,7 +4,6 @@
 
 [<img src="https://img.shields.io/maven-central/v/org.realityforge.sting/sting-core.svg?label=latest%20release"/>](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22org.realityforge.sting%22)
 [![codecov](https://codecov.io/gh/sting-ioc/sting/branch/master/graph/badge.svg)](https://codecov.io/gh/sting-ioc/sting)
-![GWT3/J2CL compatible](https://img.shields.io/badge/GWT3/J2CL-compatible-brightgreen.svg)
 
 Sting is a fast, easy to use, compile-time dependency injection toolkit. The toolkit accepts a set of annotated
 java classes and generates source code to instantiate and wire together the components. Sting can generate
@@ -17,6 +16,12 @@ has a hard time, then we need to fix the problem.
 
 For more information about Sting, please see the [Website](https://sting-ioc.github.io/). For the source code
 and project support, please visit the [GitHub project](https://github.com/sting-ioc/sting).
+
+# Development
+
+Use Bazel 9.3.0 and JDK 17 or newer for the Java build. Run `bazel test //:all_tests` for tests. Install Node 24
+site dependencies with `npm ci`, then run `tools/check.sh` for the full check. See the
+[development process](docs/development_process.md) for focused processor tests, goldens, and releases.
 
 # Contributing
 

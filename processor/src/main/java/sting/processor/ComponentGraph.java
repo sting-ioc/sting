@@ -13,7 +13,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import javax.json.stream.JsonGenerator;
 import org.jspecify.annotations.Nullable;
 
 final class ComponentGraph {
@@ -310,19 +309,5 @@ final class ComponentGraph {
                 }
             }
         }
-    }
-
-    void write(final JsonGenerator g) {
-        g.writeStartObject();
-        g.write("schema", "graph/1");
-
-        g.writeStartArray("nodes");
-
-        for (final Node node : getNodes()) {
-            node.write(g);
-        }
-        g.writeEnd();
-
-        g.writeEnd();
     }
 }

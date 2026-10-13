@@ -5,8 +5,6 @@ filegroup(
     srcs = [
         "Sting_TodoInjector.java",
         "TodoInjector.gv",
-        "TodoInjector.sting.json",
-        "TodoInjector__ObjectGraph.sting.json",
     ],
 )
 

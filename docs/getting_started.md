@@ -51,7 +51,7 @@ For example:
 
 An example where the injector implementation is used by the host application may be as simple as:
 
-{@file_content: file=sting/doc/examples/getting_started/step3/Main.java "start_line=  {" "end_line=  }" include_start_line=false include_end_line=false}
+{@file_content: file=sting/doc/examples/getting_started/step3/Main.java "start_line=public static void main" "end_line=^    }" include_start_line=false include_end_line=false}
 
 ## Next Steps
 

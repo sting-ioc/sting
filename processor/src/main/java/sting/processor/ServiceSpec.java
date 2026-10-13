@@ -1,7 +1,6 @@
 package sting.processor;
 
 import java.util.Objects;
-import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -39,13 +38,6 @@ final class ServiceSpec {
         final TypeMirror type = _coordinate.type();
         return TypeKind.DECLARED != type.getKind()
                 || ElementsUtil.isEffectivelyPublic((TypeElement) ((DeclaredType) type).asElement());
-    }
-
-    void write(final JsonGenerator g) {
-        _coordinate.write(g);
-        if (_optional) {
-            g.write("optional", true);
-        }
     }
 
     @Override

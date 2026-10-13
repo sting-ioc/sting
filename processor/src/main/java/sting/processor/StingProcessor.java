@@ -48,7 +48,6 @@ import org.realityforge.proton.AnnotationsUtil;
 import org.realityforge.proton.DeferredElementSet;
 import org.realityforge.proton.ElementsUtil;
 import org.realityforge.proton.GeneratorUtil;
-import org.realityforge.proton.JsonUtil;
 import org.realityforge.proton.MemberChecks;
 import org.realityforge.proton.NamesUtil;
 import org.realityforge.proton.ProcessorException;
@@ -77,7 +76,7 @@ import org.realityforge.proton.TypesUtil;
     Constants.ACT_AS_STING_COMPONENT_CLASSNAME
 })
 @SupportedSourceVersion(SourceVersion.RELEASE_17)
-@SupportedOptions({"sting.emit_json_descriptors", "sting.emit_dot_reports"})
+@SupportedOptions("sting.emit_dot_reports")
 public final class StingProcessor extends AbstractStandardProcessor {
     private enum AnnotationUsageKind {
         PROCESSED,
@@ -86,22 +85,11 @@ public final class StingProcessor extends AbstractStandardProcessor {
     }
 
     /**
-     * Extension for json descriptors.
-     */
-    static final String JSON_SUFFIX = ".sting.json";
-    /**
      * Extension for graphviz .dot reports.
      */
     static final String DOT_SUFFIX = ".gv";
-    // Binary descriptor persistence removed
-    /**
-     * Extension for the computed graph descriptor.
-     */
-    static final String GRAPH_SUFFIX = "__ObjectGraph" + JSON_SUFFIX;
     /**
      * A local cache of bindings that is cleared on error or when processing is complete.
-     * This will probably be loaded from json cache files in the future but now we require
-     * in memory processing.
      */
     private final Registry _registry = new Registry();
 
@@ -122,11 +110,6 @@ public final class StingProcessor extends AbstractStandardProcessor {
     private final StopWatch _generateInjectorImplStopWatch = new StopWatch("Generate Injector Impl");
     private final StopWatch _isInjectorResolvedStopWatch = new StopWatch("Is Injector Resolved");
     private final StopWatch _buildAndEmitObjectGraphStopWatch = new StopWatch("Build and Emit Object Graph");
-    /**
-     * Flag controlling whether json descriptors are emitted.
-     * Json descriptors are primarily used during debugging and probably should not be enabled in production code.
-     */
-    private boolean _emitJsonDescriptors;
     /**
      * Flag controlling whether .dot formatted report is emitted.
      * The .dot report is typically used by end users who want to explore the graph.
@@ -163,7 +146,6 @@ public final class StingProcessor extends AbstractStandardProcessor {
     @Override
     public synchronized void init(final ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        _emitJsonDescriptors = readBooleanOption("emit_json_descriptors", false);
         _emitDotReports = readBooleanOption("emit_dot_reports", false);
     }
 
@@ -314,7 +296,6 @@ public final class StingProcessor extends AbstractStandardProcessor {
                         "Generate Injectable Stub",
                         e -> {
                             injectable.markJavaStubAsGenerated();
-                            emitInjectableJsonDescriptor(injectable);
                             emitInjectableStub(injectable);
                         },
                         injectable.getElement(),
@@ -368,7 +349,6 @@ public final class StingProcessor extends AbstractStandardProcessor {
                                 final ResolveType resolveType = isFragmentResolved(env, fragment);
                                 if (ResolveType.RESOLVED == resolveType) {
                                     fragment.markJavaStubAsGenerated();
-                                    emitFragmentJsonDescriptor(fragment);
                                     emitFragmentStub(fragment);
                                 } else if (ResolveType.MAYBE_UNRESOLVED == resolveType) {
                                     debug(() -> "The fragment "
@@ -518,7 +498,6 @@ public final class StingProcessor extends AbstractStandardProcessor {
             }
         }
 
-        emitObjectGraphJsonDescriptor(graph);
         emitInterceptorProxies(graph);
 
         final var packageName =
@@ -758,16 +737,6 @@ public final class StingProcessor extends AbstractStandardProcessor {
             final var entry = new PathEntry(node, e);
             stack.add(entry);
             workList.add(new WorkEntry(entry, stack));
-        }
-    }
-
-    private void emitObjectGraphJsonDescriptor(final ComponentGraph graph) throws IOException {
-        if (_emitJsonDescriptors) {
-            final TypeElement element = graph.getInjector().getElement();
-            final String filename = toFilename(element) + GRAPH_SUFFIX;
-            debug(() -> "Emitting json descriptor for the injector "
-                    + graph.getInjector().getElement().getQualifiedName());
-            JsonUtil.writeJsonResource(processingEnv, element, filename, graph::write);
         }
     }
 
@@ -1051,7 +1020,6 @@ public final class StingProcessor extends AbstractStandardProcessor {
         }
         final var injector = new InjectorDescriptor(element, gwt, injectable, fragmentOnly, includes, inputs, outputs);
         _registry.registerInjector(injector);
-        emitInjectorJsonDescriptor(injector);
     }
 
     private boolean extractInjectorFragmentOnly(final TypeElement element) {
@@ -1067,14 +1035,6 @@ public final class StingProcessor extends AbstractStandardProcessor {
                                 != processingEnv
                                         .getElementUtils()
                                         .getTypeElement("javaemul.internal.annotations.DoNotInline"));
-    }
-
-    private void emitInjectorJsonDescriptor(final InjectorDescriptor injector) throws IOException {
-        if (_emitJsonDescriptors) {
-            final TypeElement element = injector.getElement();
-            final String filename = toFilename(element) + JSON_SUFFIX;
-            JsonUtil.writeJsonResource(processingEnv, element, filename, injector::write);
-        }
     }
 
     private void processInjectorOutputMethod(final List<ServiceRequest> outputs, final ExecutableElement method) {
@@ -1854,14 +1814,6 @@ public final class StingProcessor extends AbstractStandardProcessor {
                         + MemberChecks.toSimpleName(Constants.STING_PROVIDER_CLASSNAME)
                         + " because "
                         + detail + ".\nDependency Path:\n" + workEntry.describePathFromRoot());
-    }
-
-    private void emitFragmentJsonDescriptor(final FragmentDescriptor fragment) throws IOException {
-        if (_emitJsonDescriptors) {
-            final TypeElement element = fragment.getElement();
-            final String filename = toFilename(element) + JSON_SUFFIX;
-            JsonUtil.writeJsonResource(processingEnv, element, filename, fragment::write);
-        }
     }
 
     private void processProvidesMethod(
@@ -3249,16 +3201,6 @@ public final class StingProcessor extends AbstractStandardProcessor {
             index++;
         }
         return candidate;
-    }
-
-    // Binary descriptor writing and verification removed
-
-    private void emitInjectableJsonDescriptor(final InjectableDescriptor injectable) throws IOException {
-        if (_emitJsonDescriptors) {
-            final TypeElement element = injectable.getElement();
-            final String filename = toFilename(element) + JSON_SUFFIX;
-            JsonUtil.writeJsonResource(processingEnv, element, filename, injectable::write);
-        }
     }
 
     private String toFilename(final TypeElement typeElement) {

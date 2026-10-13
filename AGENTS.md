@@ -4,11 +4,11 @@ This guide helps contributors work effectively on the Sting codebase.
 
 ## Project Structure & Module Organization
 
-- Java modules: `core/` (runtime/annotations), `processor/` (annotation processor).
-- Integration Tests: `integration-tests/`, `performance-tests/`, `downstream-test/`.
+- Java modules: `core/` (runtime/annotations), `processor/` (annotation processor), `server/` (server integrations).
+- Integration tests: `integration-tests/`, `server-integration-tests/`.
 - Source code used in documentation: `doc-examples/`.
 - Docs and site: `docs/`, `website/` (Docusaurus v1), `assets/`.
-- Build configuration: `buildfile` (Buildr), `tasks/*.rake` (CI/site tasks).
+- Build configuration: `MODULE.bazel`, directory-owned `BUILD.bazel` files, `third_party/java/`, and `tools/`.
 - Source layout: `*/src/main/java/...`; tests: `*/src/test/java/...`.
 - Generated binaries and build artifacts should stay out of version control and should stay untouched unless you are
   troubleshooting a local build.
@@ -32,13 +32,14 @@ This guide helps contributors work effectively on the Sting codebase.
 
 ## Build, Test, and Development Commands
 
-Prerequisites: JDK 17+, Ruby 2.7.x with Bundler, Node.js (for docs site) and Yarn.
+Prerequisites: Bazel 9.3.0, JDK 17+, Node 24 and npm for the docs site.
 
-- Bootstrap once: `bundle install` and `yarn install`.
-- Build all modules: `bundle exec buildr clean package`.
-- Run tests: `bundle exec buildr test`.
-- CI-equivalent locally: `bundle exec buildr ci J2CL=no`.
-- Docs site (optional): `bundle exec buildr site:serve` (dev), `bundle exec buildr site:build` (static output under `reports/site`).
+- Bootstrap site dependencies: `npm ci`.
+- Build Java modules: `bazel build //core //processor //server //doc-examples`.
+- Run tests: `bazel test //:all_tests`.
+- CI-equivalent locally: `tools/check.sh`.
+- Regenerate one processor golden family: `tools/update_goldens.sh <target>`.
+- Docs site: `tools/site.sh serve` (dev), `tools/site.sh build` (static output under `reports/site`).
 
 ## Bazel Build Invariants
 
@@ -58,7 +59,7 @@ Prerequisites: JDK 17+, Ruby 2.7.x with Bundler, Node.js (for docs site) and Yar
 - Framework: TestNG across modules.
 - Location: place tests under `*/src/test/java`; integration tests live in `integration-tests/src/test/java`.
 - Naming: suffix unit tests with `Test` and integration tests with `IntegrationTest`.
-- Run all tests with `bundle exec buildr test` before submitting.
+- Run `tools/check.sh` before submitting. For a quick edit cycle, run the affected Bazel test target first.
 
 ## Commit & Pull Request Guidelines
 
@@ -68,8 +69,8 @@ Prerequisites: JDK 17+, Ruby 2.7.x with Bundler, Node.js (for docs site) and Yar
 
 ## Security & Configuration Tips (Optional)
 
-- Never commit secrets. CI uses encrypted `etc/secrets`; maintainers handle deployment keys.
-- Release-related env vars: `PRODUCT_VERSION`, `PREVIOUS_PRODUCT_VERSION`; for quicker local cycles set `J2CL=no`.
+- Never commit secrets. Maintainers provide signing and publishing credentials when running a release.
+- Releases use an explicit version and the scripts under `tools/release/`; see `docs/development_process.md`.
 
 ## Processor Integration Notes
 

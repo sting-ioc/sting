@@ -182,7 +182,7 @@ def java_test(name, srcs = [], javacopts = [], deps = [], plugins = [], jvm_flag
         **kwargs
     )
 
-def java_testng(name, srcs, test_classes = [], test_class = None, deps = [], runtime_deps = [], jvm_flags = [], javacopts = [], **kwargs):
+def java_testng(name, srcs, test_classes = [], test_class = None, test_methods = [], deps = [], runtime_deps = [], jvm_flags = [], javacopts = [], **kwargs):
     if test_class and test_classes:
         fail("Specify only one of test_class or test_classes")
     if test_class:
@@ -207,12 +207,10 @@ def java_testng(name, srcs, test_classes = [], test_class = None, deps = [], run
         args = [
             "-testclass",
             ",".join(test_classes),
-        ],
-        deps = deps + [
-            "//third_party/java:testng",
-        ],
+        ] + (["-methods", ",".join(test_methods)] if test_methods else []),
+        deps = deps + ["//third_party/java:testng"] if srcs else [],
         javacopts = javacopts,
         jvm_flags = jvm_flags,
-        runtime_deps = runtime_deps,
+        runtime_deps = runtime_deps + (deps + ["//third_party/java:testng"] if not srcs else []),
         **filtered_kwargs
     )

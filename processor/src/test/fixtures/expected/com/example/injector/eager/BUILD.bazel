@@ -10,7 +10,6 @@ filegroup(
         "BasicEagerDependencyModel_Sting_MyModel4.java",
         "BasicEagerDependencyModel_Sting_MyModel5.java",
         "BasicEagerDependencyModel_Sting_MyModel6.java",
-        "BasicEagerDependencyModel__ObjectGraph.sting.json",
         "Sting_BasicEagerDependencyModel.java",
     ],
 )

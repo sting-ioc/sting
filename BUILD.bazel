@@ -3,6 +3,8 @@ load("@rules_palantir_java_format//:defs.bzl", "java_format_check")
 
 package(default_visibility = ["//visibility:public"])
 
+exports_files(["LICENSE"])
+
 WARNINGS = [
     "+unsorted-dict-items",
     "-module-docstring",
@@ -68,5 +70,6 @@ java_format_check(
         "//doc-examples",
         "//processor",
         "//server",
+        "//tools/release:maven_artifacts",
     ],
 )

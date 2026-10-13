@@ -1,7 +1,6 @@
 package sting.processor;
 
 import java.util.Objects;
-import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.TypeElement;
 import org.realityforge.proton.ElementsUtil;
 
@@ -41,12 +40,5 @@ final class InjectableDescriptor {
 
     void markJavaStubAsGenerated() {
         _javaStubGenerated = true;
-    }
-
-    void write(final JsonGenerator g) {
-        g.writeStartObject();
-        g.write("schema", "injectable/1");
-        _binding.write(g);
-        g.writeEnd();
     }
 }

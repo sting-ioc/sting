@@ -4,8 +4,6 @@ filegroup(
     name = "local_files",
     srcs = [
         "NameCollisionInjectorModel.gv",
-        "NameCollisionInjectorModel.sting.json",
-        "NameCollisionInjectorModel__ObjectGraph.sting.json",
         "Sting_NameCollisionInjectorModel.java",
     ],
 )

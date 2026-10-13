@@ -4,11 +4,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import javax.json.stream.JsonGenerator;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
@@ -292,49 +290,5 @@ final class Node {
         final var edge = new Edge(this, serviceRequest);
         edge.setSatisfiedBy(Collections.singletonList(node));
         _dependsOn.put(serviceRequest, edge);
-    }
-
-    void write(final JsonGenerator g) {
-        g.writeStartObject();
-        g.write("id", getId());
-        if (null != _binding) {
-            final Binding.Kind kind = _binding.getKind();
-            g.write("kind", kind.name());
-        } else {
-            final var proxy = getProxy();
-            g.write("kind", "PROXY");
-            g.writeStartObject("service");
-            proxy.getService().service().getCoordinate().write(g);
-            g.writeEnd();
-        }
-        if (_eager) {
-            g.write("eager", true);
-        }
-        if (null != _proxy) {
-            g.write("target", _proxy.getService().binding().getId());
-            final List<Binding> interceptors = _proxy.getGenericInterceptorBindings();
-            if (!interceptors.isEmpty()) {
-                g.writeStartArray("interceptors");
-                for (final Binding binding : interceptors) {
-                    g.write(binding.getId());
-                }
-                g.writeEnd();
-            }
-        }
-        if (!_dependsOn.isEmpty()) {
-            g.writeStartArray("dependencies");
-            for (final Edge edge : _dependsOn.values()) {
-                g.writeStartObject();
-                edge.getServiceRequest().getService().getCoordinate().write(g);
-                g.writeStartArray("supportedBy");
-                for (final Node node : edge.getSatisfiedBy()) {
-                    g.write(node.getId());
-                }
-                g.writeEnd();
-                g.writeEnd();
-            }
-            g.writeEnd();
-        }
-        g.writeEnd();
     }
 }

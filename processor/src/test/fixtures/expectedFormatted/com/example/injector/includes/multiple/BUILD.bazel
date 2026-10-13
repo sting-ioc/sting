@@ -4,10 +4,6 @@ filegroup(
     name = "local_files",
     srcs = [
         "MultipleIncludesModel.gv",
-        "MultipleIncludesModel.sting.json",
-        "MultipleIncludesModel__ObjectGraph.sting.json",
-        "MyFragment.sting.json",
-        "MyModel.sting.json",
         "Sting_MultipleIncludesModel.java",
         "Sting_MyFragment.java",
         "Sting_MyModel.java",

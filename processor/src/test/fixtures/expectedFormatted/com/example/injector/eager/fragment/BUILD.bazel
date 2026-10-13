@@ -3,7 +3,6 @@ package(default_visibility = ["//visibility:public"])
 filegroup(
     name = "local_files",
     srcs = [
-        "EagerInjectableViaIncludesModel__ObjectGraph.sting.json",
         "Sting_EagerInjectableViaIncludesModel.java",
         "Sting_MyFragment1.java",
         "Sting_MyFragment2.java",

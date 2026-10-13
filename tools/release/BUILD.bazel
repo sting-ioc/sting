@@ -1,0 +1,179 @@
+load(
+    ":release.bzl",
+    "release_jar",
+    "release_javadoc_jar",
+    "release_pom",
+    "release_source_jar",
+    "release_version",
+)
+
+package(default_visibility = ["//visibility:public"])
+
+CORE = [
+    "//core/src/main/java/sting",
+    "//core/src/main/java/sting/interceptors",
+]
+
+PROCESSOR = ["//processor/src/main/java/sting/processor"]
+
+SERVER = [
+    "//server/src/main/java/sting/server",
+    "//server/src/main/java/sting/server/interceptors",
+]
+
+release_version(
+    name = "version",
+    build_setting_default = "0.0.0-SNAPSHOT",
+)
+
+alias(
+    name = "jar_builder",
+    actual = "//tools/release/src/main/java/sting/release:jar_builder",
+)
+
+alias(
+    name = "javadoc_jar_builder",
+    actual = "//tools/release/src/main/java/sting/release:javadoc_jar_builder",
+)
+
+release_jar(
+    name = "core_jar",
+    out = "sting-core.jar",
+    java_targets = CORE,
+    resource_entries = ["META-INF/LICENSE"],
+    resource_files = ["//:LICENSE"],
+)
+
+release_source_jar(
+    name = "core_sources",
+    out = "sting-core-sources.jar",
+    java_targets = CORE,
+)
+
+release_javadoc_jar(
+    name = "core_javadoc",
+    out = "sting-core-javadoc.jar",
+    classpath = ["//third_party/java:javax_annotation"],
+    java_targets = CORE,
+)
+
+release_pom(
+    name = "core_pom",
+    out = "sting-core.pom",
+    artifact_id = "sting-core",
+    dependencies = ["org.realityforge.javax.annotation:javax.annotation:1.1.1"],
+    description = "Sting annotations and runtime",
+    display_name = "Sting Core",
+)
+
+release_jar(
+    name = "processor_jar",
+    out = "sting-processor.jar",
+    exclude_entries = ["sting/processor/vendor/proton/JsonUtil.class"],
+    jars = [
+        "@javapoet//file",
+        "@proton_core//file",
+    ],
+    java_targets = PROCESSOR,
+    relocations = [
+        "com.palantir.javapoet=sting.processor.vendor.javapoet",
+        "org.realityforge.proton=sting.processor.vendor.proton",
+    ],
+    resource_entries = ["META-INF/LICENSE"],
+    resource_files = ["//:LICENSE"],
+)
+
+release_source_jar(
+    name = "processor_sources",
+    out = "sting-processor-sources.jar",
+    java_targets = PROCESSOR,
+)
+
+release_javadoc_jar(
+    name = "processor_javadoc",
+    out = "sting-processor-javadoc.jar",
+    classpath = [
+        "@javapoet//file",
+        "@proton_core//file",
+        "//third_party/java:javax_annotation",
+        "//third_party/java:jspecify",
+    ],
+    java_targets = PROCESSOR,
+)
+
+release_pom(
+    name = "processor_pom",
+    out = "sting-processor.pom",
+    artifact_id = "sting-processor",
+    description = "Sting annotation processor",
+    display_name = "Sting Processor",
+)
+
+release_jar(
+    name = "server_jar",
+    out = "sting-server.jar",
+    java_targets = SERVER,
+    resource_entries = ["META-INF/LICENSE"],
+    resource_files = ["//:LICENSE"],
+)
+
+release_source_jar(
+    name = "server_sources",
+    out = "sting-server-sources.jar",
+    java_targets = SERVER,
+)
+
+release_javadoc_jar(
+    name = "server_javadoc",
+    out = "sting-server-javadoc.jar",
+    classpath = [
+        "//core/src/main/java/sting",
+        "//core/src/main/java/sting/interceptors",
+        "@jakarta_transaction_api//file",
+        "//third_party/java:javax_annotation",
+    ],
+    java_targets = SERVER,
+)
+
+release_pom(
+    name = "server_pom",
+    out = "sting-server.pom",
+    artifact_id = "sting-server",
+    dependencies = [
+        "org.realityforge.sting:sting-core:{version}",
+        "jakarta.transaction:jakarta.transaction-api:2.0.1",
+    ],
+    description = "Sting server integrations",
+    display_name = "Sting Server",
+)
+
+release_javadoc_jar(
+    name = "site_javadoc",
+    out = "sting-api-javadoc.jar",
+    classpath = [
+        "@jakarta_transaction_api//file",
+        "@javapoet//file",
+        "@proton_core//file",
+        "//third_party/java:javax_annotation",
+        "//third_party/java:jspecify",
+    ],
+    java_targets = CORE + PROCESSOR + SERVER,
+)
+
+filegroup(
+    name = "maven_artifacts",
+    srcs = [
+        ":core_jar",
+        ":core_javadoc",
+        ":core_pom",
+        ":core_sources",
+        ":processor_jar",
+        ":processor_javadoc",
+        ":processor_pom",
+        ":processor_sources",
+        ":server_jar",
+        ":server_javadoc",
+        ":server_pom",
+        ":server_sources",
+    ],
+)
