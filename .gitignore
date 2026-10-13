@@ -1,15 +1,11 @@
-**/generated
-*.iml
-/*.ipr
-/*.iws
-/reports
-/target
-/dist
+# Ignore project files
+.idea/
+.bazelbsp/
+
+# Ignore bazel link trees
 /bazel-*
-/tmp
-/node_modules
-/website/translated_docs
-/website/build/
-/website/node_modules
-/website/i18n
-/website/static/api
+
+# Ignore project local temp files
+tmp/
+
+/dist
