@@ -15,6 +15,5 @@ doc_examples_java_library(
     deps = [
         "//core",
         "//doc-examples/src/main/java/sting/doc/examples/include_injector",
-        "//third_party/java:javax_annotation",
     ],
 )

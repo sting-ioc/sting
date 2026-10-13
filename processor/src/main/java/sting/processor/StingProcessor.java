@@ -3133,6 +3133,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             for (int i = 0; i < constructorParameters.size(); i++) {
                 final VariableElement constructorParameter = constructorParameters.get(i);
                 if (constructorParameter.getSimpleName().contentEquals(parameter.getSimpleName())) {
+                    validateNullability(constructorParameter, constructorParameterTypes.get(i), false);
                     matched = true;
                     if (methodParametersByConstructorIndex.containsKey(i)) {
                         throw new ProcessorException(

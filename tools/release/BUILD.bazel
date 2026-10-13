@@ -53,7 +53,7 @@ release_source_jar(
 release_javadoc_jar(
     name = "core_javadoc",
     out = "sting-core-javadoc.jar",
-    classpath = ["//third_party/java:javax_annotation"],
+    classpath = ["//third_party/java:jspecify"],
     java_targets = CORE,
 )
 
@@ -61,7 +61,7 @@ release_pom(
     name = "core_pom",
     out = "sting-core.pom",
     artifact_id = "sting-core",
-    dependencies = ["org.realityforge.javax.annotation:javax.annotation:1.1.1"],
+    dependencies = ["org.jspecify:jspecify:1.0.0"],
     description = "Sting annotations and runtime",
     display_name = "Sting Core",
 )
@@ -72,7 +72,8 @@ release_jar(
     exclude_entries = ["sting/processor/vendor/proton/JsonUtil.class"],
     jars = [
         "@javapoet//file",
-        "@proton_core//file",
+        "@proton_project//tools/release:proton_core_jar",
+        "@jspecify//file",
     ],
     java_targets = PROCESSOR,
     relocations = [
@@ -94,8 +95,7 @@ release_javadoc_jar(
     out = "sting-processor-javadoc.jar",
     classpath = [
         "@javapoet//file",
-        "@proton_core//file",
-        "//third_party/java:javax_annotation",
+        "@proton_project//tools/release:proton_core_jar",
         "//third_party/java:jspecify",
     ],
     java_targets = PROCESSOR,
@@ -130,7 +130,7 @@ release_javadoc_jar(
         "//core/src/main/java/sting",
         "//core/src/main/java/sting/interceptors",
         "@jakarta_transaction_api//file",
-        "//third_party/java:javax_annotation",
+        "//third_party/java:jspecify",
     ],
     java_targets = SERVER,
 )
@@ -153,8 +153,7 @@ release_javadoc_jar(
     classpath = [
         "@jakarta_transaction_api//file",
         "@javapoet//file",
-        "@proton_core//file",
-        "//third_party/java:javax_annotation",
+        "@proton_project//tools/release:proton_core_jar",
         "//third_party/java:jspecify",
     ],
     java_targets = CORE + PROCESSOR + SERVER,

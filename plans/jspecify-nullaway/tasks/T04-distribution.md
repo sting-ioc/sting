@@ -1,6 +1,6 @@
 # T04 — Distribution, documentation and full validation
 
-- Status: pending
+- Status: in_progress
 - Blocked by: T03
 - Spec coverage: R6, R7, AC5 (packaging/rollout), AC6
 

@@ -8,6 +8,7 @@
 Sting is a fast, easy to use, compile-time dependency injection toolkit. The toolkit accepts a set of annotated
 java classes and generates source code to instantiate and wire together the components. Sting can generate
 injectors, fragments, auto-fragments, dependency-injected factories, and service-interface interceptor proxies.
+Library and generated contracts use JSpecify; see the [nullness migration guide](docs/dependency_kinds.md#nullness-and-migration).
 
 Sting is under heavy development, and sometimes the documentation does not keep up to date. However the goal of
 the toolkit is to be easy to use, and this includes clear and concise documentation. If something is unclear

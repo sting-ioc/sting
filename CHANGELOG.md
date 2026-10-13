@@ -2,7 +2,8 @@
 
 ### Unreleased
 
-* Use JSpecify in runtime APIs and generated code, preserve type-use nullness, and reject legacy nullability declarations at Sting boundaries.
+* Use JSpecify throughout runtime APIs and generated code, preserve nested type-use nullness, and reject legacy nullability declarations at Sting boundaries.
+* Check owned code, examples and positive generated fixtures with NullAway JSpecify mode. Build against the local Proton migration until its release.
 * Make release JAR manifests and generated Javadocs independent of the build time.
 * Make Bazel the sole build, split processor goldens into focused cached targets, and package the three Maven artifacts from Bazel.
 * Build and publish the documentation site with Node and npm; remove legacy API differences, performance reports, and downstream test harnesses.

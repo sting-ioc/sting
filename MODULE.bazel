@@ -460,48 +460,6 @@ _http_file(
 )
 
 _http_file(
-    name = "javax_annotation",
-    downloaded_file_path = "org/realityforge/javax/annotation/javax.annotation/1.1.1/javax.annotation-1.1.1.jar",
-    sha256 = "147d086711cd48670097ac626bfe1ed137786144c2a2c46b2aa1bb7292adc77b",
-    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/javax/annotation/javax.annotation/1.1.1/javax.annotation-1.1.1.jar"],
-)
-
-_http_file(
-    name = "javax_annotation__sources",
-    downloaded_file_path = "org/realityforge/javax/annotation/javax.annotation/1.1.1/javax.annotation-1.1.1-sources.jar",
-    sha256 = "1c1af94b554daa452a2b2bc8c3df1dd0d847bb4f20b9ec5cc9c7a1d41e03c39e",
-    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/javax/annotation/javax.annotation/1.1.1/javax.annotation-1.1.1-sources.jar"],
-)
-
-_http_file(
-    name = "proton_core",
-    downloaded_file_path = "org/realityforge/proton/proton-core/0.75/proton-core-0.75.jar",
-    sha256 = "5aa909d0fa6ce437a6a70dad8f5eea7509b4c608da4e8fa41a1cef1a20c7d9ea",
-    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-core/0.75/proton-core-0.75.jar"],
-)
-
-_http_file(
-    name = "proton_core__sources",
-    downloaded_file_path = "org/realityforge/proton/proton-core/0.75/proton-core-0.75-sources.jar",
-    sha256 = "0fba608913ee1ea146da930583f11d70f57e423c6e6250655ab5901747065d4d",
-    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-core/0.75/proton-core-0.75-sources.jar"],
-)
-
-_http_file(
-    name = "proton_qa",
-    downloaded_file_path = "org/realityforge/proton/proton-qa/0.75/proton-qa-0.75.jar",
-    sha256 = "df882b5da1a6ef4e680af396a740fb578b71db5375369745774059c23c166e7c",
-    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-qa/0.75/proton-qa-0.75.jar"],
-)
-
-_http_file(
-    name = "proton_qa__sources",
-    downloaded_file_path = "org/realityforge/proton/proton-qa/0.75/proton-qa-0.75-sources.jar",
-    sha256 = "016bfb25bcdd8bbb7c6cb5ede9a4871e008c9b895188a1ea246d20ee37e984c2",
-    urls = ["https://repo.maven.apache.org/maven2/org/realityforge/proton/proton-qa/0.75/proton-qa-0.75-sources.jar"],
-)
-
-_http_file(
     name = "slf4j_api",
     downloaded_file_path = "org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar",
     sha256 = "d3ef575e3e4979678dc01bf1dcce51021493b4d11fb7f1be8ad982877c16a1c0",

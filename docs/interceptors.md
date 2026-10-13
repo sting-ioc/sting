@@ -56,7 +56,7 @@ Generic interceptor implementations use public instance methods annotated with
 
 {@file_content: file=sting/doc/examples/interceptors/TimingInterceptor.java start_line=@Injectable}
 
-An `@Around` method returns `Object`, may throw `Throwable`, and must have exactly one
+An `@Around` method returns `@Nullable Object`, may throw `Throwable`, and must have exactly one
 {@link: sting.interceptors.Proceed @Proceed} {@link: sting.interceptors.Invocation Invocation}
 parameter.
 
@@ -140,3 +140,16 @@ requests, suppliers, supplier optionals, collections, supplier collections, and 
 target remains internal to the generated injector and proxy.
 
 {@file_content: file=sting/doc/examples/interceptors/InterceptorsInjector.java start_line=@Injector}
+
+## Nullness contracts
+
+Use JSpecify annotations in interceptor implementations and service interfaces. In a `@NullMarked` scope,
+`@Arguments @Nullable Object[]` is a nonnull array whose entries may be null; `@Result @Nullable Object`
+permits nullable service results and the null result of void calls. `Invocation.proceed()` also returns
+`@Nullable Object`.
+
+Proxies preserve explicit nullable type arguments and array annotations in service signatures. `Invocation`
+is an erased runtime boundary: interceptors must supply arguments and results that satisfy the service's contract.
+Generated proxies use a narrowly suppressed cast helper at that boundary to retain existing cast, unboxing and
+null behavior. Other generated bodies remain checked by NullAway. An interceptor that returns null for a required
+reference result can still violate the service contract; annotate and check application code as well.

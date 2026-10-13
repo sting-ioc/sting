@@ -48,9 +48,9 @@ Prerequisites: Bazel 9.3.0, JDK 17+, Node 24 and npm for the docs site.
 
 ## Coding Style & Naming Conventions
 
-- Annotations: processor internals use JSpecify (`@NullMarked` packages and `@Nullable` only where needed);
-  generated code, public examples, and annotation-processor input fixtures may still use `javax.annotation`.
-  Use `final` where practical.
+- Annotations: use JSpecify throughout owned code and positive fixtures (`@NullMarked` packages/types and
+  type-use `@Nullable` where needed). Generated bodies must pass NullAway JSpecify mode; keep legacy
+  annotation spellings only in migration diagnostics and deliberate rejection tests. Use `final` where practical.
 - Naming: packages lowercase (`sting.*`), classes `PascalCase`, methods/fields `camelCase`, constants `UPPER_SNAKE_CASE`.
 - Public API must include Javadoc; keep package-level docs in `package-info.java`.
 

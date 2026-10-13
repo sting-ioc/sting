@@ -25,6 +25,5 @@ doc_examples_java_library(
     ],
     deps = [
         "//core",
-        "//third_party/java:javax_annotation",
     ],
 )

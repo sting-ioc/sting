@@ -21,7 +21,7 @@
 | T01 | [Runtime JSpecify contracts](T01-runtime-contracts.md) | complete | None |
 | T02 | [Local Proton and generated contract cutover](T02-processor-cutover.md) | complete | T01; consumable local Proton generator APIs |
 | T03 | [Default and generated NullAway enforcement](T03-enforcement.md) | complete | T02 |
-| T04 | [Distribution, documentation and full validation](T04-distribution.md) | pending | T03 |
+| T04 | [Distribution, documentation and full validation](T04-distribution.md) | in_progress | T03 |
 
 ## Sequencing notes
 

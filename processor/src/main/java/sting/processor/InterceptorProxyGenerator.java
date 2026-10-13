@@ -241,8 +241,7 @@ final class InterceptorProxyGenerator {
         suppressTypes.add(method.getReturnType());
         suppressTypes.addAll(
                 method.getParameters().stream().map(VariableElement::asType).toList());
-        SuppressWarningsUtil.addSuppressWarningsIfRequired(
-                processingEnv, builder, Collections.emptyList(), suppressTypes);
+        SuppressWarningsUtil.addSuppressWarningsIfRequired(processingEnv, builder, List.of("unchecked"), suppressTypes);
     }
 
     private static void emitAroundInvocationMethods(
@@ -331,8 +330,7 @@ final class InterceptorProxyGenerator {
         suppressTypes.add(method.getReturnType());
         suppressTypes.addAll(
                 method.getParameters().stream().map(VariableElement::asType).toList());
-        SuppressWarningsUtil.addSuppressWarningsIfRequired(
-                processingEnv, builder, Collections.emptyList(), suppressTypes);
+        SuppressWarningsUtil.addSuppressWarningsIfRequired(processingEnv, builder, List.of("unchecked"), suppressTypes);
         return builder.build();
     }
 

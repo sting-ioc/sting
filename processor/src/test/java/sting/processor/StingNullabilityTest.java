@@ -197,6 +197,7 @@ public final class StingNullabilityTest extends AbstractStingProcessorTest {
                     }
                     """.replace("@Before public void before() {}", lifecycle))));
         assertCompilationSuccessful(compilation);
+        CompileTestUtil.assertNoWarnings(compilation.diagnostics());
         final String proxy = compilation.sourceOutputFilenames().stream()
                 .filter(name -> name.endsWith("InterceptorProxy.java"))
                 .findFirst()
@@ -214,6 +215,12 @@ public final class StingNullabilityTest extends AbstractStingProcessorTest {
                 "METHOD",
                 "@sting.Fragment interface Broken { @javax.annotation.Nullable default String value() { return null; }"
                         + " }"
+            },
+            {
+                "Nullable",
+                "PARAMETER",
+                "class Product { Product(@javax.annotation.Nullable String name) {} }"
+                        + " @sting.Factory interface Broken { Product create(String name); }"
             },
             {
                 "Nonnull",

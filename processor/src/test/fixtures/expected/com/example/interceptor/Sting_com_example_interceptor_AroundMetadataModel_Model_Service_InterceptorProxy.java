@@ -26,6 +26,7 @@ public final class Sting_com_example_interceptor_AroundMetadataModel_Model_Servi
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public String run(final String value, final int count) {
     final @Nullable Object[] arguments = new Object[] {value, count};
     try {
@@ -39,6 +40,7 @@ public final class Sting_com_example_interceptor_AroundMetadataModel_Model_Servi
     }
   }
 
+  @SuppressWarnings("unchecked")
   private @Nullable Object invoke_run_interceptor2(final @Nullable Object[] arguments) throws
       Throwable {
     assert null != arguments && 2 == arguments.length;
@@ -48,6 +50,7 @@ public final class Sting_com_example_interceptor_AroundMetadataModel_Model_Servi
     return result;
   }
 
+  @SuppressWarnings("unchecked")
   private @Nullable Object invoke_run_target(final @Nullable Object[] arguments) throws Throwable {
     assert null != arguments && 2 == arguments.length;
     return _target.run((String) $sting$_cast( arguments[0] ), (int) $sting$_cast( arguments[1] ));

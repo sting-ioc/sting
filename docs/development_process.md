@@ -22,6 +22,32 @@ Then inspect the fixture diff and rerun the target. The tests use an in-process 
 
 When changing Java dependencies, edit `third_party/java/dependencies.yml` and run `tools/update_java_deps.sh`. The script verifies depgen's pinned SHA-256 before executing either a downloaded or cached JAR. Format Java sources with `tools/java_format.sh write`, or use `tools/java_format_watch.sh` while editing. Generated expected fixtures are managed by the processor tests.
 
+## Nullness checking and local Proton
+
+Owned source targets automatically attach JSpecify and NullAway 0.14.2 at error severity. Positive processor
+fixtures use an Error Prone 2.42.0 compiler in process, so their generated bodies are checked too. Deliberately
+invalid processor fixtures use a separate plain-javac diagnostics target. The generated negative control in
+`StingNullabilityTest` must fail with NullAway for both a nullable dereference and a nested generic mismatch.
+
+The build keeps Java 17 bytecode and enables `NullAway:JSpecifyMode=true`, `NullAway:OnlyNullMarked=true` and
+`-XDaddTypeAnnotationsToSymbol=true`. Full JSpecify mode needs a supported compiler: JDK 22+, patched JDK
+17.0.19+, or patched JDK 21.0.8+ with the symbol flag. Bazel resolves the compiler and runtime; check the resolved
+versions before changing toolchains. The repository's checked Java 17 runtime is 17.0.20. See
+[NullAway's JSpecify support](https://github.com/uber/NullAway/wiki/JSpecify-Support) for requirements.
+
+`MODULE.bazel` temporarily overrides `proton_project` with `/Users/peter/Code/realityforge/proton`, on branch
+`codex/jspecify-nullaway`. The processor, QA harness and shaded release jar consume that checkout immediately.
+Set the override path to your checkout when building elsewhere. Proton's changes are in
+[PR 10](https://github.com/realityforge/proton/pull/10); a release is not required for this build.
+
+After Proton is released, remove the local module dependency/override, add the released `proton-core` and
+`proton-qa` coordinates to `third_party/java/dependencies.yml`, and regenerate dependencies. Replace the local
+core/QA imports and release/Javadoc jar labels with the released artifacts. Re-run `tools/check.sh`, including
+the packaged consumer compilation, before removing the local checkout.
+
+`tools/release/check_artifacts.py` checks published JSpecify metadata and compiles a consumer with only the shaded
+processor jar on the processorpath. This catches processor classloader dependencies that archive shape checks miss.
+
 ## Hermeticity
 
 Bazel sandboxed actions deny external network access by default; on macOS, Bazel still permits localhost and Unix sockets. Dependency fetching and commands launched by `bazel run` remain outside that action sandbox; tools that deliberately update dependencies can still download them.

@@ -39,25 +39,12 @@ _java_import(
 # DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
 
 # SHA256 of the configuration content that generated this content
-_CONFIG_SHA256 = "CE260C386DE0DC7E821D20BB02710E28AD401C6201A9C1BDDFCE98B11ADF6C39"
+_CONFIG_SHA256 = "74CA24051FD178451CB85A710C735B10CDCC8F877EC093A8A651C57D283DA81B"
 
 exports_files(["dependencies.yml"])
 
 # Dependency Graph Generated from the input data
-# +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
 # +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
-# +- org.realityforge.proton:proton-core:jar:0.75 [compile]
-# |  +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
-# |  +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
-# |  +- com.google.guava:guava:jar:27.1-jre [compile] (conflicts with 33.4.0-jre)
-# |  \- org.jspecify:jspecify:jar:1.0.0 [compile]
-# +- org.realityforge.proton:proton-qa:jar:0.75 [compile]
-# |  +- org.realityforge.proton:proton-core:jar:0.75 [compile]
-# |  +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
-# |  +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
-# |  +- com.google.guava:guava:jar:27.1-jre [compile] (conflicts with 33.4.0-jre)
-# |  +- org.jspecify:jspecify:jar:1.0.0 [compile]
-# |  \- org.testng:testng:jar:6.8 [compile] (conflicts with 7.10.2)
 # +- org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:jar:0.01 [compile]
 # +- javax:javaee-api:jar:8.0 [compile]
 # |  +- javax:javaee-web-api:jar:8.0 [compile, optional]
@@ -385,41 +372,6 @@ _java_import(
     jars = ["@javaemul_internal_annotations//file"],
     srcjar = "@javaemul_internal_annotations__sources//file",
     tags = ["maven_coordinates=org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:0.01"],
-)
-
-_java_import(
-    name = "javax_annotation",
-    jars = ["@javax_annotation//file"],
-    srcjar = "@javax_annotation__sources//file",
-    tags = ["maven_coordinates=org.realityforge.javax.annotation:javax.annotation:1.1.1"],
-)
-
-_java_import(
-    name = "proton_core",
-    jars = ["@proton_core//file"],
-    srcjar = "@proton_core__sources//file",
-    tags = ["maven_coordinates=org.realityforge.proton:proton-core:0.75"],
-    deps = [
-        ":guava",
-        ":javapoet",
-        ":javax_annotation",
-        ":jspecify",
-    ],
-)
-
-_java_import(
-    name = "proton_qa",
-    jars = ["@proton_qa//file"],
-    srcjar = "@proton_qa__sources//file",
-    tags = ["maven_coordinates=org.realityforge.proton:proton-qa:0.75"],
-    deps = [
-        ":guava",
-        ":javapoet",
-        ":javax_annotation",
-        ":jspecify",
-        ":proton_core",
-        ":testng",
-    ],
 )
 
 _java_import(

@@ -5,12 +5,15 @@ title: Factories
 The {@link: sting.Factory @Factory} annotation is used to generate a dependency-injected factory implementation.
 This is useful when a type requires a mixture of values supplied by application code and services supplied by Sting.
 
+The examples use `org.jspecify.annotations.NullMarked` for nonnull defaults.
+
 For example, consider a component that needs a `SomeService` from Sting and a runtime `int` parameter:
 
 ```java
+@NullMarked
 class MyComponent
 {
-  MyComponent( @Nonnull final SomeService someService, final int someParameter )
+  MyComponent( final SomeService someService, final int someParameter )
   {
   }
 }
@@ -19,10 +22,10 @@ class MyComponent
 You can define a factory interface such as:
 
 ```java
+@NullMarked
 @Factory
 interface MyComponentFactory
 {
-  @Nonnull
   MyComponent create( int someParameter );
 }
 ```
@@ -32,10 +35,10 @@ Sting will generate an implementation using the normal generated naming conventi
 be included in injectors like any other provider-backed component.
 
 ```java
+@NullMarked
 @Injector( fragmentOnly = false, includes = MyComponentFactory.class )
 interface MyInjector
 {
-  @Nonnull
   MyComponentFactory factory();
 }
 ```
