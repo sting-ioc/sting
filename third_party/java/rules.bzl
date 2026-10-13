@@ -155,6 +155,7 @@ def doc_examples_java_library(name, srcs = [], javacopts = [], deps = [], plugin
 def java_binary(name, srcs = [], javacopts = [], deps = [], plugins = [], **kwargs):
     _java_binary(
         name = name,
+        exclude_build_data = True,
         srcs = srcs,
         deps = deps,
         javacopts = _JAVA_JAVACOPTS + javacopts,
@@ -174,6 +175,7 @@ def java_plugin(name, srcs = [], javacopts = [], deps = [], **kwargs):
 def java_test(name, srcs = [], javacopts = [], deps = [], plugins = [], jvm_flags = [], **kwargs):
     _java_test(
         name = name,
+        exclude_build_data = True,
         srcs = srcs,
         deps = deps,
         javacopts = _JAVA_JAVACOPTS + javacopts,

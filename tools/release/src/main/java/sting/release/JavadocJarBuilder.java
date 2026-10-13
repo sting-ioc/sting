@@ -106,6 +106,7 @@ public final class JavadocJarBuilder {
             throws IOException, InterruptedException {
         final var args = new ArrayList<String>();
         args.add("-quiet");
+        args.add("-notimestamp");
         args.add("-d");
         args.add(docs.toString());
         args.add("-encoding");
@@ -136,7 +137,12 @@ public final class JavadocJarBuilder {
 
     private static void writeJar(final Path output, final Path docs) throws IOException {
         Files.createDirectories(output.toAbsolutePath().getParent());
-        try (JarOutputStream out = new JarOutputStream(Files.newOutputStream(output), new Manifest())) {
+        try (JarOutputStream out = new JarOutputStream(Files.newOutputStream(output))) {
+            final var manifestEntry = new JarEntry(JarFile.MANIFEST_NAME);
+            manifestEntry.setTime(STABLE_TIME);
+            out.putNextEntry(manifestEntry);
+            new Manifest().write(out);
+            out.closeEntry();
             final List<Path> files;
             try (Stream<Path> stream = Files.walk(docs)) {
                 files = stream.filter(Files::isRegularFile).sorted().toList();

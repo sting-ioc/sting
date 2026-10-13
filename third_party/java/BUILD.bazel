@@ -1,4 +1,5 @@
-load("@rules_java//java:defs.bzl", _java_binary = "java_binary", _java_import = "java_import", _java_plugin = "java_plugin", _java_test = "java_test")
+load("@rules_java//java:defs.bzl", _java_binary = "java_binary", _java_import = "java_import", _java_plugin = "java_plugin")
+load("//third_party/java:rules.bzl", _java_test = "java_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -17,7 +18,7 @@ _java_plugin(
 # DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
 
 # SHA256 of the configuration content that generated this content
-_CONFIG_SHA256 = "89FC46269D88E7789DAADC45BF28AE5C87D1E5BF430989B7F605851CFF5216F4"
+_CONFIG_SHA256 = "C58287C512DE40E55F57AC120152700609A16A4616D5E1845B003427E7A7D7C3"
 
 exports_files(["dependencies.yml"])
 

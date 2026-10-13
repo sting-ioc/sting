@@ -95,7 +95,10 @@ public final class JarBuilder {
         }
 
         Files.createDirectories(output.toAbsolutePath().getParent());
-        try (JarOutputStream out = new JarOutputStream(Files.newOutputStream(output), manifest())) {
+        try (JarOutputStream out = new JarOutputStream(Files.newOutputStream(output))) {
+            final var manifestContent = new ByteArrayOutputStream();
+            manifest().write(manifestContent);
+            writeEntry(out, JarFile.MANIFEST_NAME, manifestContent.toByteArray());
             writeEntries(out, entries, services);
         }
     }

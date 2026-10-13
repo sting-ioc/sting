@@ -3,6 +3,7 @@ module(
 )
 
 bazel_dep(name = "buildifier_prebuilt", version = "8.5.1", dev_dependency = True)
+bazel_dep(name = "ahab", version = "0.3.0", dev_dependency = True)
 bazel_dep(name = "rules_palantir_java_format", version = "0.1.1", dev_dependency = True)
 
 # Use the immutable release until the module is available in BCR.
@@ -14,6 +15,12 @@ archive_override(
 )
 
 bazel_dep(name = "rules_java", version = "9.9.0")
+single_version_override(
+    module_name = "rules_java",
+    patch_strip = 1,
+    patches = ["//third_party/bazel/patches:rules_java_exclude_build_data.patch"],
+    version = "9.9.0",
+)
 
 # Expose rules_java's compatibility proxy to the root module for IJWB's bundled
 # IntelliJ aspect, which loads @compatibility_proxy//:proxy.bzl directly.

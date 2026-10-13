@@ -9,6 +9,8 @@ options:
   repositoryNameStrategy: ArtifactId
   repositoryRuleGenerationStrategy: module
   targetGenerationStrategy: build
+  targetRuleLoadSymbols:
+    java_test: false
   failOnMissingPom: false
 
 artifacts:
