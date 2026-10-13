@@ -1,6 +1,6 @@
 # T04 — Distribution, documentation and full validation
 
-- Status: complete
+- Status: pending
 - Blocked by: T03
 - Spec coverage: R6, R7, AC5 (packaging/rollout), AC6
 
@@ -14,9 +14,12 @@ Release artifacts, documentation and examples expose the JSpecify contract and l
 - [x] Resolve required JSpecify classes on the processor's own classloader without relocating canonical annotation names or adding runtime POM dependencies.
 - [x] Replace direct legacy annotation dependencies and Javadoc classpaths; regenerate dependency outputs through owned configuration.
 - [x] Artifact checks verify JSpecify API metadata and absence of legacy annotation usage without rejecting legitimate processing/Java EE names or diagnostic strings.
-- [x] Document consumer migration, unmarked trust boundary, Java 17/full-mode configuration and replacing the local override after Proton release.
+- [x] Document consumer migration, unmarked trust boundary, Java 17 output/Java 21 processor/full-mode configuration and replacing the local override after Proton release.
 - [x] Update changelog and repository annotation guidance; do no GWT/J2CL work.
 - [x] Run and record the strongest full-scope gate before committing this task.
+
+- [ ] Document the Java 21 processor requirement and verify owned/generated Java 17 bytecode independently of shaded Proton Java 21 classes.
+- [ ] Refresh full-gate evidence against current local Proton 32fc6cb after runtime reconciliation.
 
 ## Validation
 

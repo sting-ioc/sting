@@ -1,6 +1,6 @@
 # T03 — Default and generated NullAway enforcement
 
-- Status: complete
+- Status: pending
 - Blocked by: T02
 - Spec coverage: R5, AC4
 
@@ -16,6 +16,8 @@ Every sourceful owned target and positive generated fixture is checked in NullAw
 - [x] A deliberately invalid generated source fails specifically with NullAway; all valid generated fixtures pass the same checked path.
 - [x] Migrate test/example contracts exposed by strict checking, including arrays and nullable interception results.
 - [x] Invalid processor fixtures remain in a separate diagnostics path and cannot falsely satisfy positive coverage.
+
+- [ ] Reconcile Java 21 test/processor runtime and Java 25 tools with current local Proton, retaining Sting/generated --release 17 and supported symbol flags.
 
 ## Validation
 
@@ -34,3 +36,7 @@ Every sourceful owned target and positive generated fixture is checked in NullAw
 - Error Prone 2.42.0/NullAway 0.14.2 and Guava 33.4.0 match the nested compiler's runtime needs. Local QA is imported from its release jar to avoid mixing upstream TestNG/Guava versions.
 
 - T04 final scan added six previously missing eager/recursive/provider-naming positive fixture cases; their generated goldens now use JSpecify and pass the strict compiler.
+
+## Reopened validation
+
+Local Proton 32fc6cb invalidated the Java 17 execution assumption after the historical gate. Re-run strict builds/tests and generated controls on Java 21; investigate the reviewer’s explicit NonNull lazy-storage probe after compiler execution is restored.
