@@ -14,6 +14,8 @@ options:
   failOnMissingPom: false
 
 artifacts:
+  - coord: org.commonmark:commonmark:0.30.1
+  - coord: org.commonmark:commonmark-ext-gfm-tables:0.30.1
   - coord: org.realityforge.javax.annotation:javax.annotation:1.1.1
   - coord: com.palantir.javapoet:javapoet:0.14.0
     excludes:

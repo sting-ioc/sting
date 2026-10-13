@@ -4,7 +4,8 @@
 
 * Make release JAR manifests and generated Javadocs independent of the build time.
 * Make Bazel the sole build, split processor goldens into focused cached targets, and package the three Maven artifacts from Bazel.
-* Build and publish the documentation site with Node and npm; remove legacy API differences, performance reports, and downstream test harnesses.
+* Build the documentation site hermetically with Java and Bazel, preserve documentation URLs and source snippets, and serve all assets locally. Remove Docusaurus and Node/npm requirements and check API method fragments as well as file links.
+* Remove legacy API differences, performance reports, and downstream test harnesses.
 * Upgrade the Bazel build to version `9.3.0`.
 * Use Bazel's default workspace symlink and repository cache locations.
 

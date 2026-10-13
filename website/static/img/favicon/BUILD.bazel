@@ -1,0 +1,6 @@
+exports_files(
+    [
+        "favicon.ico",
+    ],
+    visibility = ["//website:__pkg__"],
+)

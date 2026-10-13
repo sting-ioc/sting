@@ -40,6 +40,7 @@ test_suite(
     tests = [
         "//processor/src/test/java/sting/processor:all_tests",
         "//server/src/test/java/sting/server/interceptors:all_tests",
+        "//tools/site/src/test/java/sting/site:all_tests",
     ],
 )
 
@@ -71,5 +72,6 @@ java_format_check(
         "//processor",
         "//server",
         "//tools/release:maven_artifacts",
+        "//tools/site:tool",
     ],
 )

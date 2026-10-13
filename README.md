@@ -19,8 +19,8 @@ and project support, please visit the [GitHub project](https://github.com/sting-
 
 # Development
 
-Use Bazel 9.3.0 and JDK 17 or newer for the Java build. Run `bazel test //:all_tests` for tests. Install Node 24
-site dependencies with `npm ci`, then run `tools/check.sh` for the full check. See the
+Use Bazel 9.3.0 and JDK 17 or newer for the build, including the documentation site. Run
+`bazel test //:all_tests` for tests and `tools/check.sh` for the full check. See the
 [development process](docs/development_process.md) for focused processor tests, goldens, and releases.
 Run `bazel run //tools/ahab:hermeticity` for the hermeticity report; the full check guards its recorded baseline.
 

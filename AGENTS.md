@@ -7,7 +7,7 @@ This guide helps contributors work effectively on the Sting codebase.
 - Java modules: `core/` (runtime/annotations), `processor/` (annotation processor), `server/` (server integrations).
 - Integration tests: `integration-tests/`, `server-integration-tests/`.
 - Source code used in documentation: `doc-examples/`.
-- Docs and site: `docs/`, `website/` (Docusaurus v1), `assets/`.
+- Docs and site: `docs/`, `website/` (HTML templates and static assets), `assets/`; the Java site generator lives under `tools/site/`.
 - Build configuration: `MODULE.bazel`, directory-owned `BUILD.bazel` files, `third_party/java/`, and `tools/`.
 - Source layout: `*/src/main/java/...`; tests: `*/src/test/java/...`.
 - Generated binaries and build artifacts should stay out of version control and should stay untouched unless you are
@@ -32,14 +32,13 @@ This guide helps contributors work effectively on the Sting codebase.
 
 ## Build, Test, and Development Commands
 
-Prerequisites: Bazel 9.3.0, JDK 17+, Node 24 and npm for the docs site.
+Prerequisites: Bazel 9.3.0 and JDK 17+.
 
-- Bootstrap site dependencies: `npm ci`.
 - Build Java modules: `bazel build //core //processor //server //doc-examples`.
 - Run tests: `bazel test //:all_tests`.
 - CI-equivalent locally: `tools/check.sh`.
 - Regenerate one processor golden family: `tools/update_goldens.sh <target>`.
-- Docs site: `tools/site.sh serve` (dev), `tools/site.sh build` (static output under `reports/site`).
+- Docs site: `bazel build //website:site` (hermetic output), `tools/site.sh build` (copy to `reports/site`), `tools/site.sh check` (files and fragments), `tools/site.sh serve` (local preview; rebuild and refresh manually).
 
 ## Bazel Build Invariants
 

@@ -18,11 +18,14 @@ _java_plugin(
 # DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
 
 # SHA256 of the configuration content that generated this content
-_CONFIG_SHA256 = "C58287C512DE40E55F57AC120152700609A16A4616D5E1845B003427E7A7D7C3"
+_CONFIG_SHA256 = "93A69FBC8EAD5ECA890A2F867C3B281BDCCAA6EA515F34F627765C2CD759258A"
 
 exports_files(["dependencies.yml"])
 
 # Dependency Graph Generated from the input data
+# +- org.commonmark:commonmark:jar:0.30.1 [compile]
+# +- org.commonmark:commonmark-ext-gfm-tables:jar:0.30.1 [compile]
+# |  \- org.commonmark:commonmark:jar:0.30.1 [compile]
 # +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
 # +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
 # +- org.realityforge.proton:proton-core:jar:0.75 [compile]
@@ -338,6 +341,21 @@ _java_import(
     srcjar = "@animal_sniffer_annotations__sources//file",
     tags = ["maven_coordinates=org.codehaus.mojo:animal-sniffer-annotations:1.17"],
     visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "commonmark",
+    jars = ["@commonmark//file"],
+    srcjar = "@commonmark__sources//file",
+    tags = ["maven_coordinates=org.commonmark:commonmark:0.30.1"],
+)
+
+_java_import(
+    name = "commonmark_ext_gfm_tables",
+    jars = ["@commonmark_ext_gfm_tables//file"],
+    srcjar = "@commonmark_ext_gfm_tables__sources//file",
+    tags = ["maven_coordinates=org.commonmark:commonmark-ext-gfm-tables:0.30.1"],
+    deps = [":commonmark"],
 )
 
 _java_import(
