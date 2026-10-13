@@ -29,7 +29,7 @@ def check_owned_nullability(workspace: Path) -> None:
     )
     allowed = {"processor/src/main/java/sting/processor/StingProcessor.java",
                "processor/src/test/java/sting/processor/StingNullabilityTest.java"}
-    roots = ["core", "processor", "server", "integration-tests", "server-integration-tests", "doc-examples", "docs"]
+    roots = ["core", "processor", "server", "integration-tests", "server-integration-tests", "doc-examples", "docs", "tools/site"]
     files = [workspace / "README.md", workspace / "AGENTS.md"]
     for root in roots:
         files.extend(path for path in (workspace / root).rglob("*") if path.suffix in (".java", ".md"))

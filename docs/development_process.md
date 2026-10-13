@@ -3,24 +3,26 @@ title: Development Process
 ---
 ## Build and test
 
-Bazel is the build for the Java modules. Install Bazel 9.3.0 and JDK 21 or newer. Run the complete local check before submitting changes:
+Use Bazel 9.3.0 and JDK 21 or newer to build the Java modules and documentation site. Before submitting changes, run:
 
     $ tools/check.sh
 
-This checks Starlark and Java formatting and the Ahab hermeticity baseline, builds the modules and release artifacts, runs all TestNG targets, checks processor and server coverage, and builds the documentation site. Install the site dependencies first with `npm ci` using Node 24.
+This checks formatting and the hermeticity baseline, builds the modules and release artifacts, runs all TestNG targets, checks processor and server coverage, and builds and validates the site.
 
-For a shorter feedback loop, run the relevant Bazel target, for example:
+Format Bazel and Starlark files with `bazel run //tools/buildifier:buildifier`. Check formatting and lint without changing files with `bazel run //tools/buildifier:buildifier_check`.
+
+During development, run the target for the code you changed, or the full test suite:
 
     $ bazel test //processor/src/test/java/sting/processor:factory_goldens
     $ bazel test //:all_tests
 
-The processor tests are split by feature. Each golden target owns only its input and expected fixture subset, so editing one fixture does not invalidate every processor test. The full suite still runs every processor invocation, including formatted and unformatted output checks. Regenerate a feature's goldens explicitly after reviewing a deliberate output change:
+Processor golden tests are split by feature, so editing one fixture only invalidates its target. The full suite checks both formatted and unformatted output. When you deliberately change generated output, regenerate that feature's goldens:
 
     $ tools/update_goldens.sh factory_goldens
 
-Then inspect the fixture diff and rerun the target. The tests use an in-process Java compiler and complete quickly enough without a persistent Bazel worker.
+Review the fixture diff, then rerun the target. The tests compile Java in process; they do not use a persistent Bazel worker.
 
-When changing Java dependencies, edit `third_party/java/dependencies.yml` and run `tools/update_java_deps.sh`. The script verifies depgen's pinned SHA-256 before executing either a downloaded or cached JAR. Format Java sources with `tools/java_format.sh write`, or use `tools/java_format_watch.sh` while editing. Generated expected fixtures are managed by the processor tests.
+To update Java dependencies, edit `third_party/java/dependencies.yml` and run `tools/update_java_deps.sh`. The script checks depgen's pinned SHA-256 before running a downloaded or cached JAR. Format Java with `tools/java_format.sh write`, or use `tools/java_format_watch.sh` while editing. Regenerate expected fixtures through the golden tests.
 
 ## Nullness checking and local Proton
 
@@ -41,6 +43,8 @@ runtime is Zulu 21.0.12, and the tools runtime is Zulu 25.0.4. See
 The processor, QA harness and shaded release jar consume that checkout immediately. Set the override path to
 your checkout when building elsewhere. Proton's changes from
 [PR 10](https://github.com/realityforge/proton/pull/10) are on master; a release is not required for this build.
+CI checks out that merged commit and supplies its path through the ignored `.bazelrc.local`. Other checkouts can
+use the same `common --override_module=proton_project=/path/to/proton` option without editing `MODULE.bazel`.
 
 After Proton is released, remove the local module dependency/override, add the released `proton-core` and
 `proton-qa` coordinates to `third_party/java/dependencies.yml`, and regenerate dependencies. Replace the local
@@ -53,42 +57,48 @@ Proton Java 21 classes, and catches processor classloader dependencies that arch
 
 ## Hermeticity
 
-Bazel sandboxed actions deny external network access by default; on macOS, Bazel still permits localhost and Unix sockets. Dependency fetching and commands launched by `bazel run` remain outside that action sandbox; tools that deliberately update dependencies can still download them.
+Bazel's sandbox blocks external network access. On macOS, localhost and Unix sockets remain accessible. Dependency fetching and programs launched by `bazel run` are outside the sandbox, so dependency update tools can still download files.
 
-Ahab 0.3.0 analyzes the default Bazel configuration across `//...`. Sting has no separate CI configuration. Run these targets with `bazel run`, because Ahab invokes Bazel's action query:
+Ahab checks action declarations and tool specifications across `//...`, using the same default configuration locally and in CI. It does not run the build tools or compare their output bytes. Run it with `bazel run` because it queries Bazel's actions:
 
     $ bazel run //tools/ahab:hermeticity
     $ bazel run //tools/ahab:hermeticity.check
     $ bazel run //tools/ahab:hermeticity.explain
 
-The report target exits nonzero when it finds violations. The check compares findings with `tools/ahab/baseline.json`; passing means the findings match, not that the build is hermetic. After investigating a change, run `bazel run //tools/ahab:hermeticity.update` and review the baseline diff. There are currently no exceptions. The formatter worker's reproducibility specification follows Rose's setup and was checked against its UTF-8 input handling and sorted marker output.
+The report fails when it finds violations. The check compares findings with `tools/ahab/baseline.json`; a pass means the findings match the baseline. The baseline and exception list are currently empty. Investigate new findings before running `bazel run //tools/ahab:hermeticity.update`, then review the diff. Custom tool reproducibility specifications live in `tools/ahab/reproducibility.json`.
 
-The baseline contains no findings. The `java_binary` and `java_test` wrappers set `exclude_build_data = True`; a local patch copied from Rose adds support for this attribute to rules_java 9.9.0. Depgen's `targetRuleLoadSymbols.java_test: false` setting keeps its generated test on Sting's hand-maintained `_java_test` wrapper load across regeneration. The release builders write every archive entry, including the manifest, with a fixed timestamp. Javadoc runs with `-notimestamp` to omit generation dates from HTML. All 10 main, source, and Javadoc release/site jars were reproduced byte-for-byte by repeating their actions after a time delay. `tools/release/check_artifacts.py` rejects archive timestamps and Javadoc generation dates that would regress these fixes.
+Java binary and test wrappers omit `build-data.properties`. Deploy JARs use `--exclude_build_data` to remove this metadata and `--normalize` to fix archive timestamps. The release builders also fix every entry's timestamp, including the manifest, and Javadoc uses `-notimestamp` to omit generation dates. `tools/release/check_artifacts.py` checks release archive timestamps and Javadoc dates.
 
-The `--exclude_build_data` flag removes `build-data.properties` from deploy jars. This is separate from `--normalize`, which normalizes archive timestamps. The previous unstamped deploy jars used redacted build metadata, but omitting that metadata entirely also prevents it from becoming a changing input if stamping is enabled elsewhere.
-
-Ahab analyzes action declarations and tool specifications; it does not execute tools or prove byte-for-byte reproducibility. Shell workflows outside Bazel are also outside this check: the documentation build uses host Node/npm and Python, and `website/siteConfig.js` derives the copyright year from the clock and rewrites the development document's table of contents. The repository's `.node-version` currently selects Node 17.5.0 despite the documented Node 24 prerequisite. Release signing and publishing use host tools, credentials, and network access intentionally. An unchanged Ahab baseline does not cover these workflows.
+The site build declares its Markdown, templates, navigation, assets, example source jars, and Javadoc inputs. It does not read the clock or generated workspace directories and leaves source documents unchanged. Release signing and publishing use host tools, credentials, and network access outside Ahab's checks.
 
 ## Website
 
-The Docusaurus v1 site uses Node 24 and npm. Its content and URLs remain under `docs/` and `website/`.
+The Java generator in `tools/site/` renders Markdown and tables with commonmark-java and HTML templates in `website/`. Building the site needs no Node, npm, or host Python:
 
-    $ npm ci
+    $ bazel build //website:site
     $ tools/site.sh build
     $ tools/site.sh check
     $ tools/site.sh serve
 
-The built site is in `reports/site`, including Bazel-generated Javadocs at `/api`. The check verifies local links in the built site. External links are not checked.
+Bazel writes the complete site to `bazel-bin/website/site`. `tools/site.sh build` copies it to `reports/site`, including Javadoc at `/api`. Every build checks local file links and HTML fragments and rejects external browser assets. `tools/site.sh check` checks the copy. External page links are not fetched.
+
+Preview at `http://localhost:3000` with `tools/site.sh serve`. After editing, run `tools/site.sh build` and refresh the browser. Each build includes the whole site; Bazel reuses cached examples and Javadoc.
+
+Documents use `title` and optional `sidebar_label` frontmatter, `{@link: ...}` API links, and `{@file_content: ...}` snippets. Snippets come from compiled example source jars, including generated Java. List each new document or asset in its directory's `BUILD.bazel`. Add documents to `website/navigation.txt` under a `[Category]` heading, in display order. Map assets to their output paths in `website/BUILD.bazel`.
+
+The templates in `website/` use named `{{slots}}`, which the generator fills once. `layout.html` provides the header and footer; `home.html` and `document.html` provide the page content.
+
+CSS, Java/XML highlighting, logos, and favicons are served locally. Highlight.js assets and their license are in `website/static/vendor/highlightjs`; its README records the version, source, and checksums. System fonts avoid external font services. The footer omits the copyright year so the output does not depend on the date.
 
 ## Release
 
-A release requires a clean default-branch checkout, an explicit version, GPG signing access, Maven Central Portal credentials, `gh` access to the repository, and push access to the website repository. It is run by a maintainer after review, outside CI.
+A maintainer releases from a clean default-branch checkout after review, outside CI. You need GPG signing access, Maven Central Portal credentials, `gh` access to the repository, and push access to the website repository. Replace `0.41` below with the release version.
 
-1. Run `python3 tools/release/prepare.py 0.41` with the intended version. Review the moved changelog notes and the version in `docs/project_setup.md`, then commit those changes.
-2. Run `npm ci && tools/check.sh`, tag the reviewed commit `v0.41`, and push the commit and tag to origin.
-3. Run `tools/release/package.sh 0.41`. This builds the three main, source, and Javadoc jars and POMs, signs every artifact, writes checksums, and creates `dist/sting-0.41.zip`. Inspect that bundle. `GPG_USER` selects a key; `GPG_PASS` can provide its passphrase through standard input. Use `--unsigned` only for a local preview.
+1. Run `python3 tools/release/prepare.py 0.41`. Review the changelog notes and the version in `docs/project_setup.md`, then commit them.
+2. Run `tools/check.sh`, tag the reviewed commit `v0.41`, and push the commit and tag to origin.
+3. Run `tools/release/package.sh 0.41` to build the main, source, and Javadoc JARs and POMs, sign them, write checksums, and create `dist/sting-0.41.zip`. Inspect the bundle. `GPG_USER` selects the signing key; `GPG_PASS` can supply its passphrase through standard input. Use `--unsigned` only for a local preview.
 4. Set `MAVEN_CENTRAL_USERNAME` and `MAVEN_CENTRAL_PASSWORD`, then run `tools/release/upload_maven_central.sh 0.41`. It uploads the bundle to Central Portal and waits for publication.
-5. Save the reviewed changelog entry to `/tmp/sting-0.41-notes.md`, then create the GitHub release with `gh release create v0.41 dist/sting-0.41.zip --title 'Sting 0.41' --notes-file /tmp/sting-0.41-notes.md`.
-6. Run `tools/site.sh deploy 0.41` to build, check, and publish the website from the release tag. It pushes a normal commit to `sting-ioc.github.io`.
+5. Save the reviewed changelog entry to `/tmp/sting-0.41-notes.md` and create the GitHub release with `gh release create v0.41 dist/sting-0.41.zip --title 'Sting 0.41' --notes-file /tmp/sting-0.41-notes.md`.
+6. Run `tools/site.sh deploy 0.41` from the release tag to build, check, and publish the website. It pushes a normal commit to `sting-ioc.github.io`.
 
-If a later step fails, resume from that step after correcting the problem. Do not reupload an already published Central bundle.
+If a step fails, fix the problem and resume there. Do not upload a Central bundle that is already published.

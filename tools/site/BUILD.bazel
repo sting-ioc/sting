@@ -1,0 +1,5 @@
+alias(
+    name = "tool",
+    actual = "//tools/site/src/main/java/sting/site:tool",
+    visibility = ["//visibility:public"],
+)

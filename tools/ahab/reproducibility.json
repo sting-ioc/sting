@@ -14,6 +14,11 @@
       "spec": {
         "reproducibility": "always"
       }
+    },
+    "//tools/site/src/main/java/sting/site/tool": {
+      "spec": {
+        "reproducibility": "always"
+      }
     }
   }
 }

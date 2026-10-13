@@ -1,0 +1,10 @@
+exports_files(
+    [
+        "TodoInjector.svg",
+        "favicon-32x32.png",
+        "legend.svg",
+        "logo.png",
+        "logo.svg",
+    ],
+    visibility = ["//website:__pkg__"],
+)

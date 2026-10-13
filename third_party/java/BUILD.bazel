@@ -39,11 +39,14 @@ _java_import(
 # DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
 
 # SHA256 of the configuration content that generated this content
-_CONFIG_SHA256 = "74CA24051FD178451CB85A710C735B10CDCC8F877EC093A8A651C57D283DA81B"
+_CONFIG_SHA256 = "7FDAAB66034F20A38DDE8EC4F6137643161AD4F7BF2BF2DFE3201E015D8A38FE"
 
 exports_files(["dependencies.yml"])
 
 # Dependency Graph Generated from the input data
+# +- org.commonmark:commonmark:jar:0.30.1 [compile]
+# +- org.commonmark:commonmark-ext-gfm-tables:jar:0.30.1 [compile]
+# |  \- org.commonmark:commonmark:jar:0.30.1 [compile]
 # +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
 # +- org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:jar:0.01 [compile]
 # +- javax:javaee-api:jar:8.0 [compile]
@@ -344,6 +347,21 @@ _java_import(
     tags = ["maven_coordinates=org.checkerframework:dataflow-nullaway:4.2.3"],
     visibility = ["//visibility:private"],
     runtime_deps = [":checker_qual"],
+)
+
+_java_import(
+    name = "commonmark",
+    jars = ["@commonmark//file"],
+    srcjar = "@commonmark__sources//file",
+    tags = ["maven_coordinates=org.commonmark:commonmark:0.30.1"],
+)
+
+_java_import(
+    name = "commonmark_ext_gfm_tables",
+    jars = ["@commonmark_ext_gfm_tables//file"],
+    srcjar = "@commonmark_ext_gfm_tables__sources//file",
+    tags = ["maven_coordinates=org.commonmark:commonmark-ext-gfm-tables:0.30.1"],
+    deps = [":commonmark"],
 )
 
 _java_import(
