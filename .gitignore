@@ -8,11 +8,6 @@
 # Ignore project local temp files
 tmp/
 
+# Generated build and release output
 /dist
-
-# Site specific temp files
-/node_modules/
 /reports/
-/website/build/
-/website/i18n/
-/website/static/api/

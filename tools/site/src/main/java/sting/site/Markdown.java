@@ -39,18 +39,12 @@ final class Markdown {
         final var code = new ArrayList<SourceSpan>();
         PARSER.parse(markdown).accept(new AbstractVisitor() {
             @Override
-            public void visit(final Code node) {
-                code.addAll(node.getSourceSpans());
-            }
-
-            @Override
-            public void visit(final FencedCodeBlock node) {
-                code.addAll(node.getSourceSpans());
-            }
-
-            @Override
-            public void visit(final IndentedCodeBlock node) {
-                code.addAll(node.getSourceSpans());
+            protected void visitChildren(final Node node) {
+                if (node instanceof Code || node instanceof FencedCodeBlock || node instanceof IndentedCodeBlock) {
+                    code.addAll(node.getSourceSpans());
+                } else {
+                    super.visitChildren(node);
+                }
             }
         });
         final var matcher = DIRECTIVE.matcher(markdown);
@@ -84,7 +78,7 @@ final class Markdown {
                 .render(PARSER.parse(text));
     }
 
-    static String apiLink(final String specification) {
+    private static String apiLink(final String specification) {
         final var parts = specification.strip().split("\\s+", 2);
         final var target = parts[0].split("#", 2);
         final var names = target[0].split("\\.");
@@ -192,7 +186,7 @@ final class Markdown {
             final var index = accents.indexOf(character);
             normalized.append(index < 0 ? character : replacements.charAt(index));
         }
-        // Public fragments were generated from the raw heading by Docusaurus.
+        // Preserve published fragments derived from raw Markdown headings.
         return normalized
                         .toString()
                         .replaceAll("[.(?]", "")
@@ -209,15 +203,7 @@ final class Markdown {
                 .replace("'", "&#39;");
     }
 
-    private static final class Headings implements NodeRenderer {
-        private final HtmlNodeRendererContext context;
-        private final String source;
-
-        private Headings(final HtmlNodeRendererContext context, final String source) {
-            this.context = context;
-            this.source = source;
-        }
-
+    private record Headings(HtmlNodeRendererContext context, String source) implements NodeRenderer {
         @Override
         public Set<Class<? extends Node>> getNodeTypes() {
             return Set.of(Heading.class);

@@ -23,24 +23,18 @@ public final class Main {
                 }
                 final var value = args[i + 1];
                 switch (args[i]) {
-                    case "--doc":
-                        docs.add(Path.of(value));
-                        break;
-                    case "--source-jar":
-                        sources.add(Path.of(value));
-                        break;
-                    case "--asset":
+                    case "--doc" -> docs.add(Path.of(value));
+                    case "--source-jar" -> sources.add(Path.of(value));
+                    case "--asset" -> {
                         final var separator = value.indexOf('=');
                         if (separator < 1) {
                             throw new IllegalArgumentException("Expected asset source=destination: " + value);
                         }
                         assets.put(Path.of(value.substring(0, separator)), value.substring(separator + 1));
-                        break;
-                    case "--output", "--layout", "--home", "--document", "--navigation", "--api":
+                    }
+                    case "--output", "--layout", "--home", "--document", "--navigation", "--api" ->
                         files.put(args[i], Path.of(value));
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unknown argument: " + args[i]);
+                    default -> throw new IllegalArgumentException("Unknown argument: " + args[i]);
                 }
             }
             for (final var required :

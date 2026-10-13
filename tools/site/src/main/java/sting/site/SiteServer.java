@@ -7,7 +7,6 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
-import java.util.Map;
 
 final class SiteServer {
     private SiteServer() {}
@@ -15,23 +14,6 @@ final class SiteServer {
     static void serve(final Path directory) throws IOException {
         final var root = directory.toRealPath();
         final var server = HttpServer.create(new InetSocketAddress(InetAddress.getLoopbackAddress(), 3000), 0);
-        final var types = Map.of(
-                "html",
-                "text/html; charset=utf-8",
-                "css",
-                "text/css; charset=utf-8",
-                "js",
-                "text/javascript; charset=utf-8",
-                "svg",
-                "image/svg+xml",
-                "png",
-                "image/png",
-                "ico",
-                "image/x-icon",
-                "json",
-                "application/json",
-                "xml",
-                "application/xml");
         server.createContext("/", exchange -> {
             try (exchange) {
                 final var method = exchange.getRequestMethod();
@@ -61,8 +43,19 @@ final class SiteServer {
                 }
                 final var name = file.getFileName().toString();
                 final var extension = name.substring(name.lastIndexOf('.') + 1).toLowerCase(Locale.ROOT);
-                exchange.getResponseHeaders()
-                        .set("Content-Type", types.getOrDefault(extension, "application/octet-stream"));
+                final var contentType =
+                        switch (extension) {
+                            case "html" -> "text/html; charset=utf-8";
+                            case "css" -> "text/css; charset=utf-8";
+                            case "js" -> "text/javascript; charset=utf-8";
+                            case "svg" -> "image/svg+xml";
+                            case "png" -> "image/png";
+                            case "ico" -> "image/x-icon";
+                            case "json" -> "application/json";
+                            case "xml" -> "application/xml";
+                            default -> "application/octet-stream";
+                        };
+                exchange.getResponseHeaders().set("Content-Type", contentType);
                 exchange.getResponseHeaders().set("Cache-Control", "no-store");
                 if (method.equals("HEAD")) {
                     exchange.getResponseHeaders().set("Content-Length", Long.toString(Files.size(file)));

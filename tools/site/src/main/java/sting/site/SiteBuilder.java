@@ -43,7 +43,7 @@ final class SiteBuilder {
         final var document = Files.readString(files.get("--document"));
         final var home = template(layout, Map.of("title", "Sting", "content", Files.readString(files.get("--home"))));
         write(output, "index.html", home);
-        // Docusaurus exposed this homepage alias as well as /.
+        // Keep the published /en/ homepage URL.
         write(output, "en/index.html", home);
         final var ordered = new ArrayList<>(navigation.keySet());
         for (int i = 0; i < ordered.size(); i++) {
@@ -140,10 +140,10 @@ final class SiteBuilder {
             }
             if (line.startsWith("[") && line.endsWith("]")) {
                 category = line.substring(1, line.length() - 1);
-            } else {
-                if (category.isBlank() || !pages.containsKey(line) || navigation.putIfAbsent(line, category) != null) {
-                    throw new IOException("Invalid navigation entry: " + line);
-                }
+            } else if (category.isBlank()
+                    || !pages.containsKey(line)
+                    || navigation.putIfAbsent(line, category) != null) {
+                throw new IOException("Invalid navigation entry: " + line);
             }
         }
         if (!navigation.keySet().equals(pages.keySet())) {
@@ -202,7 +202,7 @@ final class SiteBuilder {
                     Files.createDirectories(target.getParent());
                     try (var stream = jar.getInputStream(entry)) {
                         if (entry.getName().equals("stylesheet.css")) {
-                            // Use system fonts for API pages too; the JDK stylesheet imports an absent font bundle.
+                            // The JDK stylesheet imports fonts absent from the API archive.
                             final var css = new String(stream.readAllBytes(), StandardCharsets.UTF_8);
                             Files.writeString(target, css.replace("@import url('resources/fonts/dejavu.css');", ""));
                         } else {
