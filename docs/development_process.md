@@ -26,7 +26,7 @@ When changing Java dependencies, edit `third_party/java/dependencies.yml` and ru
 
 Bazel sandboxed actions deny external network access by default; on macOS, Bazel still permits localhost and Unix sockets. Dependency fetching and commands launched by `bazel run` remain outside that action sandbox; tools that deliberately update dependencies can still download them.
 
-Ahab 0.3.0 analyzes the default Bazel configuration across `//...`. Sting has no separate CI configuration. Run these targets with `bazel run`, because Ahab invokes Bazel's action query:
+Ahab 0.4.0 analyzes the default Bazel configuration across `//...`. Sting has no separate CI configuration. Run these targets with `bazel run`, because Ahab invokes Bazel's action query:
 
     $ bazel run //tools/ahab:hermeticity
     $ bazel run //tools/ahab:hermeticity.check

@@ -16,8 +16,8 @@
     "https://bcr.bazel.build/modules/abseil-cpp/20250814.1/source.json": "cea3901d7e299da7320700abbaafe57a65d039f10d0d7ea601c4a66938ea4b0c",
     "https://bcr.bazel.build/modules/abseil-py/2.1.0/MODULE.bazel": "5ebe5bf853769c65707e5c28f216798f7a4b1042015e6a36e6d03094d94bec8a",
     "https://bcr.bazel.build/modules/abseil-py/2.1.0/source.json": "0e8fc4f088ce07099c1cd6594c20c7ddbb48b4b3c0849b7d94ba94be88ff042b",
-    "https://bcr.bazel.build/modules/ahab/0.3.0/MODULE.bazel": "e2b7350aa4bbe4e694d6c7d3cdc2ae567309246aeb9a319b13f440ca0a3a497a",
-    "https://bcr.bazel.build/modules/ahab/0.3.0/source.json": "52b0025c5d4c07b46356da36fa18c4ef407a56f17f030e4077f80633886a84e5",
+    "https://bcr.bazel.build/modules/ahab/0.4.0/MODULE.bazel": "a3c202520f2ffed28d3c78e82ca5f4385a69352a067d576db78ecdf867d941a1",
+    "https://bcr.bazel.build/modules/ahab/0.4.0/source.json": "728156009420afdf4f9fdcead52193280489687f3ac7f9d9287e843887f85e3e",
     "https://bcr.bazel.build/modules/apple_support/1.11.1/MODULE.bazel": "1843d7cd8a58369a444fc6000e7304425fba600ff641592161d9f15b179fb896",
     "https://bcr.bazel.build/modules/apple_support/1.15.1/MODULE.bazel": "a0556fefca0b1bb2de8567b8827518f94db6a6e7e7d632b4c48dc5f865bc7c85",
     "https://bcr.bazel.build/modules/apple_support/1.21.0/MODULE.bazel": "ac1824ed5edf17dee2fdd4927ada30c9f8c3b520be1b5fd02a5da15bc10bff3e",
@@ -259,8 +259,8 @@
   "moduleExtensions": {
     "@@ahab+//private:extensions.bzl%module_info": {
       "general": {
-        "bzlTransitiveDigest": "egYQy7SuJV672zWArPsY6aEBLdKJq95a3rRxIRfece8=",
-        "usagesDigest": "bJFAU68KAwsQV3LHOZgzLR3h9p8oCzgDXbVsI5ldTJ0=",
+        "bzlTransitiveDigest": "6j4aYQUWfceGdaQHkDNZVtLlO4r3sGWVVOPPrQLvxhQ=",
+        "usagesDigest": "ToWfSiTH7UsNY/wyju+GFSAr41Po4ilChqzHwlmPmGQ=",
         "recordedInputs": [
           "REPO_MAPPING:ahab+,bazel_tools bazel_tools"
         ],
@@ -269,7 +269,7 @@
             "repoRuleId": "@@ahab+//private:extensions.bzl%_module_info_repo",
             "attributes": {
               "is_root": false,
-              "version": "0.3.0"
+              "version": "0.4.0"
             }
           }
         }
@@ -277,8 +277,8 @@
     },
     "@@ahab+//private:extensions.bzl%prebuilt": {
       "general": {
-        "bzlTransitiveDigest": "egYQy7SuJV672zWArPsY6aEBLdKJq95a3rRxIRfece8=",
-        "usagesDigest": "MPX5Te0OHVFP30yaFd8tUjXcQMD69Yk70YWLrJ+ZYRo=",
+        "bzlTransitiveDigest": "6j4aYQUWfceGdaQHkDNZVtLlO4r3sGWVVOPPrQLvxhQ=",
+        "usagesDigest": "/g+nPVOs7VXaa38SSm+r522yPwKudiH+Doxhcd1SIYc=",
         "recordedInputs": [
           "REPO_MAPPING:ahab+,bazel_tools bazel_tools"
         ],
@@ -287,9 +287,9 @@
             "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_archive",
             "attributes": {
               "build_file_content": "load(\"@bazel_skylib//rules:native_binary.bzl\", \"native_binary\")\n\nnative_binary(\n    name = \"binary\",\n    src = \"ahab\",\n    out = \"ahab_exe\",\n    visibility = [\"//visibility:public\"],\n)\n",
-              "sha256": "1a14dfcb8a33a5b6d5d81ebfe412a77283a42ba73f76a97dd1771ad57baf7dc0",
+              "sha256": "a288de9e8f3818b280ebf74a1e54526707977b068dab734c42cf99c28048c3db",
               "urls": [
-                "https://github.com/mrkkrp/ahab/releases/download/v0.3.0/ahab-0.3.0-darwin_arm64.tar.gz"
+                "https://github.com/mrkkrp/ahab/releases/download/v0.4.0/ahab-0.4.0-darwin_arm64.tar.gz"
               ]
             }
           },
@@ -297,9 +297,9 @@
             "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_archive",
             "attributes": {
               "build_file_content": "load(\"@bazel_skylib//rules:native_binary.bzl\", \"native_binary\")\n\nnative_binary(\n    name = \"binary\",\n    src = \"ahab\",\n    out = \"ahab_exe\",\n    visibility = [\"//visibility:public\"],\n)\n",
-              "sha256": "150677c2f955487a7f7cf0ff9dea77ced26c1fc1cece7eaae51da62b9d2ea6cc",
+              "sha256": "561c262a36954ab1fbb795ff766759da77c931d7fc4d13051b18eff03b680c9e",
               "urls": [
-                "https://github.com/mrkkrp/ahab/releases/download/v0.3.0/ahab-0.3.0-darwin_x86_64.tar.gz"
+                "https://github.com/mrkkrp/ahab/releases/download/v0.4.0/ahab-0.4.0-darwin_x86_64.tar.gz"
               ]
             }
           },
@@ -307,9 +307,9 @@
             "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_archive",
             "attributes": {
               "build_file_content": "load(\"@bazel_skylib//rules:native_binary.bzl\", \"native_binary\")\n\nnative_binary(\n    name = \"binary\",\n    src = \"ahab\",\n    out = \"ahab_exe\",\n    visibility = [\"//visibility:public\"],\n)\n",
-              "sha256": "0e436ecdfffe5d7fccbb00f06298d570793b142da6ec5714f95e1a28c498994a",
+              "sha256": "1044847f2a06d199991450a0583a2489a818f543611de2e56826b7bdd5238c7e",
               "urls": [
-                "https://github.com/mrkkrp/ahab/releases/download/v0.3.0/ahab-0.3.0-linux_arm64.tar.gz"
+                "https://github.com/mrkkrp/ahab/releases/download/v0.4.0/ahab-0.4.0-linux_arm64.tar.gz"
               ]
             }
           },
@@ -317,16 +317,16 @@
             "repoRuleId": "@@bazel_tools//tools/build_defs/repo:http.bzl%http_archive",
             "attributes": {
               "build_file_content": "load(\"@bazel_skylib//rules:native_binary.bzl\", \"native_binary\")\n\nnative_binary(\n    name = \"binary\",\n    src = \"ahab\",\n    out = \"ahab_exe\",\n    visibility = [\"//visibility:public\"],\n)\n",
-              "sha256": "b4fbe1c719f1724a8ae176467c98a2b729630b29cf7770fe75e11bf4fbe11361",
+              "sha256": "4c5ec6c46bfaa96cc0fadc364d6cf274866ff392bb23675bae4ce2fd698ec638",
               "urls": [
-                "https://github.com/mrkkrp/ahab/releases/download/v0.3.0/ahab-0.3.0-linux_x86_64.tar.gz"
+                "https://github.com/mrkkrp/ahab/releases/download/v0.4.0/ahab-0.4.0-linux_x86_64.tar.gz"
               ]
             }
           },
           "ahab_prebuilt": {
             "repoRuleId": "@@ahab+//private:extensions.bzl%_hub",
             "attributes": {
-              "version": "0.3.0"
+              "version": "0.4.0"
             }
           }
         }
