@@ -1,0 +1,5 @@
+# Directories Bazel should not scan as source packages in the main repository.
+ignore_directories([
+    ".git",
+    "tmp",
+])
