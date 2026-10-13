@@ -9,3 +9,9 @@
 tmp/
 
 /dist
+
+# Site specific temp files
+/node_modules/
+/reports/
+/website/build/
+/website/i18n/
