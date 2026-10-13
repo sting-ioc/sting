@@ -8,6 +8,7 @@ import sting.Fragment;
 import sting.Injector;
 import sting.interceptors.InterceptorBinding;
 
+@org.jspecify.annotations.NullMarked
 public final class UnreachableInvalidInterceptorModel {
     private UnreachableInvalidInterceptorModel() {}
 

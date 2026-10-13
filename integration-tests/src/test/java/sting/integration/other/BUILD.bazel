@@ -6,6 +6,7 @@ java_testng(
     srcs = [
         "MyInjector.java",
         "PackageAccessInDifferentPackagesIntegrationTest.java",
+        "package-info.java",
     ],
     plugins = ["//processor:sting_processor_plugin"],
     test_class = "sting.integration.other.PackageAccessInDifferentPackagesIntegrationTest",

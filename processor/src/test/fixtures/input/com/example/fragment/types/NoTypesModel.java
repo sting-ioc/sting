@@ -5,10 +5,11 @@ import sting.Fragment;
 import sting.Typed;
 
 @Fragment
+@org.jspecify.annotations.NullMarked
 public interface NoTypesModel {
     @Eager
     @Typed({})
     default String provideConfig() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

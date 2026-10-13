@@ -24,12 +24,22 @@ _java_import(
     ],
 )
 
+_java_import(
+    name = "local_proton_qa",
+    jars = ["@proton_project//tools/release:proton_qa_jar"],
+    srcjar = "@proton_project//tools/release:proton_qa_sources_jar",
+    deps = [
+        ":local_proton_core",
+        ":testng",
+    ],
+)
+
 # --- depgen-generated targets start ---
 
 # DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
 
 # SHA256 of the configuration content that generated this content
-_CONFIG_SHA256 = "C58287C512DE40E55F57AC120152700609A16A4616D5E1845B003427E7A7D7C3"
+_CONFIG_SHA256 = "CE260C386DE0DC7E821D20BB02710E28AD401C6201A9C1BDDFCE98B11ADF6C39"
 
 exports_files(["dependencies.yml"])
 
@@ -39,20 +49,13 @@ exports_files(["dependencies.yml"])
 # +- org.realityforge.proton:proton-core:jar:0.75 [compile]
 # |  +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
 # |  +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
-# |  +- com.google.guava:guava:jar:27.1-jre [compile]
-# |  |  +- com.google.guava:failureaccess:jar:1.0.1 [compile]
-# |  |  +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
-# |  |  +- com.google.code.findbugs:jsr305:jar:3.0.2 [compile]
-# |  |  +- org.checkerframework:checker-qual:jar:2.5.2 [compile] (conflicts with 4.0.0)
-# |  |  +- com.google.errorprone:error_prone_annotations:jar:2.2.0 [compile]
-# |  |  +- com.google.j2objc:j2objc-annotations:jar:1.1 [compile]
-# |  |  \- org.codehaus.mojo:animal-sniffer-annotations:jar:1.17 [compile]
+# |  +- com.google.guava:guava:jar:27.1-jre [compile] (conflicts with 33.4.0-jre)
 # |  \- org.jspecify:jspecify:jar:1.0.0 [compile]
 # +- org.realityforge.proton:proton-qa:jar:0.75 [compile]
 # |  +- org.realityforge.proton:proton-core:jar:0.75 [compile]
 # |  +- org.realityforge.javax.annotation:javax.annotation:jar:1.1.1 [compile]
 # |  +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
-# |  +- com.google.guava:guava:jar:27.1-jre [compile]
+# |  +- com.google.guava:guava:jar:27.1-jre [compile] (conflicts with 33.4.0-jre)
 # |  +- org.jspecify:jspecify:jar:1.0.0 [compile]
 # |  \- org.testng:testng:jar:6.8 [compile] (conflicts with 7.10.2)
 # +- org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:jar:0.01 [compile]
@@ -78,13 +81,21 @@ exports_files(["dependencies.yml"])
 # |  +- com.google.inject:guice:jar:5.1.0 [compile, optional]
 # |  \- org.yaml:snakeyaml:jar:2.2 [runtime, optional]
 # +- org.jspecify:jspecify:jar:1.0.0 [compile]
-# +- com.uber.nullaway:nullaway:jar:0.13.7 [compile]
-# |  +- org.jspecify:jspecify:jar:1.0.0 [compile]
-# |  +- org.checkerframework:dataflow-nullaway:jar:4.0.0 [runtime]
-# |  |  \- org.checkerframework:checker-qual:jar:4.0.0 [runtime]
-# |  \- com.google.guava:guava:jar:31.1-jre [runtime] (conflicts with 27.1-jre)
+# +- com.uber.nullaway:nullaway:jar:0.14.2 [compile]
+# |  +- org.jspecify:jspecify:jar:1.0.1 [compile] (conflicts with 1.0.0)
+# |  +- org.checkerframework:dataflow-nullaway:jar:4.2.3 [runtime]
+# |  |  \- org.checkerframework:checker-qual:jar:4.2.3 [runtime] (conflicts with 4.0.0)
+# |  \- com.google.guava:guava:jar:31.1-jre [runtime] (conflicts with 33.4.0-jre)
 # +- org.checkerframework:checker-qual:jar:4.0.0 [compile]
-# \- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
+# +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
+# +- com.google.errorprone:error_prone_core:jar:with-dependencies:2.42.0 [compile]
+# \- com.google.guava:guava:jar:33.4.0-jre [compile]
+#    +- com.google.guava:failureaccess:jar:1.0.2 [compile]
+#    +- com.google.guava:listenablefuture:jar:9999.0-empty-to-avoid-conflict-with-guava [compile]
+#    +- com.google.code.findbugs:jsr305:jar:3.0.2 [compile]
+#    +- org.checkerframework:checker-qual:jar:3.43.0 [compile] (conflicts with 4.0.0)
+#    +- com.google.errorprone:error_prone_annotations:jar:2.36.0 [compile]
+#    \- com.google.j2objc:j2objc-annotations:jar:3.0.0 [compile]
 
 _java_test(
     name = "verify_config_sha256",
@@ -145,15 +156,22 @@ _java_import(
     name = "error_prone_annotations",
     jars = ["@error_prone_annotations//file"],
     srcjar = "@error_prone_annotations__sources//file",
-    tags = ["maven_coordinates=com.google.errorprone:error_prone_annotations:2.2.0"],
+    tags = ["maven_coordinates=com.google.errorprone:error_prone_annotations:2.36.0"],
     visibility = ["//visibility:private"],
+)
+
+_java_import(
+    name = "error_prone_core",
+    jars = ["@error_prone_core//file"],
+    srcjar = "@error_prone_core__sources//file",
+    tags = ["maven_coordinates=com.google.errorprone:error_prone_core:2.42.0"],
 )
 
 _java_import(
     name = "failureaccess",
     jars = ["@failureaccess//file"],
     srcjar = "@failureaccess__sources//file",
-    tags = ["maven_coordinates=com.google.guava:failureaccess:1.0.1"],
+    tags = ["maven_coordinates=com.google.guava:failureaccess:1.0.2"],
     visibility = ["//visibility:private"],
 )
 
@@ -161,10 +179,8 @@ _java_import(
     name = "guava",
     jars = ["@guava//file"],
     srcjar = "@guava__sources//file",
-    tags = ["maven_coordinates=com.google.guava:guava:27.1-jre"],
-    visibility = ["//visibility:private"],
+    tags = ["maven_coordinates=com.google.guava:guava:33.4.0-jre"],
     deps = [
-        ":animal_sniffer_annotations",
         ":checker_qual",
         ":error_prone_annotations",
         ":failureaccess",
@@ -192,7 +208,7 @@ _java_import(
     name = "j2objc_annotations",
     jars = ["@j2objc_annotations//file"],
     srcjar = "@j2objc_annotations__sources//file",
-    tags = ["maven_coordinates=com.google.j2objc:j2objc-annotations:1.1"],
+    tags = ["maven_coordinates=com.google.j2objc:j2objc-annotations:3.0.0"],
     visibility = ["//visibility:private"],
 )
 
@@ -216,7 +232,7 @@ _java_import(
     name = "nullaway",
     jars = ["@nullaway//file"],
     srcjar = "@nullaway__sources//file",
-    tags = ["maven_coordinates=com.uber.nullaway:nullaway:0.13.7"],
+    tags = ["maven_coordinates=com.uber.nullaway:nullaway:0.14.2"],
     runtime_deps = [
         ":dataflow_nullaway",
         ":guava",
@@ -338,17 +354,9 @@ _java_import(
     name = "dataflow_nullaway",
     jars = ["@dataflow_nullaway//file"],
     srcjar = "@dataflow_nullaway__sources//file",
-    tags = ["maven_coordinates=org.checkerframework:dataflow-nullaway:4.0.0"],
+    tags = ["maven_coordinates=org.checkerframework:dataflow-nullaway:4.2.3"],
     visibility = ["//visibility:private"],
     runtime_deps = [":checker_qual"],
-)
-
-_java_import(
-    name = "animal_sniffer_annotations",
-    jars = ["@animal_sniffer_annotations//file"],
-    srcjar = "@animal_sniffer_annotations__sources//file",
-    tags = ["maven_coordinates=org.codehaus.mojo:animal-sniffer-annotations:1.17"],
-    visibility = ["//visibility:private"],
 )
 
 _java_import(

@@ -14,7 +14,6 @@ java_library(
         "TransactionInterceptorSupport.java",
         "package-info.java",
     ],
-    nullaway = True,
     plugins = [
         "//processor:sting_processor_plugin",
     ],

@@ -10,6 +10,6 @@ import sting.Named;
 @NullMarked
 public interface ComplexDependencyModel {
     default Runnable provideRunnable(@Named("threadName") String name, int priority, @Nullable EventListener listener) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

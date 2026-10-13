@@ -4,6 +4,7 @@ import sting.Fragment;
 import sting.Injector;
 
 @Injector
+@org.jspecify.annotations.NullMarked
 public interface DeprecatedFragmentNodeInjectorModel {
     Runnable getRunnable();
 
@@ -11,7 +12,7 @@ public interface DeprecatedFragmentNodeInjectorModel {
     @Fragment
     interface MyFragment {
         default Runnable provideRunnable() {
-            return null;
+            throw new UnsupportedOperationException();
         }
     }
 }

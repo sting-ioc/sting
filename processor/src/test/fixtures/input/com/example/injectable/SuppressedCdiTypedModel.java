@@ -6,4 +6,5 @@ import sting.Injectable;
 @SuppressWarnings("Sting:CdiTypedPresent")
 @Injectable
 @Typed
+@org.jspecify.annotations.NullMarked
 public class SuppressedCdiTypedModel {}

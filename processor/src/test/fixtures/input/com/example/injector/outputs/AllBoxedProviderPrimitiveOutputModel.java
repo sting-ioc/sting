@@ -4,6 +4,7 @@ import sting.Fragment;
 import sting.Injector;
 
 @Injector
+@org.jspecify.annotations.NullMarked
 interface AllBoxedProviderPrimitiveOutputModel {
     boolean getValue1();
 

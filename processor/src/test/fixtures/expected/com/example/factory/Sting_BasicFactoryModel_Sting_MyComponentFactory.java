@@ -10,6 +10,10 @@ public final class Sting_BasicFactoryModel_Sting_MyComponentFactory {
   private Sting_BasicFactoryModel_Sting_MyComponentFactory() {
   }
 
+  @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull"
+  })
   public static BasicFactoryModel_Sting_MyComponentFactory create(
       final BasicFactoryModel.SomeService someService) {
     return new BasicFactoryModel_Sting_MyComponentFactory( Objects.requireNonNull( someService ) );

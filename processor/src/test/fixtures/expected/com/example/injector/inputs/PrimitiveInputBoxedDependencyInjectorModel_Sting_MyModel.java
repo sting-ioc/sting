@@ -10,6 +10,10 @@ public final class PrimitiveInputBoxedDependencyInjectorModel_Sting_MyModel {
   private PrimitiveInputBoxedDependencyInjectorModel_Sting_MyModel() {
   }
 
+  @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull"
+  })
   public static Object create(final Integer value) {
     return new PrimitiveInputBoxedDependencyInjectorModel.MyModel( Objects.requireNonNull( value ) );
   }

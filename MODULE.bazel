@@ -69,44 +69,58 @@ _http_file(
 
 _http_file(
     name = "error_prone_annotations",
-    downloaded_file_path = "com/google/errorprone/error_prone_annotations/2.2.0/error_prone_annotations-2.2.0.jar",
-    sha256 = "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.2.0/error_prone_annotations-2.2.0.jar"],
+    downloaded_file_path = "com/google/errorprone/error_prone_annotations/2.36.0/error_prone_annotations-2.36.0.jar",
+    sha256 = "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.36.0/error_prone_annotations-2.36.0.jar"],
 )
 
 _http_file(
     name = "error_prone_annotations__sources",
-    downloaded_file_path = "com/google/errorprone/error_prone_annotations/2.2.0/error_prone_annotations-2.2.0-sources.jar",
-    sha256 = "626adccd4894bee72c3f9a0384812240dcc1282fb37a87a3f6cb94924a089496",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.2.0/error_prone_annotations-2.2.0-sources.jar"],
+    downloaded_file_path = "com/google/errorprone/error_prone_annotations/2.36.0/error_prone_annotations-2.36.0-sources.jar",
+    sha256 = "7e117e0931cb2cb4226372af336189b49edb79969d120ec958a6df0beacb0612",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.36.0/error_prone_annotations-2.36.0-sources.jar"],
+)
+
+_http_file(
+    name = "error_prone_core",
+    downloaded_file_path = "com/google/errorprone/error_prone_core/2.42.0/error_prone_core-2.42.0-with-dependencies.jar",
+    sha256 = "f9e747a2ff76dfae6bc0f71fc8c259b7493ecc093a96d3223d5b2669a996b0a7",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_core/2.42.0/error_prone_core-2.42.0-with-dependencies.jar"],
+)
+
+_http_file(
+    name = "error_prone_core__sources",
+    downloaded_file_path = "com/google/errorprone/error_prone_core/2.42.0/error_prone_core-2.42.0-sources.jar",
+    sha256 = "a955a8b5dfe197628a59dbd0b72e9fee232b9e0c2322340ed5e810162793bc01",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_core/2.42.0/error_prone_core-2.42.0-sources.jar"],
 )
 
 _http_file(
     name = "failureaccess",
-    downloaded_file_path = "com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar",
-    sha256 = "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar"],
+    downloaded_file_path = "com/google/guava/failureaccess/1.0.2/failureaccess-1.0.2.jar",
+    sha256 = "8a8f81cf9b359e3f6dfa691a1e776985c061ef2f223c9b2c80753e1b458e8064",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.2/failureaccess-1.0.2.jar"],
 )
 
 _http_file(
     name = "failureaccess__sources",
-    downloaded_file_path = "com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1-sources.jar",
-    sha256 = "092346eebbb1657b51aa7485a246bf602bb464cc0b0e2e1c7e7201fadce1e98f",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1-sources.jar"],
+    downloaded_file_path = "com/google/guava/failureaccess/1.0.2/failureaccess-1.0.2-sources.jar",
+    sha256 = "dd3bfa5e2ec5bc5397efb2c3cef044c192313ff77089573667ff97a60c6978e0",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/guava/failureaccess/1.0.2/failureaccess-1.0.2-sources.jar"],
 )
 
 _http_file(
     name = "guava",
-    downloaded_file_path = "com/google/guava/guava/27.1-jre/guava-27.1-jre.jar",
-    sha256 = "4a5aa70cc968a4d137e599ad37553e5cfeed2265e8c193476d7119036c536fe7",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/guava/guava/27.1-jre/guava-27.1-jre.jar"],
+    downloaded_file_path = "com/google/guava/guava/33.4.0-jre/guava-33.4.0-jre.jar",
+    sha256 = "b918c98a7e44dbe94ebd9fe3e40cddaadb5a93e6a78eb6008b42df237241e538",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/guava/guava/33.4.0-jre/guava-33.4.0-jre.jar"],
 )
 
 _http_file(
     name = "guava__sources",
-    downloaded_file_path = "com/google/guava/guava/27.1-jre/guava-27.1-jre-sources.jar",
-    sha256 = "9de05c573971cedfcd53fb85fc7a58a5f453053026a9bf18594cffc79a1d6874",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/guava/guava/27.1-jre/guava-27.1-jre-sources.jar"],
+    downloaded_file_path = "com/google/guava/guava/33.4.0-jre/guava-33.4.0-jre-sources.jar",
+    sha256 = "55ef6603b6ab1f6e3ae810b127561650ed682eb5f3fb50a212a658a74087b457",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/guava/guava/33.4.0-jre/guava-33.4.0-jre-sources.jar"],
 )
 
 _http_file(
@@ -132,16 +146,16 @@ _http_file(
 
 _http_file(
     name = "j2objc_annotations",
-    downloaded_file_path = "com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar",
-    sha256 = "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar"],
+    downloaded_file_path = "com/google/j2objc/j2objc-annotations/3.0.0/j2objc-annotations-3.0.0.jar",
+    sha256 = "88241573467ddca44ffd4d74aa04c2bbfd11bf7c17e0c342c94c9de7a70a7c64",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/3.0.0/j2objc-annotations-3.0.0.jar"],
 )
 
 _http_file(
     name = "j2objc_annotations__sources",
-    downloaded_file_path = "com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1-sources.jar",
-    sha256 = "2cd9022a77151d0b574887635cdfcdf3b78155b602abc89d7f8e62aba55cfb4f",
-    urls = ["https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1-sources.jar"],
+    downloaded_file_path = "com/google/j2objc/j2objc-annotations/3.0.0/j2objc-annotations-3.0.0-sources.jar",
+    sha256 = "bd60019a0423c3a025ef6ab24fe0761f5f45ffb48a8cca74a01b678de1105d38",
+    urls = ["https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/3.0.0/j2objc-annotations-3.0.0-sources.jar"],
 )
 
 _http_file(
@@ -174,16 +188,16 @@ _http_file(
 
 _http_file(
     name = "nullaway",
-    downloaded_file_path = "com/uber/nullaway/nullaway/0.13.7/nullaway-0.13.7.jar",
-    sha256 = "6bcb696ddcfa0f7cc12b90face8e7af041063f278cd9f3f07de2c53262e24d68",
-    urls = ["https://repo.maven.apache.org/maven2/com/uber/nullaway/nullaway/0.13.7/nullaway-0.13.7.jar"],
+    downloaded_file_path = "com/uber/nullaway/nullaway/0.14.2/nullaway-0.14.2.jar",
+    sha256 = "eb02eb2da5ee30bcac4621a259a84153b20690078dc47ef920589b8371f456ed",
+    urls = ["https://repo.maven.apache.org/maven2/com/uber/nullaway/nullaway/0.14.2/nullaway-0.14.2.jar"],
 )
 
 _http_file(
     name = "nullaway__sources",
-    downloaded_file_path = "com/uber/nullaway/nullaway/0.13.7/nullaway-0.13.7-sources.jar",
-    sha256 = "dded4e9757854d213d0d23c74ba832608686a579f46a51c20b2623a4dec9e88a",
-    urls = ["https://repo.maven.apache.org/maven2/com/uber/nullaway/nullaway/0.13.7/nullaway-0.13.7-sources.jar"],
+    downloaded_file_path = "com/uber/nullaway/nullaway/0.14.2/nullaway-0.14.2-sources.jar",
+    sha256 = "33364b77d956541686ac2b421e0659c379bc5cd7541dbe86317db50987cad5eb",
+    urls = ["https://repo.maven.apache.org/maven2/com/uber/nullaway/nullaway/0.14.2/nullaway-0.14.2-sources.jar"],
 )
 
 _http_file(
@@ -384,30 +398,16 @@ _http_file(
 
 _http_file(
     name = "dataflow_nullaway",
-    downloaded_file_path = "org/checkerframework/dataflow-nullaway/4.0.0/dataflow-nullaway-4.0.0.jar",
-    sha256 = "4038b94f4a58f5895a19dde9c9c04ee4cc8bf25e83d4ef10152428e760783f9a",
-    urls = ["https://repo.maven.apache.org/maven2/org/checkerframework/dataflow-nullaway/4.0.0/dataflow-nullaway-4.0.0.jar"],
+    downloaded_file_path = "org/checkerframework/dataflow-nullaway/4.2.3/dataflow-nullaway-4.2.3.jar",
+    sha256 = "0524cc55673ac10f08d74ca659f7a12c9ce74fba1120a61950c5011b843fb25e",
+    urls = ["https://repo.maven.apache.org/maven2/org/checkerframework/dataflow-nullaway/4.2.3/dataflow-nullaway-4.2.3.jar"],
 )
 
 _http_file(
     name = "dataflow_nullaway__sources",
-    downloaded_file_path = "org/checkerframework/dataflow-nullaway/4.0.0/dataflow-nullaway-4.0.0-sources.jar",
-    sha256 = "440646716bf06c054ef7437ee3e3006e5be79b9076e9492f4c8124b2aad9587d",
-    urls = ["https://repo.maven.apache.org/maven2/org/checkerframework/dataflow-nullaway/4.0.0/dataflow-nullaway-4.0.0-sources.jar"],
-)
-
-_http_file(
-    name = "animal_sniffer_annotations",
-    downloaded_file_path = "org/codehaus/mojo/animal-sniffer-annotations/1.17/animal-sniffer-annotations-1.17.jar",
-    sha256 = "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
-    urls = ["https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-annotations/1.17/animal-sniffer-annotations-1.17.jar"],
-)
-
-_http_file(
-    name = "animal_sniffer_annotations__sources",
-    downloaded_file_path = "org/codehaus/mojo/animal-sniffer-annotations/1.17/animal-sniffer-annotations-1.17-sources.jar",
-    sha256 = "2571474a676f775a8cdd15fb9b1da20c4c121ed7f42a5d93fca0e7b6e2015b40",
-    urls = ["https://repo.maven.apache.org/maven2/org/codehaus/mojo/animal-sniffer-annotations/1.17/animal-sniffer-annotations-1.17-sources.jar"],
+    downloaded_file_path = "org/checkerframework/dataflow-nullaway/4.2.3/dataflow-nullaway-4.2.3-sources.jar",
+    sha256 = "e469812d1c3afbc9afe2baae5fe2f37a384c3337c2cb4673968e51ee4b008d05",
+    urls = ["https://repo.maven.apache.org/maven2/org/checkerframework/dataflow-nullaway/4.2.3/dataflow-nullaway-4.2.3-sources.jar"],
 )
 
 _http_file(

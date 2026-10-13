@@ -9,6 +9,7 @@ import sting.Injector;
 @Injector(
         fragmentOnly = false,
         includes = {TodoRepository.class, BrowserLocationFragment.class, TodoService.class, ViewService.class})
+@org.jspecify.annotations.NullMarked
 public interface TodoInjector {
     TodoService getTodoService();
 

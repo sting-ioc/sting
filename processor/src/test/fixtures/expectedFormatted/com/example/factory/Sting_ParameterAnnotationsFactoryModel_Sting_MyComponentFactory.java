@@ -9,6 +9,7 @@ import org.jspecify.annotations.NullMarked;
 public final class Sting_ParameterAnnotationsFactoryModel_Sting_MyComponentFactory {
   private Sting_ParameterAnnotationsFactoryModel_Sting_MyComponentFactory() {}
 
+  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public static ParameterAnnotationsFactoryModel_Sting_MyComponentFactory create(
       final ParameterAnnotationsFactoryModel.SomeService someService) {
     return new ParameterAnnotationsFactoryModel_Sting_MyComponentFactory(

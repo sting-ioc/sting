@@ -4,8 +4,9 @@ import java.util.Collection;
 import sting.Fragment;
 
 @Fragment
+@org.jspecify.annotations.NullMarked
 public interface CollectionDependencyModel {
     default Runnable provideRunnable(Collection<String> name) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

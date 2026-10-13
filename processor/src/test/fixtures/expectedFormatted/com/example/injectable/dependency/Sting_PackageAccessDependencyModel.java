@@ -11,7 +11,8 @@ import org.jspecify.annotations.NullMarked;
 public final class Sting_PackageAccessDependencyModel {
   private Sting_PackageAccessDependencyModel() {}
 
-  @SuppressWarnings({"rawtypes", "unchecked"})
+  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull", "rawtypes", "unchecked"
+  })
   public static PackageAccessDependencyModel create(
       final Object instance,
       final Supplier supplier,

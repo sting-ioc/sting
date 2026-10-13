@@ -7,6 +7,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
+@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_SingleIncludesModel implements SingleIncludesModel {
   private final Sting_MyFragment fragment1 = new Sting_MyFragment();

@@ -5,6 +5,6 @@ import sting.Injectable;
 @Injectable
 public class BookCatalog {
     public Book queryByIsbn(String isbn) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

@@ -5,20 +5,21 @@ import java.util.function.Supplier;
 import sting.Fragment;
 
 @Fragment
+@org.jspecify.annotations.NullMarked
 public interface PublicAccessDependencyModel {
     default MyType1 provideMyType1(MyType2 v) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     default MyType2 provideMyType2(Supplier<MyType3> v) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     default MyType3 provideMyType3(Collection<MyType4> v) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     default MyType4 provideMyType4(Collection<Supplier<MyType5>> v) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

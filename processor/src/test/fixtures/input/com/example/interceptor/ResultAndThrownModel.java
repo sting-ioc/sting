@@ -14,6 +14,7 @@ import sting.interceptors.InterceptorBinding;
 import sting.interceptors.Result;
 import sting.interceptors.Thrown;
 
+@org.jspecify.annotations.NullMarked
 public final class ResultAndThrownModel {
     private ResultAndThrownModel() {}
 
@@ -60,7 +61,7 @@ public final class ResultAndThrownModel {
     @Injectable
     public static class TraceInterceptor {
         @After
-        public void after(@Result final Object result) {}
+        public void after(@Result final @org.jspecify.annotations.Nullable Object result) {}
 
         @AfterException
         public void afterException(@Thrown final Throwable throwable) {}

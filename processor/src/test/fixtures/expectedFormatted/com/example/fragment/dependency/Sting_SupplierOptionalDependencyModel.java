@@ -10,6 +10,7 @@ import org.jspecify.annotations.NullMarked;
 @Generated("sting.processor.StingProcessor")
 public final class Sting_SupplierOptionalDependencyModel
     implements SupplierOptionalDependencyModel {
+  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public Runnable $sting$_provideRunnable(final Supplier<Optional<String>> name) {
     return provideRunnable(Objects.requireNonNull(name));
   }

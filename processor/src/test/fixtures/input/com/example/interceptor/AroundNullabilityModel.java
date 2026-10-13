@@ -73,7 +73,7 @@ public final class AroundNullabilityModel {
     @Injectable
     public static class TraceInterceptor {
         @Around
-        public Object around(@Proceed final Invocation invocation) throws Throwable {
+        public @org.jspecify.annotations.Nullable Object around(@Proceed final Invocation invocation) throws Throwable {
             return invocation.proceed();
         }
     }

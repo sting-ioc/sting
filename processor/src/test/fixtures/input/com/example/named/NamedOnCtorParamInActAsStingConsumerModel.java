@@ -3,6 +3,7 @@ package com.example.named;
 import sting.ActAsStingConsumer;
 import sting.Named;
 
+@org.jspecify.annotations.NullMarked
 public class NamedOnCtorParamInActAsStingConsumerModel {
     @ActAsStingConsumer
     @interface MyFramework {}

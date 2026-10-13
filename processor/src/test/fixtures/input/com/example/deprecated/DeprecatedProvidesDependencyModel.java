@@ -2,6 +2,7 @@ package com.example.deprecated;
 
 import sting.Fragment;
 
+@org.jspecify.annotations.NullMarked
 public interface DeprecatedProvidesDependencyModel {
     @SuppressWarnings("DeprecatedIsStillUsed")
     @Deprecated
@@ -10,7 +11,7 @@ public interface DeprecatedProvidesDependencyModel {
     @Fragment
     interface MyFragment {
         default Runnable provideRunnable(MyDeprecatedValue value) {
-            return null;
+            throw new UnsupportedOperationException();
         }
     }
 }

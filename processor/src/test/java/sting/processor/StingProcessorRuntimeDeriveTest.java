@@ -24,6 +24,7 @@ public final class StingProcessorRuntimeDeriveTest extends AbstractStingProcesso
 
         final List<File> classPath = buildClasspath(targetDir.toFile());
         final Compilation stage2 = CompileTestUtil.compile(
+                javaCompiler(),
                 Collections.singletonList(input("unresolved", "com.example.injector.UnresolvedElementsInjectorModel")),
                 getOptions(),
                 processors(),
@@ -43,6 +44,7 @@ public final class StingProcessorRuntimeDeriveTest extends AbstractStingProcesso
 
         final List<File> classPath = buildClasspath(targetDir.toFile());
         final Compilation stage2 = CompileTestUtil.compile(
+                javaCompiler(),
                 Collections.singletonList(input("unresolved", "com.example.autodetect.AppInjector")),
                 getOptions(),
                 processors(),
@@ -64,6 +66,7 @@ public final class StingProcessorRuntimeDeriveTest extends AbstractStingProcesso
 
         final List<File> classPath = buildClasspath(targetDir.toFile());
         final Compilation stage2 = CompileTestUtil.compile(
+                javaCompiler(),
                 Collections.singletonList(input("unresolved", "com.example.autodetect.provider.AppInjector")),
                 getOptions(),
                 processors(),

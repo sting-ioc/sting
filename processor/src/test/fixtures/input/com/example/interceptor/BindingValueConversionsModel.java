@@ -12,6 +12,7 @@ import sting.interceptors.Before;
 import sting.interceptors.BindingValue;
 import sting.interceptors.InterceptorBinding;
 
+@org.jspecify.annotations.NullMarked
 public final class BindingValueConversionsModel {
     private BindingValueConversionsModel() {}
 

@@ -1,5 +1,6 @@
 package sting.processor;
 
+import com.palantir.javapoet.AnnotationSpec;
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.CodeBlock;
 import com.palantir.javapoet.FieldSpec;
@@ -38,6 +39,9 @@ final class InjectorGenerator {
         GeneratorUtil.addOriginatingTypes(element, builder);
         GeneratorUtil.copyWhitelistedAnnotations(element, builder);
         builder.addAnnotation(ClassName.get("org.jspecify.annotations", "NullMarked"));
+        builder.addAnnotation(AnnotationSpec.builder(SuppressWarnings.class)
+                .addMember("value", "$S", "UnusedVariable")
+                .build());
         GeneratorUtil.addGeneratedAnnotation(processingEnv, builder, StingProcessor.class.getName());
 
         builder.addSuperinterface(GeneratorUtil.getTypeName(element.asType()));

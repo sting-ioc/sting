@@ -10,6 +10,7 @@ import sting.Injector;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
+@org.jspecify.annotations.NullMarked
 public final class ProviderBindingSourceModel {
     private ProviderBindingSourceModel() {}
 

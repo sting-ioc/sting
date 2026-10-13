@@ -12,6 +12,8 @@ public final class SupplierBrokenChainedCircularDependencyModel_Sting_MyModel3 {
   }
 
   @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull",
       "rawtypes",
       "unchecked"
   })

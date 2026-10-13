@@ -16,6 +16,7 @@ import jakarta.transaction.TransactionRequiredException;
 import jakarta.transaction.TransactionalException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.transaction.xa.XAResource;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -64,7 +65,7 @@ public final class TransactionInterceptorTest {
                 TransactionalException.class,
                 () -> new MandatoryTransactionInterceptor(manager).around(invocation(manager, "target", null)));
 
-        assertEquals(exception.getCause().getClass(), TransactionRequiredException.class);
+        assertEquals(Objects.requireNonNull(exception.getCause()).getClass(), TransactionRequiredException.class);
         manager.assertTrace("getTransaction");
     }
 
@@ -110,7 +111,7 @@ public final class TransactionInterceptorTest {
                 TransactionalException.class,
                 () -> new NeverTransactionInterceptor(manager).around(invocation(manager, "target", null)));
 
-        assertEquals(exception.getCause().getClass(), InvalidTransactionException.class);
+        assertEquals(Objects.requireNonNull(exception.getCause()).getClass(), InvalidTransactionException.class);
         manager.assertTrace("getTransaction");
     }
 

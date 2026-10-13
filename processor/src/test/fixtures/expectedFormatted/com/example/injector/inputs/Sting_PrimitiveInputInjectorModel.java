@@ -4,6 +4,7 @@ import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
+@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_PrimitiveInputInjectorModel implements PrimitiveInputInjectorModel {
   private final double node1;

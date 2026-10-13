@@ -5,6 +5,7 @@ import sting.Typed;
 
 @Injectable
 @Typed( LibModel.class )
+@org.jspecify.annotations.NullMarked
 public class LibModelImpl
   extends LibModel
 {

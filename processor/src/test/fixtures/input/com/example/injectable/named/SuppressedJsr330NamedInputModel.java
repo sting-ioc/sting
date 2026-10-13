@@ -5,6 +5,7 @@ import sting.Injectable;
 
 @SuppressWarnings("CdiManagedBeanInconsistencyInspection")
 @Injectable
+@org.jspecify.annotations.NullMarked
 public class SuppressedJsr330NamedInputModel {
     @SuppressWarnings("Sting:Jsr330NamedPresent")
     SuppressedJsr330NamedInputModel(@Named int someParam) {}

@@ -10,6 +10,10 @@ public final class Sting_Arez_TodoService {
   private Sting_Arez_TodoService() {
   }
 
+  @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull"
+  })
   public static Object create(final TodoRepository repository) {
     return new Arez_TodoService( Objects.requireNonNull( repository ) );
   }

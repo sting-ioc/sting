@@ -9,6 +9,7 @@ import org.jspecify.annotations.NullMarked;
 public final class Sting_PrimitiveDependencyModel {
   private Sting_PrimitiveDependencyModel() {}
 
+  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public static PrimitiveDependencyModel create(
       final boolean bool,
       final char ch,

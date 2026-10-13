@@ -3,6 +3,7 @@ package com.example.injectable;
 import sting.Injectable;
 import sting.Typed;
 
+@org.jspecify.annotations.NullMarked
 public class ExposeTypesModel {
     public interface MyMarkerInterface {}
 

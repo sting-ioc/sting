@@ -7,4 +7,5 @@ import sting.Typed;
 @Eager
 @Injectable
 @Typed({})
+@org.jspecify.annotations.NullMarked
 public class NoTypesModel {}

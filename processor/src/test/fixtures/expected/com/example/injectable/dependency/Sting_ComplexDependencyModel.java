@@ -13,6 +13,10 @@ public final class Sting_ComplexDependencyModel {
   private Sting_ComplexDependencyModel() {
   }
 
+  @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull"
+  })
   public static ComplexDependencyModel create(final Runnable runnable,
       final @Nullable EventListener listener, final Serializable serializable,
       final int countDown) {

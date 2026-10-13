@@ -3,10 +3,11 @@ package com.example.injector;
 import sting.Fragment;
 
 @Fragment
+@org.jspecify.annotations.NullMarked
 public interface MyFragment
 {
   default Runnable provideRunnable()
   {
-    return null;
+    throw new UnsupportedOperationException();
   }
 }

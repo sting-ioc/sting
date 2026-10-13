@@ -10,7 +10,11 @@ public final class SupplierBrokenDirectCircularDependencyModel_Sting_MyModel1 {
   private SupplierBrokenDirectCircularDependencyModel_Sting_MyModel1() {
   }
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull",
+      "unchecked"
+  })
   public static Object create(final Object model) {
     return new SupplierBrokenDirectCircularDependencyModel.MyModel1( Objects.requireNonNull( (SupplierBrokenDirectCircularDependencyModel.MyModel2) model ) );
   }

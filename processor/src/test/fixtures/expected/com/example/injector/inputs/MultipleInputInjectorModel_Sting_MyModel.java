@@ -10,6 +10,10 @@ public final class MultipleInputInjectorModel_Sting_MyModel {
   private MultipleInputInjectorModel_Sting_MyModel() {
   }
 
+  @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull"
+  })
   public static Object create(final Runnable runnable) {
     return new MultipleInputInjectorModel.MyModel( Objects.requireNonNull( runnable ) );
   }

@@ -5,14 +5,91 @@ import static org.testng.Assert.*;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import org.realityforge.proton.qa.Compilation;
+import org.realityforge.proton.qa.CompileTestUtil;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public final class StingNullabilityTest extends AbstractStingProcessorTest {
+    @Test
+    public void generatedNullnessViolationsFailChecking() throws IOException {
+        final var synthesizer = new AbstractProcessor() {
+            private boolean _generated;
+
+            @Override
+            public Set<String> getSupportedAnnotationTypes() {
+                return Set.of("*");
+            }
+
+            @Override
+            public SourceVersion getSupportedSourceVersion() {
+                return SourceVersion.RELEASE_17;
+            }
+
+            @Override
+            public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment round) {
+                if (!_generated) {
+                    _generated = true;
+                    try (final var writer = processingEnv
+                            .getFiler()
+                            .createSourceFile("samples.InvalidGenerated")
+                            .openWriter()) {
+                        writer.write("""
+                            package samples;
+                            @javax.annotation.processing.Generated("NullAwayControl")
+                            @org.jspecify.annotations.NullMarked
+                            final class InvalidGenerated {
+                              static int length(@org.jspecify.annotations.Nullable String text) { return text.length(); }
+                              static java.util.List<String> values(
+                                  java.util.List<@org.jspecify.annotations.Nullable String> values) { return values; }
+                            }
+                            """);
+                    } catch (final IOException e) {
+                        throw new AssertionError(e);
+                    }
+                }
+                return false;
+            }
+        };
+        final Compilation compilation = CompileTestUtil.compile(
+                javaCompiler(),
+                List.of(source("samples.Control", "package samples; final class Control {}")),
+                getOptions(),
+                List.of(synthesizer),
+                List.of());
+        try {
+            assertCompilationUnsuccessful(compilation);
+            assertEquals(
+                    compilation.diagnostics().stream()
+                            .filter(d -> d.getKind() == Diagnostic.Kind.ERROR
+                                    && d.toString().contains("[NullAway]")
+                                    && d.toString().contains("InvalidGenerated.java"))
+                            .count(),
+                    2L,
+                    describeFailureDiagnostics(compilation));
+            compilation.assertSourceOutputFilenamePresent("samples/InvalidGenerated.java");
+        } finally {
+            for (final var directory : List.of(compilation.sourceOutput(), compilation.classOutput())) {
+                try (final var paths = Files.walk(directory)) {
+                    for (final var path :
+                            paths.sorted(Comparator.reverseOrder()).toList()) {
+                        Files.delete(path);
+                    }
+                }
+            }
+        }
+    }
+
     @Test
     public void nullableRequestMatchesRequiredProvider() {
         final Compilation compilation = compile(List.of(source("samples.Request", """
@@ -74,38 +151,51 @@ public final class StingNullabilityTest extends AbstractStingProcessorTest {
         assertErrorDiagnostic(required, "optional provider method or optional injector input");
     }
 
-    @Test
-    public void inheritedInterceptorSignaturesPreserveNestedAndArrayNullness() throws IOException {
-        final Compilation compilation = compile(List.of(source("samples.Shapes", """
-            package samples;
-            import java.lang.annotation.*;
-            import java.util.*;
-            import org.jspecify.annotations.*;
-            import sting.*;
-            import sting.interceptors.*;
-            @NullMarked
-            public final class Shapes {
-              private Shapes() {}
-              interface Parent {
-                List<@Nullable String> run(@Nullable String @Nullable [] values);
-              }
-              @Trace interface Service extends Parent {}
-              @Injectable @Typed(Service.class)
-              static class Model implements Service {
-                public List<@Nullable String> run(@Nullable String @Nullable [] values) {
-                  return Collections.emptyList();
-                }
-              }
-              @Injectable public static class TraceInterceptor {
-                @Before public void before() {}
-              }
-              @InterceptorBinding(implementedBy = "samples.Shapes.TraceInterceptor", priority = 1)
-              @Retention(RetentionPolicy.CLASS) @Target(ElementType.TYPE)
-              @interface Trace {}
-              @Injector(includes = Model.class, fragmentOnly = false)
-              interface Request { Service service(); }
+    @DataProvider(name = "interceptorPhases")
+    public Object[][] interceptorPhases() {
+        return new Object[][] {
+            {"@Before public void before() {}"},
+            {
+                "@Around public @Nullable Object around(@Proceed Invocation invocation) throws Throwable {"
+                        + " return invocation.proceed(); }"
             }
-            """)));
+        };
+    }
+
+    @Test(dataProvider = "interceptorPhases")
+    public void inheritedInterceptorSignaturesPreserveNestedAndArrayNullness(final String lifecycle)
+            throws IOException {
+        final Compilation compilation =
+                compile(List.of(source("samples.Shapes", """
+                    package samples;
+                    import java.lang.annotation.*;
+                    import java.util.*;
+                    import org.jspecify.annotations.*;
+                    import sting.*;
+                    import sting.interceptors.*;
+                    @NullMarked
+                    public final class Shapes {
+                      private Shapes() {}
+                      interface Parent {
+                        List<@Nullable String> run(@Nullable String @Nullable [] values);
+                      }
+                      @Trace interface Service extends Parent {}
+                      @Injectable @Typed(Service.class)
+                      static class Model implements Service {
+                        public List<@Nullable String> run(@Nullable String @Nullable [] values) {
+                          return Collections.emptyList();
+                        }
+                      }
+                      @Injectable public static class TraceInterceptor {
+                        @Before public void before() {}
+                      }
+                      @InterceptorBinding(implementedBy = "samples.Shapes.TraceInterceptor", priority = 1)
+                      @Retention(RetentionPolicy.CLASS) @Target(ElementType.TYPE)
+                      @interface Trace {}
+                      @Injector(includes = Model.class, fragmentOnly = false)
+                      interface Request { Service service(); }
+                    }
+                    """.replace("@Before public void before() {}", lifecycle))));
         assertCompilationSuccessful(compilation);
         final String proxy = compilation.sourceOutputFilenames().stream()
                 .filter(name -> name.endsWith("InterceptorProxy.java"))

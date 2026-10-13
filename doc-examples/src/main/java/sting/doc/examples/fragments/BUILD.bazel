@@ -22,6 +22,7 @@ doc_examples_java_library(
         "StdoutDiagnosticsReporter.java",
         "UserRepository.java",
         "UserServiceAsync.java",
+        "package-info.java",
     ],
     plugins = [
         "//processor:sting_processor_plugin",

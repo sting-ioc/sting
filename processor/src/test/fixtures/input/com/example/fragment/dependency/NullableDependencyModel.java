@@ -8,6 +8,6 @@ import sting.Fragment;
 @NullMarked
 public interface NullableDependencyModel {
     default Runnable provideRunnable(@Nullable String name) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

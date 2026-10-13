@@ -31,7 +31,11 @@ artifacts:
   - coord: jakarta.transaction:jakarta.transaction-api:2.0.1
   - coord: org.testng:testng:7.10.2
   - coord: org.jspecify:jspecify:1.0.0
-  - coord: com.uber.nullaway:nullaway:0.13.7
+  - coord: com.uber.nullaway:nullaway:0.14.2
   - coord: org.checkerframework:checker-qual:4.0.0
   - coord: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
     includeSource: false
+  - coord: com.google.errorprone:error_prone_core:jar:with-dependencies:2.42.0
+    excludes:
+      - "*:*"
+  - coord: com.google.guava:guava:33.4.0-jre

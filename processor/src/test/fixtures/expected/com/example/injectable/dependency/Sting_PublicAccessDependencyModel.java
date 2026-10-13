@@ -12,6 +12,10 @@ public final class Sting_PublicAccessDependencyModel {
   private Sting_PublicAccessDependencyModel() {
   }
 
+  @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull"
+  })
   public static PublicAccessDependencyModel create(
       final PublicAccessDependencyModel.MyType1 instance,
       final Supplier<PublicAccessDependencyModel.MyType2> supplier,

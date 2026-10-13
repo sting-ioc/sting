@@ -3,6 +3,7 @@ package com.example.fragment.types;
 import java.util.EventListener;
 import java.util.Properties;
 
+@org.jspecify.annotations.NullMarked
 public class MyModel extends Properties implements Runnable, EventListener, AutoCloseable {
     private static final long serialVersionUID = -3456430195886129035L;
 

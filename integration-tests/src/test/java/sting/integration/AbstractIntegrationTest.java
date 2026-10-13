@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.BeforeMethod;
 
 @NullMarked
@@ -13,7 +14,7 @@ public abstract class AbstractIntegrationTest {
     private static final List<String> c_trace = new ArrayList<>();
 
     public abstract static class BaseModel {
-        protected BaseModel(final Object... args) {
+        protected BaseModel(final @Nullable Object... args) {
             c_trace.add(toString() + Arrays.asList(args));
         }
 

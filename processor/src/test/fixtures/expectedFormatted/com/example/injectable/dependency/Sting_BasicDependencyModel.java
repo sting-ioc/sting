@@ -9,6 +9,7 @@ import org.jspecify.annotations.NullMarked;
 public final class Sting_BasicDependencyModel {
   private Sting_BasicDependencyModel() {}
 
+  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public static BasicDependencyModel create(final Runnable runnable) {
     return new BasicDependencyModel(Objects.requireNonNull(runnable));
   }

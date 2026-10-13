@@ -7,6 +7,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
+@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_BasicOutputModel implements BasicOutputModel {
   private @Nullable Object node1;

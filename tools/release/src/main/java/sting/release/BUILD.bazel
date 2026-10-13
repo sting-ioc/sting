@@ -4,12 +4,18 @@ package(default_visibility = ["//tools/release:__pkg__"])
 
 java_binary(
     name = "jar_builder",
-    srcs = ["JarBuilder.java"],
+    srcs = [
+        "JarBuilder.java",
+        "package-info.java",
+    ],
     main_class = "sting.release.JarBuilder",
 )
 
 java_binary(
     name = "javadoc_jar_builder",
-    srcs = ["JavadocJarBuilder.java"],
+    srcs = [
+        "JavadocJarBuilder.java",
+        "package-info.java",
+    ],
     main_class = "sting.release.JavadocJarBuilder",
 )

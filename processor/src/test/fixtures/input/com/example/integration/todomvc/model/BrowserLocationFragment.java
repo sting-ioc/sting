@@ -4,6 +4,7 @@ import sting.Eager;
 import sting.Fragment;
 
 @Fragment
+@org.jspecify.annotations.NullMarked
 public interface BrowserLocationFragment {
     @Eager
     default BrowserLocation createBrowserLocation() {

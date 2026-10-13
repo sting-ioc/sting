@@ -7,6 +7,7 @@ doc_examples_java_library(
     srcs = [
         "AcademyApplication.java",
         "LibraryApplication.java",
+        "package-info.java",
     ],
     plugins = [
         "//processor:sting_processor_plugin",

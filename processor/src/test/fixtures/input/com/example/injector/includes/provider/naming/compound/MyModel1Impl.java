@@ -5,4 +5,5 @@ import sting.Typed;
 
 @Injectable
 @Typed(MyModel1.class)
+@org.jspecify.annotations.NullMarked
 class MyModel1Impl extends MyModel1 {}

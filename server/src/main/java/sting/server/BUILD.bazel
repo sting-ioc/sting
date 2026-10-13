@@ -8,7 +8,6 @@ java_library(
         "Transactional.java",
         "package-info.java",
     ],
-    nullaway = True,
     plugins = [
         "//processor:sting_processor_plugin",
     ],

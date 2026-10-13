@@ -10,6 +10,7 @@ doc_examples_java_library(
         "HttpClient.java",
         "SimulationFragment.java",
         "SimulationSystem.java",
+        "package-info.java",
     ],
     plugins = [
         "//processor:sting_processor_plugin",

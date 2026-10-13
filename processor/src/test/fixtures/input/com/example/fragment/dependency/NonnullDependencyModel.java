@@ -7,6 +7,6 @@ import sting.Fragment;
 @NullMarked
 public interface NonnullDependencyModel {
     default Runnable provideRunnable(String name) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

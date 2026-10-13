@@ -9,6 +9,7 @@ java_library(
         "Model2.java",
         "MyService1.java",
         "MyService2.java",
+        "package-info.java",
     ],
     plugins = [
         "//processor:sting_processor_plugin",

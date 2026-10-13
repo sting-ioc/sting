@@ -8,7 +8,7 @@ public interface SimulationFragment {
     @Named("system:particleSystem")
     default SimulationSystem provideParticleSimulationSystem(@Named("system:lighting") SimulationSystem lighting) {
         // DOC ELIDE START
-        return null;
+        throw new UnsupportedOperationException();
         // DOC ELIDE END
     }
     // DOC ELIDE START

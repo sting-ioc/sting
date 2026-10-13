@@ -7,6 +7,7 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_PrimitiveDependencyModel implements PrimitiveDependencyModel {
+  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public Runnable $sting$_provideRunnable(
       final boolean bool,
       final char ch,

@@ -7,6 +7,10 @@ import org.jspecify.annotations.Nullable;
 @NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_NullableDependencyModel implements NullableDependencyModel {
+  @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull"
+  })
   public Runnable $sting$_provideRunnable(final @Nullable String name) {
     return provideRunnable( name );
   }

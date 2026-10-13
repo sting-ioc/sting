@@ -10,6 +10,7 @@ import org.jspecify.annotations.NullMarked;
 public final class Sting_MultipleDependencyModel {
   private Sting_MultipleDependencyModel() {}
 
+  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public static MultipleDependencyModel create(
       final Runnable runnable, final EventListener listener) {
     return new MultipleDependencyModel(

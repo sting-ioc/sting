@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import org.jspecify.annotations.NullMarked;
@@ -437,13 +438,13 @@ public final class InterceptorsIntegrationTest {
                 @ServiceType final String serviceType,
                 @MethodName final String methodName,
                 @BindingValue("value") final String value,
-                @Arguments final Object[] arguments) {
+                @Arguments final @Nullable Object[] arguments) {
             c_trace.add("before:" + serviceType.substring(serviceType.lastIndexOf('.') + 1) + "." + methodName + ":"
                     + value + ":" + arguments.length);
         }
 
         @After
-        public void after(@MethodName final String methodName, @Result final Object result) {
+        public void after(@MethodName final String methodName, @Result final @Nullable Object result) {
             c_trace.add("after:" + methodName + ":" + result);
         }
 
@@ -512,19 +513,19 @@ public final class InterceptorsIntegrationTest {
         }
 
         @Around
-        public Object around(
+        public @Nullable Object around(
                 @Proceed final Invocation invocation,
                 @ServiceType final String serviceType,
                 @MethodName final String methodName,
                 @BindingValue("value") final String binding,
-                @Arguments final Object[] arguments)
+                @Arguments final @Nullable Object[] arguments)
                 throws Throwable {
             return InterceptorsIntegrationTest.around(
                     "outerAround", c_outerAroundMode, invocation, serviceType, methodName, binding, arguments);
         }
 
         @After
-        public void after(@Result final Object result) {
+        public void after(@Result final @Nullable Object result) {
             c_trace.add("outerAround:after:" + result);
         }
 
@@ -544,19 +545,19 @@ public final class InterceptorsIntegrationTest {
         }
 
         @Around
-        public Object around(
+        public @Nullable Object around(
                 @Proceed final Invocation invocation,
                 @ServiceType final String serviceType,
                 @MethodName final String methodName,
                 @BindingValue("value") final String binding,
-                @Arguments final Object[] arguments)
+                @Arguments final @Nullable Object[] arguments)
                 throws Throwable {
             return InterceptorsIntegrationTest.around(
                     "innerAround", c_innerAroundMode, invocation, serviceType, methodName, binding, arguments);
         }
 
         @After
-        public void after(@Result final Object result) {
+        public void after(@Result final @Nullable Object result) {
             c_trace.add("innerAround:after:" + result);
         }
 
@@ -574,7 +575,7 @@ public final class InterceptorsIntegrationTest {
             final String serviceType,
             final String methodName,
             final String binding,
-            final Object[] arguments)
+            final @Nullable Object[] arguments)
             throws Throwable {
         c_trace.add(name + ":around:enter:" + serviceType.substring(serviceType.lastIndexOf('.') + 1) + "." + methodName
                 + ":" + binding + ":" + Arrays.toString(arguments));
@@ -593,7 +594,7 @@ public final class InterceptorsIntegrationTest {
                 yield invocation.proceed();
             }
             case REPLACE_ARGUMENTS -> proceed(name, invocation, new Object[] {"replacement", 2});
-            case NULL_REPLACEMENT -> invocation.proceed(null);
+            case NULL_REPLACEMENT -> invocation.proceed(invalidNullArguments());
             case WRONG_COUNT_REPLACEMENT -> invocation.proceed(new Object[] {"only"});
             case WRONG_COUNT_THEN_PROCEED -> {
                 try {
@@ -617,7 +618,12 @@ public final class InterceptorsIntegrationTest {
         };
     }
 
-    private static Object proceed(final String name, final Invocation invocation) throws Throwable {
+    @SuppressWarnings({"NullAway", "ReturnMissingNullable"})
+    private static @Nullable Object[] invalidNullArguments() {
+        return null; // Deliberately violate Invocation's array contract to test its runtime check.
+    }
+
+    private static @Nullable Object proceed(final String name, final Invocation invocation) throws Throwable {
         try {
             final Object result = invocation.proceed();
             c_trace.add(name + ":around:exit:" + result);
@@ -628,8 +634,8 @@ public final class InterceptorsIntegrationTest {
         }
     }
 
-    private static Object proceed(final String name, final Invocation invocation, final Object[] arguments)
-            throws Throwable {
+    private static @Nullable Object proceed(
+            final String name, final Invocation invocation, final @Nullable Object[] arguments) throws Throwable {
         try {
             final Object result = invocation.proceed(arguments);
             c_trace.add(name + ":around:exit:" + result);
@@ -1002,8 +1008,8 @@ public final class InterceptorsIntegrationTest {
                 UndeclaredThrowableException.class,
                 () -> AroundInjector.create().service().echo("a"));
 
-        assertEquals(exception.getCause().getClass(), Exception.class);
-        assertEquals(exception.getCause().getMessage(), "innerAround-undeclared");
+        assertEquals(Objects.requireNonNull(exception.getCause()).getClass(), Exception.class);
+        assertEquals(Objects.requireNonNull(exception.getCause()).getMessage(), "innerAround-undeclared");
         assertTrue(c_trace.contains("innerAround:exception:Exception:innerAround-undeclared"));
         assertTrue(c_trace.contains("outerAround:exception:Exception:innerAround-undeclared"));
     }
@@ -1330,7 +1336,7 @@ public final class InterceptorsIntegrationTest {
 
         final SupplierCycleService service = SupplierCycleInjector.create().service();
         assertNotNull(c_supplierCycleServiceSupplier);
-        assertSame(c_supplierCycleServiceSupplier.get(), service);
+        assertSame(Objects.requireNonNull(c_supplierCycleServiceSupplier).get(), service);
 
         service.run();
         assertEquals(c_trace, List.of("supplierCycle:before", "target:supplierCycle"));

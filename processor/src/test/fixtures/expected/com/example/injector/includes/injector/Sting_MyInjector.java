@@ -7,6 +7,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
+@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_MyInjector implements MyInjector {
   private final Sting_Sting_MyOtherInjectorModel_Provider fragment1 = new Sting_Sting_MyOtherInjectorModel_Provider();

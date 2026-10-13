@@ -5,4 +5,5 @@ import sting.Injectable;
 
 @Injectable
 @Typed
+@org.jspecify.annotations.NullMarked
 public class CdiTypedModel {}

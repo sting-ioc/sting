@@ -4,9 +4,10 @@ import sting.Fragment;
 import sting.Named;
 
 @Fragment
+@org.jspecify.annotations.NullMarked
 public interface BasicQualifierModel {
     @Named("com.bix/SomeQualifier")
     default Runnable provideRunnable() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

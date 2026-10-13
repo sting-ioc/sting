@@ -9,6 +9,7 @@ import org.jspecify.annotations.NullMarked;
 public final class SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel2 {
   private SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel2() {}
 
+  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public static Object create(final Runnable model) {
     return new SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2(
         Objects.requireNonNull(model));

@@ -5,6 +5,7 @@ import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
+@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_DiamondDependencyIncludesModel implements DiamondDependencyIncludesModel {
   private final Object node1;

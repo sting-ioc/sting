@@ -16,6 +16,7 @@ import sting.interceptors.MethodName;
 import sting.interceptors.Proceed;
 import sting.interceptors.ServiceType;
 
+@org.jspecify.annotations.NullMarked
 public final class AroundMetadataModel {
     private AroundMetadataModel() {}
 
@@ -40,13 +41,13 @@ public final class AroundMetadataModel {
     @Injectable
     public static class TraceInterceptor {
         @Around
-        public Object around(
+        public @org.jspecify.annotations.Nullable Object around(
                 @Proceed final Invocation invocation,
                 @ServiceType final String serviceType,
                 @MethodName final String methodName,
                 @BindingValue("value") final String value,
                 @BindingValue("level") final int level,
-                @Arguments final Object[] arguments)
+                @Arguments final @org.jspecify.annotations.Nullable Object[] arguments)
                 throws Throwable {
             return invocation.proceed();
         }

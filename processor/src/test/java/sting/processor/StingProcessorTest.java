@@ -875,7 +875,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                 "around proxy assigns around result directly",
                 "com.example.interceptor.AroundMetadataModel",
                 "AroundMetadataModel",
-                "result = (String) _interceptor1.around(",
+                "result = (String) $sting$_cast(_interceptor1.around(",
                 true
             },
             new Object[] {
@@ -903,7 +903,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                 "around proxy invoke arguments are nonnull",
                 "com.example.interceptor.AroundMetadataModel",
                 "AroundMetadataModel",
-                "private Object invoke_run_interceptor2(final @Nullable Object[] arguments)",
+                "private @Nullable Object invoke_run_interceptor2(final @Nullable Object[] arguments)",
                 true
             },
             new Object[] {
@@ -963,17 +963,17 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                 false
             },
             new Object[] {
-                "around proxy nonnull helper entry",
+                "around proxy erased helper entry",
                 "com.example.interceptor.AroundNullabilityModel",
                 "NonnullService",
-                "private Object invoke_run_interceptor2",
+                "private @Nullable Object invoke_run_interceptor2",
                 true
             },
             new Object[] {
-                "around proxy nonnull helper target",
+                "around proxy erased helper target",
                 "com.example.interceptor.AroundNullabilityModel",
                 "NonnullService",
-                "private Object invoke_run_target",
+                "private @Nullable Object invoke_run_target",
                 true
             },
             new Object[] {
@@ -991,24 +991,24 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                 true
             },
             new Object[] {
-                "around proxy primitive helper entry is nonnull",
+                "around proxy primitive helper entry carries boxed nullness",
                 "com.example.interceptor.AroundNullabilityModel",
                 "PrimitiveService",
-                "private Object invoke_run_interceptor2",
+                "private @Nullable Object invoke_run_interceptor2",
                 true
             },
             new Object[] {
-                "around proxy primitive helper target is nonnull",
+                "around proxy primitive helper target carries boxed nullness",
                 "com.example.interceptor.AroundNullabilityModel",
                 "PrimitiveService",
-                "private Object invoke_run_target",
+                "private @Nullable Object invoke_run_target",
                 true
             },
             new Object[] {
                 "around proxy primitive result casts directly",
                 "com.example.interceptor.AroundNullabilityModel",
                 "PrimitiveService",
-                "result = (int) _interceptor1.around(",
+                "result = (int) $sting$_cast(_interceptor1.around(",
                 true
             },
             new Object[] {
@@ -1068,13 +1068,13 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         final String source = readGeneratedInterceptorProxy(compilation, "NonnullService");
         assertTrue(source.contains("import org.jetbrains.annotations.Unmodifiable;"), source);
         assertTrue(
-                source.contains("private @Unmodifiable Object invoke_run_interceptor2(\n"
+                source.contains("private @Unmodifiable @Nullable Object invoke_run_interceptor2(\n"
                         + "      "
                         + "final @Unmodifiable @Nullable Object[] arguments)"),
                 source);
         assertTrue(
-                source.contains("private @Unmodifiable Object invoke_run_target("
-                        + "final @Unmodifiable @Nullable Object[] arguments)"),
+                source.contains("private @Unmodifiable @Nullable Object invoke_run_target(\n"
+                        + "      final @Unmodifiable @Nullable Object[] arguments)"),
                 source);
     }
 
@@ -2538,6 +2538,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
 
         final List<File> classPath = buildClasspath(targetDir.toFile());
         final Compilation stage2 = CompileTestUtil.compile(
+                javaCompiler(),
                 Collections.singletonList(input("bad_input", "com.example.injector.autodetect.MyInjector")),
                 getOptions(),
                 processors(),
@@ -2575,6 +2576,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         final Processor synthesizingProcessor =
                 newSynthesizingProcessor("com.example.multiround.fragment.MyGeneratedFragment", 0);
         final Compilation compilation = CompileTestUtil.compile(
+                javaCompiler(),
                 inputs(
                         "com.example.multiround.fragment.MyInjector",
                         "com.example.multiround.fragment.MyFragment",
@@ -2608,6 +2610,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         final Processor synthesizingProcessor =
                 newSynthesizingProcessor("com.example.multiround.injectable.MyGeneratedInjectable", 0);
         final Compilation compilation = CompileTestUtil.compile(
+                javaCompiler(),
                 inputs(
                         "com.example.multiround.injectable.MyInjector",
                         "com.example.multiround.injectable.MyFragment",

@@ -3,11 +3,16 @@ load(":test_rules.bzl", "FIXTURES", "feature", "processor_test")
 
 java_library(
     name = "test_support",
-    srcs = ["AbstractStingProcessorTest.java"],
+    srcs = [
+        "AbstractStingProcessorTest.java",
+        "package-info.java",
+    ],
     deps = [
         "//processor",
+        "//third_party/java:error_prone_core",
         "//third_party/java:jspecify",
-        "@proton_project//qa/src/main/java/org/realityforge/proton/qa",
+        "//third_party/java:local_proton_qa",
+        "//third_party/java:nullaway",
     ],
 )
 
@@ -27,8 +32,8 @@ java_library(
         "//third_party/java:javaee_api",
         "//third_party/java:javaemul_internal_annotations",
         "//third_party/java:jspecify",
+        "//third_party/java:local_proton_qa",
         "//third_party/java:testng",
-        "@proton_project//qa/src/main/java/org/realityforge/proton/qa",
     ],
 )
 
@@ -80,7 +85,6 @@ processor_test(
     ) + [FIXTURES + "/input/org:all"],
     methods = [
         "processSuccessfulInterceptorCompile",
-        "processFailedInterceptorCompile",
         "generatedInterceptorSourceAssertion",
         "aroundInvocationUsesUnmodifiableWhenJetbrainsAnnotationsPresent",
         "generatedInterceptorProxyFixture",
@@ -97,7 +101,6 @@ processor_test(
     methods = [
         "basicIncludesFragment",
         "multipleIncludesFragment",
-        "crossPackageIncludeFailsWhenFragmentIsLocalOnly",
         "crossPackageIncludeAllowedWhenFragmentIsNotLocalOnly",
         "todomvcIntegrationTest",
     ],
@@ -106,8 +109,13 @@ processor_test(
 processor_test(
     name = "failed_compiles",
     size = "large",
+    check_nullness = False,
     data = [FIXTURES + "/bad_input:all"],
-    methods = ["processFailedCompile"],
+    methods = [
+        "processFailedCompile",
+        "processFailedInterceptorCompile",
+        "crossPackageIncludeFailsWhenFragmentIsLocalOnly",
+    ],
 )
 
 processor_test(
@@ -149,6 +157,7 @@ processor_test(
 
 processor_test(
     name = "formatter_failure",
+    check_nullness = False,
     data = feature(
         "injectable",
         ["input"],

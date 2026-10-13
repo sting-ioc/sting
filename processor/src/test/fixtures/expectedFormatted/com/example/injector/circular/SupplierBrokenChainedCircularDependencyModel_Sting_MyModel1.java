@@ -9,7 +9,7 @@ import org.jspecify.annotations.NullMarked;
 public final class SupplierBrokenChainedCircularDependencyModel_Sting_MyModel1 {
   private SupplierBrokenChainedCircularDependencyModel_Sting_MyModel1() {}
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull", "unchecked"})
   public static Object create(final Object model) {
     return new SupplierBrokenChainedCircularDependencyModel.MyModel1(
         Objects.requireNonNull((SupplierBrokenChainedCircularDependencyModel.MyModel2) model));

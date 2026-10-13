@@ -7,6 +7,7 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_QualifiedDependencyModel implements QualifiedDependencyModel {
+  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public Runnable $sting$_provideRunnable(final String name) {
     return provideRunnable(Objects.requireNonNull(name));
   }

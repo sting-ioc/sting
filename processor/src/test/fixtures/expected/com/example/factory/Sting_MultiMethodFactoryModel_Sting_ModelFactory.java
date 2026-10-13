@@ -10,6 +10,10 @@ public final class Sting_MultiMethodFactoryModel_Sting_ModelFactory {
   private Sting_MultiMethodFactoryModel_Sting_ModelFactory() {
   }
 
+  @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull"
+  })
   public static MultiMethodFactoryModel_Sting_ModelFactory create(
       final MultiMethodFactoryModel.SomeService someService,
       final MultiMethodFactoryModel.OtherService otherService) {

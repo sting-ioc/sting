@@ -9,6 +9,8 @@ import org.jspecify.annotations.NullMarked;
 @Generated("sting.processor.StingProcessor")
 public final class SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyFragment implements SupplierBrokenFragmentWalkingCircularDependencyModel.MyFragment {
   @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull",
       "rawtypes",
       "unchecked"
   })

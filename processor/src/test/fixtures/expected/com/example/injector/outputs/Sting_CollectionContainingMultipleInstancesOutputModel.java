@@ -9,6 +9,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
+@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_CollectionContainingMultipleInstancesOutputModel implements CollectionContainingMultipleInstancesOutputModel {
   private final CollectionContainingMultipleInstancesOutputModel_Sting_MyFragment1 fragment1 = new CollectionContainingMultipleInstancesOutputModel_Sting_MyFragment1();

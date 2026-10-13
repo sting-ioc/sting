@@ -5,16 +5,17 @@ import java.util.EventListener;
 import sting.Fragment;
 
 @Fragment
+@org.jspecify.annotations.NullMarked
 public interface MultiProvideModel {
     default Runnable provideRunnable() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     default EventListener provideEventListener() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     default Serializable provideSerializable() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

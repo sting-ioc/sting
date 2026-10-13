@@ -9,12 +9,18 @@ import org.jspecify.annotations.NullMarked;
 @NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_PackageAccessDependencyModel implements PackageAccessDependencyModel {
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull",
+      "unchecked"
+  })
   public Object $sting$_provideMyType1(final Object v) {
     return provideMyType1( Objects.requireNonNull( (MyType2) v ) );
   }
 
   @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull",
       "rawtypes",
       "unchecked"
   })
@@ -23,6 +29,8 @@ public final class Sting_PackageAccessDependencyModel implements PackageAccessDe
   }
 
   @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull",
       "rawtypes",
       "unchecked"
   })
@@ -31,6 +39,8 @@ public final class Sting_PackageAccessDependencyModel implements PackageAccessDe
   }
 
   @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull",
       "rawtypes",
       "unchecked"
   })

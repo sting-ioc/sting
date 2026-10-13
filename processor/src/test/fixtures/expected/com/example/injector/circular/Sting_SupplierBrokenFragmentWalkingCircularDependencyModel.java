@@ -7,6 +7,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
+@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implements SupplierBrokenFragmentWalkingCircularDependencyModel {
   private final SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyFragment fragment1 = new SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyFragment();

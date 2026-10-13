@@ -14,6 +14,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
+@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_TodoInjector implements TodoInjector {
   private final Sting_BrowserLocationFragment fragment1 = new Sting_BrowserLocationFragment();

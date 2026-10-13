@@ -10,6 +10,7 @@ import org.jspecify.annotations.NullMarked;
 public final class Sting_SupplierDependencyModel {
   private Sting_SupplierDependencyModel() {}
 
+  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public static SupplierDependencyModel create(final Supplier<Runnable> runnable) {
     return new SupplierDependencyModel(Objects.requireNonNull(runnable));
   }

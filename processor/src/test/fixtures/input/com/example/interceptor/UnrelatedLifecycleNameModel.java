@@ -9,6 +9,7 @@ import sting.Injector;
 import sting.Typed;
 import sting.interceptors.InterceptorBinding;
 
+@org.jspecify.annotations.NullMarked
 public final class UnrelatedLifecycleNameModel {
     private UnrelatedLifecycleNameModel() {}
 

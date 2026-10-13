@@ -9,7 +9,7 @@ import org.jspecify.annotations.NullMarked;
 public final class Sting_Arez_ViewService {
   private Sting_Arez_ViewService() {}
 
-  @SuppressWarnings("unchecked")
+  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull", "unchecked"})
   public static Object create(final TodoRepository todoRepository, final Object browserLocation) {
     return new Arez_ViewService(
         Objects.requireNonNull(todoRepository),

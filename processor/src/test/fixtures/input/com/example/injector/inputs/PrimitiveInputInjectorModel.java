@@ -13,6 +13,7 @@ import sting.Injector;
             @Injector.Input(type = float.class),
             @Injector.Input(type = double.class)
         })
+@org.jspecify.annotations.NullMarked
 interface PrimitiveInputInjectorModel {
     boolean value1();
 }

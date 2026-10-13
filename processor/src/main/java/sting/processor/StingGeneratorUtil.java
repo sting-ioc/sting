@@ -131,7 +131,7 @@ final class StingGeneratorUtil {
             }
             if (!isPublic) {
                 code.append("($T) ");
-                args.add(actualTypeName);
+                args.add(actualTypeName.withoutAnnotations());
             }
             code.append("$N");
             args.add(paramName);
@@ -145,6 +145,10 @@ final class StingGeneratorUtil {
         code.append(")");
         method.addStatement(code.toString(), args.toArray());
         final var additionalSuppressions = new ArrayList<String>();
+        if (0 != dependencies.length) {
+            additionalSuppressions.add("ImpossibleNullComparison");
+            additionalSuppressions.add("UnnecessaryCheckNotNull");
+        }
         if (!allPublic) {
             additionalSuppressions.add("unchecked");
         }

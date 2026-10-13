@@ -5,6 +5,7 @@ import sting.Injector;
 import sting.StingProvider;
 import sting.Typed;
 
+@org.jspecify.annotations.NullMarked
 interface AutodetectProviderInjectableModel {
     @Injector
     interface MyInjector {

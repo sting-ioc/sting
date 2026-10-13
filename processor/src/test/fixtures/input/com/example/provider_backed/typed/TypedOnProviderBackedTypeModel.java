@@ -3,6 +3,7 @@ package com.example.provider_backed.typed;
 import sting.StingProvider;
 import sting.Typed;
 
+@org.jspecify.annotations.NullMarked
 public final class TypedOnProviderBackedTypeModel {
     @StingProvider("[SimpleName]Impl")
     @interface FrameworkComponent {}

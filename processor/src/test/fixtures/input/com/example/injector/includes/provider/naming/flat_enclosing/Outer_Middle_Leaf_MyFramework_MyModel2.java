@@ -5,4 +5,5 @@ import sting.Typed;
 
 @Injectable
 @Typed(Outer.Middle.Leaf.MyModel2.class)
+@org.jspecify.annotations.NullMarked
 public class Outer_Middle_Leaf_MyFramework_MyModel2 extends Outer.Middle.Leaf.MyModel2 {}

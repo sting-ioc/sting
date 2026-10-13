@@ -20,7 +20,6 @@ java_library(
         "Typed.java",
         "package-info.java",
     ],
-    nullaway = True,
     resource_strip_prefix = "core/src/main/java",
     resources = [
         "Sting.gwt.xml",

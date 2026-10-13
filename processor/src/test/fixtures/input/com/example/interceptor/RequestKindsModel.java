@@ -13,6 +13,7 @@ import sting.Typed;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
+@org.jspecify.annotations.NullMarked
 public final class RequestKindsModel {
     private RequestKindsModel() {}
 

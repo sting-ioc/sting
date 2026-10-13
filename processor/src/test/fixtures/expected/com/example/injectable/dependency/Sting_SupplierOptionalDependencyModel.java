@@ -12,6 +12,10 @@ public final class Sting_SupplierOptionalDependencyModel {
   private Sting_SupplierOptionalDependencyModel() {
   }
 
+  @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull"
+  })
   public static SupplierOptionalDependencyModel create(
       final Supplier<Optional<Runnable>> runnable) {
     return new SupplierOptionalDependencyModel( Objects.requireNonNull( runnable ) );

@@ -10,6 +10,10 @@ public final class Sting_NullableDependencyModel {
   private Sting_NullableDependencyModel() {
   }
 
+  @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull"
+  })
   public static NullableDependencyModel create(final @Nullable Runnable runnable) {
     return new NullableDependencyModel( runnable );
   }

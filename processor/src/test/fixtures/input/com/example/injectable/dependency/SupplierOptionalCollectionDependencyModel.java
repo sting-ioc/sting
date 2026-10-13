@@ -6,6 +6,7 @@ import java.util.function.Supplier;
 import sting.Injectable;
 
 @Injectable
+@org.jspecify.annotations.NullMarked
 public class SupplierOptionalCollectionDependencyModel {
     SupplierOptionalCollectionDependencyModel(Collection<Supplier<Optional<Runnable>>> runnable) {}
 }

@@ -4,8 +4,9 @@ import sting.Fragment;
 
 @Fragment
 @Deprecated
+@org.jspecify.annotations.NullMarked
 public interface DeprecatedFragmentModel {
     default Runnable provideRunnable() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

@@ -1,11 +1,24 @@
 package sting.processor;
 
+import com.google.errorprone.BaseErrorProneJavaCompiler;
+import com.google.errorprone.scanner.ScannerSupplier;
+import com.uber.nullaway.JSpecifyUnrecognizedAnnotationLocation;
+import com.uber.nullaway.NullAway;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.processing.Processor;
+import javax.tools.JavaCompiler;
 import org.realityforge.proton.qa.AbstractProcessorTest;
 
 public abstract class AbstractStingProcessorTest extends AbstractProcessorTest {
+    @Override
+    protected JavaCompiler javaCompiler() {
+        return Boolean.getBoolean("sting.plain_javac")
+                ? super.javaCompiler()
+                : new BaseErrorProneJavaCompiler(ScannerSupplier.fromBugCheckerClasses(
+                        NullAway.class, JSpecifyUnrecognizedAnnotationLocation.class));
+    }
+
     @Override
     protected Processor processor() {
         return new StingProcessor();
@@ -21,6 +34,16 @@ public abstract class AbstractStingProcessorTest extends AbstractProcessorTest {
         final List<String> options = new ArrayList<>(super.getOptions());
         options.add("-Asting.verbose_out_of_round.errors=false");
         options.add("-XDaddTypeAnnotationsToSymbol=true");
+        if (!Boolean.getBoolean("sting.plain_javac")) {
+            options.addAll(List.of(
+                    "--release",
+                    "17",
+                    "-XDcompilePolicy=simple",
+                    "-Xep:NullAway:ERROR",
+                    "-Xep:JSpecifyUnrecognizedAnnotationLocation:ERROR",
+                    "-XepOpt:NullAway:OnlyNullMarked=true",
+                    "-XepOpt:NullAway:JSpecifyMode=true"));
+        }
         return options;
     }
 

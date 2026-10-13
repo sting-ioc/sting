@@ -5,4 +5,5 @@ import sting.Typed;
 
 @Injectable
 @Typed(Object.class)
+@org.jspecify.annotations.NullMarked
 public class MyModel {}

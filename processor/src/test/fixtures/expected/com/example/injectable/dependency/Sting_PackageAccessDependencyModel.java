@@ -13,6 +13,8 @@ public final class Sting_PackageAccessDependencyModel {
   }
 
   @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull",
       "rawtypes",
       "unchecked"
   })

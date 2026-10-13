@@ -10,6 +10,10 @@ public final class PrimitiveProviderOptionalBoxedDependencyModel_Sting_MyModel {
   private PrimitiveProviderOptionalBoxedDependencyModel_Sting_MyModel() {
   }
 
+  @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull"
+  })
   public static Object create(final @Nullable Integer value) {
     return new PrimitiveProviderOptionalBoxedDependencyModel.MyModel( value );
   }

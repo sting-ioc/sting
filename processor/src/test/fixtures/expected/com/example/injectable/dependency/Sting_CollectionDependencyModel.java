@@ -11,6 +11,10 @@ public final class Sting_CollectionDependencyModel {
   private Sting_CollectionDependencyModel() {
   }
 
+  @SuppressWarnings({
+      "ImpossibleNullComparison",
+      "UnnecessaryCheckNotNull"
+  })
   public static CollectionDependencyModel create(final Collection<Runnable> runnable) {
     return new CollectionDependencyModel( Objects.requireNonNull( runnable ) );
   }

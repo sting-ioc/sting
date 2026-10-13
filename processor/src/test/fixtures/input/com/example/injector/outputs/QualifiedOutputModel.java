@@ -5,6 +5,7 @@ import sting.Injector;
 import sting.Named;
 
 @Injector
+@org.jspecify.annotations.NullMarked
 interface QualifiedOutputModel {
     @Named("Foo")
     MyModel getMyModel();

@@ -12,6 +12,7 @@ import org.jspecify.annotations.NullMarked;
 public final class Sting_SupplierOptionalCollectionDependencyModel {
   private Sting_SupplierOptionalCollectionDependencyModel() {}
 
+  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public static SupplierOptionalCollectionDependencyModel create(
       final Collection<Supplier<Optional<Runnable>>> runnable) {
     return new SupplierOptionalCollectionDependencyModel(Objects.requireNonNull(runnable));

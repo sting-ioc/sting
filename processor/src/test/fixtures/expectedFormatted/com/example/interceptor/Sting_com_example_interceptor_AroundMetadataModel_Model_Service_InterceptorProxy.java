@@ -8,6 +8,7 @@ import sting.interceptors.Invocation;
 
 @NullMarked
 @Generated("sting.processor.StingProcessor")
+@SuppressWarnings("Varifier")
 public final class Sting_com_example_interceptor_AroundMetadataModel_Model_Service_InterceptorProxy
     implements AroundMetadataModel.Service {
   private final AroundMetadataModel.Service _target;
@@ -30,7 +31,7 @@ public final class Sting_com_example_interceptor_AroundMetadataModel_Model_Servi
   public String run(final String value, final int count) {
     final @Nullable Object[] arguments = new Object[] {value, count};
     try {
-      return (String) invoke_run_interceptor2(arguments);
+      return (String) $sting$_cast(invoke_run_interceptor2(arguments));
     } catch (RuntimeException t) {
       throw t;
     } catch (Error t) {
@@ -40,23 +41,29 @@ public final class Sting_com_example_interceptor_AroundMetadataModel_Model_Servi
     }
   }
 
-  private Object invoke_run_interceptor2(final @Nullable Object[] arguments) throws Throwable {
+  private @Nullable Object invoke_run_interceptor2(final @Nullable Object[] arguments)
+      throws Throwable {
     assert null != arguments && 2 == arguments.length;
     final Object result;
-    final Invocation invocation =
+    final var invocation =
         new Invocation(nextArguments -> invoke_run_target(nextArguments), arguments);
-    result = (String) _interceptor1.around(
+    result = (String) $sting$_cast(_interceptor1.around(
         invocation,
         "com.example.interceptor.AroundMetadataModel.Service",
         "run",
         "metadata",
         7,
-        arguments);
+        arguments));
     return result;
   }
 
-  private Object invoke_run_target(final @Nullable Object[] arguments) throws Throwable {
+  private @Nullable Object invoke_run_target(final @Nullable Object[] arguments) throws Throwable {
     assert null != arguments && 2 == arguments.length;
-    return _target.run((String) arguments[0], (int) arguments[1]);
+    return _target.run((String) $sting$_cast(arguments[0]), (int) $sting$_cast(arguments[1]));
+  }
+
+  @SuppressWarnings({"unchecked", "NullAway"})
+  private static <T> T $sting$_cast(final @Nullable Object value) {
+    return (T) value;
   }
 }

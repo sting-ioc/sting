@@ -5,4 +5,5 @@ import sting.Named;
 
 @Injectable
 @Named("com.biz/SomeQualifier")
+@org.jspecify.annotations.NullMarked
 public class BasicQualifierModel {}
