@@ -75,7 +75,7 @@ on patched Java 21 compilers. Library and generated output remain at version 17.
 processor contains its own canonical JSpecify runtime classes for the isolated processorpath.
 
 To check application and generated bodies, configure Error Prone and NullAway with JSpecify mode and marked
-scopes as described in the [development process](development_process.md#nullness-checking-and-local-proton).
+scopes as described in the [development process](development_process.md#nullness-checking).
 Unmarked application implementations remain an optimistic boundary.
 
 ### Optional Generated Source Formatting

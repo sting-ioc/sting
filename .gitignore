@@ -11,7 +11,3 @@
 # Generated build and release output
 /dist
 /reports/
-
-# Local Bazel dependency overrides
-/.bazelrc.local
-/.ci/

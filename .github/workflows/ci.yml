@@ -15,16 +15,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Checkout unreleased Proton
-        uses: actions/checkout@v4
-        with:
-          repository: realityforge/proton
-          ref: c70b0e1c50fec5653929ecbff5683855d504e2d7
-          path: .ci/proton
-
-      - name: Use CI Proton checkout
-        run: printf 'common --override_module=proton_project=%s/.ci/proton\n' "$GITHUB_WORKSPACE" > .bazelrc.local
-
       - name: Setup Java 21
         uses: actions/setup-java@v4
         with:

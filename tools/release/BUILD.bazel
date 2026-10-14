@@ -69,10 +69,9 @@ release_pom(
 release_jar(
     name = "processor_jar",
     out = "sting-processor.jar",
-    exclude_entries = ["sting/processor/vendor/proton/JsonUtil.class"],
     jars = [
         "@javapoet//file",
-        "@proton_project//tools/release:proton_core_jar",
+        "@proton_core//file",
         "@jspecify//file",
     ],
     java_targets = PROCESSOR,
@@ -95,7 +94,7 @@ release_javadoc_jar(
     out = "sting-processor-javadoc.jar",
     classpath = [
         "@javapoet//file",
-        "@proton_project//tools/release:proton_core_jar",
+        "@proton_core//file",
         "//third_party/java:jspecify",
     ],
     java_targets = PROCESSOR,
@@ -153,7 +152,7 @@ release_javadoc_jar(
     classpath = [
         "@jakarta_transaction_api//file",
         "@javapoet//file",
-        "@proton_project//tools/release:proton_core_jar",
+        "@proton_core//file",
         "//third_party/java:jspecify",
     ],
     java_targets = CORE + PROCESSOR + SERVER,

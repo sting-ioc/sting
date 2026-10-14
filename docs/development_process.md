@@ -24,7 +24,7 @@ Review the fixture diff, then rerun the target. The tests compile Java in proces
 
 To update Java dependencies, edit `third_party/java/dependencies.yml` and run `tools/update_java_deps.sh`. The script checks depgen's pinned SHA-256 before running a downloaded or cached JAR. Format Java with `tools/java_format.sh write`, or use `tools/java_format_watch.sh` while editing. Regenerate expected fixtures through the golden tests.
 
-## Nullness checking and local Proton
+## Nullness checking
 
 Owned source targets automatically attach JSpecify and NullAway 0.14.2 at error severity. Positive processor
 fixtures use an Error Prone 2.42.0 compiler in process, so their generated bodies are checked too. Deliberately
@@ -32,24 +32,16 @@ invalid processor fixtures use a separate plain-javac diagnostics target. The ge
 `StingNullabilityTest` must fail with NullAway for both a nullable dereference and a nested generic mismatch.
 
 Sting and generated sources target Java 17 bytecode. Annotation processing and the QA compiler run on Java 21
-because the local Proton implementation requires it; Bazel tools run on Java 25. The build enables
+because Proton requires it; Bazel tools run on Java 25. The build enables
 `NullAway:JSpecifyMode=true`, `NullAway:OnlyNullMarked=true` and `-XDaddTypeAnnotationsToSymbol=true`.
 Use JDK 22+ or patched JDK 21.0.8+ with the symbol flag when reading compiled type-use contracts. Bazel resolves
 the compiler and runtime; check the resolved versions before changing toolchains. The checked test/processor
 runtime is Zulu 21.0.12, and the tools runtime is Zulu 25.0.4. See
 [NullAway's JSpecify support](https://github.com/uber/NullAway/wiki/JSpecify-Support) for requirements.
 
-`MODULE.bazel` temporarily overrides `proton_project` with `/Users/peter/Code/realityforge/proton`.
-The processor, QA harness and shaded release jar consume that checkout immediately. Set the override path to
-your checkout when building elsewhere. Proton's changes from
-[PR 10](https://github.com/realityforge/proton/pull/10) are on master; a release is not required for this build.
-CI checks out that merged commit and supplies its path through the ignored `.bazelrc.local`. Other checkouts can
-use the same `common --override_module=proton_project=/path/to/proton` option without editing `MODULE.bazel`.
-
-After Proton is released, remove the local module dependency/override, add the released `proton-core` and
-`proton-qa` coordinates to `third_party/java/dependencies.yml`, and regenerate dependencies. Replace the local
-core/QA imports and release/Javadoc jar labels with the released artifacts. Re-run `tools/check.sh`, including
-the packaged consumer compilation, before removing the local checkout.
+The build uses released `proton-core` and `proton-qa` 0.76 from Maven Central. Dependencies are pinned in
+`third_party/java/dependencies.yml` and fetched by Bazel. The processor release shades Proton's implementation
+and bundled formatter; builds and CI do not require a local Proton checkout.
 
 `tools/release/check_artifacts.py` checks published JSpecify metadata and compiles a consumer with only the shaded
 processor jar on the processorpath. It verifies owned and generated Java 17 bytecode separately from shaded

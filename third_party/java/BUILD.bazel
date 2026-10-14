@@ -13,33 +13,12 @@ _java_plugin(
     ],
 )
 
-_java_import(
-    name = "local_proton_core",
-    jars = ["@proton_project//tools/release:proton_core_jar"],
-    srcjar = "@proton_project//tools/release:proton_core_sources_jar",
-    deps = [
-        ":guava",
-        ":javapoet",
-        ":jspecify",
-    ],
-)
-
-_java_import(
-    name = "local_proton_qa",
-    jars = ["@proton_project//tools/release:proton_qa_jar"],
-    srcjar = "@proton_project//tools/release:proton_qa_sources_jar",
-    deps = [
-        ":local_proton_core",
-        ":testng",
-    ],
-)
-
 # --- depgen-generated targets start ---
 
 # DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
 
 # SHA256 of the configuration content that generated this content
-_CONFIG_SHA256 = "7FDAAB66034F20A38DDE8EC4F6137643161AD4F7BF2BF2DFE3201E015D8A38FE"
+_CONFIG_SHA256 = "C756CAAA76D908E5C2640EC60AF6BAD8921F9C151DA0006E8DBCE13EBF090C3A"
 
 exports_files(["dependencies.yml"])
 
@@ -48,6 +27,16 @@ exports_files(["dependencies.yml"])
 # +- org.commonmark:commonmark-ext-gfm-tables:jar:0.30.1 [compile]
 # |  \- org.commonmark:commonmark:jar:0.30.1 [compile]
 # +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
+# +- org.realityforge.proton:proton-core:jar:0.76 [compile]
+# |  +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
+# |  +- com.google.guava:guava:jar:27.1-jre [compile] (conflicts with 33.4.0-jre)
+# |  \- org.jspecify:jspecify:jar:1.0.0 [compile]
+# +- org.realityforge.proton:proton-qa:jar:0.76 [compile]
+# |  +- org.realityforge.proton:proton-core:jar:0.76 [compile]
+# |  +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
+# |  +- com.google.guava:guava:jar:27.1-jre [compile] (conflicts with 33.4.0-jre)
+# |  +- org.jspecify:jspecify:jar:1.0.0 [compile]
+# |  \- org.testng:testng:jar:6.8 [compile] (conflicts with 7.10.2)
 # +- org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:jar:0.01 [compile]
 # +- javax:javaee-api:jar:8.0 [compile]
 # |  +- javax:javaee-web-api:jar:8.0 [compile, optional]
@@ -390,6 +379,32 @@ _java_import(
     jars = ["@javaemul_internal_annotations//file"],
     srcjar = "@javaemul_internal_annotations__sources//file",
     tags = ["maven_coordinates=org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:0.01"],
+)
+
+_java_import(
+    name = "proton_core",
+    jars = ["@proton_core//file"],
+    srcjar = "@proton_core__sources//file",
+    tags = ["maven_coordinates=org.realityforge.proton:proton-core:0.76"],
+    deps = [
+        ":guava",
+        ":javapoet",
+        ":jspecify",
+    ],
+)
+
+_java_import(
+    name = "proton_qa",
+    jars = ["@proton_qa//file"],
+    srcjar = "@proton_qa__sources//file",
+    tags = ["maven_coordinates=org.realityforge.proton:proton-qa:0.76"],
+    deps = [
+        ":guava",
+        ":javapoet",
+        ":jspecify",
+        ":proton_core",
+        ":testng",
+    ],
 )
 
 _java_import(

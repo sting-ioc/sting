@@ -201,9 +201,9 @@ def main() -> None:
             if f"org/jspecify/annotations/{annotation}.class" not in processor:
                 raise SystemExit(f"Missing canonical processor runtime annotation: {annotation}")
         if b"getTypeName" not in jar.read("sting/processor/vendor/proton/GeneratorUtil.class"):
-            raise SystemExit("Processor jar does not contain the local Proton type-use converter")
+            raise SystemExit("Processor jar does not contain the Proton type-use converter")
         if int.from_bytes(jar.read("sting/processor/vendor/proton/GeneratorUtil.class")[6:8], "big") != 65:
-            raise SystemExit("Expected the local Java 21 Proton implementation in the processor")
+            raise SystemExit("Expected the Java 21 Proton implementation in the processor")
     with zipfile.ZipFile(root / "sting-core.jar") as jar:
         if b"Lorg/jspecify/annotations/Nullable;" not in jar.read("sting/interceptors/Invocation.class"):
             raise SystemExit("Missing JSpecify Invocation nullness metadata")

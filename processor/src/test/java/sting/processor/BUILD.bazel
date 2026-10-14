@@ -11,8 +11,8 @@ java_library(
         "//processor",
         "//third_party/java:error_prone_core",
         "//third_party/java:jspecify",
-        "//third_party/java:local_proton_qa",
         "//third_party/java:nullaway",
+        "//third_party/java:proton_qa",
     ],
 )
 
@@ -32,7 +32,7 @@ java_library(
         "//third_party/java:javaee_api",
         "//third_party/java:javaemul_internal_annotations",
         "//third_party/java:jspecify",
-        "//third_party/java:local_proton_qa",
+        "//third_party/java:proton_qa",
         "//third_party/java:testng",
     ],
 )
