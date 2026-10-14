@@ -12,6 +12,7 @@ import sting.interceptors.AfterException;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
+@org.jspecify.annotations.NullMarked
 public final class AllLifecyclePhasesModel {
     private AllLifecyclePhasesModel() {}
 

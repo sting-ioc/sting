@@ -6,6 +6,7 @@ import sting.Named;
 
 @Injector(
         inputs = {@Injector.Input(type = Runnable.class), @Injector.Input(qualifier = "hostname", type = String.class)})
+@org.jspecify.annotations.NullMarked
 interface MultipleInputInjectorModel {
     MyModel getMyModel();
 

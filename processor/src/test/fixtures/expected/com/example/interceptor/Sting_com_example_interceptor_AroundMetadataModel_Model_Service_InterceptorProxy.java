@@ -1,16 +1,16 @@
 package com.example.interceptor;
 
 import java.lang.reflect.UndeclaredThrowableException;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import sting.interceptors.Invocation;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_com_example_interceptor_AroundMetadataModel_Model_Service_InterceptorProxy implements AroundMetadataModel.Service {
-  @Nonnull
   private final AroundMetadataModel.Service _target;
 
-  @Nonnull
   private final AroundMetadataModel.TraceInterceptor _interceptor1;
 
   private Sting_com_example_interceptor_AroundMetadataModel_Model_Service_InterceptorProxy(
@@ -20,16 +20,16 @@ public final class Sting_com_example_interceptor_AroundMetadataModel_Model_Servi
     _interceptor1 = interceptor1;
   }
 
-  @Nonnull
   public static Object create(final Object target, final Object interceptor1) {
     return new Sting_com_example_interceptor_AroundMetadataModel_Model_Service_InterceptorProxy( (AroundMetadataModel.Service) target, (AroundMetadataModel.TraceInterceptor) interceptor1 );
   }
 
   @Override
+  @SuppressWarnings("unchecked")
   public String run(final String value, final int count) {
-    final Object[] arguments = new Object[] {value, count};
+    final var arguments = new @Nullable Object[] {value, count};
     try {
-      return (String) invoke_run_interceptor2( arguments );
+      return (String) $sting$_cast( invoke_run_interceptor2( arguments ) );
     } catch ( RuntimeException t ) {
       throw t;
     } catch ( Error t ) {
@@ -39,16 +39,24 @@ public final class Sting_com_example_interceptor_AroundMetadataModel_Model_Servi
     }
   }
 
-  private Object invoke_run_interceptor2(@Nonnull final Object[] arguments) throws Throwable {
-    assert null != arguments && 2 == arguments.length;
+  @SuppressWarnings("unchecked")
+  private @Nullable Object invoke_run_interceptor2(final @Nullable Object[] arguments) throws
+      Throwable {
+    assert 2 == arguments.length;
     final Object result;
-    final Invocation invocation = new Invocation( nextArguments -> invoke_run_target( nextArguments ), arguments );
-    result = (String) _interceptor1.around(invocation, "com.example.interceptor.AroundMetadataModel.Service", "run", "metadata", 7, arguments);
+    final var invocation = new Invocation( nextArguments -> invoke_run_target( nextArguments ), arguments );
+    result = (String) $sting$_cast( _interceptor1.around(invocation, "com.example.interceptor.AroundMetadataModel.Service", "run", "metadata", 7, arguments) );
     return result;
   }
 
-  private Object invoke_run_target(@Nonnull final Object[] arguments) throws Throwable {
-    assert null != arguments && 2 == arguments.length;
-    return _target.run((String) arguments[0], (int) arguments[1]);
+  @SuppressWarnings("unchecked")
+  private @Nullable Object invoke_run_target(final @Nullable Object[] arguments) throws Throwable {
+    assert 2 == arguments.length;
+    return _target.run((String) $sting$_cast( arguments[0] ), (int) $sting$_cast( arguments[1] ));
+  }
+
+  @SuppressWarnings({"unchecked", "NullAway"})
+  private static <T> T $sting$_cast(final @Nullable Object value) {
+    return (T) value;
   }
 }

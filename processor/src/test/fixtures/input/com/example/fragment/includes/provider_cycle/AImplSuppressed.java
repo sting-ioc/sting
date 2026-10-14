@@ -4,4 +4,5 @@ import sting.Fragment;
 
 @SuppressWarnings("Sting:FragmentIncludeCycle")
 @Fragment(includes = B.class)
+@org.jspecify.annotations.NullMarked
 public interface AImplSuppressed {}

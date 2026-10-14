@@ -16,6 +16,7 @@ import sting.interceptors.MethodName;
 import sting.interceptors.ServiceType;
 import sting.interceptors.Thrown;
 
+@org.jspecify.annotations.NullMarked
 public final class LifecycleMetadataModel {
     private LifecycleMetadataModel() {}
 
@@ -41,19 +42,19 @@ public final class LifecycleMetadataModel {
         public void before(
                 @ServiceType final String serviceType,
                 @MethodName final String methodName,
-                @Arguments final Object[] arguments) {}
+                @Arguments final @org.jspecify.annotations.Nullable Object[] arguments) {}
 
         @After
         public void after(
                 @ServiceType final String serviceType,
                 @MethodName final String methodName,
-                @Arguments final Object[] arguments) {}
+                @Arguments final @org.jspecify.annotations.Nullable Object[] arguments) {}
 
         @AfterException
         public void afterException(
                 @ServiceType final String serviceType,
                 @MethodName final String methodName,
-                @Arguments final Object[] arguments,
+                @Arguments final @org.jspecify.annotations.Nullable Object[] arguments,
                 @Thrown final Throwable throwable) {}
     }
 

@@ -18,7 +18,7 @@ final class InjectorDotReportGenerator {
 
         final var sb = new StringBuilder();
         final String injectorName = extractShortestUniqueName(
-                types, graph.getInjector().getElement().asType().toString());
+                types, ServiceKey.typeName(graph.getInjector().getElement().asType()));
         sb.append("digraph \"")
                 .append(injectorName)
                 .append("\" {\n")
@@ -32,7 +32,7 @@ final class InjectorDotReportGenerator {
                     .append(node.getName())
                     .append(" [label=\"")
                     .append(node.isProxy() ? "Proxy " : "")
-                    .append(extractShortestUniqueName(types, node.getType().toString()));
+                    .append(extractShortestUniqueName(types, ServiceKey.typeName(node.getType())));
 
             final List<ServiceSpec> services = node.getProviderBinding().getPublishedServices();
             if (!services.isEmpty()) {
@@ -105,7 +105,7 @@ final class InjectorDotReportGenerator {
         final Coordinate coordinate = service.getCoordinate();
         final TypeMirror serviceType = coordinate.type();
         if (!processingEnv.getTypeUtils().isSameType(serviceType, toNode.getType())) {
-            sb.append("label=\"").append(extractShortestUniqueName(types, serviceType.toString()));
+            sb.append("label=\"").append(extractShortestUniqueName(types, ServiceKey.typeName(serviceType)));
             final String qualifier = coordinate.qualifier();
             if (!qualifier.isEmpty()) {
                 sb.append("/").append(qualifier);
@@ -145,10 +145,10 @@ final class InjectorDotReportGenerator {
         // SimpleName -> [FQN]
         final var types = new HashMap<String, Set<String>>();
         for (final Node node : graph.getRawNodeCollection()) {
-            recordType(types, node.getType().toString());
+            recordType(types, ServiceKey.typeName(node.getType()));
             recordDependencyTypes(types, node);
         }
-        recordType(types, graph.getInjector().getElement().asType().toString());
+        recordType(types, ServiceKey.typeName(graph.getInjector().getElement().asType()));
         recordDependencyTypes(types, graph.getRootNode());
         return types;
     }
@@ -157,7 +157,10 @@ final class InjectorDotReportGenerator {
         for (final Edge edge : node.getDependsOn()) {
             recordType(
                     types,
-                    edge.getServiceRequest().getService().getCoordinate().type().toString());
+                    ServiceKey.typeName(edge.getServiceRequest()
+                            .getService()
+                            .getCoordinate()
+                            .type()));
         }
     }
 

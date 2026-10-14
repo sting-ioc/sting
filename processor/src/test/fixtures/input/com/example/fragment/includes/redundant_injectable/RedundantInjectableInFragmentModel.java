@@ -4,4 +4,5 @@ import sting.Fragment;
 
 @SuppressWarnings("Sting:AutoDiscoverableIncluded")
 @Fragment(includes = {MyFragment.class, MyModel.class})
+@org.jspecify.annotations.NullMarked
 public interface RedundantInjectableInFragmentModel {}

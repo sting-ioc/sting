@@ -22,7 +22,8 @@ final class InjectableDescriptor {
         } else {
             final Coordinate coordinate = _binding.getPublishedServices().get(0).getCoordinate();
             return coordinate.qualifier().isEmpty()
-                    && coordinate.type().toString().equals(getElement().asType().toString());
+                    && ServiceKey.typeName(coordinate.type())
+                            .equals(ServiceKey.typeName(getElement().asType()));
         }
     }
 

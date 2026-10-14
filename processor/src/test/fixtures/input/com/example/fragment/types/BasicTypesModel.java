@@ -6,10 +6,11 @@ import sting.Fragment;
 import sting.Typed;
 
 @Fragment
+@org.jspecify.annotations.NullMarked
 public interface BasicTypesModel {
     // Does not expose BasicTypesModel or AutoCloseable nor Hashtable and related
     @Typed({Runnable.class, EventListener.class, Object.class, Properties.class})
     default MyModel provideMyModel() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

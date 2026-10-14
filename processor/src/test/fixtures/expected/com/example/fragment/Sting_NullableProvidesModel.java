@@ -1,12 +1,13 @@
 package com.example.fragment;
 
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_NullableProvidesModel implements NullableProvidesModel {
-  @Nullable
-  public Runnable $sting$_provideRunnable() {
+  public @Nullable Runnable $sting$_provideRunnable() {
     return provideRunnable();
   }
 }

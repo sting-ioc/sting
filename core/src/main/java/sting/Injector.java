@@ -6,7 +6,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
 
 /**
  * Annotates an interface for which a dependency-injected implementation is to be generated.
@@ -50,10 +49,10 @@ import javax.annotation.Nonnull;
  * a match.</p>
  *
  * <p>If the binding is marked as optional (i.e. the component is created by a method annotated with
- * {@link javax.annotation.Nullable} in a type annotated with the {@link Fragment} annotation, or it is an
+ * {@link org.jspecify.annotations.Nullable} in a type annotated with the {@link Fragment} annotation, or it is an
  * optional injector input) and the service request does not explicitly allow optional bindings then the
  * compiler generates an error as it is not able to determine statically that the service will be available.
- * Optional bindings may be consumed by {@link javax.annotation.Nullable nullable instance} requests,
+ * Optional bindings may be consumed by {@link org.jspecify.annotations.Nullable nullable instance} requests,
  * {@link java.util.Optional Optional}-based requests and {@code Collection<T>} requests. For
  * {@code Collection<T>} requests, any optional binding that yields {@code null} is omitted from the
  * resulting collection.</p>
@@ -81,7 +80,7 @@ import javax.annotation.Nonnull;
  * <p>Instance methods defined on the injector allow access to services contained within the injector and
  * also define the root services that are used to build the component graph. The instance methods must be
  * abstract, have zero parameters, throw no exceptions and return services. Sting actively processes
- * {@link Named} on these methods to qualify the requested service and {@link javax.annotation.Nullable}
+ * {@link Named} on these methods to qualify the requested service and {@link org.jspecify.annotations.Nullable}
  * to mark an instance request as optional. {@link Typed} is ignored on injector output methods.
  * Service methods may also request optional services via {@link java.util.Optional Optional},
  * {@code Supplier<Optional<T>>} and {@code Collection<Supplier<Optional<T>>>}.</p>
@@ -169,7 +168,6 @@ public @interface Injector {
      *
      * @return a list of types that contribute to the injector's object graph.
      */
-    @Nonnull
     Class<?>[] includes() default {};
 
     /**
@@ -190,7 +188,6 @@ public @interface Injector {
      *
      * @return a list of services that must be passed into the injector.
      */
-    @Nonnull
     Input[] inputs() default {};
 
     /**
@@ -214,7 +211,6 @@ public @interface Injector {
      *
      * @return true to optimize the injector implementation for transpilation to javascript, false otherwise.
      */
-    @Nonnull
     Feature gwt() default Feature.AUTODETECT;
 
     /**
@@ -232,7 +228,6 @@ public @interface Injector {
          *
          * @return an opaque qualifier string.
          */
-        @Nonnull
         String qualifier() default "";
 
         /**

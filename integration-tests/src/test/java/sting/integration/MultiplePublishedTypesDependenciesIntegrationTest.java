@@ -3,8 +3,8 @@ package sting.integration;
 import static org.testng.Assert.*;
 
 import java.util.Collection;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.Test;
 import sting.Eager;
 import sting.Fragment;
@@ -12,6 +12,7 @@ import sting.Injectable;
 import sting.Injector;
 import sting.Typed;
 
+@NullMarked
 public final class MultiplePublishedTypesDependenciesIntegrationTest extends AbstractIntegrationTest {
     public interface MyService1 {}
 
@@ -29,13 +30,13 @@ public final class MultiplePublishedTypesDependenciesIntegrationTest extends Abs
     @Injectable
     @Typed({MyService3.class, Model2.class, Object.class})
     public static class Model2 extends BaseModel implements MyService3 {
-        Model2(@Nonnull final MyService2 model1) {
+        Model2(final MyService2 model1) {
             super(model1);
         }
     }
 
     public static class Model3 extends BaseModel {
-        Model3(@Nonnull final MyService2 model1, @Nonnull final MyService3 model2) {
+        Model3(final MyService2 model1, final MyService3 model2) {
             super(model1, model2);
         }
     }
@@ -48,7 +49,7 @@ public final class MultiplePublishedTypesDependenciesIntegrationTest extends Abs
     @Fragment
     public interface MyFragment {
         @Typed({Model3.class, Object.class})
-        default Model3 provideModel3(@Nonnull final MyService2 model1, @Nonnull final MyService3 model2) {
+        default Model3 provideModel3(final MyService2 model1, final MyService3 model2) {
             return new Model3(model1, model2);
         }
     }
@@ -57,7 +58,6 @@ public final class MultiplePublishedTypesDependenciesIntegrationTest extends Abs
             fragmentOnly = false,
             includes = {MyFragment.class, Model1.class, Model2.class, Model4.class})
     public interface MyInjector {
-        @Nonnull
         static MyInjector create() {
             return new MultiplePublishedTypesDependenciesIntegrationTest_Sting_MyInjector();
         }

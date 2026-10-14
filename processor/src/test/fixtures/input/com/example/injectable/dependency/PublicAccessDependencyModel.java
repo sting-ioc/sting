@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import sting.Injectable;
 
 @Injectable
+@org.jspecify.annotations.NullMarked
 public class PublicAccessDependencyModel {
     public interface MyType1 {}
 

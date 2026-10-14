@@ -23,7 +23,10 @@ import org.commonmark.parser.Parser;
 import org.commonmark.renderer.NodeRenderer;
 import org.commonmark.renderer.html.HtmlNodeRendererContext;
 import org.commonmark.renderer.html.HtmlRenderer;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 final class Markdown {
     private static final Pattern DIRECTIVE =
             Pattern.compile("\\{@(link|file_content):\\s*((?:\"[^\"]*\"|'[^']*'|[^}])+)}");
@@ -165,7 +168,8 @@ final class Markdown {
         return value.equals("true");
     }
 
-    private static int boundary(final List<String> lines, final int start, final String regex, final int defaultLine) {
+    private static int boundary(
+            final List<String> lines, final int start, final @Nullable String regex, final int defaultLine) {
         if (regex == null) {
             return defaultLine;
         }

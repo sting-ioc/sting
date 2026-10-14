@@ -1,9 +1,11 @@
 package com.example.fragment.provides;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import sting.Fragment;
 
 @Fragment
+@NullMarked
 public interface NullablePrimitiveReturnTypeProvidesModel {
     @SuppressWarnings("NullableProblems")
     @Nullable

@@ -13,6 +13,7 @@ import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 import sting.interceptors.Thrown;
 
+@org.jspecify.annotations.NullMarked
 public final class LifecycleFailureNestingModel {
     private LifecycleFailureNestingModel() {}
 

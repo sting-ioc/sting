@@ -1,34 +1,13 @@
 package com.example.injector.outputs;
 
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
-  @Nonnull
   private final PrimitiveOutputModel_Sting_MyFragment fragment1 = new PrimitiveOutputModel_Sting_MyFragment();
-
-  @Nonnull
-  private final PrimitiveOutputModel_Sting_MyFragment fragment2 = new PrimitiveOutputModel_Sting_MyFragment();
-
-  @Nonnull
-  private final PrimitiveOutputModel_Sting_MyFragment fragment3 = new PrimitiveOutputModel_Sting_MyFragment();
-
-  @Nonnull
-  private final PrimitiveOutputModel_Sting_MyFragment fragment4 = new PrimitiveOutputModel_Sting_MyFragment();
-
-  @Nonnull
-  private final PrimitiveOutputModel_Sting_MyFragment fragment5 = new PrimitiveOutputModel_Sting_MyFragment();
-
-  @Nonnull
-  private final PrimitiveOutputModel_Sting_MyFragment fragment6 = new PrimitiveOutputModel_Sting_MyFragment();
-
-  @Nonnull
-  private final PrimitiveOutputModel_Sting_MyFragment fragment7 = new PrimitiveOutputModel_Sting_MyFragment();
-
-  @Nonnull
-  private final PrimitiveOutputModel_Sting_MyFragment fragment8 = new PrimitiveOutputModel_Sting_MyFragment();
 
   private double node1;
 
@@ -69,7 +48,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   private synchronized double node1() {
     if ( !node1_allocated ) {
       node1_allocated = true;
-      node1 = fragment8.$sting$_provideValue8();
+      node1 = fragment1.$sting$_provideValue8();
     }
     return node1;
   }
@@ -78,7 +57,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   private synchronized float node2() {
     if ( !node2_allocated ) {
       node2_allocated = true;
-      node2 = fragment8.$sting$_provideValue7();
+      node2 = fragment1.$sting$_provideValue7();
     }
     return node2;
   }
@@ -87,7 +66,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   private synchronized short node3() {
     if ( !node3_allocated ) {
       node3_allocated = true;
-      node3 = fragment8.$sting$_provideValue4();
+      node3 = fragment1.$sting$_provideValue4();
     }
     return node3;
   }
@@ -96,7 +75,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   private synchronized byte node4() {
     if ( !node4_allocated ) {
       node4_allocated = true;
-      node4 = fragment8.$sting$_provideValue3();
+      node4 = fragment1.$sting$_provideValue3();
     }
     return node4;
   }
@@ -105,7 +84,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   private synchronized long node5() {
     if ( !node5_allocated ) {
       node5_allocated = true;
-      node5 = fragment8.$sting$_provideValue6();
+      node5 = fragment1.$sting$_provideValue6();
     }
     return node5;
   }
@@ -114,7 +93,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   private synchronized int node6() {
     if ( !node6_allocated ) {
       node6_allocated = true;
-      node6 = fragment8.$sting$_provideValue5();
+      node6 = fragment1.$sting$_provideValue5();
     }
     return node6;
   }
@@ -123,7 +102,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   private synchronized boolean node7() {
     if ( !node7_allocated ) {
       node7_allocated = true;
-      node7 = fragment8.$sting$_provideValue();
+      node7 = fragment1.$sting$_provideValue();
     }
     return node7;
   }
@@ -132,7 +111,7 @@ final class Sting_PrimitiveOutputModel implements PrimitiveOutputModel {
   private synchronized char node8() {
     if ( !node8_allocated ) {
       node8_allocated = true;
-      node8 = fragment8.$sting$_provideValue2();
+      node8 = fragment1.$sting$_provideValue2();
     }
     return node8;
   }

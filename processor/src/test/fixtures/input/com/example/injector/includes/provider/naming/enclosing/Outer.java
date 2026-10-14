@@ -3,6 +3,7 @@ package com.example.injector.includes.provider.naming.enclosing;
 import sting.Injectable;
 import sting.Typed;
 
+@org.jspecify.annotations.NullMarked
 public interface Outer {
     class Middle {
         public static class Leaf {

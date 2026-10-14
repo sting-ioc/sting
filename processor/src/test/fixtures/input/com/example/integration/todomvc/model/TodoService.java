@@ -1,9 +1,10 @@
 package com.example.integration.todomvc.model;
 
 import com.example.integration.todomvc.ArezComponent;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 
 @ArezComponent
+@NullMarked
 public abstract class TodoService {
-    TodoService(@Nonnull final TodoRepository repository) {}
+    TodoService(final TodoRepository repository) {}
 }

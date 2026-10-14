@@ -1,25 +1,22 @@
 package com.example.factory;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import sting.Factory;
 import sting.Injectable;
 
+@NullMarked
 public final class ParameterAnnotationsFactoryModel {
     @Injectable
     public static class SomeService {}
 
     public static class MyComponent {
         MyComponent(
-                @Nonnull final SomeService someService,
-                @Nullable final String name,
-                @Nonnull final Runnable action,
-                final int count) {}
+                final SomeService someService, @Nullable final String name, final Runnable action, final int count) {}
     }
 
     @Factory
     public interface MyComponentFactory {
-        @Nonnull
-        MyComponent create(@Nullable String name, @Nonnull Runnable action, int count);
+        MyComponent create(@Nullable String name, Runnable action, int count);
     }
 }

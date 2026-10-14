@@ -4,21 +4,22 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Supplier;
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_PrimitiveProviderBoxedSupplierKindsOutputModel implements PrimitiveProviderBoxedSupplierKindsOutputModel {
-  @Nonnull
   private final PrimitiveProviderBoxedSupplierKindsOutputModel_Sting_MyFragment fragment1 = new PrimitiveProviderBoxedSupplierKindsOutputModel_Sting_MyFragment();
 
   private int node1;
 
   private boolean node1_allocated;
 
-  private Collection<Integer> $sting$_getValuesCache;
+  private @Nullable Collection<Integer> $sting$_getValuesCache;
 
-  private Collection<Supplier<Integer>> $sting$_getValueSuppliersCache;
+  private @Nullable Collection<Supplier<Integer>> $sting$_getValueSuppliersCache;
 
   Sting_PrimitiveProviderBoxedSupplierKindsOutputModel() {
   }

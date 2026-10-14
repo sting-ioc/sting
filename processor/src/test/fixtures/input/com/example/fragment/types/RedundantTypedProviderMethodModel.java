@@ -4,9 +4,10 @@ import sting.Fragment;
 import sting.Typed;
 
 @Fragment
+@org.jspecify.annotations.NullMarked
 public interface RedundantTypedProviderMethodModel {
     @Typed(MyModel.class)
     default MyModel provideMyModel() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

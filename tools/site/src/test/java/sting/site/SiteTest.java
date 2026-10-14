@@ -5,10 +5,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.Map;
+import org.jspecify.annotations.NullMarked;
 import org.testng.Assert;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+@NullMarked
 public final class SiteTest {
     @Test
     public void rendersDocumentationLinksTablesAndEscapedSources() {
@@ -84,14 +86,14 @@ public final class SiteTest {
     public void failsWhenAnExampleDisappearsOrItsBoundaryChanges() {
         Assert.assertTrue(Assert.expectThrows(
                         IllegalArgumentException.class, () -> Markdown.snippet("file=missing.java", Map.of()))
-                .getMessage()
+                .toString()
                 .contains("missing.java"));
         Assert.assertTrue(Assert.expectThrows(
                         IllegalArgumentException.class,
                         () -> Markdown.snippet(
                                 "file=Example.java start_line=@Injectable",
                                 Map.of("Example.java", "class Example {}\n")))
-                .getMessage()
+                .toString()
                 .contains("@Injectable"));
     }
 
@@ -141,11 +143,11 @@ public final class SiteTest {
             SiteLinks.check(root);
             Files.writeString(root.resolve("index.html"), "<a href=\"docs/#absent\">Broken</a>");
             Assert.assertTrue(Assert.expectThrows(IOException.class, () -> SiteLinks.check(root))
-                    .getMessage()
+                    .toString()
                     .contains("#absent"));
             Files.writeString(root.resolve("index.html"), "<script src=\"https://example.com/code.js\"></script>");
             Assert.assertTrue(Assert.expectThrows(IOException.class, () -> SiteLinks.check(root))
-                    .getMessage()
+                    .toString()
                     .contains("external asset"));
             Files.writeString(root.resolve("index.html"), "<a href=\"../outside.html\">Escapes</a>");
             Assert.expectThrows(IOException.class, () -> SiteLinks.check(root));
@@ -154,7 +156,7 @@ public final class SiteTest {
             Assert.expectThrows(IOException.class, () -> SiteLinks.check(root));
             Files.writeString(root.resolve("style.css"), "@import 'missing.css';");
             Assert.assertTrue(Assert.expectThrows(IOException.class, () -> SiteLinks.check(root))
-                    .getMessage()
+                    .toString()
                     .contains("missing.css"));
             Files.writeString(
                     root.resolve("style.css"), "body { background: url('data:image/svg+xml; utf8, <svg></svg>'); }");

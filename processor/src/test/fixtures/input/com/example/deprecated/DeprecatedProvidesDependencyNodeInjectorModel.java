@@ -5,6 +5,7 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
+@org.jspecify.annotations.NullMarked
 public interface DeprecatedProvidesDependencyNodeInjectorModel {
     Runnable getRunnable();
 
@@ -16,7 +17,7 @@ public interface DeprecatedProvidesDependencyNodeInjectorModel {
     @Fragment
     interface MyFragment {
         default Runnable provideRunnable(MyOtherModel other) {
-            return null;
+            throw new UnsupportedOperationException();
         }
     }
 }

@@ -1,7 +1,9 @@
 package com.example.fragment;
 
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class NestedNestedModel_Middle_Sting_MyModel
     implements NestedNestedModel.Middle.MyModel {

@@ -10,11 +10,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 final class SiteBuilder {
     private static final Pattern SLOT = Pattern.compile("\\{\\{([a-z_]+)}}");
 
@@ -26,7 +29,8 @@ final class SiteBuilder {
             final List<Path> sourceJars,
             final Map<Path, String> assets)
             throws IOException {
-        final var output = files.get("--output").toAbsolutePath().normalize();
+        final var output =
+                Objects.requireNonNull(files.get("--output")).toAbsolutePath().normalize();
         Files.createDirectories(output);
         final var sources = readSources(sourceJars);
         final var pages = new TreeMap<String, Page>();
@@ -38,7 +42,7 @@ final class SiteBuilder {
                 throw new IOException("Duplicate document: " + id);
             }
         }
-        final var navigation = readNavigation(files.get("--navigation"), pages);
+        final var navigation = readNavigation(Objects.requireNonNull(files.get("--navigation")), pages);
         final var layout = Files.readString(files.get("--layout"));
         final var document = Files.readString(files.get("--document"));
         final var home = template(layout, Map.of("title", "Sting", "content", Files.readString(files.get("--home"))));
@@ -48,7 +52,7 @@ final class SiteBuilder {
         final var ordered = new ArrayList<>(navigation.keySet());
         for (int i = 0; i < ordered.size(); i++) {
             final var id = ordered.get(i);
-            final var page = pages.get(id);
+            final var page = Objects.requireNonNull(pages.get(id));
             final String body;
             try {
                 body = Markdown.render(page.body(), sources);
@@ -63,21 +67,23 @@ final class SiteBuilder {
                             "title",
                             Markdown.escape(page.title()),
                             "category",
-                            Markdown.escape(navigation.get(id)),
+                            Markdown.escape(Objects.requireNonNull(navigation.get(id))),
                             "sidebar",
                             sidebar(navigation, pages, id),
                             "body",
                             body,
                             "previous",
-                            i == 0 ? "" : pageLink(pages.get(ordered.get(i - 1)), "Previous"),
+                            i == 0 ? "" : pageLink(Objects.requireNonNull(pages.get(ordered.get(i - 1))), "Previous"),
                             "next",
-                            i + 1 == ordered.size() ? "" : pageLink(pages.get(ordered.get(i + 1)), "Next")));
+                            i + 1 == ordered.size()
+                                    ? ""
+                                    : pageLink(Objects.requireNonNull(pages.get(ordered.get(i + 1))), "Next")));
             write(
                     output,
                     "docs/" + id + ".html",
                     template(layout, Map.of("title", Markdown.escape(page.title()) + " · Sting", "content", content)));
         }
-        extractApi(files.get("--api"), output);
+        extractApi(Objects.requireNonNull(files.get("--api")), output);
         for (final var asset : assets.entrySet()) {
             final var destination = destination(output, asset.getValue());
             Files.createDirectories(destination.getParent());
@@ -169,7 +175,8 @@ final class SiteBuilder {
                 html.append(" aria-current=\"page\"");
             }
             html.append(">")
-                    .append(Markdown.escape(pages.get(entry.getKey()).label()))
+                    .append(Markdown.escape(
+                            Objects.requireNonNull(pages.get(entry.getKey())).label()))
                     .append("</a></li>\n");
         }
         return html.append("</ul></section>\n").toString();

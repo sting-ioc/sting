@@ -3,7 +3,9 @@ package sting.site;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public final class Main {
     private Main() {}
 

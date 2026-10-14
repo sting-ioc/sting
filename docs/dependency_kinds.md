@@ -6,8 +6,8 @@ Sting allows a component to declare different kinds of dependencies. The kind de
 Sting supplies the dependency to the component. The kind is specified by the java type of the constructor
 parameter (for {@link: sting.Injectable} annotated types), the method parameter (for methods contained in
 {@link: sting.Fragment} annotated types) or the method return value (for injector [outputs](outputs.md)).
-The kind can also be determined by whether the element has been annotated by the `@javax.annotation.Nullable`
-annotation.
+An outer `@org.jspecify.annotations.Nullable` annotation makes an instance dependency optional.
+Unannotated instance requests remain required, including in unmarked consumer code.
 
 The following table lists the different kinds supported by Sting.
 
@@ -130,3 +130,20 @@ fragment such as:
 The service could also be retrieved as [outputs](outputs.md) using different dependency kinds:
 
 {@file_content: file=sting/doc/examples/dependency_kinds/MyInjector.java start_line=@Injector}
+
+## Nullness
+
+Sting uses [JSpecify](https://jspecify.dev/) for library APIs and generated contracts. Add
+`org.jspecify:jspecify:1.0.0` to the compilation classpath, mark your packages or types with `@NullMarked`,
+and annotate nullable types with `org.jspecify.annotations.Nullable`. Within a marked scope, other reference
+types are nonnull by default.
+
+`@Nullable T` is an optional instance request. Use `Optional<T>` or `Supplier<Optional<T>>` for optional values
+in those request forms. Nullable type arguments such as `Supplier<@Nullable T>` are unsupported DI requests.
+Sting preserves nested nullable types in intercepted service signatures and the position of array annotations:
+`@Nullable String[]` permits null entries, while
+`String @Nullable []` permits a null array.
+
+Generated types are `@NullMarked`; the Sting build checks their bodies with NullAway's JSpecify mode.
+NullAway trusts unmarked consumer implementations and unspecified contracts. To check those implementations,
+mark your application code and run NullAway on it.

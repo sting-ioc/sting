@@ -1,14 +1,13 @@
 package com.example.interceptor;
 
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_com_example_interceptor_NoArgumentsModel_Model_Service_InterceptorProxy implements NoArgumentsModel.Service {
-  @Nonnull
   private final NoArgumentsModel.Service _target;
 
-  @Nonnull
   private final NoArgumentsModel.TraceInterceptor _interceptor1;
 
   private Sting_com_example_interceptor_NoArgumentsModel_Model_Service_InterceptorProxy(
@@ -17,7 +16,6 @@ public final class Sting_com_example_interceptor_NoArgumentsModel_Model_Service_
     _interceptor1 = interceptor1;
   }
 
-  @Nonnull
   public static Object create(final Object target, final Object interceptor1) {
     return new Sting_com_example_interceptor_NoArgumentsModel_Model_Service_InterceptorProxy( (NoArgumentsModel.Service) target, (NoArgumentsModel.TraceInterceptor) interceptor1 );
   }

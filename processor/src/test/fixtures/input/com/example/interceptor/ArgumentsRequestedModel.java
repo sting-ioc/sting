@@ -11,6 +11,7 @@ import sting.interceptors.Arguments;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
+@org.jspecify.annotations.NullMarked
 public final class ArgumentsRequestedModel {
     private ArgumentsRequestedModel() {}
 
@@ -33,7 +34,7 @@ public final class ArgumentsRequestedModel {
     @Injectable
     public static class TraceInterceptor {
         @Before
-        public void before(@Arguments final Object[] arguments) {}
+        public void before(@Arguments final @org.jspecify.annotations.Nullable Object[] arguments) {}
     }
 
     @InterceptorBinding(

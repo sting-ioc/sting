@@ -3,6 +3,7 @@ package com.example.fragment.includes.provider_cycle;
 import sting.Fragment;
 import sting.StingProvider;
 
+@org.jspecify.annotations.NullMarked
 public interface SuppressedProviderIncludeCycleModel {
     @StingProvider("[SimpleName]Impl")
     @interface MyFrameworkFragment {}

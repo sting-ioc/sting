@@ -5,6 +5,7 @@ import sting.Fragment;
 import sting.Injector;
 
 @Injector
+@org.jspecify.annotations.NullMarked
 interface PrimitiveAndBoxedCollectionOutputModel {
     Collection<Integer> getValues();
 

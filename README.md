@@ -8,6 +8,7 @@
 Sting is a fast, easy to use, compile-time dependency injection toolkit. The toolkit accepts a set of annotated
 java classes and generates source code to instantiate and wire together the components. Sting can generate
 injectors, fragments, auto-fragments, dependency-injected factories, and service-interface interceptor proxies.
+Library and generated contracts use JSpecify; see the [nullness documentation](docs/dependency_kinds.md#nullness).
 
 Sting is under heavy development, and sometimes the documentation does not keep up to date. However the goal of
 the toolkit is to be easy to use, and this includes clear and concise documentation. If something is unclear
@@ -19,7 +20,7 @@ and project support, please visit the [GitHub project](https://github.com/sting-
 
 # Development
 
-Use Bazel 9.3.0 and JDK 17 or newer for the build, including the documentation site. Run
+Use Bazel 9.3.0 and JDK 21 or newer for the build, including the documentation site. Run
 `bazel test //:all_tests` for tests and `tools/check.sh` for the full check. See the
 [development process](docs/development_process.md) for focused processor tests, goldens, and releases.
 Run `bazel run //tools/ahab:hermeticity` for the hermeticity report; the full check guards its recorded baseline.

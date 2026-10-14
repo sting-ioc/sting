@@ -1,7 +1,9 @@
 package com.example.injector.includes.multiple;
 
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_MyFragment implements MyFragment {
   public Runnable $sting$_provideRunnable() {

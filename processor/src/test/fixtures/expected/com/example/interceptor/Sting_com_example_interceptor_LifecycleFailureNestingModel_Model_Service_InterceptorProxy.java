@@ -1,17 +1,15 @@
 package com.example.interceptor;
 
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_com_example_interceptor_LifecycleFailureNestingModel_Model_Service_InterceptorProxy implements LifecycleFailureNestingModel.Service {
-  @Nonnull
   private final LifecycleFailureNestingModel.Service _target;
 
-  @Nonnull
   private final LifecycleFailureNestingModel.OuterInterceptor _interceptor1;
 
-  @Nonnull
   private final LifecycleFailureNestingModel.InnerInterceptor _interceptor2;
 
   private Sting_com_example_interceptor_LifecycleFailureNestingModel_Model_Service_InterceptorProxy(
@@ -23,7 +21,6 @@ public final class Sting_com_example_interceptor_LifecycleFailureNestingModel_Mo
     _interceptor2 = interceptor2;
   }
 
-  @Nonnull
   public static Object create(final Object target, final Object interceptor1,
       final Object interceptor2) {
     return new Sting_com_example_interceptor_LifecycleFailureNestingModel_Model_Service_InterceptorProxy( (LifecycleFailureNestingModel.Service) target, (LifecycleFailureNestingModel.OuterInterceptor) interceptor1, (LifecycleFailureNestingModel.InnerInterceptor) interceptor2 );

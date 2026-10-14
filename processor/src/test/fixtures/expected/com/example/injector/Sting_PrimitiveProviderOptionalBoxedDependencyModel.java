@@ -1,22 +1,20 @@
 package com.example.injector;
 
-import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_PrimitiveProviderOptionalBoxedDependencyModel implements PrimitiveProviderOptionalBoxedDependencyModel {
-  @Nonnull
   private final PrimitiveProviderOptionalBoxedDependencyModel_Sting_MyFragment fragment1 = new PrimitiveProviderOptionalBoxedDependencyModel_Sting_MyFragment();
 
   private int node1;
 
   private boolean node1_allocated;
 
-  @Nullable
-  private Object node2;
+  private @Nullable Object node2;
 
   Sting_PrimitiveProviderOptionalBoxedDependencyModel() {
   }
@@ -30,13 +28,11 @@ final class Sting_PrimitiveProviderOptionalBoxedDependencyModel implements Primi
     return node1;
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Object node2() {
     if ( null == node2 ) {
-      node2 = Objects.requireNonNull( PrimitiveProviderOptionalBoxedDependencyModel_Sting_MyModel.create(node1()) );
+      node2 = PrimitiveProviderOptionalBoxedDependencyModel_Sting_MyModel.create(node1());
     }
-    assert null != node2;
     return node2;
   }
 

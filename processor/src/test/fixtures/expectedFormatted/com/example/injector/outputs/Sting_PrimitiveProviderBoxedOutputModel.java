@@ -1,12 +1,12 @@
 package com.example.injector.outputs;
 
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_PrimitiveProviderBoxedOutputModel implements PrimitiveProviderBoxedOutputModel {
-  @Nonnull
   private final PrimitiveProviderBoxedOutputModel_Sting_MyFragment fragment1 =
       new PrimitiveProviderBoxedOutputModel_Sting_MyFragment();
 

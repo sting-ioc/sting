@@ -7,6 +7,7 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
+@org.jspecify.annotations.NullMarked
 interface SupplierOptionalCollectionOutputModel {
     Collection<Supplier<Optional<MyModel>>> getMyModel();
 

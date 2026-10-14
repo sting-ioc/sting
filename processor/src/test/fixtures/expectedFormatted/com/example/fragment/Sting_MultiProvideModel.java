@@ -3,7 +3,9 @@ package com.example.fragment;
 import java.io.Serializable;
 import java.util.EventListener;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_MultiProvideModel implements MultiProvideModel {
   public Runnable $sting$_provideRunnable() {

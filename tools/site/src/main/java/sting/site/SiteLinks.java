@@ -8,13 +8,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Pattern;
 import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.parser.ParserDelegator;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 final class SiteLinks {
     private static final Pattern CSS_URL = Pattern.compile(
             "(?i)url\\(\\s*(?:\"([^\"]*)\"|'([^']*)'|([^\\s)]*))\\s*\\)|@import\\s+[\"']([^\"']+)[\"']");
@@ -68,7 +71,9 @@ final class SiteLinks {
                         ? entry.getKey()
                         : path.startsWith("/")
                                 ? root.resolve(path.substring(1)).normalize()
-                                : entry.getKey().getParent().resolve(path).normalize();
+                                : Objects.requireNonNull(entry.getKey().getParent())
+                                        .resolve(path)
+                                        .normalize();
                 if (Files.isDirectory(target)) {
                     target = target.resolve("index.html");
                 } else if (!Files.exists(target)

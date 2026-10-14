@@ -2,7 +2,6 @@ package sting.processor;
 
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.MethodSpec;
-import com.palantir.javapoet.TypeName;
 import com.palantir.javapoet.TypeSpec;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,8 +28,9 @@ final class FragmentGenerator {
         GeneratorUtil.addOriginatingTypes(element, builder);
         GeneratorUtil.copyWhitelistedAnnotations(element, builder);
         final TypeMirror type = element.asType();
-        builder.addSuperinterface(TypeName.get(type));
+        builder.addSuperinterface(GeneratorUtil.getTypeName(type));
 
+        builder.addAnnotation(ClassName.get("org.jspecify.annotations", "NullMarked"));
         GeneratorUtil.addGeneratedAnnotation(processingEnv, builder, StingProcessor.class.getName());
         SuppressWarningsUtil.addSuppressWarningsIfRequired(
                 processingEnv, builder, Collections.emptyList(), Collections.singletonList(type));
@@ -51,7 +51,10 @@ final class FragmentGenerator {
         final MethodSpec.Builder method = MethodSpec.methodBuilder(
                         StingGeneratorUtil.getFragmentProvidesStubName(element))
                 .addModifiers(Modifier.PUBLIC)
-                .returns(isPublic ? TypeName.get(returnType) : OBJECT);
+                .returns(
+                        isPublic
+                                ? GeneratorUtil.getTypeName(returnType)
+                                : binding.isOptional() ? StingGeneratorUtil.asNullable(OBJECT) : OBJECT);
         GeneratorUtil.copyWhitelistedAnnotations(element, method);
 
         final var code = new StringBuilder();

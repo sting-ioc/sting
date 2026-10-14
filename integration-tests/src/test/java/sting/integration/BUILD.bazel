@@ -5,7 +5,7 @@ java_library(
     srcs = ["AbstractIntegrationTest.java"],
     visibility = ["//integration-tests/src/test/java/sting/integration/other:__subpackages__"],
     deps = [
-        "//third_party/java:javax_annotation",
+        "//third_party/java:jspecify",
         "//third_party/java:testng",
     ],
 )
@@ -52,6 +52,6 @@ java_testng(
     deps = [
         ":test_support",
         "//core",
-        "//third_party/java:javax_annotation",
+        "//third_party/java:jspecify",
     ],
 )

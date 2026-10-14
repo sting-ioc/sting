@@ -7,7 +7,9 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Locale;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 final class SiteServer {
     private SiteServer() {}
 

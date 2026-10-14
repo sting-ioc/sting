@@ -11,6 +11,7 @@ import sting.interceptors.After;
 import sting.interceptors.InterceptorBinding;
 import sting.interceptors.Result;
 
+@org.jspecify.annotations.NullMarked
 public final class VoidResultModel {
     private VoidResultModel() {}
 
@@ -33,7 +34,7 @@ public final class VoidResultModel {
     @Injectable
     public static class TraceInterceptor {
         @After
-        public void after(@Result final Object result) {}
+        public void after(@Result final @org.jspecify.annotations.Nullable Object result) {}
     }
 
     @InterceptorBinding(implementedBy = "com.example.interceptor.VoidResultModel.TraceInterceptor", priority = 100)

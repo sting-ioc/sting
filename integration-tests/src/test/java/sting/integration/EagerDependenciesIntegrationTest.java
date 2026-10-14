@@ -2,13 +2,14 @@ package sting.integration;
 
 import static org.testng.Assert.*;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 import org.testng.annotations.Test;
 import sting.Eager;
 import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
 
+@NullMarked
 public final class EagerDependenciesIntegrationTest extends AbstractIntegrationTest {
     @Eager
     @Injectable
@@ -16,13 +17,13 @@ public final class EagerDependenciesIntegrationTest extends AbstractIntegrationT
 
     @Injectable
     public static class Model2 extends BaseModel {
-        Model2(@Nonnull final Model1 model1) {
+        Model2(final Model1 model1) {
             super(model1);
         }
     }
 
     public static class Model3 extends BaseModel {
-        Model3(@Nonnull final Model1 model1, @Nonnull final Model2 model2) {
+        Model3(final Model1 model1, final Model2 model2) {
             super(model1, model2);
         }
     }
@@ -33,7 +34,7 @@ public final class EagerDependenciesIntegrationTest extends AbstractIntegrationT
 
     @Fragment
     public interface MyFragment {
-        default Model3 provideModel3(@Nonnull final Model1 model1, @Nonnull final Model2 model2) {
+        default Model3 provideModel3(final Model1 model1, final Model2 model2) {
             return new Model3(model1, model2);
         }
     }
@@ -42,7 +43,6 @@ public final class EagerDependenciesIntegrationTest extends AbstractIntegrationT
             fragmentOnly = false,
             includes = {MyFragment.class, Model4.class})
     public interface MyInjector {
-        @Nonnull
         static MyInjector create() {
             return new EagerDependenciesIntegrationTest_Sting_MyInjector();
         }

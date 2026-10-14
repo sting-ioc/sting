@@ -9,6 +9,7 @@ import sting.Injector;
 import sting.Typed;
 import sting.interceptors.Before;
 
+@org.jspecify.annotations.NullMarked
 public final class ThirdPartyBindingModel {
     private ThirdPartyBindingModel() {}
 

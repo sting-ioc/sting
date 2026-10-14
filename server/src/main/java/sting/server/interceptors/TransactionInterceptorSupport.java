@@ -7,20 +7,18 @@ import jakarta.transaction.Transaction;
 import jakarta.transaction.TransactionManager;
 import jakarta.transaction.TransactionRequiredException;
 import jakarta.transaction.TransactionalException;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.Nullable;
 import sting.interceptors.Invocation;
 
 abstract class TransactionInterceptorSupport {
-    @Nonnull
     private final TransactionManager _transactionManager;
 
-    TransactionInterceptorSupport(@Nonnull final TransactionManager transactionManager) {
+    TransactionInterceptorSupport(final TransactionManager transactionManager) {
         _transactionManager = transactionManager;
     }
 
     @Nullable
-    final Object required(@Nonnull final Invocation invocation) throws Throwable {
+    final Object required(final Invocation invocation) throws Throwable {
         if (null == getTransaction()) {
             begin();
             return invokeInStartedTransaction(invocation);
@@ -30,7 +28,7 @@ abstract class TransactionInterceptorSupport {
     }
 
     @Nullable
-    final Object requiresNew(@Nonnull final Invocation invocation) throws Throwable {
+    final Object requiresNew(final Invocation invocation) throws Throwable {
         final Transaction transaction = getTransaction();
         if (null == transaction) {
             begin();
@@ -47,7 +45,7 @@ abstract class TransactionInterceptorSupport {
     }
 
     @Nullable
-    final Object mandatory(@Nonnull final Invocation invocation) throws Throwable {
+    final Object mandatory(final Invocation invocation) throws Throwable {
         if (null == getTransaction()) {
             throw new TransactionalException(
                     "Transaction required for MANDATORY transactional invocation",
@@ -57,12 +55,12 @@ abstract class TransactionInterceptorSupport {
     }
 
     @Nullable
-    final Object supports(@Nonnull final Invocation invocation) throws Throwable {
+    final Object supports(final Invocation invocation) throws Throwable {
         return invokeInExistingTransaction(invocation);
     }
 
     @Nullable
-    final Object notSupported(@Nonnull final Invocation invocation) throws Throwable {
+    final Object notSupported(final Invocation invocation) throws Throwable {
         final Transaction transaction = getTransaction();
         if (null == transaction) {
             return invokeInExistingTransaction(invocation);
@@ -77,7 +75,7 @@ abstract class TransactionInterceptorSupport {
     }
 
     @Nullable
-    final Object never(@Nonnull final Invocation invocation) throws Throwable {
+    final Object never(final Invocation invocation) throws Throwable {
         if (null != getTransaction()) {
             throw new TransactionalException(
                     "Transaction present for NEVER transactional invocation",
@@ -87,7 +85,7 @@ abstract class TransactionInterceptorSupport {
     }
 
     @Nullable
-    private Object invokeInExistingTransaction(@Nonnull final Invocation invocation) throws Throwable {
+    private Object invokeInExistingTransaction(final Invocation invocation) throws Throwable {
         try {
             return invocation.proceed();
         } catch (final RuntimeException | Error e) {
@@ -97,7 +95,7 @@ abstract class TransactionInterceptorSupport {
     }
 
     @Nullable
-    private Object invokeInStartedTransaction(@Nonnull final Invocation invocation) throws Throwable {
+    private Object invokeInStartedTransaction(final Invocation invocation) throws Throwable {
         boolean rollback = false;
         Throwable failure = null;
         Object result = null;
@@ -180,7 +178,6 @@ abstract class TransactionInterceptorSupport {
         }
     }
 
-    @Nonnull
     private Transaction suspend() {
         try {
             return _transactionManager.suspend();
@@ -189,7 +186,7 @@ abstract class TransactionInterceptorSupport {
         }
     }
 
-    private void resume(@Nonnull final Transaction transaction) {
+    private void resume(final Transaction transaction) {
         try {
             _transactionManager.resume(transaction);
         } catch (final Exception e) {
@@ -197,8 +194,7 @@ abstract class TransactionInterceptorSupport {
         }
     }
 
-    @Nonnull
-    private static TransactionalException failure(@Nonnull final String message, @Nonnull final Throwable cause) {
+    private static TransactionalException failure(final String message, final Throwable cause) {
         return new TransactionalException(message, cause);
     }
 }

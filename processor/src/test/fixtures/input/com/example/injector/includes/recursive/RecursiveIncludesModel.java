@@ -6,6 +6,7 @@ import sting.Named;
 @Injector(
         fragmentOnly = false,
         includes = {MyFragment1.class, MyModel1.class})
+@org.jspecify.annotations.NullMarked
 interface RecursiveIncludesModel {
     Runnable getRunnable1();
 

@@ -2,7 +2,7 @@
 
 Sting is a compile-time dependency injection toolkit for Java.
 
-Use the Bazel version pinned in [.bazelversion](.bazelversion) and JDK 17 or newer.
+Use the Bazel version pinned in [.bazelversion](.bazelversion) and JDK 21 or newer.
 
 - Build Java modules: `bazel build //core //processor //server //doc-examples`.
 - Run all tests: `bazel test //:all_tests`.

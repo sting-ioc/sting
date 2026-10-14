@@ -5,7 +5,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import javax.annotation.Nonnull;
 
 /**
  * Annotation that indicates the class that provides the service.
@@ -80,6 +79,5 @@ public @interface StingProvider {
      *
      * @return the pattern to produce a name.
      */
-    @Nonnull
     String value();
 }

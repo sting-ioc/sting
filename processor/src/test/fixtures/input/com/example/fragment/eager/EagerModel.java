@@ -4,9 +4,10 @@ import sting.Eager;
 import sting.Fragment;
 
 @Fragment
+@org.jspecify.annotations.NullMarked
 public interface EagerModel {
     @Eager
     default Runnable provideRunnable() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

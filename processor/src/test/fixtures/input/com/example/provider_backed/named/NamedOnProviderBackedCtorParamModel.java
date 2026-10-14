@@ -3,6 +3,7 @@ package com.example.provider_backed.named;
 import sting.Named;
 import sting.StingProvider;
 
+@org.jspecify.annotations.NullMarked
 public final class NamedOnProviderBackedCtorParamModel {
     @StingProvider("[SimpleName]Impl")
     @interface FrameworkComponent {}

@@ -5,4 +5,5 @@ import sting.Injectable;
 
 @Injectable
 @Eager
+@org.jspecify.annotations.NullMarked
 public class EagerModel {}

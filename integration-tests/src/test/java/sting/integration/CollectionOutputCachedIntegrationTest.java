@@ -4,12 +4,13 @@ import static org.testng.Assert.*;
 
 import java.util.Collection;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 import org.testng.annotations.Test;
 import sting.Injectable;
 import sting.Injector;
 import sting.Typed;
 
+@NullMarked
 public final class CollectionOutputCachedIntegrationTest extends AbstractIntegrationTest {
     public interface MyType {}
 
@@ -19,7 +20,6 @@ public final class CollectionOutputCachedIntegrationTest extends AbstractIntegra
 
     @Injector
     public interface MyInjector {
-        @Nonnull
         static MyInjector create() {
             return new CollectionOutputCachedIntegrationTest_Sting_MyInjector();
         }

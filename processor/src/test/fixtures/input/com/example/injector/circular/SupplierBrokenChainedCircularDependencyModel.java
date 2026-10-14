@@ -5,6 +5,7 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
+@org.jspecify.annotations.NullMarked
 interface SupplierBrokenChainedCircularDependencyModel {
     MyModel1 getMyModel1();
 

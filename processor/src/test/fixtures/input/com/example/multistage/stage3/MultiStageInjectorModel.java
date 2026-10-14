@@ -9,6 +9,7 @@ import sting.Injector;
 @Injector(
         fragmentOnly = false,
         includes = {Model1.class, MyFragment.class})
+@org.jspecify.annotations.NullMarked
 interface MultiStageInjectorModel {
     // From MyFragment
     Model2 getModel2();

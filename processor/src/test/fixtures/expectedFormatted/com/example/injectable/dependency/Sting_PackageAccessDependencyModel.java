@@ -1,16 +1,15 @@
 package com.example.injectable.dependency;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_PackageAccessDependencyModel {
   private Sting_PackageAccessDependencyModel() {}
 
-  @Nonnull
   @SuppressWarnings({"rawtypes", "unchecked"})
   public static PackageAccessDependencyModel create(
       final Object instance,
@@ -18,10 +17,9 @@ public final class Sting_PackageAccessDependencyModel {
       final Collection collection,
       final Collection supplierCollection) {
     return new PackageAccessDependencyModel(
-        Objects.requireNonNull((PackageAccessDependencyModel.MyType1) instance),
-        Objects.requireNonNull((Supplier<PackageAccessDependencyModel.MyType2>) supplier),
-        Objects.requireNonNull((Collection<PackageAccessDependencyModel.MyType3>) collection),
-        Objects.requireNonNull(
-            (Collection<Supplier<PackageAccessDependencyModel.MyType4>>) supplierCollection));
+        (PackageAccessDependencyModel.MyType1) instance,
+        (Supplier<PackageAccessDependencyModel.MyType2>) supplier,
+        (Collection<PackageAccessDependencyModel.MyType3>) collection,
+        (Collection<Supplier<PackageAccessDependencyModel.MyType4>>) supplierCollection);
   }
 }

@@ -5,6 +5,7 @@ import sting.Injector;
 
 @Injector
 @Deprecated
+@org.jspecify.annotations.NullMarked
 public interface DeprecatedInjectorModel {
     MyModel getMyModel();
 

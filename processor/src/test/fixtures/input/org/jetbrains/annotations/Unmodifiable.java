@@ -7,4 +7,5 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE_USE)
+@org.jspecify.annotations.NullMarked
 public @interface Unmodifiable {}

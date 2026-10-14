@@ -12,6 +12,7 @@ import sting.interceptors.InterceptorBinding;
 import sting.interceptors.Invocation;
 import sting.interceptors.Proceed;
 
+@org.jspecify.annotations.NullMarked
 public final class VoidAroundModel {
     private VoidAroundModel() {}
 
@@ -34,7 +35,7 @@ public final class VoidAroundModel {
     @Injectable
     public static class TraceInterceptor {
         @Around
-        public Object around(@Proceed final Invocation invocation) throws Throwable {
+        public @org.jspecify.annotations.Nullable Object around(@Proceed final Invocation invocation) throws Throwable {
             return invocation.proceed();
         }
     }

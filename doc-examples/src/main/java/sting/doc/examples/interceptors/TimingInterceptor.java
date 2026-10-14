@@ -1,5 +1,6 @@
 package sting.doc.examples.interceptors;
 
+import org.jspecify.annotations.Nullable;
 import sting.Injectable;
 import sting.interceptors.After;
 import sting.interceptors.AfterException;
@@ -16,7 +17,9 @@ public final class TimingInterceptor {
 
     @After
     public void after(
-            @ServiceType final String serviceType, @MethodName final String methodName, @Result final Object result) {}
+            @ServiceType final String serviceType,
+            @MethodName final String methodName,
+            @Result final @Nullable Object result) {}
 
     @AfterException
     public void afterException(

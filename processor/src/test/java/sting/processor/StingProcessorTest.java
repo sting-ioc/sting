@@ -13,7 +13,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
-import javax.annotation.Nonnull;
 import javax.annotation.processing.Processor;
 import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
@@ -24,7 +23,6 @@ import org.testng.annotations.Test;
 
 @SuppressWarnings("TextBlockMigration")
 public final class StingProcessorTest extends AbstractStingProcessorTest {
-    @Nonnull
     @DataProvider(name = "successfulCompiles")
     public Object[][] successfulCompiles() {
         return new Object[][] {
@@ -78,11 +76,10 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
     }
 
     @Test(dataProvider = "successfulCompiles")
-    public void processSuccessfulCompile(@Nonnull final String classname) throws Exception {
+    public void processSuccessfulCompile(final String classname) throws Exception {
         assertSuccessfulCompile(classname, javaOutput(classname));
     }
 
-    @Nonnull
     @DataProvider(name = "successfulFactoryCompiles")
     public Object[][] successfulFactoryCompiles() {
         return new Object[][] {
@@ -102,21 +99,20 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
     }
 
     @Test(dataProvider = "successfulFactoryCompiles")
-    public void processSuccessfulFactoryCompile(
-            @Nonnull final String classname, @Nonnull final String generatedClassname) throws Exception {
+    public void processSuccessfulFactoryCompile(final String classname, final String generatedClassname)
+            throws Exception {
         assertSuccessfulCompile(
                 inputs(classname),
                 Collections.singletonList(javaOutput(generatedClassname)),
                 t -> emitFactoryGeneratedFile(generatedClassname, t));
     }
 
-    private boolean emitFactoryGeneratedFile(@Nonnull final String generatedClassname, @Nonnull final String target) {
+    private boolean emitFactoryGeneratedFile(final String generatedClassname, final String target) {
         return target.endsWith(toFilename(generatedClassname, "", ".java"))
                 || target.endsWith(toFilename(generatedClassname, "Sting_", ".java"));
     }
 
     @DataProvider(name = "successfulInjectorCompiles")
-    @Nonnull
     public Object[][] successfulInjectorCompiles() {
         return new Object[][] {
             new Object[] {"com.example.injector.BasicInjectorModel"},
@@ -156,13 +152,65 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
 
     // These tests save less fixtures to the filesystem
     @Test(dataProvider = "successfulInjectorCompiles")
-    public void processSuccessfulInjectorCompile(@Nonnull final String classname) throws Exception {
+    public void processSuccessfulInjectorCompile(final String classname) throws Exception {
         final List<String> expectedOutputs = Collections.singletonList(javaOutput(classname));
         assertSuccessfulCompile(inputs(classname), expectedOutputs, t -> emitInjectorGeneratedFile(classname, t));
     }
 
+    @DataProvider(name = "additionalInjectorCompiles")
+    public Object[][] additionalInjectorCompiles() {
+        return new Object[][] {
+            {"com.example.injector.eager", "BasicEagerDependencyModel", new String[0]},
+            {
+                "com.example.injector.eager.fragment",
+                "EagerInjectableViaIncludesModel",
+                new String[] {"MyFragment1", "MyFragment2", "MyModel1", "MyModel2", "MyModel3"}
+            },
+            {
+                "com.example.injector.includes.recursive",
+                "RecursiveIncludesModel",
+                new String[] {"MyFragment1", "MyFragment2", "MyFragment3", "MyModel1", "MyModel2", "MyModel3"}
+            },
+            {
+                "com.example.injector.includes.provider.naming.compound",
+                "MyInjector",
+                new String[] {"MyFrameworkComponent", "MyModel1", "MyModel1Impl", "Outer"}
+            },
+            {
+                "com.example.injector.includes.provider.naming.enclosing",
+                "MyInjector",
+                new String[] {"MyFrameworkComponent", "MyModel", "MyFramework_MyModel", "Outer"}
+            },
+            {
+                "com.example.injector.includes.provider.naming.flat_enclosing",
+                "MyInjector",
+                new String[] {
+                    "MyFrameworkComponent",
+                    "MyModel",
+                    "MyFramework_MyModel",
+                    "Outer",
+                    "Outer_Middle_Leaf_MyFramework_MyModel2"
+                }
+            }
+        };
+    }
+
+    @Test(dataProvider = "additionalInjectorCompiles")
+    public void processAdditionalInjectorCompile(
+            final String packageName, final String injector, final String[] companions) throws Exception {
+        final String classname = packageName + "." + injector;
+        final var names = new ArrayList<String>();
+        names.add(classname);
+        for (final String companion : companions) {
+            names.add(packageName + "." + companion);
+        }
+        assertSuccessfulCompile(
+                inputs(names.toArray(new String[0])),
+                List.of(javaOutput(classname)),
+                target -> target.endsWith(".java"));
+    }
+
     @DataProvider(name = "successfulPrimitiveInteropCompiles")
-    @Nonnull
     public Object[][] successfulPrimitiveInteropCompiles() {
         return new Object[][] {
             new Object[] {"com.example.injector.AllPrimitiveProviderBoxedDependencyModel"},
@@ -175,13 +223,12 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
     }
 
     @Test(dataProvider = "successfulPrimitiveInteropCompiles")
-    public void processSuccessfulPrimitiveInteropCompile(@Nonnull final String classname) {
+    public void processSuccessfulPrimitiveInteropCompile(final String classname) {
         final Compilation compilation = compile(Collections.singletonList(input("input", classname)));
         assertCompilationSuccessful(compilation);
     }
 
     @DataProvider(name = "successfulOptionalRequestInjectorCompiles")
-    @Nonnull
     public Object[][] successfulOptionalRequestInjectorCompiles() {
         return new Object[][] {
             new Object[] {"com.example.injector.OptionalCollectionDependencyInjectorModel"},
@@ -190,13 +237,12 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
     }
 
     @Test(dataProvider = "successfulOptionalRequestInjectorCompiles")
-    public void processSuccessfulOptionalRequestInjectorCompile(@Nonnull final String classname) {
+    public void processSuccessfulOptionalRequestInjectorCompile(final String classname) {
         final Compilation compilation = compile(Collections.singletonList(input("input", classname)));
         assertCompilationSuccessful(compilation);
     }
 
     @DataProvider(name = "successfulInterceptorCompiles")
-    @Nonnull
     public Object[][] successfulInterceptorCompiles() {
         return new Object[][] {
             new Object[] {"public interceptor annotations", "com.example.interceptor.BasicInterceptorModel"},
@@ -263,13 +309,12 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
 
     @Test(dataProvider = "successfulInterceptorCompiles")
     public void processSuccessfulInterceptorCompile(
-            @SuppressWarnings("unused") @Nonnull final String label, @Nonnull final String classname) {
+            @SuppressWarnings("unused") final String label, final String classname) {
         final Compilation compilation = compile(Collections.singletonList(input("input", classname)));
         assertCompilationSuccessful(compilation);
     }
 
     @DataProvider(name = "failedInterceptorCompiles")
-    @Nonnull
     public Object[][] failedInterceptorCompiles() {
         return new Object[][] {
             new Object[] {
@@ -624,16 +669,13 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
 
     @Test(dataProvider = "failedInterceptorCompiles")
     public void processFailedInterceptorCompile(
-            @SuppressWarnings("unused") @Nonnull final String label,
-            @Nonnull final String classname,
-            @Nonnull final String message) {
+            @SuppressWarnings("unused") final String label, final String classname, final String message) {
         final Compilation compilation = compile(Collections.singletonList(input("bad_input", classname)));
         assertFalse(compilation.success());
         assertErrorDiagnostic(compilation, message);
     }
 
     @DataProvider(name = "generatedInterceptorSourceAssertions")
-    @Nonnull
     public Object[][] generatedInterceptorSourceAssertions() {
         return new Object[][] {
             new Object[] {
@@ -700,17 +742,17 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                 true
             },
             new Object[] {
-                "nonnull method annotation copied",
+                "generated interceptor type is null marked",
                 "com.example.interceptor.AnnotationCopyModel",
                 "AnnotationCopyModel",
-                "@Nonnull\n  public String run",
+                "@NullMarked",
                 true
             },
             new Object[] {
                 "nullable parameter annotation copied",
                 "com.example.interceptor.AnnotationCopyModel",
                 "AnnotationCopyModel",
-                "@Nullable final String value",
+                "final @Nullable String value",
                 true
             },
             new Object[] {
@@ -886,7 +928,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                 "around proxy assigns around result directly",
                 "com.example.interceptor.AroundMetadataModel",
                 "AroundMetadataModel",
-                "result = (String) _interceptor1.around(",
+                "result = (String) $sting$_cast(_interceptor1.around(",
                 true
             },
             new Object[] {
@@ -914,14 +956,14 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                 "around proxy invoke arguments are nonnull",
                 "com.example.interceptor.AroundMetadataModel",
                 "AroundMetadataModel",
-                "private Object invoke_run_interceptor2(@Nonnull final Object[] arguments)",
+                "private @Nullable Object invoke_run_interceptor2(final @Nullable Object[] arguments)",
                 true
             },
             new Object[] {
                 "around proxy invoke argument shape asserted",
                 "com.example.interceptor.AroundMetadataModel",
                 "AroundMetadataModel",
-                "assert null != arguments && 2 == arguments.length;",
+                "assert 2 == arguments.length;",
                 true
             },
             new Object[] {
@@ -974,52 +1016,52 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                 false
             },
             new Object[] {
-                "around proxy nonnull helper entry",
+                "around proxy erased helper entry",
                 "com.example.interceptor.AroundNullabilityModel",
                 "NonnullService",
-                "@Nonnull\n  private Object invoke_run_interceptor2",
+                "private @Nullable Object invoke_run_interceptor2",
                 true
             },
             new Object[] {
-                "around proxy nonnull helper target",
+                "around proxy erased helper target",
                 "com.example.interceptor.AroundNullabilityModel",
                 "NonnullService",
-                "@Nonnull\n  private Object invoke_run_target",
+                "private @Nullable Object invoke_run_target",
                 true
             },
             new Object[] {
                 "around proxy nullable helper entry",
                 "com.example.interceptor.AroundNullabilityModel",
                 "NullableService",
-                "@Nullable\n  private Object invoke_run_interceptor2",
+                "private @Nullable Object invoke_run_interceptor2",
                 true
             },
             new Object[] {
                 "around proxy nullable helper target",
                 "com.example.interceptor.AroundNullabilityModel",
                 "NullableService",
-                "@Nullable\n  private Object invoke_run_target",
+                "private @Nullable Object invoke_run_target",
                 true
             },
             new Object[] {
-                "around proxy primitive helper entry is nonnull",
+                "around proxy primitive helper entry carries boxed nullness",
                 "com.example.interceptor.AroundNullabilityModel",
                 "PrimitiveService",
-                "@Nonnull\n  private Object invoke_run_interceptor2",
+                "private @Nullable Object invoke_run_interceptor2",
                 true
             },
             new Object[] {
-                "around proxy primitive helper target is nonnull",
+                "around proxy primitive helper target carries boxed nullness",
                 "com.example.interceptor.AroundNullabilityModel",
                 "PrimitiveService",
-                "@Nonnull\n  private Object invoke_run_target",
+                "private @Nullable Object invoke_run_target",
                 true
             },
             new Object[] {
                 "around proxy primitive result casts directly",
                 "com.example.interceptor.AroundNullabilityModel",
                 "PrimitiveService",
-                "result = (int) _interceptor1.around(",
+                "result = (int) $sting$_cast(_interceptor1.around(",
                 true
             },
             new Object[] {
@@ -1033,14 +1075,14 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                 "void around helper entry returns void",
                 "com.example.interceptor.VoidAroundModel",
                 "VoidAroundModel",
-                "private void invoke_run_interceptor2(@Nonnull final Object[] arguments)",
+                "private void invoke_run_interceptor2(final @Nullable Object[] arguments)",
                 true
             },
             new Object[] {
                 "void around helper target returns void",
                 "com.example.interceptor.VoidAroundModel",
                 "VoidAroundModel",
-                "private void invoke_run_target(@Nonnull final Object[] arguments)",
+                "private void invoke_run_target(final @Nullable Object[] arguments)",
                 true
             },
             new Object[] {
@@ -1055,10 +1097,10 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
 
     @Test(dataProvider = "generatedInterceptorSourceAssertions")
     public void generatedInterceptorSourceAssertion(
-            @Nonnull final String label,
-            @Nonnull final String classname,
-            @Nonnull final String filenamePart,
-            @Nonnull final String sourceFragment,
+            final String label,
+            final String classname,
+            final String filenamePart,
+            final String sourceFragment,
             final boolean present)
             throws Exception {
         final Compilation compilation = compile(Collections.singletonList(input("input", classname)));
@@ -1079,18 +1121,17 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         final String source = readGeneratedInterceptorProxy(compilation, "NonnullService");
         assertTrue(source.contains("import org.jetbrains.annotations.Unmodifiable;"), source);
         assertTrue(
-                source.contains("@Nonnull\n" + "  private @Unmodifiable Object invoke_run_interceptor2(\n"
+                source.contains("private @Unmodifiable @Nullable Object invoke_run_interceptor2(\n"
                         + "      "
-                        + "@Nonnull final @Unmodifiable Object[] arguments)"),
+                        + "final @Unmodifiable @Nullable Object[] arguments)"),
                 source);
         assertTrue(
-                source.contains("@Nonnull\n" + "  private @Unmodifiable Object invoke_run_target("
-                        + "@Nonnull final @Unmodifiable Object[] arguments)"),
+                source.contains("private @Unmodifiable @Nullable Object invoke_run_target(\n"
+                        + "      final @Unmodifiable @Nullable Object[] arguments)"),
                 source);
     }
 
     @DataProvider(name = "generatedInterceptorProxyFixtures")
-    @Nonnull
     public Object[][] generatedInterceptorProxyFixtures() {
         return new Object[][] {
             new Object[] {
@@ -1128,9 +1169,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
 
     @Test(dataProvider = "generatedInterceptorProxyFixtures")
     public void generatedInterceptorProxyFixture(
-            @SuppressWarnings("unused") @Nonnull final String label,
-            @Nonnull final String classname,
-            @Nonnull final String output)
+            @SuppressWarnings("unused") final String label, final String classname, final String output)
             throws Exception {
         assertSuccessfulCompile(
                 inputs(classname), Collections.singletonList(output), target -> target.endsWith(output));
@@ -1147,7 +1186,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         assertTrue(dot.contains("TraceInterceptor"), dot);
     }
 
-    private boolean emitInjectorGeneratedFile(@Nonnull final String classname, @Nonnull final String target) {
+    private boolean emitInjectorGeneratedFile(final String classname, final String target) {
         final int index = classname.lastIndexOf(".");
         final String simpleClassName = -1 == index ? classname : classname.substring(index + 1);
         return target.endsWith(".java") || target.endsWith(simpleClassName + StingProcessor.DOT_SUFFIX);
@@ -2246,12 +2285,11 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
     }
 
     @Test(dataProvider = "failedCompiles")
-    public void processFailedCompile(@Nonnull final String classname, @Nonnull final String errorMessageFragment) {
+    public void processFailedCompile(final String classname, final String errorMessageFragment) {
         assertFailedCompile(classname, errorMessageFragment);
     }
 
     @DataProvider(name = "compileWithWarnings")
-    @Nonnull
     public Object[][] compileWithWarnings() {
         return new Object[][] {
             new Object[] {
@@ -2312,7 +2350,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
     }
 
     @Test(dataProvider = "compileWithWarnings")
-    public void processCompileWithWarnings(@Nonnull final String classname, @Nonnull final String messageFragment) {
+    public void processCompileWithWarnings(final String classname, final String messageFragment) {
         assertCompilesWithSingleWarningThatCanBeUpgradedToError(classname, messageFragment);
     }
 
@@ -2338,7 +2376,6 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
     }
 
     @DataProvider(name = "compileWithoutWarnings")
-    @Nonnull
     public Object[][] compileWithoutWarnings() {
         return new Object[][] {
             new Object[] {"NoPackageModel"},
@@ -2540,7 +2577,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
     }
 
     @Test(dataProvider = "compileWithoutWarnings")
-    public void processCompileWithoutWarnings(@Nonnull final String classname) {
+    public void processCompileWithoutWarnings(final String classname) {
         assertCompilesWithoutWarnings(classname);
     }
 
@@ -2554,6 +2591,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
 
         final List<File> classPath = buildClasspath(targetDir.toFile());
         final Compilation stage2 = CompileTestUtil.compile(
+                javaCompiler(),
                 Collections.singletonList(input("bad_input", "com.example.injector.autodetect.MyInjector")),
                 getOptions(),
                 processors(),
@@ -2591,6 +2629,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         final Processor synthesizingProcessor =
                 newSynthesizingProcessor("com.example.multiround.fragment.MyGeneratedFragment", 0);
         final Compilation compilation = CompileTestUtil.compile(
+                javaCompiler(),
                 inputs(
                         "com.example.multiround.fragment.MyInjector",
                         "com.example.multiround.fragment.MyFragment",
@@ -2624,6 +2663,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         final Processor synthesizingProcessor =
                 newSynthesizingProcessor("com.example.multiround.injectable.MyGeneratedInjectable", 0);
         final Compilation compilation = CompileTestUtil.compile(
+                javaCompiler(),
                 inputs(
                         "com.example.multiround.injectable.MyInjector",
                         "com.example.multiround.injectable.MyFragment",
@@ -2695,9 +2735,8 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         }
     }
 
-    @Nonnull
-    private String readGeneratedInterceptorProxy(
-            @Nonnull final Compilation compilation, @Nonnull final String filenamePart) throws IOException {
+    private String readGeneratedInterceptorProxy(final Compilation compilation, final String filenamePart)
+            throws IOException {
         final String filename = compilation.sourceOutputFilenames().stream()
                 .filter(f -> f.endsWith("_InterceptorProxy.java"))
                 .filter(f -> f.contains(filenamePart))
@@ -2707,9 +2746,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         return Files.readString(compilation.sourceOutput().resolve(filename), StandardCharsets.UTF_8);
     }
 
-    @Nonnull
-    private String readClassOutput(@Nonnull final Compilation compilation, @Nonnull final String suffix)
-            throws IOException {
+    private String readClassOutput(final Compilation compilation, final String suffix) throws IOException {
         final String filename = compilation.classOutputFilenames().stream()
                 .filter(f -> f.endsWith(suffix))
                 .findFirst()
@@ -2719,7 +2756,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void deleteDir(@Nonnull final Path directory) {
+    private void deleteDir(final Path directory) {
         try (var paths = Files.walk(directory)) {
             paths.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
         } catch (final IOException e) {
@@ -2727,7 +2764,6 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
         }
     }
 
-    @Nonnull
     @Override
     protected List<String> getOptions() {
         final List<String> options = new ArrayList<>(super.getOptions());

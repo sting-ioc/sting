@@ -4,7 +4,6 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import javax.annotation.Nonnull;
 
 /**
  * Marks a lifecycle method parameter that receives a compile-time member value from the binding annotation.
@@ -21,6 +20,5 @@ public @interface BindingValue {
      *
      * @return the binding annotation member name.
      */
-    @Nonnull
     String value();
 }

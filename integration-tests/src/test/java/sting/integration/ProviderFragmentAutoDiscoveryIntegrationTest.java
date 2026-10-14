@@ -2,13 +2,14 @@ package sting.integration;
 
 import static org.testng.Assert.*;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 import org.testng.annotations.Test;
 import sting.Fragment;
 import sting.Injectable;
 import sting.Injector;
 import sting.StingProvider;
 
+@NullMarked
 public final class ProviderFragmentAutoDiscoveryIntegrationTest extends AbstractIntegrationTest {
     @Injectable
     public static class Model2 extends BaseModel {}
@@ -18,15 +19,13 @@ public final class ProviderFragmentAutoDiscoveryIntegrationTest extends Abstract
 
     @MyFrameworkComponent
     public static class Model1 extends BaseModel {
-        @Nonnull
         private final Model2 _model2;
 
-        Model1(@Nonnull final Model2 model2) {
+        Model1(final Model2 model2) {
             super(model2);
             _model2 = model2;
         }
 
-        @Nonnull
         Model2 getModel2() {
             return _model2;
         }
@@ -34,23 +33,19 @@ public final class ProviderFragmentAutoDiscoveryIntegrationTest extends Abstract
 
     @Fragment
     public interface Model1Fragment {
-        @Nonnull
-        default Model1 provideModel1(@Nonnull final Model2 model2) {
+        default Model1 provideModel1(final Model2 model2) {
             return new Model1(model2);
         }
     }
 
     @Injector
     public interface MyInjector {
-        @Nonnull
         static MyInjector create() {
             return new ProviderFragmentAutoDiscoveryIntegrationTest_Sting_MyInjector();
         }
 
-        @Nonnull
         Model1 getModel1();
 
-        @Nonnull
         Model2 getModel2();
     }
 

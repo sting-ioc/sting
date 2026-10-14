@@ -3,7 +3,10 @@ title: Project Setup
 ---
 
 A Sting project can be setup using any build system that supports configuration of annotation
-processors. The following instructions describe how to set up the project using the
+processors. Library and generated contracts use JSpecify; see the
+[nullness documentation](dependency_kinds.md#nullness) for annotations and supported dependency forms.
+
+The following instructions describe how to set up the project using the
 [Apache Maven](https://maven.apache.org) build tool as it is relatively well known within the Java ecosystem.
 
 ## Configure Maven
@@ -42,8 +45,11 @@ compiler plugin from within the `pom.xml`:
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.5.1</version>
         <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
+          <source>17</source>
+          <target>17</target>
+          <compilerArgs>
+            <arg>-XDaddTypeAnnotationsToSymbol=true</arg>
+          </compilerArgs>
           <useIncrementalCompilation>false</useIncrementalCompilation>
           <annotationProcessorPaths>
             <path>
@@ -59,6 +65,18 @@ compiler plugin from within the `pom.xml`:
   </build>
 </project>
 ```
+
+### Compiler and JSpecify
+
+The Sting processor requires Java 21 or newer. Use JDK 22+ or patched JDK 21.0.8+ when reading JSpecify
+contracts from compiled classes. The symbol flag in the example makes type-use annotations available to Sting
+on patched Java 21 compilers. Library and generated classes target Java 17. `sting-core` depends on
+`org.jspecify:jspecify:1.0.0`, which supplies the annotations on the compilation classpath. The shaded
+processor contains its own canonical JSpecify runtime classes for the isolated processorpath.
+
+To check application and generated bodies, configure Error Prone and NullAway with JSpecify mode and marked
+scopes as described in the [development process](development_process.md#nullness-checking).
+NullAway trusts unmarked application implementations; mark and check them to verify their nullness contracts.
 
 ### Optional Generated Source Formatting
 

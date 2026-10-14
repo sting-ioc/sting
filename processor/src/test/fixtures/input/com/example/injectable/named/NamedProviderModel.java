@@ -5,6 +5,7 @@ import sting.Named;
 import sting.StingProvider;
 import sting.Typed;
 
+@org.jspecify.annotations.NullMarked
 public interface NamedProviderModel {
     @StingProvider("[CompoundName]Impl")
     @interface MyFrameworkComponent {}

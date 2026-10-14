@@ -2,6 +2,7 @@ package com.example.provider_backed.named;
 
 import sting.Named;
 
+@org.jspecify.annotations.NullMarked
 public final class NamedOnCtorParamInThirdPartyActAsStingConsumerBackedTypeModel {
     @interface ActAsStingConsumer {}
 

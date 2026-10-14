@@ -1,5 +1,6 @@
 package sting.processor;
 
+import com.palantir.javapoet.AnnotationSpec;
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.MethodSpec;
 import com.palantir.javapoet.ParameterSpec;
@@ -8,7 +9,6 @@ import com.palantir.javapoet.TypeName;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -23,6 +23,7 @@ import org.realityforge.proton.SuppressWarningsUtil;
 
 final class StingGeneratorUtil {
     static final String FRAMEWORK_PREFIX = "$sting$_";
+    private static final ClassName NONNULL = ClassName.get("org.jspecify.annotations", "NonNull");
     private static final ClassName OBJECT = ClassName.get("java.lang", "Object");
     private static final ClassName COLLECTION = ClassName.get(Collection.class);
     private static final ClassName OPTIONAL = ClassName.get(Optional.class);
@@ -30,12 +31,23 @@ final class StingGeneratorUtil {
 
     private StingGeneratorUtil() {}
 
+    static TypeName asNullable(final TypeName type) {
+        final var annotations = new ArrayList<>(type.annotations().stream()
+                .filter(annotation -> !annotation.type().equals(NONNULL))
+                .toList());
+        if (annotations.stream().noneMatch(annotation -> annotation.type().equals(GeneratorUtil.NULLABLE_CLASSNAME))) {
+            annotations.add(
+                    AnnotationSpec.builder(GeneratorUtil.NULLABLE_CLASSNAME).build());
+        }
+        return type.withoutAnnotations().annotated(annotations);
+    }
+
     static TypeName getServiceType(final ServiceRequest serviceRequest) {
         final ServiceRequest.Kind kind = serviceRequest.getKind();
-        final var baseType =
-                TypeName.get(serviceRequest.getService().getCoordinate().type());
+        final var baseType = GeneratorUtil.getTypeName(
+                serviceRequest.getService().getCoordinate().type());
         if (ServiceRequest.Kind.INSTANCE == kind) {
-            return baseType;
+            return serviceRequest.getService().isOptional() ? asNullable(baseType) : baseType;
         } else if (ServiceRequest.Kind.OPTIONAL == kind) {
             return ParameterizedTypeName.get(OPTIONAL, baseType);
         } else if (ServiceRequest.Kind.SUPPLIER == kind) {
@@ -106,28 +118,20 @@ final class StingGeneratorUtil {
                 anyNonPublicNonInstance = true;
                 paramType = COLLECTION;
             }
-            final ParameterSpec.Builder param = ParameterSpec.builder(paramType, paramName, Modifier.FINAL);
+            final ParameterSpec.Builder param = ParameterSpec.builder(
+                    service.getService().isOptional() ? asNullable(paramType) : paramType, paramName, Modifier.FINAL);
             GeneratorUtil.copyWhitelistedAnnotations(parameter, param);
             method.addParameter(param.build());
             if (!firstParam) {
                 code.append(", ");
             }
             firstParam = false;
-            final boolean requireNonNull = !service.getService().isOptional()
-                    && !typeProduced.getKind().isPrimitive();
-            if (requireNonNull) {
-                code.append("$T.requireNonNull( ");
-                args.add(Objects.class);
-            }
             if (!isPublic) {
                 code.append("($T) ");
-                args.add(actualTypeName);
+                args.add(actualTypeName.withoutAnnotations());
             }
             code.append("$N");
             args.add(paramName);
-            if (requireNonNull) {
-                code.append(" )");
-            }
         }
         if (0 != dependencies.length) {
             code.append(' ');

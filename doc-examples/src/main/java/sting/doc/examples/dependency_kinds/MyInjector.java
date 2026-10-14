@@ -3,11 +3,13 @@ package sting.doc.examples.dependency_kinds;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Supplier;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import sting.Injectable;
 import sting.Injector;
 
 @Injector
+@NullMarked
 public interface MyInjector {
     Supplier<NotificationService> getNotificationService();
 

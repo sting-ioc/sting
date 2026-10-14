@@ -6,6 +6,7 @@ import sting.Injectable;
 import sting.Injector;
 
 @Injector
+@org.jspecify.annotations.NullMarked
 interface SupplierBrokenFragmentWalkingCircularDependencyModel {
     MyModel1 getMyModel1();
 
@@ -26,7 +27,7 @@ interface SupplierBrokenFragmentWalkingCircularDependencyModel {
     @Fragment
     interface MyFragment {
         default Runnable provideRunnable(Supplier<MyModel1> model) {
-            return null;
+            throw new UnsupportedOperationException();
         }
     }
 }

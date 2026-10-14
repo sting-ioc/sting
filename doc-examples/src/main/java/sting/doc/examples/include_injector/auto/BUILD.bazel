@@ -7,6 +7,7 @@ doc_examples_java_library(
     srcs = [
         "AcademyApplication.java",
         "LibraryApplication.java",
+        "package-info.java",
     ],
     plugins = [
         "//processor:sting_processor_plugin",
@@ -14,6 +15,5 @@ doc_examples_java_library(
     deps = [
         "//core",
         "//doc-examples/src/main/java/sting/doc/examples/include_injector",
-        "//third_party/java:javax_annotation",
     ],
 )

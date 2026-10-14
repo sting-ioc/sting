@@ -3,8 +3,9 @@ package com.example.fragment;
 import sting.Fragment;
 
 @Fragment
+@org.jspecify.annotations.NullMarked
 public interface BasicModel {
     default Runnable provideRunnable() {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

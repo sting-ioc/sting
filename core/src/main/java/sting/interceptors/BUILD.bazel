@@ -21,6 +21,6 @@ java_library(
         "package-info.java",
     ],
     deps = [
-        "//third_party/java:javax_annotation",
+        "//third_party/java:jspecify",
     ],
 )

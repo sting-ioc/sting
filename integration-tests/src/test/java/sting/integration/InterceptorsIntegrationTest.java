@@ -12,10 +12,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import org.testng.annotations.Test;
 import sting.Eager;
 import sting.Factory;
@@ -38,6 +39,7 @@ import sting.interceptors.Result;
 import sting.interceptors.ServiceType;
 import sting.interceptors.Thrown;
 
+@NullMarked
 public final class InterceptorsIntegrationTest {
     private static final List<String> c_trace = new ArrayList<>();
     private static boolean c_innerBeforeThrows;
@@ -114,8 +116,7 @@ public final class InterceptorsIntegrationTest {
 
     @Trace("service")
     public interface MyService {
-        @Nonnull
-        String ok(@Nonnull String name);
+        String ok(String name);
 
         void fail() throws IOException;
     }
@@ -131,35 +132,28 @@ public final class InterceptorsIntegrationTest {
     @OuterAround
     @InnerAround
     public interface AroundService {
-        @Nonnull
-        String echo(@Nonnull String value);
+        String echo(String value);
 
-        @Nonnull
-        String replace(@Nonnull String value, int count);
+        String replace(String value, int count);
 
-        @Nonnull
-        String varargs(@Nonnull String prefix, @Nonnull String... values);
+        String varargs(String prefix, String... values);
 
-        int primitive(@Nonnull String value);
+        int primitive(String value);
 
         int primitiveArg(int value);
 
-        void none(@Nonnull String value);
+        void none(String value);
 
-        @Nonnull
         String checked() throws IOException;
 
-        @Nonnull
         String runtime();
     }
 
     public interface ConstructorConsumer {
-        @Nonnull
         MyService service();
     }
 
     public interface ProviderConsumer {
-        @Nonnull
         MyService service();
     }
 
@@ -180,7 +174,6 @@ public final class InterceptorsIntegrationTest {
     }
 
     public interface QualifiedService {
-        @Nonnull
         String name();
     }
 
@@ -189,7 +182,6 @@ public final class InterceptorsIntegrationTest {
     }
 
     public interface AsyncService {
-        @Nonnull
         AsyncHandle start();
     }
 
@@ -204,20 +196,17 @@ public final class InterceptorsIntegrationTest {
     @Trace("factory")
     @Factory
     public interface GeneratedFactory {
-        @Nonnull
-        FactoryProduct create(@Nonnull String name);
+        FactoryProduct create(String name);
     }
 
     public static final class FactoryProduct {
-        @Nonnull
         private final String _name;
 
-        FactoryProduct(@Nonnull final String name) {
+        FactoryProduct(final String name) {
             _name = name;
             c_trace.add("target:factory:" + name);
         }
 
-        @Nonnull
         @Override
         public String toString() {
             return _name;
@@ -233,9 +222,8 @@ public final class InterceptorsIntegrationTest {
     @Injectable
     @Typed(MyService.class)
     public static class MyServiceImpl implements MyService {
-        @Nonnull
         @Override
-        public String ok(@Nonnull final String name) {
+        public String ok(final String name) {
             c_trace.add("target:" + name);
             return "ok:" + name;
         }
@@ -265,29 +253,26 @@ public final class InterceptorsIntegrationTest {
     @Injectable
     @Typed(AroundService.class)
     public static class AroundServiceImpl implements AroundService {
-        @Nonnull
         @Override
-        public String echo(@Nonnull final String value) {
+        public String echo(final String value) {
             c_trace.add("target:echo:" + value);
             return "target:" + value;
         }
 
-        @Nonnull
         @Override
-        public String replace(@Nonnull final String value, final int count) {
+        public String replace(final String value, final int count) {
             c_trace.add("target:replace:" + value + ":" + count);
             return value + ":" + count;
         }
 
-        @Nonnull
         @Override
-        public String varargs(@Nonnull final String prefix, @Nonnull final String... values) {
+        public String varargs(final String prefix, final String... values) {
             c_trace.add("target:varargs:" + prefix + ":" + Arrays.toString(values));
             return prefix + ":" + String.join(",", values);
         }
 
         @Override
-        public int primitive(@Nonnull final String value) {
+        public int primitive(final String value) {
             c_trace.add("target:primitive:" + value);
             return value.length();
         }
@@ -299,19 +284,17 @@ public final class InterceptorsIntegrationTest {
         }
 
         @Override
-        public void none(@Nonnull final String value) {
+        public void none(final String value) {
             c_trace.add("target:none:" + value);
         }
 
         @SuppressWarnings("RedundantThrows")
-        @Nonnull
         @Override
         public String checked() throws IOException {
             c_trace.add("target:checked");
             return "checked";
         }
 
-        @Nonnull
         @Override
         public String runtime() {
             c_trace.add("target:runtime");
@@ -322,14 +305,12 @@ public final class InterceptorsIntegrationTest {
     @Injectable
     @Typed(ConstructorConsumer.class)
     public static class ConstructorConsumerImpl implements ConstructorConsumer {
-        @Nonnull
         private final MyService _service;
 
-        ConstructorConsumerImpl(@Nonnull final MyService service) {
+        ConstructorConsumerImpl(final MyService service) {
             _service = service;
         }
 
-        @Nonnull
         @Override
         public MyService service() {
             return _service;
@@ -373,7 +354,6 @@ public final class InterceptorsIntegrationTest {
     @Injectable
     @Typed(QualifiedService.class)
     public static class LeftQualifiedService implements QualifiedService {
-        @Nonnull
         @Override
         public String name() {
             return "left";
@@ -385,7 +365,6 @@ public final class InterceptorsIntegrationTest {
     @Injectable
     @Typed(QualifiedService.class)
     public static class RightQualifiedService implements QualifiedService {
-        @Nonnull
         @Override
         public String name() {
             return "right";
@@ -406,7 +385,6 @@ public final class InterceptorsIntegrationTest {
     @Injectable
     @Typed(AsyncService.class)
     public static class AsyncServiceImpl implements AsyncService {
-        @Nonnull
         @Override
         public AsyncHandle start() {
             c_trace.add("target:async");
@@ -446,7 +424,7 @@ public final class InterceptorsIntegrationTest {
             return new ProviderBoundServiceImpl();
         }
 
-        default ProviderConsumer providerConsumer(@Nonnull final MyService service) {
+        default ProviderConsumer providerConsumer(final MyService service) {
             return () -> service;
         }
     }
@@ -457,22 +435,21 @@ public final class InterceptorsIntegrationTest {
 
         @Before
         public void before(
-                @ServiceType @Nonnull final String serviceType,
-                @MethodName @Nonnull final String methodName,
-                @BindingValue("value") @Nonnull final String value,
-                @Arguments @Nonnull final Object[] arguments) {
+                @ServiceType final String serviceType,
+                @MethodName final String methodName,
+                @BindingValue("value") final String value,
+                @Arguments final @Nullable Object[] arguments) {
             c_trace.add("before:" + serviceType.substring(serviceType.lastIndexOf('.') + 1) + "." + methodName + ":"
                     + value + ":" + arguments.length);
         }
 
         @After
-        public void after(@MethodName @Nonnull final String methodName, @Result final Object result) {
+        public void after(@MethodName final String methodName, @Result final @Nullable Object result) {
             c_trace.add("after:" + methodName + ":" + result);
         }
 
         @AfterException
-        public void afterException(
-                @MethodName @Nonnull final String methodName, @Thrown @Nonnull final Throwable throwable) {
+        public void afterException(@MethodName final String methodName, @Thrown final Throwable throwable) {
             c_trace.add("exception:" + methodName + ":" + throwable.getClass().getSimpleName());
         }
     }
@@ -492,7 +469,7 @@ public final class InterceptorsIntegrationTest {
         }
 
         @AfterException
-        public void afterException(@Thrown @Nonnull final Throwable throwable) {
+        public void afterException(@Thrown final Throwable throwable) {
             c_trace.add("outer:exception:" + throwable.getMessage());
         }
     }
@@ -518,7 +495,7 @@ public final class InterceptorsIntegrationTest {
         }
 
         @AfterException
-        public void afterException(@Thrown @Nonnull final Throwable throwable) {
+        public void afterException(@Thrown final Throwable throwable) {
             c_trace.add("inner:exception:" + throwable.getMessage());
             if (c_innerAfterExceptionThrows) {
                 throw new IllegalArgumentException("inner-afterException");
@@ -536,24 +513,24 @@ public final class InterceptorsIntegrationTest {
         }
 
         @Around
-        public Object around(
-                @Proceed @Nonnull final Invocation invocation,
-                @ServiceType @Nonnull final String serviceType,
-                @MethodName @Nonnull final String methodName,
-                @BindingValue("value") @Nonnull final String binding,
-                @Arguments @Nonnull final Object[] arguments)
+        public @Nullable Object around(
+                @Proceed final Invocation invocation,
+                @ServiceType final String serviceType,
+                @MethodName final String methodName,
+                @BindingValue("value") final String binding,
+                @Arguments final @Nullable Object[] arguments)
                 throws Throwable {
             return InterceptorsIntegrationTest.around(
                     "outerAround", c_outerAroundMode, invocation, serviceType, methodName, binding, arguments);
         }
 
         @After
-        public void after(@Result final Object result) {
+        public void after(@Result final @Nullable Object result) {
             c_trace.add("outerAround:after:" + result);
         }
 
         @AfterException
-        public void afterException(@Thrown @Nonnull final Throwable throwable) {
+        public void afterException(@Thrown final Throwable throwable) {
             c_trace.add("outerAround:exception:" + describe(throwable));
         }
     }
@@ -568,37 +545,37 @@ public final class InterceptorsIntegrationTest {
         }
 
         @Around
-        public Object around(
-                @Proceed @Nonnull final Invocation invocation,
-                @ServiceType @Nonnull final String serviceType,
-                @MethodName @Nonnull final String methodName,
-                @BindingValue("value") @Nonnull final String binding,
-                @Arguments @Nonnull final Object[] arguments)
+        public @Nullable Object around(
+                @Proceed final Invocation invocation,
+                @ServiceType final String serviceType,
+                @MethodName final String methodName,
+                @BindingValue("value") final String binding,
+                @Arguments final @Nullable Object[] arguments)
                 throws Throwable {
             return InterceptorsIntegrationTest.around(
                     "innerAround", c_innerAroundMode, invocation, serviceType, methodName, binding, arguments);
         }
 
         @After
-        public void after(@Result final Object result) {
+        public void after(@Result final @Nullable Object result) {
             c_trace.add("innerAround:after:" + result);
         }
 
         @AfterException
-        public void afterException(@Thrown @Nonnull final Throwable throwable) {
+        public void afterException(@Thrown final Throwable throwable) {
             c_trace.add("innerAround:exception:" + describe(throwable));
         }
     }
 
     @Nullable
     private static Object around(
-            @Nonnull final String name,
-            @Nonnull final AroundMode mode,
-            @Nonnull final Invocation invocation,
-            @Nonnull final String serviceType,
-            @Nonnull final String methodName,
-            @Nonnull final String binding,
-            @Nonnull final Object[] arguments)
+            final String name,
+            final AroundMode mode,
+            final Invocation invocation,
+            final String serviceType,
+            final String methodName,
+            final String binding,
+            final @Nullable Object[] arguments)
             throws Throwable {
         c_trace.add(name + ":around:enter:" + serviceType.substring(serviceType.lastIndexOf('.') + 1) + "." + methodName
                 + ":" + binding + ":" + Arrays.toString(arguments));
@@ -617,7 +594,7 @@ public final class InterceptorsIntegrationTest {
                 yield invocation.proceed();
             }
             case REPLACE_ARGUMENTS -> proceed(name, invocation, new Object[] {"replacement", 2});
-            case NULL_REPLACEMENT -> invocation.proceed(null);
+            case NULL_REPLACEMENT -> invocation.proceed(invalidNullArguments());
             case WRONG_COUNT_REPLACEMENT -> invocation.proceed(new Object[] {"only"});
             case WRONG_COUNT_THEN_PROCEED -> {
                 try {
@@ -641,7 +618,12 @@ public final class InterceptorsIntegrationTest {
         };
     }
 
-    private static Object proceed(@Nonnull final String name, @Nonnull final Invocation invocation) throws Throwable {
+    @SuppressWarnings({"NullAway", "ReturnMissingNullable"})
+    private static @Nullable Object[] invalidNullArguments() {
+        return null; // Simulate a caller that violates Invocation's nonnull array contract.
+    }
+
+    private static @Nullable Object proceed(final String name, final Invocation invocation) throws Throwable {
         try {
             final Object result = invocation.proceed();
             c_trace.add(name + ":around:exit:" + result);
@@ -652,9 +634,8 @@ public final class InterceptorsIntegrationTest {
         }
     }
 
-    private static Object proceed(
-            @Nonnull final String name, @Nonnull final Invocation invocation, @Nonnull final Object[] arguments)
-            throws Throwable {
+    private static @Nullable Object proceed(
+            final String name, final Invocation invocation, final @Nullable Object[] arguments) throws Throwable {
         try {
             final Object result = invocation.proceed(arguments);
             c_trace.add(name + ":around:exit:" + result);
@@ -665,8 +646,7 @@ public final class InterceptorsIntegrationTest {
         }
     }
 
-    @Nonnull
-    private static String describe(@Nonnull final Throwable throwable) {
+    private static String describe(final Throwable throwable) {
         return throwable.getClass().getSimpleName() + ":" + throwable.getMessage();
     }
 
@@ -689,7 +669,7 @@ public final class InterceptorsIntegrationTest {
 
     @Injectable
     public static class SupplierCycleInterceptor {
-        SupplierCycleInterceptor(@Nonnull final Supplier<SupplierCycleService> service) {
+        SupplierCycleInterceptor(final Supplier<SupplierCycleService> service) {
             c_supplierCycleServiceSupplier = service;
         }
 
@@ -727,102 +707,83 @@ public final class InterceptorsIntegrationTest {
             },
             fragmentOnly = false)
     public interface MyInjector {
-        @Nonnull
         static MyInjector create() {
             return new InterceptorsIntegrationTest_Sting_MyInjector();
         }
 
-        @Nonnull
         MyService service();
 
-        @Nonnull
         Optional<MyService> optionalService();
 
-        @Nonnull
         Supplier<MyService> serviceSupplier();
 
-        @Nonnull
         Supplier<Optional<MyService>> optionalServiceSupplier();
 
-        @Nonnull
         Collection<MyService> serviceCollection();
 
-        @Nonnull
         Collection<Supplier<MyService>> serviceSupplierCollection();
 
-        @Nonnull
         Collection<Supplier<Optional<MyService>>> optionalServiceSupplierCollection();
 
-        @Nonnull
         OrderedService orderedService();
 
-        @Nonnull
         ConstructorConsumer constructorConsumer();
 
-        @Nonnull
         ProviderConsumer providerConsumer();
 
-        @Nonnull
         ImplBoundService implBoundService();
 
-        @Nonnull
         ProviderBoundService providerBoundService();
 
-        @Nonnull
         MultiA multiA();
 
-        @Nonnull
         MultiB multiB();
 
         @Named("left")
-        @Nonnull
         QualifiedService leftService();
 
         @Named("right")
-        @Nonnull
         QualifiedService rightService();
 
-        @Nonnull
         OverrideService overrideService();
 
-        @Nonnull
         AsyncService asyncService();
 
-        @Nonnull
         GeneratedFactory generatedFactory();
     }
 
     @Injector(includes = AroundServiceImpl.class, fragmentOnly = false)
     public interface AroundInjector {
-        @Nonnull
         static AroundInjector create() {
             return new InterceptorsIntegrationTest_Sting_AroundInjector();
         }
 
-        @Nonnull
         AroundService service();
     }
 
     @Injector(includes = SupplierCycleServiceImpl.class, fragmentOnly = false)
     public interface SupplierCycleInjector {
-        @Nonnull
         static SupplierCycleInjector create() {
             return new InterceptorsIntegrationTest_Sting_SupplierCycleInjector();
         }
 
-        @Nonnull
         SupplierCycleService service();
     }
 
     @Injector(includes = EagerServiceImpl.class, fragmentOnly = false)
     public interface EagerInjector {
-        @Nonnull
         static EagerInjector create() {
             return new InterceptorsIntegrationTest_Sting_EagerInjector();
         }
 
-        @Nonnull
         EagerService service();
+    }
+
+    @Injector(includes = EagerServiceImpl.class, fragmentOnly = false)
+    public interface UnusedEagerInjector {
+        static UnusedEagerInjector create() {
+            return new InterceptorsIntegrationTest_Sting_UnusedEagerInjector();
+        }
     }
 
     @InterceptorBinding(
@@ -960,7 +921,8 @@ public final class InterceptorsIntegrationTest {
         resetAroundState();
         c_outerAroundMode = AroundMode.NULL_REPLACEMENT;
         expectThrows(
-                AssertionError.class, () -> AroundInjector.create().service().replace("original", 1));
+                NullPointerException.class,
+                () -> AroundInjector.create().service().replace("original", 1));
 
         resetAroundState();
         c_outerAroundMode = AroundMode.WRONG_COUNT_REPLACEMENT;
@@ -1054,8 +1016,8 @@ public final class InterceptorsIntegrationTest {
                 UndeclaredThrowableException.class,
                 () -> AroundInjector.create().service().echo("a"));
 
-        assertEquals(exception.getCause().getClass(), Exception.class);
-        assertEquals(exception.getCause().getMessage(), "innerAround-undeclared");
+        assertEquals(Objects.requireNonNull(exception.getCause()).getClass(), Exception.class);
+        assertEquals(Objects.requireNonNull(exception.getCause()).getMessage(), "innerAround-undeclared");
         assertTrue(c_trace.contains("innerAround:exception:Exception:innerAround-undeclared"));
         assertTrue(c_trace.contains("outerAround:exception:Exception:innerAround-undeclared"));
     }
@@ -1358,6 +1320,15 @@ public final class InterceptorsIntegrationTest {
     }
 
     @Test
+    public void eagerInterceptionWithoutOutputStillCreatesComponents() {
+        c_trace.clear();
+
+        UnusedEagerInjector.create();
+
+        assertEquals(c_trace, List.of("interceptor:eager:create", "target:eager:create"));
+    }
+
+    @Test
     public void asyncShapedReturnIsInterceptedAtSynchronousBoundaryOnly() {
         c_trace.clear();
 
@@ -1382,7 +1353,7 @@ public final class InterceptorsIntegrationTest {
 
         final SupplierCycleService service = SupplierCycleInjector.create().service();
         assertNotNull(c_supplierCycleServiceSupplier);
-        assertSame(c_supplierCycleServiceSupplier.get(), service);
+        assertSame(Objects.requireNonNull(c_supplierCycleServiceSupplier).get(), service);
 
         service.run();
         assertEquals(c_trace, List.of("supplierCycle:before", "target:supplierCycle"));

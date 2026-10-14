@@ -4,21 +4,21 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import sting.Injectable;
 import sting.Injector;
 import sting.Typed;
 import sting.interceptors.Before;
 import sting.interceptors.InterceptorBinding;
 
+@NullMarked
 public final class AnnotationCopyModel {
     private AnnotationCopyModel() {}
 
     @Trace
     interface Service {
         @Deprecated
-        @Nonnull
         String run(@Nullable String value);
     }
 
@@ -26,7 +26,6 @@ public final class AnnotationCopyModel {
     @Typed(Service.class)
     static class Model implements Service {
         @Deprecated
-        @Nonnull
         public String run(@Nullable final String value) {
             return "";
         }

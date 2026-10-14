@@ -30,6 +30,8 @@ public class LoginService {
     }
 
     // DOC ELIDE START
-    private final RemoteLoginService _remoteLoginService = null;
+    private final RemoteLoginService _remoteLoginService = (username, secret, callback) -> {
+        throw new UnsupportedOperationException();
+    };
     // DOC ELIDE END
 }

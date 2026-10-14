@@ -5,4 +5,5 @@ import sting.Named;
 
 @Injectable
 @Named("")
+@org.jspecify.annotations.NullMarked
 public class EmptyQualifierModel {}

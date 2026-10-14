@@ -4,6 +4,7 @@ import sting.Fragment;
 import sting.Injector;
 import sting.StingProvider;
 
+@org.jspecify.annotations.NullMarked
 interface AutodetectProviderFragmentModel {
     @Injector
     interface MyInjector {

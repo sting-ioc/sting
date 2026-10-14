@@ -2,7 +2,6 @@ package sting.processor;
 
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.MethodSpec;
-import com.palantir.javapoet.TypeName;
 import com.palantir.javapoet.TypeSpec;
 import java.util.ArrayList;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -24,6 +23,7 @@ final class InjectableGenerator {
         final TypeSpec.Builder builder = TypeSpec.classBuilder(StingGeneratorUtil.getGeneratedClassName(element))
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL);
         GeneratorUtil.addOriginatingTypes(element, builder);
+        builder.addAnnotation(ClassName.get("org.jspecify.annotations", "NullMarked"));
         GeneratorUtil.addGeneratedAnnotation(processingEnv, builder, StingProcessor.class.getName());
 
         builder.addMethod(
@@ -36,8 +36,7 @@ final class InjectableGenerator {
 
         final MethodSpec.Builder creator = MethodSpec.methodBuilder("create")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-                .addAnnotation(GeneratorUtil.NONNULL_CLASSNAME)
-                .returns(isPublic ? TypeName.get(returnType) : OBJECT);
+                .returns(isPublic ? GeneratorUtil.getTypeName(returnType) : OBJECT);
         final var code = new StringBuilder();
         final var args = new ArrayList<Object>();
         code.append("return new $T");

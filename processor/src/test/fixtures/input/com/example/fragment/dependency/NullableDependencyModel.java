@@ -1,11 +1,13 @@
 package com.example.fragment.dependency;
 
-import javax.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 import sting.Fragment;
 
 @Fragment
+@NullMarked
 public interface NullableDependencyModel {
     default Runnable provideRunnable(@Nullable String name) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

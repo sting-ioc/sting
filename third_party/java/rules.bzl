@@ -16,7 +16,6 @@ _FORMATTER_JDK_EXPORTS = [
 FORMATTER_JVM_FLAGS = _FORMATTER_JDK_EXPORTS
 
 _ERROR_PRONE_JAVACOPTS = [
-    "-XepExcludedPaths:(.*/" + "external/.*|.*/_javac/.*/.*_sources/.*)",
     "-Xep:AlmostJavadoc:ERROR",
     "-Xep:AlreadyChecked:ERROR",
     "-Xep:AmbiguousMethodReference:ERROR",
@@ -109,9 +108,12 @@ _JAVA_JAVACOPTS = [
 ] + _ERROR_PRONE_JAVACOPTS
 
 _NULLAWAY_JAVACOPTS = [
+    "-XDaddTypeAnnotationsToSymbol=true",
     "-Xep:NullAway:ERROR",
     "-Xep:RequireExplicitNullMarking:ERROR",
+    "-Xep:JSpecifyUnrecognizedAnnotationLocation:ERROR",
     "-XepOpt:NullAway:OnlyNullMarked=true",
+    "-XepOpt:NullAway:JSpecifyMode=true",
 ]
 
 _DOC_EXAMPLES_RELAXED_ERROR_PRONE_JAVACOPTS = [
@@ -132,13 +134,13 @@ def _with_jspecify(deps):
 def _with_nullaway(plugins):
     return [_NULLAWAY_PLUGIN] + plugins if _NULLAWAY_PLUGIN not in plugins else plugins
 
-def java_library(name, srcs = [], javacopts = [], deps = [], plugins = [], nullaway = False, **kwargs):
+def java_library(name, srcs = [], javacopts = [], deps = [], plugins = [], **kwargs):
     _java_library(
         name = name,
         srcs = srcs,
-        deps = _with_jspecify(deps) if nullaway else deps,
-        javacopts = _JAVA_JAVACOPTS + (_NULLAWAY_JAVACOPTS if nullaway else []) + javacopts,
-        plugins = _with_nullaway(plugins) if nullaway else plugins,
+        deps = _with_jspecify(deps) if srcs else deps,
+        javacopts = _JAVA_JAVACOPTS + (_NULLAWAY_JAVACOPTS if srcs else []) + javacopts,
+        plugins = _with_nullaway(plugins) if srcs else plugins,
         **kwargs
     )
 
@@ -146,9 +148,9 @@ def doc_examples_java_library(name, srcs = [], javacopts = [], deps = [], plugin
     _java_library(
         name = name,
         srcs = srcs,
-        deps = deps,
-        javacopts = _JAVA_JAVACOPTS + _DOC_EXAMPLES_RELAXED_ERROR_PRONE_JAVACOPTS + javacopts,
-        plugins = plugins,
+        deps = _with_jspecify(deps),
+        javacopts = _JAVA_JAVACOPTS + (_NULLAWAY_JAVACOPTS if srcs else []) + _DOC_EXAMPLES_RELAXED_ERROR_PRONE_JAVACOPTS + javacopts,
+        plugins = _with_nullaway(plugins) if srcs else plugins,
         **kwargs
     )
 
@@ -157,18 +159,19 @@ def java_binary(name, srcs = [], javacopts = [], deps = [], plugins = [], **kwar
         name = name,
         exclude_build_data = True,
         srcs = srcs,
-        deps = deps,
-        javacopts = _JAVA_JAVACOPTS + javacopts,
-        plugins = plugins,
+        deps = _with_jspecify(deps) if srcs else deps,
+        javacopts = _JAVA_JAVACOPTS + (_NULLAWAY_JAVACOPTS if srcs else []) + javacopts,
+        plugins = _with_nullaway(plugins) if srcs else plugins,
         **kwargs
     )
 
-def java_plugin(name, srcs = [], javacopts = [], deps = [], **kwargs):
+def java_plugin(name, srcs = [], javacopts = [], deps = [], plugins = [], **kwargs):
     _java_plugin(
         name = name,
         srcs = srcs,
-        deps = deps,
-        javacopts = _JAVA_JAVACOPTS + javacopts,
+        deps = _with_jspecify(deps) if srcs else deps,
+        javacopts = _JAVA_JAVACOPTS + (_NULLAWAY_JAVACOPTS if srcs else []) + javacopts,
+        plugins = _with_nullaway(plugins) if srcs else plugins,
         **kwargs
     )
 
@@ -177,9 +180,9 @@ def java_test(name, srcs = [], javacopts = [], deps = [], plugins = [], jvm_flag
         name = name,
         exclude_build_data = True,
         srcs = srcs,
-        deps = deps,
-        javacopts = _JAVA_JAVACOPTS + javacopts,
-        plugins = plugins,
+        deps = _with_jspecify(deps) if srcs else deps,
+        javacopts = _JAVA_JAVACOPTS + (_NULLAWAY_JAVACOPTS if srcs else []) + javacopts,
+        plugins = _with_nullaway(plugins) if srcs else plugins,
         jvm_flags = _JAVA_TEST_JVM_FLAGS + jvm_flags,
         **kwargs
     )
@@ -210,9 +213,9 @@ def java_testng(name, srcs, test_classes = [], test_class = None, test_methods =
             "-testclass",
             ",".join(test_classes),
         ] + (["-methods", ",".join(test_methods)] if test_methods else []),
-        deps = deps + ["//third_party/java:testng"] if srcs else [],
+        deps = ["//third_party/java:testng"] + deps if srcs else [],
         javacopts = javacopts,
         jvm_flags = jvm_flags,
-        runtime_deps = runtime_deps + (deps + ["//third_party/java:testng"] if not srcs else []),
+        runtime_deps = runtime_deps + (["//third_party/java:testng"] + deps if not srcs else []),
         **filtered_kwargs
     )

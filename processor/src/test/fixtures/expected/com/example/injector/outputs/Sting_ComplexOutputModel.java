@@ -1,53 +1,44 @@
 package com.example.injector.outputs;
 
-import java.util.Objects;
 import java.util.function.Supplier;
 import javaemul.internal.annotations.DoNotInline;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_ComplexOutputModel implements ComplexOutputModel {
-  @Nullable
-  private Object node1;
+  private @Nullable Object node1;
 
-  @Nullable
-  private Object node2;
+  private @Nullable Object node2;
 
-  @Nullable
-  private Object node3;
+  private @Nullable Object node3;
 
   Sting_ComplexOutputModel() {
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Object node1() {
     if ( null == node1 ) {
-      node1 = Objects.requireNonNull( ComplexOutputModel_Sting_MyModel1.create() );
+      node1 = ComplexOutputModel_Sting_MyModel1.create();
     }
-    assert null != node1;
     return node1;
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Object node2() {
     if ( null == node2 ) {
-      node2 = Objects.requireNonNull( ComplexOutputModel_Sting_MyModel3.create() );
+      node2 = ComplexOutputModel_Sting_MyModel3.create();
     }
-    assert null != node2;
     return node2;
   }
 
-  @Nonnull
   @DoNotInline
   private synchronized Object node3() {
     if ( null == node3 ) {
-      node3 = Objects.requireNonNull( ComplexOutputModel_Sting_MyModel2.create() );
+      node3 = ComplexOutputModel_Sting_MyModel2.create();
     }
-    assert null != node3;
     return node3;
   }
 
@@ -67,8 +58,7 @@ final class Sting_ComplexOutputModel implements ComplexOutputModel {
   }
 
   @Override
-  @Nullable
-  public Runnable getRunnable() {
+  public @Nullable Runnable getRunnable() {
     return null;
   }
 }

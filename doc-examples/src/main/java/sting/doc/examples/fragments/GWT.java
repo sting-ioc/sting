@@ -1,10 +1,10 @@
 package sting.doc.examples.fragments;
 
-import javax.annotation.Nonnull;
+import org.jspecify.annotations.NullMarked;
 
+@NullMarked
 public class GWT {
-    @Nonnull
     public static <T> T create(final Class<T> type) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

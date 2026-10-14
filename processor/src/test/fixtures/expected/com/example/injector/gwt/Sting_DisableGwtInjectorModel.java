@@ -1,24 +1,21 @@
 package com.example.injector.gwt;
 
-import java.util.Objects;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.annotation.processing.Generated;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
+@NullMarked
 @Generated("sting.processor.StingProcessor")
 final class Sting_DisableGwtInjectorModel implements DisableGwtInjectorModel {
-  @Nullable
-  private Object node1;
+  private @Nullable Object node1;
 
   Sting_DisableGwtInjectorModel() {
   }
 
-  @Nonnull
   private synchronized Object node1() {
     if ( null == node1 ) {
-      node1 = Objects.requireNonNull( DisableGwtInjectorModel_Sting_MyModel0.create() );
+      node1 = DisableGwtInjectorModel_Sting_MyModel0.create();
     }
-    assert null != node1;
     return node1;
   }
 
