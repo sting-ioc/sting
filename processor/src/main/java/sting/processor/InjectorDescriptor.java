@@ -6,10 +6,6 @@ import java.util.Objects;
 import javax.lang.model.element.TypeElement;
 
 final class InjectorDescriptor {
-    /**
-     * The element that defined the Injector.
-     * It may be either an interface or an abstract class.
-     */
     private final TypeElement _element;
     /**
      * Should this injector be able to be included i other injectors.

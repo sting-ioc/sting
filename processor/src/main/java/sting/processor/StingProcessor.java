@@ -963,7 +963,9 @@ public final class StingProcessor extends AbstractStandardProcessor {
         final var injectable =
                 (boolean) AnnotationsUtil.getAnnotationValue(element, Constants.INJECTOR_CLASSNAME, "injectable")
                         .getValue();
-        final boolean fragmentOnly = extractInjectorFragmentOnly(element);
+        final var fragmentOnly =
+                (boolean) AnnotationsUtil.getAnnotationValue(element, Constants.INJECTOR_CLASSNAME, "fragmentOnly")
+                        .getValue();
         final List<IncludeDescriptor> includes = extractIncludes(element, Constants.INJECTOR_CLASSNAME, fragmentOnly);
         final List<InputDescriptor> inputs = extractInputs(element);
 
@@ -1020,11 +1022,6 @@ public final class StingProcessor extends AbstractStandardProcessor {
         }
         final var injector = new InjectorDescriptor(element, injectable, fragmentOnly, includes, inputs, outputs);
         _registry.registerInjector(injector);
-    }
-
-    private boolean extractInjectorFragmentOnly(final TypeElement element) {
-        return (boolean) AnnotationsUtil.getAnnotationValue(element, Constants.INJECTOR_CLASSNAME, "fragmentOnly")
-                .getValue();
     }
 
     private void processInjectorOutputMethod(final List<ServiceRequest> outputs, final ExecutableElement method) {
