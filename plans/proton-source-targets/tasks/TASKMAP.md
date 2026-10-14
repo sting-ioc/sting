@@ -5,7 +5,7 @@
 - Current frontier: None; T01 complete.
 - Planning reviewer: `/root/proton_targets_planning_review` (`1/3` rounds), Findings: none.
 - Plan checkpoint: `automatic` — accepted grill, explicit source-override request and passing planning review.
-- Implementation reviewer: `pending` (`0/5` rounds)
+- Implementation reviewer: `/root/proton_targets_implementation_review` (`1/5` rounds), Findings: none.
 
 ## Full-scope validation
 
@@ -21,7 +21,7 @@
 ## Sequencing notes
 
 - One slice covers the complete dependency change. The local checkout is read-only throughout.
-- After implementation review, publish the prepared PR update, confirm CI, record the result and remove the plan.
+- Implementation review passed. Record the result, publish the prepared PR description, remove the plan and push the final branch; confirm CI on the final head.
 
 ## Promoted knowledge
 
