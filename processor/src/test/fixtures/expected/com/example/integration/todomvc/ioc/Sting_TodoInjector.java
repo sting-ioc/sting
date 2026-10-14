@@ -7,7 +7,6 @@ import com.example.integration.todomvc.model.Sting_BrowserLocationFragment;
 import com.example.integration.todomvc.model.TodoRepository;
 import com.example.integration.todomvc.model.TodoService;
 import com.example.integration.todomvc.model.ViewService;
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -29,7 +28,6 @@ final class Sting_TodoInjector implements TodoInjector {
     node3 = fragment1.$sting$_createBrowserLocation();
   }
 
-  @DoNotInline
   private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = Sting_Arez_TodoRepository.create();
@@ -37,7 +35,6 @@ final class Sting_TodoInjector implements TodoInjector {
     return node1;
   }
 
-  @DoNotInline
   private synchronized Object node2() {
     if ( null == node2 ) {
       node2 = Sting_Arez_TodoService.create((TodoRepository) node1());
@@ -45,7 +42,6 @@ final class Sting_TodoInjector implements TodoInjector {
     return node2;
   }
 
-  @DoNotInline
   private synchronized Object node4() {
     if ( null == node4 ) {
       node4 = Sting_Arez_ViewService.create((TodoRepository) node1(), node3);

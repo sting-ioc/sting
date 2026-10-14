@@ -5,23 +5,18 @@ package(default_visibility = ["//visibility:public"])
 doc_examples_java_library(
     name = "fragments",
     srcs = [
-        "AuthorizationServiceAsync.java",
         "Compiler.java",
         "CompilerFragment.java",
         "DiagnosticsReporter.java",
         "FileSystemService.java",
-        "GWT.java",
         "GroupRepository.java",
         "Optimizer.java",
         "Parser.java",
         "ParserFragment.java",
         "PermissionRepository.java",
-        "RemoteServicesFragment.java",
         "SecurityFragment.java",
-        "ServiceDefTarget.java",
         "StdoutDiagnosticsReporter.java",
         "UserRepository.java",
-        "UserServiceAsync.java",
         "package-info.java",
     ],
     plugins = [

@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Supplier;
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -19,7 +18,6 @@ final class Sting_SupplierOptionalCollectionOutputModel implements SupplierOptio
   Sting_SupplierOptionalCollectionOutputModel() {
   }
 
-  @DoNotInline
   private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = SupplierOptionalCollectionOutputModel_Sting_MyModel.create();

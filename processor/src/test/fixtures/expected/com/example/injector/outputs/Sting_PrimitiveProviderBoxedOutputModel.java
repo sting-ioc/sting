@@ -1,6 +1,5 @@
 package com.example.injector.outputs;
 
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 
@@ -16,7 +15,6 @@ final class Sting_PrimitiveProviderBoxedOutputModel implements PrimitiveProvider
   Sting_PrimitiveProviderBoxedOutputModel() {
   }
 
-  @DoNotInline
   private synchronized int node1() {
     if ( !node1_allocated ) {
       node1_allocated = true;

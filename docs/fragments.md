@@ -9,7 +9,7 @@ can contribute to a component graph modelled by an injector. The fragment does t
   types that will contribute to the component graph.
 * The interface may include zero or more default access methods that are invoked to programmatically create
   components. This technique is used when third-party objects can't be annotated, when a different framework
-  is responsible for creating the object (i.e `GWT.create(MyGwtRpcService.class)` or when it is awkward to
+  is responsible for creating the object, or when it is awkward to
   create the type (i.e. when publishing a component that is provided by calling a method on another
   component). The documentation often terms these "provider" methods.
 
@@ -24,7 +24,7 @@ For example:
 
 At other times, fragments will just include provider methods such as:
 
-{@file_content: file=sting/doc/examples/fragments/RemoteServicesFragment.java start_line=@Fragment}
+{@file_content: file=sting/doc/examples/fragments/ParserFragment.java start_line=@Fragment}
 
 It is also perfectly acceptable, for a fragment to include both includes and provider methods:
 

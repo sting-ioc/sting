@@ -1,6 +1,5 @@
 package com.example.injector.includes.single;
 
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -14,7 +13,6 @@ final class Sting_SingleIncludesModel implements SingleIncludesModel {
 
   Sting_SingleIncludesModel() {}
 
-  @DoNotInline
   private synchronized Runnable node1() {
     if (null == node1) {
       node1 = fragment1.$sting$_provideRunnable();

@@ -2,7 +2,6 @@ package com.example.injector.outputs;
 
 import java.util.Arrays;
 import java.util.Collection;
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -25,7 +24,6 @@ final class Sting_PrimitiveAndBoxedCollectionOutputModel implements PrimitiveAnd
   Sting_PrimitiveAndBoxedCollectionOutputModel() {
   }
 
-  @DoNotInline
   private synchronized Integer node1() {
     if ( null == node1 ) {
       node1 = fragment2.$sting$_provideValue();
@@ -33,7 +31,6 @@ final class Sting_PrimitiveAndBoxedCollectionOutputModel implements PrimitiveAnd
     return node1;
   }
 
-  @DoNotInline
   private synchronized int node2() {
     if ( !node2_allocated ) {
       node2_allocated = true;

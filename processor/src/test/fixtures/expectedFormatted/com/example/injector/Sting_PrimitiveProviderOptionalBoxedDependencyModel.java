@@ -1,6 +1,5 @@
 package com.example.injector;
 
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -20,7 +19,6 @@ final class Sting_PrimitiveProviderOptionalBoxedDependencyModel
 
   Sting_PrimitiveProviderOptionalBoxedDependencyModel() {}
 
-  @DoNotInline
   private synchronized int node1() {
     if (!node1_allocated) {
       node1_allocated = true;
@@ -29,7 +27,6 @@ final class Sting_PrimitiveProviderOptionalBoxedDependencyModel
     return node1;
   }
 
-  @DoNotInline
   private synchronized Object node2() {
     if (null == node2) {
       node2 = PrimitiveProviderOptionalBoxedDependencyModel_Sting_MyModel.create(node1());

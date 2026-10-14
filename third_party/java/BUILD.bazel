@@ -18,7 +18,7 @@ _java_plugin(
 # DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
 
 # SHA256 of the configuration content that generated this content
-_CONFIG_SHA256 = "7FDAAB66034F20A38DDE8EC4F6137643161AD4F7BF2BF2DFE3201E015D8A38FE"
+_CONFIG_SHA256 = "EFF7CA47E24420948F4E2C64795D6D4C69F2A71693207B6A41C3F51340C32A2B"
 
 exports_files(["dependencies.yml"])
 
@@ -27,7 +27,6 @@ exports_files(["dependencies.yml"])
 # +- org.commonmark:commonmark-ext-gfm-tables:jar:0.30.1 [compile]
 # |  \- org.commonmark:commonmark:jar:0.30.1 [compile]
 # +- com.palantir.javapoet:javapoet:jar:0.14.0 [compile]
-# +- org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:jar:0.01 [compile]
 # +- javax:javaee-api:jar:8.0 [compile]
 # |  +- javax:javaee-web-api:jar:8.0 [compile, optional]
 # |  +- org.glassfish:javax.faces:jar:2.3.2 [compile, optional]
@@ -362,13 +361,6 @@ _java_import(
     name = "bazel_depgen",
     jars = ["@bazel_depgen//file"],
     tags = ["maven_coordinates=org.realityforge.bazel.depgen:bazel-depgen:0.26"],
-)
-
-_java_import(
-    name = "javaemul_internal_annotations",
-    jars = ["@javaemul_internal_annotations//file"],
-    srcjar = "@javaemul_internal_annotations__sources//file",
-    tags = ["maven_coordinates=org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:0.01"],
 )
 
 _java_import(

@@ -20,7 +20,6 @@ filegroup(
         "//processor/src/test/fixtures/expectedFormatted/com/example/injector/circular:all",
         "//processor/src/test/fixtures/expectedFormatted/com/example/injector/eager:all",
         "//processor/src/test/fixtures/expectedFormatted/com/example/injector/graphviz:all",
-        "//processor/src/test/fixtures/expectedFormatted/com/example/injector/gwt:all",
         "//processor/src/test/fixtures/expectedFormatted/com/example/injector/includes:all",
         "//processor/src/test/fixtures/expectedFormatted/com/example/injector/inputs:all",
         "//processor/src/test/fixtures/expectedFormatted/com/example/injector/outputs:all",

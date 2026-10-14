@@ -1,6 +1,5 @@
 package com.example.injector.eager;
 
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -30,7 +29,6 @@ final class Sting_BasicEagerDependencyModel implements BasicEagerDependencyModel
     node7 = BasicEagerDependencyModel_Sting_MyModel6.create(node5, node6);
   }
 
-  @DoNotInline
   private synchronized Object node2() {
     if ( null == node2 ) {
       node2 = BasicEagerDependencyModel_Sting_MyModel0.create();
@@ -38,7 +36,6 @@ final class Sting_BasicEagerDependencyModel implements BasicEagerDependencyModel
     return node2;
   }
 
-  @DoNotInline
   private synchronized Object node3() {
     if ( null == node3 ) {
       node3 = BasicEagerDependencyModel_Sting_MyModel3.create(node2(), node1);

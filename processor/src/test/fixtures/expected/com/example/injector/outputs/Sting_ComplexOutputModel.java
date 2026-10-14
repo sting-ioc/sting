@@ -1,7 +1,6 @@
 package com.example.injector.outputs;
 
 import java.util.function.Supplier;
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -18,7 +17,6 @@ final class Sting_ComplexOutputModel implements ComplexOutputModel {
   Sting_ComplexOutputModel() {
   }
 
-  @DoNotInline
   private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = ComplexOutputModel_Sting_MyModel1.create();
@@ -26,7 +24,6 @@ final class Sting_ComplexOutputModel implements ComplexOutputModel {
     return node1;
   }
 
-  @DoNotInline
   private synchronized Object node2() {
     if ( null == node2 ) {
       node2 = ComplexOutputModel_Sting_MyModel3.create();
@@ -34,7 +31,6 @@ final class Sting_ComplexOutputModel implements ComplexOutputModel {
     return node2;
   }
 
-  @DoNotInline
   private synchronized Object node3() {
     if ( null == node3 ) {
       node3 = ComplexOutputModel_Sting_MyModel2.create();
