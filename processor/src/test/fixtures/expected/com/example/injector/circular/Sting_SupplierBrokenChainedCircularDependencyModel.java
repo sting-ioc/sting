@@ -1,13 +1,11 @@
 package com.example.injector.circular;
 
-import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_SupplierBrokenChainedCircularDependencyModel implements SupplierBrokenChainedCircularDependencyModel {
   private @Nullable Object node1;
@@ -22,27 +20,24 @@ final class Sting_SupplierBrokenChainedCircularDependencyModel implements Suppli
   @DoNotInline
   private synchronized Object node1() {
     if ( null == node1 ) {
-      node1 = Objects.requireNonNull( SupplierBrokenChainedCircularDependencyModel_Sting_MyModel2.create(node3()) );
+      node1 = SupplierBrokenChainedCircularDependencyModel_Sting_MyModel2.create(node3());
     }
-    assert null != node1;
     return node1;
   }
 
   @DoNotInline
   private synchronized Object node2() {
     if ( null == node2 ) {
-      node2 = Objects.requireNonNull( SupplierBrokenChainedCircularDependencyModel_Sting_MyModel1.create(node1()) );
+      node2 = SupplierBrokenChainedCircularDependencyModel_Sting_MyModel1.create(node1());
     }
-    assert null != node2;
     return node2;
   }
 
   @DoNotInline
   private synchronized Object node3() {
     if ( null == node3 ) {
-      node3 = Objects.requireNonNull( SupplierBrokenChainedCircularDependencyModel_Sting_MyModel3.create(() -> node2()) );
+      node3 = SupplierBrokenChainedCircularDependencyModel_Sting_MyModel3.create(() -> node2());
     }
-    assert null != node3;
     return node3;
   }
 

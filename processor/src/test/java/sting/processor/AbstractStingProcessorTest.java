@@ -1,6 +1,9 @@
 package sting.processor;
 
 import com.google.errorprone.BaseErrorProneJavaCompiler;
+import com.google.errorprone.bugpatterns.ImpossibleNullComparison;
+import com.google.errorprone.bugpatterns.UnusedVariable;
+import com.google.errorprone.bugpatterns.nullness.UnnecessaryCheckNotNull;
 import com.google.errorprone.scanner.ScannerSupplier;
 import com.uber.nullaway.JSpecifyUnrecognizedAnnotationLocation;
 import com.uber.nullaway.NullAway;
@@ -16,7 +19,11 @@ public abstract class AbstractStingProcessorTest extends AbstractProcessorTest {
         return Boolean.getBoolean("sting.plain_javac")
                 ? super.javaCompiler()
                 : new BaseErrorProneJavaCompiler(ScannerSupplier.fromBugCheckerClasses(
-                        NullAway.class, JSpecifyUnrecognizedAnnotationLocation.class));
+                        NullAway.class,
+                        JSpecifyUnrecognizedAnnotationLocation.class,
+                        UnusedVariable.class,
+                        ImpossibleNullComparison.class,
+                        UnnecessaryCheckNotNull.class));
     }
 
     @Override
@@ -41,6 +48,9 @@ public abstract class AbstractStingProcessorTest extends AbstractProcessorTest {
                     "-XDcompilePolicy=simple",
                     "-Xep:NullAway:ERROR",
                     "-Xep:JSpecifyUnrecognizedAnnotationLocation:ERROR",
+                    "-Xep:UnusedVariable:ERROR",
+                    "-Xep:ImpossibleNullComparison:ERROR",
+                    "-Xep:UnnecessaryCheckNotNull:ERROR",
                     "-XepOpt:NullAway:OnlyNullMarked=true",
                     "-XepOpt:NullAway:JSpecifyMode=true"));
         }

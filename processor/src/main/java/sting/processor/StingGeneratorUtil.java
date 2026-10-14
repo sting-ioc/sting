@@ -9,7 +9,6 @@ import com.palantir.javapoet.TypeName;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -127,21 +126,12 @@ final class StingGeneratorUtil {
                 code.append(", ");
             }
             firstParam = false;
-            final boolean requireNonNull = !service.getService().isOptional()
-                    && !typeProduced.getKind().isPrimitive();
-            if (requireNonNull) {
-                code.append("$T.requireNonNull( ");
-                args.add(Objects.class);
-            }
             if (!isPublic) {
                 code.append("($T) ");
                 args.add(actualTypeName.withoutAnnotations());
             }
             code.append("$N");
             args.add(paramName);
-            if (requireNonNull) {
-                code.append(" )");
-            }
         }
         if (0 != dependencies.length) {
             code.append(' ');
@@ -149,10 +139,6 @@ final class StingGeneratorUtil {
         code.append(")");
         method.addStatement(code.toString(), args.toArray());
         final var additionalSuppressions = new ArrayList<String>();
-        if (0 != dependencies.length) {
-            additionalSuppressions.add("ImpossibleNullComparison");
-            additionalSuppressions.add("UnnecessaryCheckNotNull");
-        }
         if (!allPublic) {
             additionalSuppressions.add("unchecked");
         }

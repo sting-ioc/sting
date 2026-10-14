@@ -1,13 +1,11 @@
 package com.example.injector.inputs;
 
-import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_PrimitiveInputBoxedDependencyInjectorModel
     implements PrimitiveInputBoxedDependencyInjectorModel {
@@ -22,10 +20,8 @@ final class Sting_PrimitiveInputBoxedDependencyInjectorModel
   @DoNotInline
   private synchronized Object node2() {
     if (null == node2) {
-      node2 = Objects.requireNonNull(
-          PrimitiveInputBoxedDependencyInjectorModel_Sting_MyModel.create(node1));
+      node2 = PrimitiveInputBoxedDependencyInjectorModel_Sting_MyModel.create(node1);
     }
-    assert null != node2;
     return node2;
   }
 

@@ -1,13 +1,11 @@
 package com.example.injector.includes.single;
 
-import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_SingleIncludesModel implements SingleIncludesModel {
   private final Sting_MyFragment fragment1 = new Sting_MyFragment();
@@ -20,9 +18,8 @@ final class Sting_SingleIncludesModel implements SingleIncludesModel {
   @DoNotInline
   private synchronized Runnable node1() {
     if ( null == node1 ) {
-      node1 = Objects.requireNonNull( fragment1.$sting$_provideRunnable() );
+      node1 = fragment1.$sting$_provideRunnable();
     }
-    assert null != node1;
     return node1;
   }
 

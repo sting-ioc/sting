@@ -26,17 +26,17 @@ To update Java dependencies, edit `third_party/java/dependencies.yml` and run `t
 
 ## Nullness checking
 
-Owned source targets automatically attach JSpecify and NullAway 0.14.2 at error severity. Positive processor
-fixtures use an Error Prone 2.42.0 compiler in process, so their generated bodies are checked too. Deliberately
-invalid processor fixtures use a separate plain-javac diagnostics target. The generated negative control in
-`StingNullabilityTest` must fail with NullAway for both a nullable dereference and a nested generic mismatch.
+Owned source targets include JSpecify and run NullAway at error severity. Positive processor fixtures compile
+in process with Error Prone and NullAway, which check the generated bodies too. The fixture compiler also checks
+unused variables, impossible null comparisons and unnecessary null checks. `StingNullabilityTest` generates
+invalid code to verify that these checks run. Deliberately invalid processor fixtures use a separate plain-javac
+diagnostics target.
 
 Sting and generated sources target Java 17 bytecode. Annotation processing and the QA compiler run on Java 21
 because Proton requires it; Bazel tools run on Java 25. The build enables
 `NullAway:JSpecifyMode=true`, `NullAway:OnlyNullMarked=true` and `-XDaddTypeAnnotationsToSymbol=true`.
-Use JDK 22+ or patched JDK 21.0.8+ with the symbol flag when reading compiled type-use contracts. Bazel resolves
-the compiler and runtime; check the resolved versions before changing toolchains. The checked test/processor
-runtime is Zulu 21.0.12, and the tools runtime is Zulu 25.0.4. See
+Use JDK 22+ or patched JDK 21.0.8+ with the symbol flag when reading compiled type-use contracts. Bazel supplies
+the compiler and runtime. See
 [NullAway's JSpecify support](https://github.com/uber/NullAway/wiki/JSpecify-Support) for requirements.
 
 The build uses Proton's public `@proton//:core` and `@proton//:qa` targets, pinned in `MODULE.bazel` to revision

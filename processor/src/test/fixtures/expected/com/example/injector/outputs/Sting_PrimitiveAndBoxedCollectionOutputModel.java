@@ -2,14 +2,12 @@ package com.example.injector.outputs;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_PrimitiveAndBoxedCollectionOutputModel implements PrimitiveAndBoxedCollectionOutputModel {
   private final PrimitiveAndBoxedCollectionOutputModel_Sting_MyFragment1 fragment1 = new PrimitiveAndBoxedCollectionOutputModel_Sting_MyFragment1();
@@ -30,9 +28,8 @@ final class Sting_PrimitiveAndBoxedCollectionOutputModel implements PrimitiveAnd
   @DoNotInline
   private synchronized Integer node1() {
     if ( null == node1 ) {
-      node1 = Objects.requireNonNull( fragment2.$sting$_provideValue() );
+      node1 = fragment2.$sting$_provideValue();
     }
-    assert null != node1;
     return node1;
   }
 

@@ -9,7 +9,6 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_PrimitiveProviderBoxedSupplierKindsOutputModel implements PrimitiveProviderBoxedSupplierKindsOutputModel {
   private final PrimitiveProviderBoxedSupplierKindsOutputModel_Sting_MyFragment fragment1 = new PrimitiveProviderBoxedSupplierKindsOutputModel_Sting_MyFragment();

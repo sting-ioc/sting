@@ -1,6 +1,5 @@
 package com.example.factory;
 
-import java.util.Objects;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 
@@ -10,12 +9,8 @@ public final class Sting_ParameterAnnotationsFactoryModel_Sting_MyComponentFacto
   private Sting_ParameterAnnotationsFactoryModel_Sting_MyComponentFactory() {
   }
 
-  @SuppressWarnings({
-      "ImpossibleNullComparison",
-      "UnnecessaryCheckNotNull"
-  })
   public static ParameterAnnotationsFactoryModel_Sting_MyComponentFactory create(
       final ParameterAnnotationsFactoryModel.SomeService someService) {
-    return new ParameterAnnotationsFactoryModel_Sting_MyComponentFactory( Objects.requireNonNull( someService ) );
+    return new ParameterAnnotationsFactoryModel_Sting_MyComponentFactory( someService );
   }
 }

@@ -1,6 +1,5 @@
 package sting.processor;
 
-import com.palantir.javapoet.AnnotationSpec;
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.CodeBlock;
 import com.palantir.javapoet.FieldSpec;
@@ -39,9 +38,6 @@ final class InjectorGenerator {
         GeneratorUtil.addOriginatingTypes(element, builder);
         GeneratorUtil.copyWhitelistedAnnotations(element, builder);
         builder.addAnnotation(ClassName.get("org.jspecify.annotations", "NullMarked"));
-        builder.addAnnotation(AnnotationSpec.builder(SuppressWarnings.class)
-                .addMember("value", "$S", "UnusedVariable")
-                .build());
         GeneratorUtil.addGeneratedAnnotation(processingEnv, builder, StingProcessor.class.getName());
 
         builder.addSuperinterface(GeneratorUtil.getTypeName(element.asType()));
@@ -104,14 +100,11 @@ final class InjectorGenerator {
             if (node.isEager()) {
                 final Binding binding = node.getProviderBinding();
                 if (Binding.Kind.INPUT == binding.getKind()) {
-                    final var input = (InputDescriptor) binding.getOwner();
-                    final var serviceSpec = binding.getPublishedServices().get(0);
-                    if (serviceSpec.isOptional()
-                            || serviceSpec.getCoordinate().type().getKind().isPrimitive()) {
-                        ctor.addStatement("$N = $N", node.getName(), input.name());
-                    } else {
-                        ctor.addStatement("$N = $T.requireNonNull( $N )", node.getName(), Objects.class, input.name());
+                    if (node.getUsedBy().isEmpty()) {
+                        continue;
                     }
+                    final var input = (InputDescriptor) binding.getOwner();
+                    ctor.addStatement("$N = $N", node.getName(), input.name());
                 } else {
                     final var code = new StringBuilder();
                     final var args = new ArrayList<Object>();
@@ -127,6 +120,9 @@ final class InjectorGenerator {
     private static void emitNodeFields(
             final ProcessingEnvironment processingEnv, final ComponentGraph graph, final TypeSpec.Builder builder) {
         for (final Node node : graph.getNodes()) {
+            if (node.isEager() && node.getUsedBy().isEmpty()) {
+                continue;
+            }
             final TypeName type = getPublicTypeName(node);
             final boolean nullable = !node.getType().getKind().isPrimitive()
                     && (!node.isEager() || node.getProviderBinding().isOptional());
@@ -223,9 +219,6 @@ final class InjectorGenerator {
                 block.addStatement(code.toString(), args.toArray());
                 block.endControlFlow();
                 method.addCode(block.build());
-                if (isNonnull && isNonPrimitive) {
-                    method.addStatement("assert null != $N", node.getName());
-                }
                 method.addStatement("return $N", node.getName());
 
                 builder.addMethod(method.build());
@@ -238,15 +231,12 @@ final class InjectorGenerator {
     }
 
     private static void provideAndAssign(final Node node, final StringBuilder code, final List<Object> args) {
-        code.append("$N = ");
-        args.add(node.getName());
-        final boolean isNonnull = node.getProviderBinding().isRequired();
-        final boolean requireNonNull = isNonnull && !node.getType().getKind().isPrimitive();
-        if (requireNonNull) {
-            code.append("$T.requireNonNull( ");
-            args.add(Objects.class);
+        final boolean store = !node.isEager() || !node.getUsedBy().isEmpty();
+        if (store) {
+            code.append("$N = ");
+            args.add(node.getName());
         }
-        if (node.isProxy() && node.isPublic()) {
+        if (store && node.isProxy() && node.isPublic()) {
             code.append("($T) ");
             args.add(node.getType());
         }
@@ -274,9 +264,6 @@ final class InjectorGenerator {
             emitServiceValue(edge, false, code, args);
         }
         code.append(')');
-        if (requireNonNull) {
-            code.append(" )");
-        }
     }
 
     private static void emitServiceValue(

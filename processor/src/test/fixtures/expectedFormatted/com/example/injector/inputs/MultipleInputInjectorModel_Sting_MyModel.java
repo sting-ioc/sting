@@ -1,6 +1,5 @@
 package com.example.injector.inputs;
 
-import java.util.Objects;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 
@@ -9,8 +8,7 @@ import org.jspecify.annotations.NullMarked;
 public final class MultipleInputInjectorModel_Sting_MyModel {
   private MultipleInputInjectorModel_Sting_MyModel() {}
 
-  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public static Object create(final Runnable runnable) {
-    return new MultipleInputInjectorModel.MyModel(Objects.requireNonNull(runnable));
+    return new MultipleInputInjectorModel.MyModel(runnable);
   }
 }

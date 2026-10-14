@@ -1,6 +1,5 @@
 package com.example.injectable.dependency;
 
-import java.util.Objects;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 
@@ -9,8 +8,7 @@ import org.jspecify.annotations.NullMarked;
 public final class Sting_QualifiedDependencyModel {
   private Sting_QualifiedDependencyModel() {}
 
-  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public static QualifiedDependencyModel create(final Runnable runnable) {
-    return new QualifiedDependencyModel(Objects.requireNonNull(runnable));
+    return new QualifiedDependencyModel(runnable);
   }
 }

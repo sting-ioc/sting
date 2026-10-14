@@ -7,7 +7,6 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_EmptyCollectionOutputModel implements EmptyCollectionOutputModel {
   private @Nullable Collection<Runnable> $sting$_getRunnablesCache;

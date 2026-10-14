@@ -1,6 +1,5 @@
 package com.example.injectable.dependency;
 
-import java.util.Objects;
 import java.util.Optional;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
@@ -10,8 +9,7 @@ import org.jspecify.annotations.NullMarked;
 public final class Sting_OptionalDependencyModel {
   private Sting_OptionalDependencyModel() {}
 
-  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public static OptionalDependencyModel create(final Optional<Runnable> runnable) {
-    return new OptionalDependencyModel(Objects.requireNonNull(runnable));
+    return new OptionalDependencyModel(runnable);
   }
 }

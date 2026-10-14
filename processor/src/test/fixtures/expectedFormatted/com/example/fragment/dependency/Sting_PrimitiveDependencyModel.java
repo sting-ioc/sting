@@ -1,13 +1,11 @@
 package com.example.fragment.dependency;
 
-import java.util.Objects;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 
 @NullMarked
 @Generated("sting.processor.StingProcessor")
 public final class Sting_PrimitiveDependencyModel implements PrimitiveDependencyModel {
-  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public Runnable $sting$_provideRunnable(
       final boolean bool,
       final char ch,
@@ -17,14 +15,6 @@ public final class Sting_PrimitiveDependencyModel implements PrimitiveDependency
       final long l,
       final float f,
       final double d) {
-    return provideRunnable(
-        Objects.requireNonNull(bool),
-        Objects.requireNonNull(ch),
-        Objects.requireNonNull(b),
-        Objects.requireNonNull(s),
-        Objects.requireNonNull(priority),
-        Objects.requireNonNull(l),
-        Objects.requireNonNull(f),
-        Objects.requireNonNull(d));
+    return provideRunnable(bool, ch, b, s, priority, l, f, d);
   }
 }

@@ -1,13 +1,11 @@
 package com.example.injector.circular;
 
-import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_SupplierBrokenDirectCircularDependencyModel
     implements SupplierBrokenDirectCircularDependencyModel {
@@ -20,20 +18,16 @@ final class Sting_SupplierBrokenDirectCircularDependencyModel
   @DoNotInline
   private synchronized Object node1() {
     if (null == node1) {
-      node1 = Objects.requireNonNull(
-          SupplierBrokenDirectCircularDependencyModel_Sting_MyModel2.create(() -> node2()));
+      node1 = SupplierBrokenDirectCircularDependencyModel_Sting_MyModel2.create(() -> node2());
     }
-    assert null != node1;
     return node1;
   }
 
   @DoNotInline
   private synchronized Object node2() {
     if (null == node2) {
-      node2 = Objects.requireNonNull(
-          SupplierBrokenDirectCircularDependencyModel_Sting_MyModel1.create(node1()));
+      node2 = SupplierBrokenDirectCircularDependencyModel_Sting_MyModel1.create(node1());
     }
-    assert null != node2;
     return node2;
   }
 

@@ -1,13 +1,11 @@
 package com.example.injector.gwt;
 
-import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_EnableGwtInjectorModel implements EnableGwtInjectorModel {
   private @Nullable Object node1;
@@ -17,9 +15,8 @@ final class Sting_EnableGwtInjectorModel implements EnableGwtInjectorModel {
   @DoNotInline
   private synchronized Object node1() {
     if (null == node1) {
-      node1 = Objects.requireNonNull(EnableGwtInjectorModel_Sting_MyModel0.create());
+      node1 = EnableGwtInjectorModel_Sting_MyModel0.create();
     }
-    assert null != node1;
     return node1;
   }
 

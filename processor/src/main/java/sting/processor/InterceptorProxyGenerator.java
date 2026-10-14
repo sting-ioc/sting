@@ -61,9 +61,6 @@ final class InterceptorProxyGenerator {
                             .build())
                     .addStatement("return (T) value")
                     .build());
-            builder.addAnnotation(AnnotationSpec.builder(SuppressWarnings.class)
-                    .addMember("value", "$S", "Varifier")
-                    .build());
         }
 
         return builder.build();
@@ -275,11 +272,7 @@ final class InterceptorProxyGenerator {
                                 aroundInvocationArgumentsType(unmodifiableAnnotation), "arguments", Modifier.FINAL)
                         .build());
 
-        builder.addStatement(
-                "assert null != $N && $L == $N.length",
-                "arguments",
-                method.getParameters().size(),
-                "arguments");
+        builder.addStatement("assert $L == $N.length", method.getParameters().size(), "arguments");
 
         if (isTarget) {
             emitAroundTargetCall(builder, method);
@@ -460,17 +453,13 @@ final class InterceptorProxyGenerator {
             final String argumentsName) {
         if (parameters.isEmpty()) {
             builder.addStatement(
-                    "final $T[] $N = new $T[0]",
-                    StingGeneratorUtil.asNullable(ClassName.OBJECT),
-                    argumentsName,
-                    Object.class);
+                    "final var $N = new $T[0]", argumentsName, StingGeneratorUtil.asNullable(ClassName.OBJECT));
         } else {
             final var code = new StringBuilder();
             final var args = new ArrayList<>();
-            code.append("final $T[] $N = new $T[] {");
-            args.add(StingGeneratorUtil.asNullable(ClassName.OBJECT));
+            code.append("final var $N = new $T[] {");
             args.add(argumentsName);
-            args.add(Object.class);
+            args.add(StingGeneratorUtil.asNullable(ClassName.OBJECT));
             for (var i = 0; i < parameters.size(); i++) {
                 if (0 != i) {
                     code.append(", ");

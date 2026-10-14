@@ -1,7 +1,6 @@
 package com.example.injectable.dependency;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import javax.annotation.processing.Generated;
@@ -13,12 +12,8 @@ public final class Sting_SupplierOptionalCollectionDependencyModel {
   private Sting_SupplierOptionalCollectionDependencyModel() {
   }
 
-  @SuppressWarnings({
-      "ImpossibleNullComparison",
-      "UnnecessaryCheckNotNull"
-  })
   public static SupplierOptionalCollectionDependencyModel create(
       final Collection<Supplier<Optional<Runnable>>> runnable) {
-    return new SupplierOptionalCollectionDependencyModel( Objects.requireNonNull( runnable ) );
+    return new SupplierOptionalCollectionDependencyModel( runnable );
   }
 }

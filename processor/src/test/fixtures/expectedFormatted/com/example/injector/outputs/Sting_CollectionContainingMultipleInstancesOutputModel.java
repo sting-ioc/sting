@@ -2,14 +2,12 @@ package com.example.injector.outputs;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_CollectionContainingMultipleInstancesOutputModel
     implements CollectionContainingMultipleInstancesOutputModel {
@@ -35,27 +33,24 @@ final class Sting_CollectionContainingMultipleInstancesOutputModel
   @DoNotInline
   private synchronized Runnable node1() {
     if (null == node1) {
-      node1 = Objects.requireNonNull(fragment1.$sting$_provideRunnable());
+      node1 = fragment1.$sting$_provideRunnable();
     }
-    assert null != node1;
     return node1;
   }
 
   @DoNotInline
   private synchronized Runnable node2() {
     if (null == node2) {
-      node2 = Objects.requireNonNull(fragment3.$sting$_provideRunnable());
+      node2 = fragment3.$sting$_provideRunnable();
     }
-    assert null != node2;
     return node2;
   }
 
   @DoNotInline
   private synchronized Runnable node3() {
     if (null == node3) {
-      node3 = Objects.requireNonNull(fragment2.$sting$_provideRunnable());
+      node3 = fragment2.$sting$_provideRunnable();
     }
-    assert null != node3;
     return node3;
   }
 

@@ -779,6 +779,13 @@ public final class InterceptorsIntegrationTest {
         EagerService service();
     }
 
+    @Injector(includes = EagerServiceImpl.class, fragmentOnly = false)
+    public interface UnusedEagerInjector {
+        static UnusedEagerInjector create() {
+            return new InterceptorsIntegrationTest_Sting_UnusedEagerInjector();
+        }
+    }
+
     @InterceptorBinding(
             implementedBy = "sting.integration.InterceptorsIntegrationTest.OverrideInterceptor",
             priority = 100)
@@ -914,7 +921,8 @@ public final class InterceptorsIntegrationTest {
         resetAroundState();
         c_outerAroundMode = AroundMode.NULL_REPLACEMENT;
         expectThrows(
-                AssertionError.class, () -> AroundInjector.create().service().replace("original", 1));
+                NullPointerException.class,
+                () -> AroundInjector.create().service().replace("original", 1));
 
         resetAroundState();
         c_outerAroundMode = AroundMode.WRONG_COUNT_REPLACEMENT;
@@ -1309,6 +1317,15 @@ public final class InterceptorsIntegrationTest {
         c_trace.clear();
         injector.service().run();
         assertEquals(c_trace, List.of("eager:before", "target:eager"));
+    }
+
+    @Test
+    public void eagerInterceptionWithoutOutputStillCreatesComponents() {
+        c_trace.clear();
+
+        UnusedEagerInjector.create();
+
+        assertEquals(c_trace, List.of("interceptor:eager:create", "target:eager:create"));
     }
 
     @Test

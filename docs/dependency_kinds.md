@@ -131,23 +131,19 @@ The service could also be retrieved as [outputs](outputs.md) using different dep
 
 {@file_content: file=sting/doc/examples/dependency_kinds/MyInjector.java start_line=@Injector}
 
-## Nullness and migration
+## Nullness
 
 Sting uses [JSpecify](https://jspecify.dev/) for library APIs and generated contracts. Add
 `org.jspecify:jspecify:1.0.0` to the compilation classpath, mark your packages or types with `@NullMarked`,
 and annotate nullable types with `org.jspecify.annotations.Nullable`. Within a marked scope, other reference
 types are nonnull by default.
 
-Replace legacy nullability imports with JSpecify. Remove redundant nonnull annotations when adding a marked
-scope, and preserve the intended type-use position of each nullable annotation. Sting rejects legacy nullability
-annotations on DI, factory and interceptor declarations with a migration diagnostic.
-
-`@Nullable T` is an optional instance request. Existing `Optional<T>`, `Supplier<Optional<T>>` and collection
-forms retain their behavior. Nullable type arguments such as `Supplier<@Nullable T>` are unsupported DI requests;
-use a supported optional form instead. Nested nullable types in ordinary intercepted service signatures are preserved.
-Array annotations also retain their position: `@Nullable String[]` permits null entries, while
+`@Nullable T` is an optional instance request. Use `Optional<T>` or `Supplier<Optional<T>>` for optional values
+in those request forms. Nullable type arguments such as `Supplier<@Nullable T>` are unsupported DI requests.
+Sting preserves nested nullable types in intercepted service signatures and the position of array annotations:
+`@Nullable String[]` permits null entries, while
 `String @Nullable []` permits a null array.
 
-Generated types are `@NullMarked` and their bodies are checked with NullAway's JSpecify mode. Unmarked consumer
-code remains supported through NullAway's optimistic boundary assumptions: its implementation bodies and unspecified
-contracts are trusted. Annotate and check consumer code to extend the guarantee to those implementations.
+Generated types are `@NullMarked`; the Sting build checks their bodies with NullAway's JSpecify mode.
+NullAway trusts unmarked consumer implementations and unspecified contracts. To check those implementations,
+mark your application code and run NullAway on it.

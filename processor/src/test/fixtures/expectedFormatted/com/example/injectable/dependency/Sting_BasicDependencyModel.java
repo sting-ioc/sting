@@ -1,6 +1,5 @@
 package com.example.injectable.dependency;
 
-import java.util.Objects;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 
@@ -9,8 +8,7 @@ import org.jspecify.annotations.NullMarked;
 public final class Sting_BasicDependencyModel {
   private Sting_BasicDependencyModel() {}
 
-  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public static BasicDependencyModel create(final Runnable runnable) {
-    return new BasicDependencyModel(Objects.requireNonNull(runnable));
+    return new BasicDependencyModel(runnable);
   }
 }

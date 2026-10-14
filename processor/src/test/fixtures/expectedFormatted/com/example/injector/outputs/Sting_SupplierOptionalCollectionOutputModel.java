@@ -2,7 +2,6 @@ package com.example.injector.outputs;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
 import javaemul.internal.annotations.DoNotInline;
@@ -11,7 +10,6 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_SupplierOptionalCollectionOutputModel
     implements SupplierOptionalCollectionOutputModel {
@@ -25,9 +23,8 @@ final class Sting_SupplierOptionalCollectionOutputModel
   @DoNotInline
   private synchronized Object node1() {
     if (null == node1) {
-      node1 = Objects.requireNonNull(SupplierOptionalCollectionOutputModel_Sting_MyModel.create());
+      node1 = SupplierOptionalCollectionOutputModel_Sting_MyModel.create();
     }
-    assert null != node1;
     return node1;
   }
 

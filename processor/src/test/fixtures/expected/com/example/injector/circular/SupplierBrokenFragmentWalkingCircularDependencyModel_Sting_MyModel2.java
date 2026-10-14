@@ -1,6 +1,5 @@
 package com.example.injector.circular;
 
-import java.util.Objects;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 
@@ -10,11 +9,7 @@ public final class SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_My
   private SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel2() {
   }
 
-  @SuppressWarnings({
-      "ImpossibleNullComparison",
-      "UnnecessaryCheckNotNull"
-  })
   public static Object create(final Runnable model) {
-    return new SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2( Objects.requireNonNull( model ) );
+    return new SupplierBrokenFragmentWalkingCircularDependencyModel.MyModel2( model );
   }
 }

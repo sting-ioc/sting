@@ -4,7 +4,7 @@ title: Project Setup
 
 A Sting project can be setup using any build system that supports configuration of annotation
 processors. Library and generated contracts use JSpecify; see the
-[nullness migration guide](dependency_kinds.md#nullness-and-migration) for annotations and supported DI forms.
+[nullness documentation](dependency_kinds.md#nullness) for annotations and supported dependency forms.
 
 The following instructions describe how to set up the project using the
 [Apache Maven](https://maven.apache.org) build tool as it is relatively well known within the Java ecosystem.
@@ -70,13 +70,13 @@ compiler plugin from within the `pom.xml`:
 
 The Sting processor requires Java 21 or newer. Use JDK 22+ or patched JDK 21.0.8+ when reading JSpecify
 contracts from compiled classes. The symbol flag in the example makes type-use annotations available to Sting
-on patched Java 21 compilers. Library and generated output remain at version 17. `sting-core` publishes a dependency on
+on patched Java 21 compilers. Library and generated classes target Java 17. `sting-core` depends on
 `org.jspecify:jspecify:1.0.0`, which supplies the annotations on the compilation classpath. The shaded
 processor contains its own canonical JSpecify runtime classes for the isolated processorpath.
 
 To check application and generated bodies, configure Error Prone and NullAway with JSpecify mode and marked
 scopes as described in the [development process](development_process.md#nullness-checking).
-Unmarked application implementations remain an optimistic boundary.
+NullAway trusts unmarked application implementations; mark and check them to verify their nullness contracts.
 
 ### Optional Generated Source Formatting
 

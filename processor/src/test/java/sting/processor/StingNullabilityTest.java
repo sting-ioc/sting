@@ -22,7 +22,7 @@ import org.testng.annotations.Test;
 
 public final class StingNullabilityTest extends AbstractStingProcessorTest {
     @Test
-    public void generatedNullnessViolationsFailChecking() throws IOException {
+    public void generatedViolationsFailChecking() throws IOException {
         final var synthesizer = new AbstractProcessor() {
             private boolean _generated;
 
@@ -46,12 +46,15 @@ public final class StingNullabilityTest extends AbstractStingProcessorTest {
                             .openWriter()) {
                         writer.write("""
                             package samples;
-                            @javax.annotation.processing.Generated("NullAwayControl")
+                            @javax.annotation.processing.Generated("GeneratedCodeControl")
                             @org.jspecify.annotations.NullMarked
                             final class InvalidGenerated {
+                              private static final Object forgotten = new Object();
                               static int length(@org.jspecify.annotations.Nullable String text) { return text.length(); }
                               static java.util.List<String> values(
                                   java.util.List<@org.jspecify.annotations.Nullable String> values) { return values; }
+                              static boolean impossibleComparison() { return java.util.Optional.of("value").get() == null; }
+                              static Object unnecessaryCheck() { return java.util.Objects.requireNonNull(new Object()); }
                             }
                             """);
                     } catch (final IOException e) {
@@ -77,6 +80,17 @@ public final class StingNullabilityTest extends AbstractStingProcessorTest {
                             .count(),
                     2L,
                     describeFailureDiagnostics(compilation));
+            for (final String checker :
+                    List.of("UnusedVariable", "ImpossibleNullComparison", "UnnecessaryCheckNotNull")) {
+                assertEquals(
+                        compilation.diagnostics().stream()
+                                .filter(d -> d.getKind() == Diagnostic.Kind.ERROR
+                                        && d.toString().contains("[" + checker + "]")
+                                        && d.toString().contains("InvalidGenerated.java"))
+                                .count(),
+                        1L,
+                        describeFailureDiagnostics(compilation));
+            }
             compilation.assertSourceOutputFilenamePresent("samples/InvalidGenerated.java");
         } finally {
             for (final var directory : List.of(compilation.sourceOutput(), compilation.classOutput())) {
@@ -229,42 +243,6 @@ public final class StingNullabilityTest extends AbstractStingProcessorTest {
         final String code = Files.readString(compilation.sourceOutput().resolve(proxy));
         assertTrue(code.contains("List<@Nullable String>"), code);
         assertTrue(code.contains("@Nullable String @Nullable [] values"), code);
-    }
-
-    @DataProvider(name = "legacyDeclarations")
-    public Object[][] legacyDeclarations() {
-        return new Object[][] {
-            {
-                "Nullable",
-                "METHOD",
-                "@sting.Fragment interface Broken { @javax.annotation.Nullable default String value() { return null; }"
-                        + " }"
-            },
-            {
-                "Nullable",
-                "PARAMETER",
-                "class Product { Product(@javax.annotation.Nullable String name) {} }"
-                        + " @sting.Factory interface Broken { Product create(String name); }"
-            },
-            {
-                "Nonnull",
-                "PARAMETER",
-                "@sting.Injectable class Broken { Broken(@javax.annotation.Nonnull String value) {} }"
-            }
-        };
-    }
-
-    @Test(dataProvider = "legacyDeclarations")
-    public void rejectLegacyDeclarations(final String annotation, final String target, final String declaration) {
-        final Compilation compilation = compile(List.of(
-                source(
-                        "javax.annotation." + annotation,
-                        "package javax.annotation;"
-                                + " @java.lang.annotation.Target(java.lang.annotation.ElementType." + target + ")"
-                                + " public @interface " + annotation + " {}"),
-                source("samples.Broken", "package samples; " + declaration)));
-        assertCompilationUnsuccessful(compilation);
-        assertErrorDiagnostic(compilation, "Legacy nullability annotation javax.annotation." + annotation);
     }
 
     @Test

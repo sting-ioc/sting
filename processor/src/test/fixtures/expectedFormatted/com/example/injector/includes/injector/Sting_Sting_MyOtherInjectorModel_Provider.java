@@ -1,6 +1,5 @@
 package com.example.injector.includes.injector;
 
-import java.util.Objects;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 
@@ -12,8 +11,7 @@ public final class Sting_Sting_MyOtherInjectorModel_Provider
     return provide();
   }
 
-  @SuppressWarnings({"ImpossibleNullComparison", "UnnecessaryCheckNotNull"})
   public MyModel $sting$_getMyModel(final MyOtherInjectorModel injector) {
-    return getMyModel(Objects.requireNonNull(injector));
+    return getMyModel(injector);
   }
 }

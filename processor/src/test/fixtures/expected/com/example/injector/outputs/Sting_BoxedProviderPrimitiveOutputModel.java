@@ -1,13 +1,11 @@
 package com.example.injector.outputs;
 
-import java.util.Objects;
 import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-@SuppressWarnings("UnusedVariable")
 @Generated("sting.processor.StingProcessor")
 final class Sting_BoxedProviderPrimitiveOutputModel implements BoxedProviderPrimitiveOutputModel {
   private final BoxedProviderPrimitiveOutputModel_Sting_MyFragment fragment1 = new BoxedProviderPrimitiveOutputModel_Sting_MyFragment();
@@ -20,9 +18,8 @@ final class Sting_BoxedProviderPrimitiveOutputModel implements BoxedProviderPrim
   @DoNotInline
   private synchronized Integer node1() {
     if ( null == node1 ) {
-      node1 = Objects.requireNonNull( fragment1.$sting$_provideValue() );
+      node1 = fragment1.$sting$_provideValue();
     }
-    assert null != node1;
     return node1;
   }
 

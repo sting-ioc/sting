@@ -963,7 +963,7 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
                 "around proxy invoke argument shape asserted",
                 "com.example.interceptor.AroundMetadataModel",
                 "AroundMetadataModel",
-                "assert null != arguments && 2 == arguments.length;",
+                "assert 2 == arguments.length;",
                 true
             },
             new Object[] {

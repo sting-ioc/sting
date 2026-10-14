@@ -150,6 +150,6 @@ permits nullable service results and the null result of void calls. `Invocation.
 
 Proxies preserve explicit nullable type arguments and array annotations in service signatures. `Invocation`
 is an erased runtime boundary: interceptors must supply arguments and results that satisfy the service's contract.
-Generated proxies use a narrowly suppressed cast helper at that boundary to retain existing cast, unboxing and
-null behavior. Other generated bodies remain checked by NullAway. An interceptor that returns null for a required
-reference result can still violate the service contract; annotate and check application code as well.
+NullAway checks generated service methods, but it cannot prove that an interceptor's erased arguments and results
+satisfy every service signature. Annotate and check interceptor implementations, and follow the service contract
+when replacing arguments or results.

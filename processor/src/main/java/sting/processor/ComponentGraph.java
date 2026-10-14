@@ -122,6 +122,7 @@ final class ComponentGraph {
         _fragmentNodes = _nodesById.values().stream()
                 .filter(Node::isFromProvides)
                 .map(n -> (FragmentDescriptor) n.getBinding().getOwner())
+                .distinct()
                 .sorted(Comparator.comparing(FragmentDescriptor::getQualifiedTypeName))
                 .map(f -> new FragmentNode(f, "fragment" + index.incrementAndGet()))
                 .peek(f -> fragmentMap.put(f.fragment(), f))
