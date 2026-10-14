@@ -1,7 +1,6 @@
 package com.example.injector.outputs;
 
 import java.util.function.Supplier;
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -16,7 +15,6 @@ final class Sting_MultipleOutputModel implements MultipleOutputModel {
   Sting_MultipleOutputModel() {
   }
 
-  @DoNotInline
   private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = MultipleOutputModel_Sting_MyModel1.create();
@@ -24,7 +22,6 @@ final class Sting_MultipleOutputModel implements MultipleOutputModel {
     return node1;
   }
 
-  @DoNotInline
   private synchronized Object node2() {
     if ( null == node2 ) {
       node2 = MultipleOutputModel_Sting_MyModel2.create();

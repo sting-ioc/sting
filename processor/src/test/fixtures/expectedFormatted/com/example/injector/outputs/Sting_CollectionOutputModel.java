@@ -2,7 +2,6 @@ package com.example.injector.outputs;
 
 import java.util.Collection;
 import java.util.Collections;
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -16,7 +15,6 @@ final class Sting_CollectionOutputModel implements CollectionOutputModel {
 
   Sting_CollectionOutputModel() {}
 
-  @DoNotInline
   private synchronized Object node1() {
     if (null == node1) {
       node1 = CollectionOutputModel_Sting_MyModel.create();

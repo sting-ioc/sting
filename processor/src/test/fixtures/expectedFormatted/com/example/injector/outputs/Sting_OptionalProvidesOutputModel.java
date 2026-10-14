@@ -1,6 +1,5 @@
 package com.example.injector.outputs;
 
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -17,7 +16,6 @@ final class Sting_OptionalProvidesOutputModel implements OptionalProvidesOutputM
 
   Sting_OptionalProvidesOutputModel() {}
 
-  @DoNotInline
   private synchronized @Nullable Runnable node1() {
     if (!node1_allocated) {
       node1_allocated = true;

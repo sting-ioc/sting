@@ -1,6 +1,5 @@
 package com.example.injector.includes.recursive;
 
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -32,7 +31,6 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
     node4 = Sting_MyModel2.create();
   }
 
-  @DoNotInline
   private synchronized Runnable node3() {
     if ( null == node3 ) {
       node3 = fragment2.$sting$_provideRunnable();
@@ -40,7 +38,6 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
     return node3;
   }
 
-  @DoNotInline
   private synchronized Runnable node5() {
     if ( null == node5 ) {
       node5 = fragment1.$sting$_provideRunnable();
@@ -48,7 +45,6 @@ final class Sting_RecursiveIncludesModel implements RecursiveIncludesModel {
     return node5;
   }
 
-  @DoNotInline
   private synchronized Runnable node6() {
     if ( null == node6 ) {
       node6 = fragment3.$sting$_provideRunnable();

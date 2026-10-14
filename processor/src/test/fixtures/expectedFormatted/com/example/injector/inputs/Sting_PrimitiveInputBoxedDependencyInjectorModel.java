@@ -1,6 +1,5 @@
 package com.example.injector.inputs;
 
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -17,7 +16,6 @@ final class Sting_PrimitiveInputBoxedDependencyInjectorModel
     node1 = input1;
   }
 
-  @DoNotInline
   private synchronized Object node2() {
     if (null == node2) {
       node2 = PrimitiveInputBoxedDependencyInjectorModel_Sting_MyModel.create(node1);

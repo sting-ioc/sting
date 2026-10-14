@@ -30,7 +30,6 @@ java_library(
         "//core",
         "//processor",
         "//third_party/java:javaee_api",
-        "//third_party/java:javaemul_internal_annotations",
         "//third_party/java:jspecify",
         "//third_party/java:testng",
         "@proton//:qa",

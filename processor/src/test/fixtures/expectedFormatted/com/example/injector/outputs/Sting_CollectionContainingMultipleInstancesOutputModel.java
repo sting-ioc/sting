@@ -2,7 +2,6 @@ package com.example.injector.outputs;
 
 import java.util.Arrays;
 import java.util.Collection;
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -30,7 +29,6 @@ final class Sting_CollectionContainingMultipleInstancesOutputModel
 
   Sting_CollectionContainingMultipleInstancesOutputModel() {}
 
-  @DoNotInline
   private synchronized Runnable node1() {
     if (null == node1) {
       node1 = fragment1.$sting$_provideRunnable();
@@ -38,7 +36,6 @@ final class Sting_CollectionContainingMultipleInstancesOutputModel
     return node1;
   }
 
-  @DoNotInline
   private synchronized Runnable node2() {
     if (null == node2) {
       node2 = fragment3.$sting$_provideRunnable();
@@ -46,7 +43,6 @@ final class Sting_CollectionContainingMultipleInstancesOutputModel
     return node2;
   }
 
-  @DoNotInline
   private synchronized Runnable node3() {
     if (null == node3) {
       node3 = fragment2.$sting$_provideRunnable();

@@ -3,7 +3,6 @@ package com.example.injector.outputs;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Supplier;
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -25,7 +24,6 @@ final class Sting_PrimitiveProviderBoxedSupplierKindsOutputModel
 
   Sting_PrimitiveProviderBoxedSupplierKindsOutputModel() {}
 
-  @DoNotInline
   private synchronized int node1() {
     if (!node1_allocated) {
       node1_allocated = true;

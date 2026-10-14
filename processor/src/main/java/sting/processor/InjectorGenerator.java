@@ -25,7 +25,6 @@ import org.realityforge.proton.GeneratorUtil;
 import org.realityforge.proton.SuppressWarningsUtil;
 
 final class InjectorGenerator {
-    private static final ClassName DO_NOT_INLINE = ClassName.get("javaemul.internal.annotations", "DoNotInline");
     private static final ClassName OBJECT = ClassName.get("java.lang", "Object");
 
     private InjectorGenerator() {}
@@ -193,16 +192,6 @@ final class InjectorGenerator {
                 final boolean isNonPrimitive = !node.getType().getKind().isPrimitive();
                 if (isNonPrimitive && !isNonnull) {
                     method.returns(StingGeneratorUtil.asNullable(getPublicTypeName(node)));
-                }
-
-                if (graph.getInjector().isGwt()) {
-                    // We avoid inlining as each lazy node accessor is typically a candidate for inlining and
-                    // will be inlined which often results the entire transitive tree of lazy node accessors
-                    // being inlined in successive passes. Then there will be too much code to run some of the
-                    // other optimization passes such as DFA as the code size is too big. Without this annotation,
-                    // there was one scenario where a piece of code was 4KB with @DonNotInline present and 1MB+
-                    // without the annotation being present.
-                    method.addAnnotation(DO_NOT_INLINE);
                 }
 
                 final CodeBlock.Builder block = CodeBlock.builder();

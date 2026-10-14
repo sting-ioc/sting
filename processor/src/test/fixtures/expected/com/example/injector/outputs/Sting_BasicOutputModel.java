@@ -1,6 +1,5 @@
 package com.example.injector.outputs;
 
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -13,7 +12,6 @@ final class Sting_BasicOutputModel implements BasicOutputModel {
   Sting_BasicOutputModel() {
   }
 
-  @DoNotInline
   private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = BasicOutputModel_Sting_MyModel.create();

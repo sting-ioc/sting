@@ -120,8 +120,6 @@ public final class StingProcessorTest extends AbstractStingProcessorTest {
             new Object[] {"com.example.injector.circular.SupplierBrokenChainedCircularDependencyModel"},
             new Object[] {"com.example.injector.circular.SupplierBrokenDirectCircularDependencyModel"},
             new Object[] {"com.example.injector.circular.SupplierBrokenFragmentWalkingCircularDependencyModel"},
-            new Object[] {"com.example.injector.gwt.DisableGwtInjectorModel"},
-            new Object[] {"com.example.injector.gwt.EnableGwtInjectorModel"},
             new Object[] {"com.example.injector.outputs.BasicOutputModel"},
             new Object[] {"com.example.injector.outputs.BoxedProviderPrimitiveOutputModel"},
             new Object[] {"com.example.injector.outputs.CollectionContainingMultipleInstancesOutputModel"},

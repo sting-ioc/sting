@@ -183,17 +183,5 @@ It is expected that most Sting applications are developed from within an IDE. Th
 can be done by importing the `pom.xml` into the IDE but further customizations may need to be done by
 the user.
 
-## Configure a GWT Application
-
-If you are using Sting within a GWT application you will also need to inherit the GWT module via:
-
-```xml
-<module>
-  ...
-  <inherits name='sting.Sting'/>
-  ...
-</module>
-```
-
 Now that the build environment is setup, you can move on to [getting started](getting_started.md) creating
 the application code.

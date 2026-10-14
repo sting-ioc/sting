@@ -2,7 +2,6 @@ package com.example.injector.graphviz;
 
 import com.example.injector.graphviz.pkg2.MyModel;
 import com.example.injector.graphviz.pkg2.Sting_MyModel;
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -16,7 +15,6 @@ final class Sting_NameCollisionInjectorModel implements NameCollisionInjectorMod
 
   Sting_NameCollisionInjectorModel() {}
 
-  @DoNotInline
   private synchronized MyModel node1() {
     if (null == node1) {
       node1 = Sting_MyModel.create();
@@ -24,7 +22,6 @@ final class Sting_NameCollisionInjectorModel implements NameCollisionInjectorMod
     return node1;
   }
 
-  @DoNotInline
   private synchronized com.example.injector.graphviz.pkg1.MyModel node2() {
     if (null == node2) {
       node2 = com.example.injector.graphviz.pkg1.Sting_MyModel.create();

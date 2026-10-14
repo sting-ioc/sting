@@ -1,6 +1,5 @@
 package com.example.injector.circular;
 
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -15,7 +14,6 @@ final class Sting_SupplierBrokenDirectCircularDependencyModel implements Supplie
   Sting_SupplierBrokenDirectCircularDependencyModel() {
   }
 
-  @DoNotInline
   private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = SupplierBrokenDirectCircularDependencyModel_Sting_MyModel2.create(() -> node2());
@@ -23,7 +21,6 @@ final class Sting_SupplierBrokenDirectCircularDependencyModel implements Supplie
     return node1;
   }
 
-  @DoNotInline
   private synchronized Object node2() {
     if ( null == node2 ) {
       node2 = SupplierBrokenDirectCircularDependencyModel_Sting_MyModel1.create(node1());

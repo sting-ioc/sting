@@ -1,6 +1,5 @@
 package com.example.injector.circular;
 
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -19,7 +18,6 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
   Sting_SupplierBrokenFragmentWalkingCircularDependencyModel() {
   }
 
-  @DoNotInline
   private synchronized Object node1() {
     if ( null == node1 ) {
       node1 = SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel2.create(node3());
@@ -27,7 +25,6 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
     return node1;
   }
 
-  @DoNotInline
   private synchronized Object node2() {
     if ( null == node2 ) {
       node2 = SupplierBrokenFragmentWalkingCircularDependencyModel_Sting_MyModel1.create(node1());
@@ -35,7 +32,6 @@ final class Sting_SupplierBrokenFragmentWalkingCircularDependencyModel implement
     return node2;
   }
 
-  @DoNotInline
   private synchronized Runnable node3() {
     if ( null == node3 ) {
       node3 = fragment1.$sting$_provideRunnable(() -> node2());

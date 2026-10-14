@@ -16,7 +16,7 @@ code to implement the injector.
 Sting can create components directly if they are annotated with the {@link: sting.Injectable @Injectable} annotation
 or it can call out to user code to provide the component (i.e. methods in {@link: sting.Fragment @Fragment} annotated
 types.) The second form is used when third-party objects can't be annotated, when a different framework is
-responsible for creating the object (i.e `GWT.create(MyGwtRpcService.class)` or when it is awkward to
+responsible for creating the object, or when it is awkward to
 create the type (i.e. when publishing a component that is constructed by invoking methods on a builder object).
 Sting can also pass in components when creating the injector.
 

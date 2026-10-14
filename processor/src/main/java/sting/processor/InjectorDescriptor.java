@@ -6,15 +6,7 @@ import java.util.Objects;
 import javax.lang.model.element.TypeElement;
 
 final class InjectorDescriptor {
-    /**
-     * The element that defined the Injector.
-     * It may be either an interface or an abstract class.
-     */
     private final TypeElement _element;
-    /**
-     * Should the injector be optimized for GWT.
-     */
-    private final boolean _gwt;
     /**
      * Should this injector be able to be included i other injectors.
      */
@@ -42,14 +34,12 @@ final class InjectorDescriptor {
 
     InjectorDescriptor(
             final TypeElement element,
-            final boolean gwt,
             final boolean injectable,
             final boolean fragmentOnly,
             final Collection<IncludeDescriptor> includes,
             final List<InputDescriptor> inputs,
             final List<ServiceRequest> outputs) {
         _element = Objects.requireNonNull(element);
-        _gwt = gwt;
         _injectable = injectable;
         _fragmentOnly = fragmentOnly;
         _includes = Objects.requireNonNull(includes);
@@ -59,10 +49,6 @@ final class InjectorDescriptor {
 
     TypeElement getElement() {
         return _element;
-    }
-
-    boolean isGwt() {
-        return _gwt;
     }
 
     boolean isInjectable() {

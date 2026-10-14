@@ -1,6 +1,5 @@
 package com.example.injector.includes.provider.naming.compound;
 
-import javaemul.internal.annotations.DoNotInline;
 import javax.annotation.processing.Generated;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
@@ -15,7 +14,6 @@ final class Sting_MyInjector implements MyInjector {
   Sting_MyInjector() {
   }
 
-  @DoNotInline
   private synchronized Outer.Middle.Leaf.MyModel2Impl node1() {
     if ( null == node1 ) {
       node1 = Outer_Middle_Leaf_Sting_MyModel2Impl.create();
@@ -23,7 +21,6 @@ final class Sting_MyInjector implements MyInjector {
     return node1;
   }
 
-  @DoNotInline
   private synchronized Object node2() {
     if ( null == node2 ) {
       node2 = Sting_MyModel1Impl.create();
