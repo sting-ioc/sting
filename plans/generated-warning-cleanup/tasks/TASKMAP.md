@@ -5,7 +5,7 @@
 - Current frontier: None; T01 complete.
 - Planning reviewer: /root/generated_cleanup_planning_review (1/3 rounds), Findings: none.
 - Plan checkpoint: automatic — accepted grill, explicit amendments and passing planning review.
-- Implementation reviewer: pending (0/5 rounds)
+- Implementation reviewer: /root/generated_cleanup_implementation_review (1/5 rounds); P2 stale null-array assertion documentation corrected, confirmation pending.
 
 ## Full-scope validation
 

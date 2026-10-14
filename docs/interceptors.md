@@ -78,10 +78,9 @@ arguments for inner interceptors and the target, or return without proceeding to
 Invocations may be called multiple times. Each call re-enters the remaining interceptor chain and may invoke
 the target service method again.
 
-`proceed(Object[])` requires a non-null array whose length matches the service method's formal parameter count. For
-varargs methods, the final formal parameter is the varargs array. Null arrays and wrong counts are checked by generated
-assertions when assertions are enabled; wrong element types and null primitive arguments fail naturally when generated
-code casts or unboxes the replacement values.
+`proceed(Object[])` requires a nonnull array with one entry per formal parameter. For varargs methods, the final
+entry is the varargs array. Generated assertions check the argument count when assertions are enabled. Wrong element
+types and null primitive arguments fail naturally when generated code casts or unboxes the replacement values.
 
 Around return values become the service method result. Void service methods ignore the value. Primitive service
 methods unbox it, so null or the wrong wrapper type fails naturally. Runtime exceptions, errors, and checked
@@ -98,9 +97,9 @@ Supported metadata:
 - {@link: sting.interceptors.ServiceType @ServiceType} `String`: the intercepted service interface name.
 - {@link: sting.interceptors.MethodName @MethodName} `String`: the service method name.
 - {@link: sting.interceptors.BindingValue @BindingValue} values from the binding annotation.
-- {@link: sting.interceptors.Arguments @Arguments} `Object[]`: the active arguments at this interceptor boundary.
+- {@link: sting.interceptors.Arguments @Arguments} `@Nullable Object[]`: the active arguments at this interceptor boundary.
 - {@link: sting.interceptors.Proceed @Proceed} `Invocation`: the next step for `@Around`.
-- {@link: sting.interceptors.Result @Result} `Object`: successful return value for `@After`.
+- {@link: sting.interceptors.Result @Result} `@Nullable Object`: successful return value for `@After`.
 - {@link: sting.interceptors.Thrown @Thrown} `Throwable`: thrown failure for `@AfterException`.
 
 {@file_content: file=sting/doc/examples/interceptors/AuditInterceptor.java start_line=@Injectable}
