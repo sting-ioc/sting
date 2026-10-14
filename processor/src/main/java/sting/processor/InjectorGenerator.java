@@ -108,7 +108,7 @@ final class InjectorGenerator {
                 } else {
                     final var code = new StringBuilder();
                     final var args = new ArrayList<Object>();
-                    provideAndAssign(node, code, args);
+                    emitNodeCreation(node, code, args);
                     ctor.addStatement(code.toString(), args.toArray());
                 }
             }
@@ -215,7 +215,7 @@ final class InjectorGenerator {
                 }
                 final var code = new StringBuilder();
                 final var args = new ArrayList<Object>();
-                provideAndAssign(node, code, args);
+                emitNodeCreation(node, code, args);
                 block.addStatement(code.toString(), args.toArray());
                 block.endControlFlow();
                 method.addCode(block.build());
@@ -230,7 +230,7 @@ final class InjectorGenerator {
         return node.getName() + "_allocated";
     }
 
-    private static void provideAndAssign(final Node node, final StringBuilder code, final List<Object> args) {
+    private static void emitNodeCreation(final Node node, final StringBuilder code, final List<Object> args) {
         final boolean store = !node.isEager() || !node.getUsedBy().isEmpty();
         if (store) {
             code.append("$N = ");

@@ -161,10 +161,9 @@ def main() -> None:
         raise SystemExit("Missing relocated Proton")
     if any(name.startswith(("com/palantir/javapoet/", "org/realityforge/proton/")) for name in processor):
         raise SystemExit("Unrelocated processor dependency")
-    with zipfile.ZipFile(root / "sting-processor.jar") as jar:
-        for annotation in ("NullMarked", "NullUnmarked", "Nullable", "NonNull"):
-            if f"org/jspecify/annotations/{annotation}.class" not in processor:
-                raise SystemExit(f"Missing canonical processor runtime annotation: {annotation}")
+    for annotation in ("NullMarked", "NullUnmarked", "Nullable", "NonNull"):
+        if f"org/jspecify/annotations/{annotation}.class" not in processor:
+            raise SystemExit(f"Missing canonical processor runtime annotation: {annotation}")
     service = "META-INF/services/javax.annotation.processing.Processor"
     if service not in processor:
         raise SystemExit("Missing processor service registration")

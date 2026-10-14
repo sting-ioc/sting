@@ -50,7 +50,7 @@ final class InterceptorProxyGenerator {
         emitServiceMethods(processingEnv, builder, proxy, serviceElement);
         if (proxy.getService().interceptors().stream()
                 .anyMatch(interceptor -> null != interceptor.getInterceptor().findMethod(InterceptorPhase.AROUND))) {
-            // The unchecked bridge preserves existing null/cast/unboxing behavior at Invocation's erased boundary.
+            // Invocation erases types and nullness, so this conversion relies on the service contract.
             builder.addMethod(MethodSpec.methodBuilder("$sting$_cast")
                     .addModifiers(Modifier.PRIVATE, Modifier.STATIC)
                     .addTypeVariable(TypeVariableName.get("T"))

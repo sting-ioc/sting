@@ -620,7 +620,7 @@ public final class InterceptorsIntegrationTest {
 
     @SuppressWarnings({"NullAway", "ReturnMissingNullable"})
     private static @Nullable Object[] invalidNullArguments() {
-        return null; // Deliberately violate Invocation's array contract to test its runtime check.
+        return null; // Simulate a caller that violates Invocation's nonnull array contract.
     }
 
     private static @Nullable Object proceed(final String name, final Invocation invocation) throws Throwable {

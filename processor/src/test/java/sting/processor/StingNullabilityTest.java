@@ -258,7 +258,7 @@ public final class StingNullabilityTest extends AbstractStingProcessorTest {
         assertErrorDiagnostic(compilation, "Nullable type arguments are not supported in DI requests");
     }
 
-    static JavaFileObject source(final String name, final String code) {
+    private static JavaFileObject source(final String name, final String code) {
         return new SimpleJavaFileObject(
                 URI.create("string:///" + name.replace('.', '/') + ".java"), JavaFileObject.Kind.SOURCE) {
             @Override

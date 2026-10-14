@@ -1,8 +1,8 @@
 # Task Map
 
 - Spec: [`SPEC.md`](../SPEC.md)
-- Status: `planned`
-- Current frontier: `T01`
+- Status: `implementation-review`
+- Current frontier: `none`
 - Planning reviewer: `/root/branch_simplify_planning_review` (`1/3` rounds, `Findings: none`)
 - Plan checkpoint: `automatic`; the accepted grill and passing planning review authorize implementation.
 - Implementation reviewer: `pending` (`0/5` rounds)
@@ -10,7 +10,7 @@
 ## Full-scope validation
 
 - Gate: `tools/check.sh`.
-- Evidence: `pending`
+- Evidence: `tools/check.sh` exited 0; all 17 tests passed, artifacts/isolated consumer passed, coverage 95.11% lines and 86.20% branches, 2,725 site links with zero broken. See [T01 evidence](T01-simplify.md#evidence).
 
 ## Review and closeout
 
@@ -21,7 +21,7 @@
 
 | ID | Task | Status | Blocked by |
 | --- | --- | --- | --- |
-| `T01` | [Simplify the branch and developer guide](T01-simplify.md) | `pending` | None |
+| `T01` | [Simplify the branch and developer guide](T01-simplify.md) | `complete` | None |
 
 ## Sequencing notes
 
