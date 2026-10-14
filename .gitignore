@@ -7,6 +7,7 @@
 
 # Ignore project local temp files
 /tmp/
+/.bazelrc.local
 
 # Generated build and release output
 /dist

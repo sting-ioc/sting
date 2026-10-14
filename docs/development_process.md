@@ -39,9 +39,16 @@ the compiler and runtime; check the resolved versions before changing toolchains
 runtime is Zulu 21.0.12, and the tools runtime is Zulu 25.0.4. See
 [NullAway's JSpecify support](https://github.com/uber/NullAway/wiki/JSpecify-Support) for requirements.
 
-The build uses released `proton-core` and `proton-qa` 0.76 from Maven Central. Dependencies are pinned in
-`third_party/java/dependencies.yml` and fetched by Bazel. The processor release shades Proton's implementation
-and bundled formatter; builds and CI do not require a local Proton checkout.
+The build uses Proton's public `@proton//:core` and `@proton//:qa` targets, pinned in `MODULE.bazel` to revision
+`2dec0fee99c5c5b3707f9f8e8b876ec800e2c40b`. These targets expose the release jars, including the bundled
+formatter. Bazel fetches the pinned source for CI and other checkouts; the processor release shades its core jar.
+
+For local Proton development, add this to the ignored `.bazelrc.local`, using your checkout's absolute path:
+
+    common --override_module=proton_project=/absolute/path/to/proton
+
+The local override follows that checkout, including uncommitted changes. Keep it at the pinned revision when
+verifying the same source as CI. Remove the override to validate the Git-pinned build.
 
 `tools/release/check_artifacts.py` checks the assembled artifacts: required JAR/source/Javadoc contents,
 licenses, POM coordinates and API dependencies, normalized timestamps, processor relocation and service

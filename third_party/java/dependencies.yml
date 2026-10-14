@@ -19,8 +19,6 @@ artifacts:
   - coord: com.palantir.javapoet:javapoet:0.14.0
     excludes:
       - com.palantir.javapoet:javapoet-root
-  - coord: org.realityforge.proton:proton-core:0.76
-  - coord: org.realityforge.proton:proton-qa:0.76
   # Processor tests need javaemul.internal.annotations.DoNotInline to exercise @Injector.gwt
   # AUTODETECT/ENABLE output without pulling the full GWT user jar into Bazel builds.
   - coord: org.realityforge.javaemul.internal.annotations:javaemul.internal.annotations:0.01

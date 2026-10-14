@@ -56,6 +56,6 @@ java_library(
     ],
     deps = [
         "//third_party/java:javapoet",
-        "//third_party/java:proton_core",
+        "@proton//:core",
     ],
 )

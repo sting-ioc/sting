@@ -213,9 +213,9 @@ def java_testng(name, srcs, test_classes = [], test_class = None, test_methods =
             "-testclass",
             ",".join(test_classes),
         ] + (["-methods", ",".join(test_methods)] if test_methods else []),
-        deps = deps + ["//third_party/java:testng"] if srcs else [],
+        deps = ["//third_party/java:testng"] + deps if srcs else [],
         javacopts = javacopts,
         jvm_flags = jvm_flags,
-        runtime_deps = runtime_deps + (deps + ["//third_party/java:testng"] if not srcs else []),
+        runtime_deps = runtime_deps + (["//third_party/java:testng"] + deps if not srcs else []),
         **filtered_kwargs
     )
