@@ -43,9 +43,11 @@ The build uses released `proton-core` and `proton-qa` 0.76 from Maven Central. D
 `third_party/java/dependencies.yml` and fetched by Bazel. The processor release shades Proton's implementation
 and bundled formatter; builds and CI do not require a local Proton checkout.
 
-`tools/release/check_artifacts.py` checks published JSpecify metadata and compiles a consumer with only the shaded
-processor jar on the processorpath. It verifies owned and generated Java 17 bytecode separately from shaded
-Proton Java 21 classes, and catches processor classloader dependencies that archive shape checks miss.
+`tools/release/check_artifacts.py` checks the assembled artifacts: required JAR/source/Javadoc contents,
+licenses, POM coordinates and API dependencies, normalized timestamps, processor relocation and service
+registration, and Java 17 bytecode for owned and generated classes. It also compiles and runs a consumer with
+only the shaded processor jar on the processorpath, preserving inherited JSpecify contracts from compiled
+classes. This catches missing processor dependencies and shading errors that source tests cannot exercise.
 
 ## Hermeticity
 

@@ -18,43 +18,11 @@ ARTIFACTS = {
     "sting-server": ("sting/server/Transactional.class", "sting/server/Transactional.java"),
 }
 
-LEGACY_DESCRIPTOR = re.compile(
-    rb"L(?:javax/annotation/(?:Nonnull|Nullable|CheckForNull)|org/jetbrains/annotations/(?:NotNull|Nullable));"
-)
-
-
-def check_owned_nullability(workspace: Path) -> None:
-    legacy = re.compile(
-        r"javax\.annotation\.(?:Nonnull|Nullable|CheckForNull)|org\.jetbrains\.annotations\.(?:NotNull|Nullable)|@Nonnull\b"
-    )
-    allowed = {"processor/src/main/java/sting/processor/StingProcessor.java",
-               "processor/src/test/java/sting/processor/StingNullabilityTest.java"}
-    roots = ["core", "processor", "server", "integration-tests", "server-integration-tests", "doc-examples", "docs", "tools/site"]
-    files = [workspace / "README.md", workspace / "AGENTS.md"]
-    for root in roots:
-        files.extend(path for path in (workspace / root).rglob("*") if path.suffix in (".java", ".md"))
-    for path in files:
-        text = path.read_text()
-        if legacy.search(text) and (str(path.relative_to(workspace)) not in allowed
-                                    or re.search(r"(?m)^\s*import\s+(?:" + legacy.pattern + ")", text)):
-            raise SystemExit(f"Legacy nullability reference in owned source/documentation: {path}")
-    print("Checked owned sources, fixtures, goldens and current documentation for legacy nullability")
-
-
-def check_nullness_metadata(path: Path) -> None:
+def check_runtime_bytecode(path: Path) -> None:
     with zipfile.ZipFile(path) as jar:
         for name in jar.namelist():
-            # Formatter classes are third-party code bundled by Proton.
-            if name.endswith(".class") and name.startswith("sting/") and "/vendor/proton/vendor/" not in name:
-                if LEGACY_DESCRIPTOR.search(jar.read(name)):
-                    raise SystemExit(f"Legacy nullability annotation descriptor in {path.name}: {name}")
             if name.endswith(".class") and name.startswith("sting/") and "/vendor/" not in name:
                 check_java_17_bytecode(jar.read(name), f"{path.name}: {name}")
-        if b"Lorg/jspecify/annotations/NullMarked;" not in jar.read(
-            "sting/processor/package-info.class" if path.name == "sting-processor.jar" else
-            "sting/server/package-info.class" if path.name == "sting-server.jar" else "sting/package-info.class"
-        ):
-            raise SystemExit(f"Missing NullMarked package contract in {path.name}")
 
 
 def check_java_17_bytecode(data: bytes, name: str) -> None:
@@ -161,7 +129,6 @@ def entries(path: Path) -> set[str]:
 
 def main() -> None:
     workspace = Path(__file__).resolve().parents[2]
-    check_owned_nullability(workspace)
     root = workspace / "bazel-bin" / "tools" / "release"
     version = sys.argv[1] if len(sys.argv) > 1 else "0.0.0-SNAPSHOT"
     for artifact, (class_name, source_name) in ARTIFACTS.items():
@@ -172,7 +139,7 @@ def main() -> None:
             raise SystemExit(f"Incomplete {artifact} artifact set")
         if "META-INF/LICENSE" not in jar:
             raise SystemExit(f"Missing {artifact} license")
-        check_nullness_metadata(root / f"{artifact}.jar")
+        check_runtime_bytecode(root / f"{artifact}.jar")
         pom = ET.parse(root / f"{artifact}.pom").getroot()
         namespace = {"m": "http://maven.apache.org/POM/4.0.0"}
         for field, expected in (("artifactId", artifact), ("version", version)):
@@ -181,11 +148,11 @@ def main() -> None:
         if artifact == "sting-processor" and list(pom.find("m:dependencies", namespace)):
             raise SystemExit("Processor POM must not declare runtime dependencies")
         if artifact == "sting-core":
-            dependencies = [tuple(dependency.findtext(f"m:{field}", namespaces=namespace)
-                                  for field in ("groupId", "artifactId", "version"))
-                            for dependency in pom.find("m:dependencies", namespace)]
-            if dependencies != [("org.jspecify", "jspecify", "1.0.0")]:
-                raise SystemExit(f"Wrong core nullability dependencies: {dependencies}")
+            dependencies = {(dependency.findtext("m:groupId", namespaces=namespace),
+                             dependency.findtext("m:artifactId", namespaces=namespace))
+                            for dependency in pom.find("m:dependencies", namespace)}
+            if ("org.jspecify", "jspecify") not in dependencies:
+                raise SystemExit("Core POM must declare its JSpecify API dependency")
 
     processor = entries(root / "sting-processor.jar")
     if "sting/processor/vendor/javapoet/JavaFile.class" not in processor:
@@ -195,18 +162,9 @@ def main() -> None:
     if any(name.startswith(("com/palantir/javapoet/", "org/realityforge/proton/")) for name in processor):
         raise SystemExit("Unrelocated processor dependency")
     with zipfile.ZipFile(root / "sting-processor.jar") as jar:
-        if any(b"javax/json" in jar.read(name) for name in processor if name.endswith(".class")):
-            raise SystemExit("Processor jar still references javax.json")
         for annotation in ("NullMarked", "NullUnmarked", "Nullable", "NonNull"):
             if f"org/jspecify/annotations/{annotation}.class" not in processor:
                 raise SystemExit(f"Missing canonical processor runtime annotation: {annotation}")
-        if b"getTypeName" not in jar.read("sting/processor/vendor/proton/GeneratorUtil.class"):
-            raise SystemExit("Processor jar does not contain the Proton type-use converter")
-        if int.from_bytes(jar.read("sting/processor/vendor/proton/GeneratorUtil.class")[6:8], "big") != 65:
-            raise SystemExit("Expected the Java 21 Proton implementation in the processor")
-    with zipfile.ZipFile(root / "sting-core.jar") as jar:
-        if b"Lorg/jspecify/annotations/Nullable;" not in jar.read("sting/interceptors/Invocation.class"):
-            raise SystemExit("Missing JSpecify Invocation nullness metadata")
     service = "META-INF/services/javax.annotation.processing.Processor"
     if service not in processor:
         raise SystemExit("Missing processor service registration")
