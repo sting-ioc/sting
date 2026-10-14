@@ -5,7 +5,7 @@
 - Current frontier: `none`
 - Planning reviewer: `/root/branch_simplify_planning_review` (`1/3` rounds, `Findings: none`)
 - Plan checkpoint: `automatic`; the accepted grill and passing planning review authorize implementation.
-- Implementation reviewer: `pending` (`0/5` rounds)
+- Implementation reviewer: `/root/branch_simplify_implementation_review` (`1/5` rounds, `Findings: none`)
 
 ## Full-scope validation
 
@@ -15,7 +15,7 @@
 ## Review and closeout
 
 - Pass implementation review, delete this exact plan tree in a closeout commit, publish to PR #67, and verify both CI workflows.
-- Evidence: `pending`
+- Evidence: implementation review passed in one round; reviewer inspected the correction diff, key branch contracts, rendered guide/README links, and full-check evidence. Plan deletion, publication, and CI verification follow this recorded review.
 
 ## Tasks
 
