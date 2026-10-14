@@ -1,8 +1,39 @@
+load("@rules_java//java:defs.bzl", "java_import", "java_plugin")
 load("@rules_palantir_java_format//:defs.bzl", "java_format_check")
 
 package(default_visibility = ["//visibility:public"])
 
 exports_files(["LICENSE"])
+
+java_import(
+    name = "core",
+    jars = ["//tools/release:core_jar"],
+    srcjar = "//tools/release:core_sources",
+    deps = ["//third_party/java:jspecify"],
+)
+
+java_import(
+    name = "processor",
+    jars = ["//tools/release:processor_jar"],
+    srcjar = "//tools/release:processor_sources",
+)
+
+java_import(
+    name = "server",
+    jars = ["//tools/release:server_jar"],
+    srcjar = "//tools/release:server_sources",
+    deps = [
+        ":core",
+        "//third_party/java:jakarta_transaction_api",
+    ],
+)
+
+java_plugin(
+    name = "sting_processor_plugin",
+    generates_api = True,
+    processor_class = "sting.processor.StingProcessor",
+    deps = [":processor"],
+)
 
 test_suite(
     name = "unit_tests",

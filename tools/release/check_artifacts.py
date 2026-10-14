@@ -161,15 +161,28 @@ def main() -> None:
         raise SystemExit("Missing relocated Proton")
     if any(name.startswith(("com/palantir/javapoet/", "org/realityforge/proton/")) for name in processor):
         raise SystemExit("Unrelocated processor dependency")
-    for annotation in ("NullMarked", "NullUnmarked", "Nullable", "NonNull"):
-        if f"org/jspecify/annotations/{annotation}.class" not in processor:
-            raise SystemExit(f"Missing canonical processor runtime annotation: {annotation}")
+    unwanted_prefixes = (
+        "org/jspecify/",
+        "javax/annotation/",
+        "sting/processor/vendor/proton/vendor/jackson/",
+        "sting/processor/vendor/proton/vendor/google/errorprone/",
+        "sting/processor/vendor/proton/vendor/google/j2objc/",
+        "sting/processor/vendor/proton/vendor/jspecify/",
+    )
+    if any(name.startswith(unwanted_prefixes) for name in processor):
+        raise SystemExit("Consumer annotations or unused formatter dependency bundled in processor")
     service = "META-INF/services/javax.annotation.processing.Processor"
     if service not in processor:
         raise SystemExit("Missing processor service registration")
     with zipfile.ZipFile(root / "sting-processor.jar") as jar:
         if "sting.processor.StingProcessor" not in jar.read(service).decode():
             raise SystemExit("Wrong processor service registration")
+        for name in processor:
+            if name.startswith("META-INF/services/"):
+                for line in jar.read(name).decode().splitlines():
+                    provider = line.split("#", 1)[0].strip()
+                    if provider and provider.replace(".", "/") + ".class" not in processor:
+                        raise SystemExit(f"Missing bundled service provider: {provider}")
     print("Checked 12 Maven artifacts and processor shading")
     check_packaged_consumer(workspace, root.resolve())
 

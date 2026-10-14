@@ -21,11 +21,11 @@ java_library(
         "package-info.java",
     ],
     plugins = [
-        "//processor:sting_processor_plugin",
+        "//:sting_processor_plugin",
     ],
     deps = [
         ":api",
-        "//core",
+        "//:core",
         "//integration-tests/src/test/java/sting/integration:test_support",
         "//integration-tests/src/test/java/sting/integration/other/pkg1",
         "//third_party/java:jspecify",

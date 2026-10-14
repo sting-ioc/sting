@@ -35,7 +35,7 @@ def _release_jar_impl(ctx):
     args.add("--output", out)
     args.add_all(input_jars, before_each = "--input")
     args.add_all(ctx.attr.relocations, before_each = "--relocate")
-    args.add_all(ctx.attr.exclude_entries, before_each = "--exclude")
+    args.add_all(ctx.attr.exclude_prefixes, before_each = "--exclude-prefix")
     for index in range(len(resource_files)):
         args.add("--resource")
         args.add("%s=%s" % (resource_files[index].path, ctx.attr.resource_entries[index]))
@@ -53,7 +53,7 @@ def _release_jar_impl(ctx):
 release_jar = rule(
     implementation = _release_jar_impl,
     attrs = {
-        "exclude_entries": attr.string_list(),
+        "exclude_prefixes": attr.string_list(),
         "jars": attr.label_list(allow_files = [".jar"]),
         "java_targets": attr.label_list(providers = [JavaInfo]),
         "out": attr.string(mandatory = True),

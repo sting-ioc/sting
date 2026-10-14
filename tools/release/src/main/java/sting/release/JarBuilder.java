@@ -57,7 +57,7 @@ public final class JarBuilder {
                     }
                     relocations.put(rule.substring(0, equals), rule.substring(equals + 1));
                     break;
-                case "--exclude":
+                case "--exclude-prefix":
                     exclusions.add(args[++i]);
                     break;
                 default:
@@ -122,7 +122,7 @@ public final class JarBuilder {
             jarEntries.sort(Comparator.comparing(ZipEntry::getName));
             for (final JarEntry entry : jarEntries) {
                 final String name = relocate(relocate(entry.getName(), relocations, '/'), relocations, '.');
-                if (entry.isDirectory() || shouldSkip(name) || exclusions.contains(name)) {
+                if (entry.isDirectory() || shouldSkip(name) || exclusions.stream().anyMatch(name::startsWith)) {
                     continue;
                 }
                 byte[] content = read(jar, entry);

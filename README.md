@@ -18,6 +18,13 @@ has a hard time, then we need to fix the problem.
 For more information about Sting, please see the [Website](https://sting-ioc.github.io/). For the source code
 and project support, please visit the [GitHub project](https://github.com/sting-ioc/sting).
 
+# Bazel Dependencies
+
+Use `@sting//:core` and `@sting//:server` in Java `deps`, and `@sting//:sting_processor_plugin` in
+`plugins`. These public targets use the same binary and source JARs as Maven Central releases. The plugin
+uses the shaded `@sting//:processor` JAR. See [Bazel setup](docs/project_setup.md#configure-bazel) for
+module overrides and toolchain configuration when consuming an unreleased checkout.
+
 # Development
 
 Use Bazel 9.3.0 and JDK 21 or newer for the build, including the documentation site. Run

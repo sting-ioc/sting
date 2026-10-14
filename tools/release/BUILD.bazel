@@ -69,10 +69,22 @@ release_pom(
 release_jar(
     name = "processor_jar",
     out = "sting-processor.jar",
+    exclude_prefixes = [
+        "META-INF/maven/com.fasterxml.jackson",
+        "META-INF/maven/com.google.code.findbugs/jsr305/",
+        "META-INF/maven/com.google.errorprone/error_prone_annotations/",
+        "META-INF/maven/com.google.j2objc/j2objc-annotations/",
+        "META-INF/services/sting.processor.vendor.proton.vendor.jackson.",
+        "META-INF/versions/",
+        "javax/annotation/",
+        "sting/processor/vendor/proton/vendor/google/errorprone/",
+        "sting/processor/vendor/proton/vendor/google/j2objc/",
+        "sting/processor/vendor/proton/vendor/jackson/",
+        "sting/processor/vendor/proton/vendor/jspecify/",
+    ],
     jars = [
         "@javapoet//file",
         "@proton//:core",
-        "@jspecify//file",
     ],
     java_targets = PROCESSOR,
     relocations = [

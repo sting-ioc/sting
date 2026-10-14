@@ -5,13 +5,14 @@ module(
 bazel_dep(name = "proton_project", repo_name = "proton")
 git_override(
     module_name = "proton_project",
-    commit = "2dec0fee99c5c5b3707f9f8e8b876ec800e2c40b",
+    commit = "6d50db451021b7880097d0880907aa036a30a689",
     remote = "https://github.com/realityforge/proton.git",
 )
 
 bazel_dep(name = "buildifier_prebuilt", version = "10.0.1", dev_dependency = True)
 bazel_dep(name = "ahab", version = "0.4.0", dev_dependency = True)
-bazel_dep(name = "rules_palantir_java_format", version = "0.1.1", dev_dependency = True)
+
+bazel_dep(name = "rules_palantir_java_format", version = "0.1.1")
 
 # Use the immutable release until the module is available in BCR.
 archive_override(
