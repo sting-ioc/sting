@@ -9,6 +9,7 @@ java_library(
 
 java_plugin(
     name = "sting_processor_plugin",
+    generates_api = True,
     processor_class = "sting.processor.StingProcessor",
     deps = ["//processor/src/main/java/sting/processor"],
 )
