@@ -1,4 +1,4 @@
-load("//third_party/java:rules.bzl", "java_library")
+load("//third_party/java:rules.bzl", "java_library", "java_testng")
 load(":test_rules.bzl", "FIXTURES", "feature", "processor_test")
 
 java_library(
@@ -183,6 +183,7 @@ processor_test(
 test_suite(
     name = "all_tests",
     tests = [
+        ":constructor_origin",
         ":factory_goldens",
         ":failed_compiles",
         ":formatter_failure",
@@ -197,6 +198,21 @@ test_suite(
         ":warnings",
     ],
     visibility = ["//:__pkg__"],
+)
+
+java_testng(
+    name = "constructor_origin",
+    srcs = [
+        "StingConstructorOriginIntegrationTest.java",
+        "package-info.java",
+    ],
+    data = ["@remote_java_tools//:TurbineDirect"],
+    jvm_flags = ["-Dsting.turbine.jar=$(rootpath @remote_java_tools//:TurbineDirect)"],
+    test_class = "sting.processor.StingConstructorOriginIntegrationTest",
+    deps = [
+        "//:core",
+        "//:processor",
+    ],
 )
 
 processor_test(

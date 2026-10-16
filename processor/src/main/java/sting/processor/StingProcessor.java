@@ -3349,7 +3349,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
     }
 
     private void injectableConstructorShouldNotBePublic(final ExecutableElement constructor) {
-        if (Elements.Origin.EXPLICIT == processingEnv.getElementUtils().getOrigin(constructor)
+        if (Elements.Origin.EXPLICIT == ElementsUtil.getOrigin(processingEnv.getElementUtils(), constructor)
                 && constructor.getModifiers().contains(Modifier.PUBLIC)
                 && SuppressWarningsUtil.isNotSuppressed(constructor, Constants.WARNING_PUBLIC_CONSTRUCTOR)) {
             final String message = MemberChecks.shouldNot(

@@ -5,7 +5,7 @@ module(
 bazel_dep(name = "proton_project", repo_name = "proton")
 git_override(
     module_name = "proton_project",
-    commit = "6d50db451021b7880097d0880907aa036a30a689",
+    commit = "d156a9d2eee74f1577cf8b7a03cd9a5a67a637ee",
     remote = "https://github.com/realityforge/proton.git",
 )
 
@@ -23,6 +23,10 @@ archive_override(
 )
 
 bazel_dep(name = "rules_java", version = "9.9.0")
+
+java_toolchains = use_extension("@rules_java//java:extensions.bzl", "toolchains")
+use_repo(java_toolchains, "remote_java_tools")
+
 single_version_override(
     module_name = "rules_java",
     patch_strip = 1,
