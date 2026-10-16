@@ -22,7 +22,7 @@ artifacts:
   - coord: javax:javaee-api:8.0
   - coord: jakarta.transaction:jakarta.transaction-api:2.0.1
   - coord: org.testng:testng:7.10.2
-  - coord: org.jspecify:jspecify:1.0.0
+  - coord: org.jspecify:jspecify:1.0.1
   - coord: com.uber.nullaway:nullaway:0.14.2
   - coord: org.checkerframework:checker-qual:4.0.0
   - coord: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava

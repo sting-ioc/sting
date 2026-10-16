@@ -61,7 +61,7 @@ release_pom(
     name = "core_pom",
     out = "sting-core.pom",
     artifact_id = "sting-core",
-    dependencies = ["org.jspecify:jspecify:1.0.0"],
+    dependencies = ["org.jspecify:jspecify:1.0.1"],
     description = "Sting annotations and runtime",
     display_name = "Sting Core",
 )

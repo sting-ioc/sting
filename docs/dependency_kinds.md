@@ -134,7 +134,7 @@ The service could also be retrieved as [outputs](outputs.md) using different dep
 ## Nullness
 
 Sting uses [JSpecify](https://jspecify.dev/) for library APIs and generated contracts. Add
-`org.jspecify:jspecify:1.0.0` to the compilation classpath, mark your packages or types with `@NullMarked`,
+`org.jspecify:jspecify:1.0.1` to the compilation classpath, mark your packages or types with `@NullMarked`,
 and annotate nullable types with `org.jspecify.annotations.Nullable`. Within a marked scope, other reference
 types are nonnull by default.
 

@@ -18,7 +18,7 @@ _java_plugin(
 # DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
 
 # SHA256 of the configuration content that generated this content
-_CONFIG_SHA256 = "EFF7CA47E24420948F4E2C64795D6D4C69F2A71693207B6A41C3F51340C32A2B"
+_CONFIG_SHA256 = "450E18C93F0B77EA9E37441B1A6661E41E41E5C3784D8C9DD1480A542509DB6C"
 
 exports_files(["dependencies.yml"])
 
@@ -48,9 +48,9 @@ exports_files(["dependencies.yml"])
 # |  +- org.webjars:jquery:jar:3.7.1 [runtime]
 # |  +- com.google.inject:guice:jar:5.1.0 [compile, optional]
 # |  \- org.yaml:snakeyaml:jar:2.2 [runtime, optional]
-# +- org.jspecify:jspecify:jar:1.0.0 [compile]
+# +- org.jspecify:jspecify:jar:1.0.1 [compile]
 # +- com.uber.nullaway:nullaway:jar:0.14.2 [compile]
-# |  +- org.jspecify:jspecify:jar:1.0.1 [compile] (conflicts with 1.0.0)
+# |  +- org.jspecify:jspecify:jar:1.0.1 [compile]
 # |  +- org.checkerframework:dataflow-nullaway:jar:4.2.3 [runtime]
 # |  |  \- org.checkerframework:checker-qual:jar:4.2.3 [runtime] (conflicts with 4.0.0)
 # |  \- com.google.guava:guava:jar:31.1-jre [runtime] (conflicts with 33.4.0-jre)
@@ -354,7 +354,7 @@ _java_import(
     name = "jspecify",
     jars = ["@jspecify//file"],
     srcjar = "@jspecify__sources//file",
-    tags = ["maven_coordinates=org.jspecify:jspecify:1.0.0"],
+    tags = ["maven_coordinates=org.jspecify:jspecify:1.0.1"],
 )
 
 _java_import(

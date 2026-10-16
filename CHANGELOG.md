@@ -2,6 +2,7 @@
 
 ### Unreleased
 
+* Upgrade JSpecify to version `1.0.1`.
 * Remove GWT support, including `@Injector.gwt`, the `Feature` enum, the module descriptor, compiler annotations, examples, and dependencies.
 * Expose public Bazel core, processor, server, and processor plugin targets backed by the Maven release JARs.
 * Remove unused Jackson, JSR-305, and formatter annotation libraries from the bundled processor.
