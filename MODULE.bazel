@@ -23,10 +23,6 @@ archive_override(
 )
 
 bazel_dep(name = "rules_java", version = "9.9.0")
-
-java_toolchains = use_extension("@rules_java//java:extensions.bzl", "toolchains")
-use_repo(java_toolchains, "remote_java_tools")
-
 single_version_override(
     module_name = "rules_java",
     patch_strip = 1,
