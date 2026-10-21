@@ -1,4 +1,4 @@
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:private"])
 
 filegroup(
     name = "local_files",
@@ -23,5 +23,9 @@ filegroup(
         "//processor/src/test/fixtures/bad_input/com/example/fragment/inputs:all",
         "//processor/src/test/fixtures/bad_input/com/example/fragment/named:all",
         "//processor/src/test/fixtures/bad_input/com/example/fragment/provides:all",
+    ],
+    visibility = [
+        "//processor/src/test/fixtures/bad_input/com/example:__pkg__",
+        "//processor/src/test/java/sting/processor:__pkg__",
     ],
 )

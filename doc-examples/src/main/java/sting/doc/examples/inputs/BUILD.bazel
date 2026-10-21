@@ -1,6 +1,6 @@
 load("//third_party/java:rules.bzl", "doc_examples_java_library")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:private"])
 
 doc_examples_java_library(
     name = "inputs",
@@ -11,9 +11,10 @@ doc_examples_java_library(
         "package-info.java",
     ],
     plugins = [
-        "//processor:sting_processor_plugin",
+        "//:processor",
     ],
+    visibility = ["//doc-examples:__pkg__"],
     deps = [
-        "//core",
+        "//:core",
     ],
 )

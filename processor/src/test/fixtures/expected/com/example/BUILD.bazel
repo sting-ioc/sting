@@ -1,4 +1,4 @@
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:private"])
 
 filegroup(
     name = "all",
@@ -10,4 +10,5 @@ filegroup(
         "//processor/src/test/fixtures/expected/com/example/integration:all",
         "//processor/src/test/fixtures/expected/com/example/interceptor:all",
     ],
+    visibility = ["//processor/src/test/fixtures/expected/com:__pkg__"],
 )

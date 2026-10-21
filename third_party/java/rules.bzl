@@ -1,5 +1,42 @@
 load("@rules_java//java:defs.bzl", _java_binary = "java_binary", _java_library = "java_library", _java_plugin = "java_plugin", _java_test = "java_test")
 
+visibility([
+    "//core",
+    "//core/src/main/java/sting",
+    "//core/src/main/java/sting/interceptors",
+    "//doc-examples",
+    "//doc-examples/src/main/java/sting/doc/examples/dependency_kinds",
+    "//doc-examples/src/main/java/sting/doc/examples/eager",
+    "//doc-examples/src/main/java/sting/doc/examples/fragments",
+    "//doc-examples/src/main/java/sting/doc/examples/getting_started/step1",
+    "//doc-examples/src/main/java/sting/doc/examples/getting_started/step2",
+    "//doc-examples/src/main/java/sting/doc/examples/getting_started/step3",
+    "//doc-examples/src/main/java/sting/doc/examples/include_injector",
+    "//doc-examples/src/main/java/sting/doc/examples/include_injector/auto",
+    "//doc-examples/src/main/java/sting/doc/examples/include_injector/manual",
+    "//doc-examples/src/main/java/sting/doc/examples/inputs",
+    "//doc-examples/src/main/java/sting/doc/examples/interceptors",
+    "//doc-examples/src/main/java/sting/doc/examples/naming",
+    "//doc-examples/src/main/java/sting/doc/examples/outputs",
+    "//doc-examples/src/main/java/sting/doc/examples/typing",
+    "//integration-tests/src/test/java/sting/integration",
+    "//integration-tests/src/test/java/sting/integration/other",
+    "//integration-tests/src/test/java/sting/integration/other/pkg1",
+    "//integration-tests/src/test/java/sting/integration/other/pkg2",
+    "//processor",
+    "//processor/src/main/java/sting/processor",
+    "//processor/src/test/java/sting/processor",
+    "//server",
+    "//server-integration-tests/src/test/java/sting/server/integration",
+    "//server/src/main/java/sting/server",
+    "//server/src/main/java/sting/server/interceptors",
+    "//server/src/test/java/sting/server/interceptors",
+    "//third_party/java",
+    "//tools/release/src/main/java/sting/release",
+    "//tools/site/src/main/java/sting/site",
+    "//tools/site/src/test/java/sting/site",
+])
+
 _JAVA_RELEASE = "17"
 _JSPECIFY = "//third_party/java:jspecify"
 _NULLAWAY_PLUGIN = "//third_party/java:nullaway_plugin"
@@ -219,3 +256,7 @@ def java_testng(name, srcs, test_classes = [], test_class = None, test_methods =
         runtime_deps = runtime_deps + (["//third_party/java:testng"] + deps if not srcs else []),
         **filtered_kwargs
     )
+
+# Depgen exports its input without specifying visibility.
+def private_files(srcs):
+    native.exports_files(srcs, visibility = ["//visibility:private"])

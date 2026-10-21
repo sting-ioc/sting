@@ -1,4 +1,4 @@
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:private"])
 
 filegroup(
     name = "local_files",
@@ -20,4 +20,5 @@ filegroup(
         ":local_files",
         "//processor/src/test/fixtures/expected/com/example/injector/eager/fragment:all",
     ],
+    visibility = ["//processor/src/test/fixtures/expected/com/example/injector:__pkg__"],
 )

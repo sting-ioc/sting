@@ -8,7 +8,7 @@ java_testng(
         "PackageAccessInDifferentPackagesIntegrationTest.java",
         "package-info.java",
     ],
-    plugins = ["//:sting_processor_plugin"],
+    plugins = ["//:processor"],
     test_class = "sting.integration.other.PackageAccessInDifferentPackagesIntegrationTest",
     visibility = ["//:__pkg__"],
     deps = [

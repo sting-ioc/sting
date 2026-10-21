@@ -1,5 +1,8 @@
 alias(
     name = "tool",
     actual = "//tools/site/src/main/java/sting/site:tool",
-    visibility = ["//visibility:public"],
+    visibility = [
+        "//:__pkg__",
+        "//website:__pkg__",
+    ],
 )

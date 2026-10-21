@@ -1,0 +1,25 @@
+package(default_visibility = ["//visibility:private"])
+
+alias(
+    name = "error_prone_core",
+    actual = "//third_party/java:error_prone_core",
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "nullaway",
+    actual = "//third_party/java:nullaway",
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "nullaway_plugin",
+    actual = "//third_party/java:nullaway_plugin",
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "testng",
+    actual = "//third_party/java:testng",
+    visibility = ["//visibility:public"],
+)

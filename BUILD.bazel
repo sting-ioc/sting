@@ -1,38 +1,40 @@
-load("@rules_java//java:defs.bzl", "java_import", "java_plugin")
 load("@rules_palantir_java_format//:defs.bzl", "java_format_check")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:private"])
 
-exports_files(["LICENSE"])
+exports_files(
+    ["LICENSE"],
+    visibility = ["//tools/release:__pkg__"],
+)
 
-java_import(
+alias(
     name = "core",
-    jars = ["//tools/release:core_jar"],
-    srcjar = "//tools/release:core_sources",
-    deps = ["//third_party/java:jspecify"],
+    actual = "//core:published",
+    visibility = ["//visibility:public"],
 )
 
-java_import(
+alias(
+    name = "core-j2cl",
+    actual = "//core:_core_j2cl",
+    visibility = ["//visibility:public"],
+)
+
+alias(
     name = "processor",
-    jars = ["//tools/release:processor_jar"],
-    srcjar = "//tools/release:processor_sources",
+    actual = "//processor:published_plugin",
+    visibility = ["//visibility:public"],
 )
 
-java_import(
+alias(
+    name = "processor_runtime",
+    actual = "//processor:published_runtime",
+    visibility = ["//visibility:public"],
+)
+
+alias(
     name = "server",
-    jars = ["//tools/release:server_jar"],
-    srcjar = "//tools/release:server_sources",
-    deps = [
-        ":core",
-        "//third_party/java:jakarta_transaction_api",
-    ],
-)
-
-java_plugin(
-    name = "sting_processor_plugin",
-    generates_api = True,
-    processor_class = "sting.processor.StingProcessor",
-    deps = [":processor"],
+    actual = "//server:published",
+    visibility = ["//visibility:public"],
 )
 
 test_suite(

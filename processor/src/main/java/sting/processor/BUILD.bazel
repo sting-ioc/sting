@@ -1,6 +1,6 @@
 load("//third_party/java:rules.bzl", "java_library")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:private"])
 
 java_library(
     name = "processor",
@@ -53,6 +53,10 @@ java_library(
     resource_strip_prefix = "processor/src/main/resources",
     resources = [
         "//processor/src/main/resources/META-INF/services:processor_service",
+    ],
+    visibility = [
+        "//processor:__pkg__",
+        "//tools/release:__pkg__",
     ],
     deps = [
         "//third_party/java:javapoet",

@@ -4,7 +4,7 @@ java_testng(
     name = "all_tests",
     size = "small",
     srcs = ["ServerTransactionalIntegrationTest.java"],
-    plugins = ["//:sting_processor_plugin"],
+    plugins = ["//:processor"],
     test_class = "sting.server.integration.ServerTransactionalIntegrationTest",
     visibility = ["//:__pkg__"],
     deps = [

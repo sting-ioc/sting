@@ -1,6 +1,6 @@
 load("//third_party/java:rules.bzl", "java_library")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:private"])
 
 java_library(
     name = "api",
@@ -8,6 +8,10 @@ java_library(
         "MyService3.java",
         "MyService4.java",
         "package-info.java",
+    ],
+    visibility = [
+        "//integration-tests/src/test/java/sting/integration/other:__pkg__",
+        "//integration-tests/src/test/java/sting/integration/other/pkg1:__pkg__",
     ],
 )
 
@@ -21,8 +25,9 @@ java_library(
         "package-info.java",
     ],
     plugins = [
-        "//:sting_processor_plugin",
+        "//:processor",
     ],
+    visibility = ["//integration-tests/src/test/java/sting/integration/other:__pkg__"],
     deps = [
         ":api",
         "//:core",

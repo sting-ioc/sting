@@ -1,4 +1,4 @@
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:private"])
 
 filegroup(
     name = "local_files",
@@ -14,4 +14,5 @@ filegroup(
         ":local_files",
         "//processor/src/test/fixtures/unresolved/com/example/autodetect/provider:all",
     ],
+    visibility = ["//processor/src/test/fixtures/unresolved/com/example:__pkg__"],
 )

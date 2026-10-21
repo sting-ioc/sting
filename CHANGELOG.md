@@ -2,9 +2,9 @@
 
 ### Unreleased
 
+* Define a limited public Bazel surface, share the core J2CL compilation, and expose the processor plugin as `//:processor` with its Java library at `//:processor_runtime`.
 * Upgrade JSpecify to version `1.0.1`.
 * Remove GWT support, including `@Injector.gwt`, the `Feature` enum, the module descriptor, compiler annotations, examples, and dependencies.
-* Expose public Bazel core, processor, server, and processor plugin targets backed by the Maven release JARs.
 * Remove unused Jackson, JSR-305, and formatter annotation libraries from the bundled processor.
 * Keep JSpecify on the consumer compilation classpath and omit it from the isolated processor bundle.
 * Use JSpecify throughout runtime APIs and generated code, preserve nested type-use nullness, and reject legacy nullability declarations at Sting boundaries.

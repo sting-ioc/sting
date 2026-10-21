@@ -1,4 +1,4 @@
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:private"])
 
 filegroup(
     name = "all",
@@ -6,4 +6,5 @@ filegroup(
         "//processor/src/test/fixtures/expected/com/example/integration/todomvc/ioc:all",
         "//processor/src/test/fixtures/expected/com/example/integration/todomvc/model:all",
     ],
+    visibility = ["//processor/src/test/fixtures/expected/com/example/integration:__pkg__"],
 )

@@ -1,6 +1,6 @@
 load("//third_party/java:rules.bzl", "java_library")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:private"])
 
 java_library(
     name = "interceptors",
@@ -16,6 +16,10 @@ java_library(
     ],
     plugins = [
         "//processor:sting_processor_plugin",
+    ],
+    visibility = [
+        "//server:__pkg__",
+        "//tools/release:__pkg__",
     ],
     deps = [
         "//core",

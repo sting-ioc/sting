@@ -1,5 +1,7 @@
 load("//third_party/java:rules.bzl", "FORMATTER_JVM_FLAGS", "java_testng")
 
+visibility(["//processor/src/test/java/sting/processor"])
+
 MAIN = "sting.processor.StingProcessorTest"
 FIXTURES = "//processor/src/test/fixtures"
 

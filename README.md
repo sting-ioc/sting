@@ -20,10 +20,10 @@ and project support, please visit the [GitHub project](https://github.com/sting-
 
 # Bazel Dependencies
 
-Use `@sting//:core` and `@sting//:server` in Java `deps`, and `@sting//:sting_processor_plugin` in
-`plugins`. These public targets use the same binary and source JARs as Maven Central releases. The plugin
-uses the shaded `@sting//:processor` JAR. See [Bazel setup](docs/project_setup.md#configure-bazel) for
-module overrides and toolchain configuration when consuming an unreleased checkout.
+Use `@sting//:core` and `@sting//:server` in Java `deps`, `@sting//:core-j2cl` in J2CL `deps`, and
+`@sting//:processor` in `plugins`. Java products use the Maven release JARs; the shared J2CL library
+compiles the checked core source archive. Tests that instantiate the processor use `@sting//:processor_runtime`.
+See [Bazel setup](docs/project_setup.md#configure-bazel) for module overrides and toolchain configuration.
 
 # Development
 

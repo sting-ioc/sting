@@ -15,19 +15,84 @@ options:
 
 artifacts:
   - coord: org.commonmark:commonmark:0.30.1
+    visibility:
+      - "//tools/site/src/main/java/sting/site:__pkg__"
   - coord: org.commonmark:commonmark-ext-gfm-tables:0.30.1
+    visibility:
+      - "//tools/site/src/main/java/sting/site:__pkg__"
   - coord: com.palantir.javapoet:javapoet:0.14.0
+    visibility:
+      - "//processor/src/main/java/sting/processor:__pkg__"
     excludes:
       - com.palantir.javapoet:javapoet-root
   - coord: javax:javaee-api:8.0
+    visibility:
+      - "//processor/src/test/java/sting/processor:__pkg__"
   - coord: jakarta.transaction:jakarta.transaction-api:2.0.1
+    visibility:
+      - "//server:__pkg__"
+      - "//server-integration-tests/src/test/java/sting/server/integration:__pkg__"
+      - "//server/src/main/java/sting/server/interceptors:__pkg__"
+      - "//server/src/test/java/sting/server/interceptors:__pkg__"
   - coord: org.testng:testng:7.10.2
+    visibility:
+      - "//integration-tests/src/test/java/sting/integration/other:__pkg__"
+      - "//integration-tests/src/test/java/sting/integration:__pkg__"
+      - "//processor/src/test/java/sting/processor:__pkg__"
+      - "//server-integration-tests/src/test/java/sting/server/integration:__pkg__"
+      - "//server/src/test/java/sting/server/interceptors:__pkg__"
+      - "//third_party:__pkg__"
+      - "//tools/site/src/test/java/sting/site:__pkg__"
   - coord: org.jspecify:jspecify:1.0.1
+    visibility:
+      - "//core:__pkg__"
+      - "//core/src/main/java/sting/interceptors:__pkg__"
+      - "//core/src/main/java/sting:__pkg__"
+      - "//doc-examples/src/main/java/sting/doc/examples/dependency_kinds:__pkg__"
+      - "//doc-examples/src/main/java/sting/doc/examples/eager:__pkg__"
+      - "//doc-examples/src/main/java/sting/doc/examples/fragments:__pkg__"
+      - "//doc-examples/src/main/java/sting/doc/examples/getting_started/step1:__pkg__"
+      - "//doc-examples/src/main/java/sting/doc/examples/getting_started/step2:__pkg__"
+      - "//doc-examples/src/main/java/sting/doc/examples/getting_started/step3:__pkg__"
+      - "//doc-examples/src/main/java/sting/doc/examples/include_injector/auto:__pkg__"
+      - "//doc-examples/src/main/java/sting/doc/examples/include_injector/manual:__pkg__"
+      - "//doc-examples/src/main/java/sting/doc/examples/include_injector:__pkg__"
+      - "//doc-examples/src/main/java/sting/doc/examples/inputs:__pkg__"
+      - "//doc-examples/src/main/java/sting/doc/examples/interceptors:__pkg__"
+      - "//doc-examples/src/main/java/sting/doc/examples/naming:__pkg__"
+      - "//doc-examples/src/main/java/sting/doc/examples/outputs:__pkg__"
+      - "//doc-examples/src/main/java/sting/doc/examples/typing:__pkg__"
+      - "//integration-tests/src/test/java/sting/integration/other/pkg1:__pkg__"
+      - "//integration-tests/src/test/java/sting/integration/other/pkg2:__pkg__"
+      - "//integration-tests/src/test/java/sting/integration/other:__pkg__"
+      - "//integration-tests/src/test/java/sting/integration:__pkg__"
+      - "//processor/src/main/java/sting/processor:__pkg__"
+      - "//processor/src/test/java/sting/processor:__pkg__"
+      - "//server-integration-tests/src/test/java/sting/server/integration:__pkg__"
+      - "//server/src/main/java/sting/server/interceptors:__pkg__"
+      - "//server/src/main/java/sting/server:__pkg__"
+      - "//server/src/test/java/sting/server/interceptors:__pkg__"
+      - "//tools/release/src/main/java/sting/release:__pkg__"
+      - "//tools/release:__pkg__"
+      - "//tools/site/src/main/java/sting/site:__pkg__"
+      - "//tools/site/src/test/java/sting/site:__pkg__"
   - coord: com.uber.nullaway:nullaway:0.14.2
+    visibility:
+      - "//processor/src/test/java/sting/processor:__pkg__"
+      - "//third_party:__pkg__"
   - coord: org.checkerframework:checker-qual:4.0.0
+    visibility:
+      - "//visibility:private"
   - coord: com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava
+    visibility:
+      - "//visibility:private"
     includeSource: false
   - coord: com.google.errorprone:error_prone_core:jar:with-dependencies:2.42.0
+    visibility:
+      - "//processor/src/test/java/sting/processor:__pkg__"
+      - "//third_party:__pkg__"
     excludes:
       - "*:*"
   - coord: com.google.guava:guava:33.4.0-jre
+    visibility:
+      - "//visibility:private"

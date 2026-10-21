@@ -1,5 +1,7 @@
 load("@rules_java//java/common:java_info.bzl", "JavaInfo")
 
+visibility(["//tools/release"])
+
 ReleaseVersionInfo = provider("Release version selected by //tools/release:version.", fields = ["value"])
 
 def _version_impl(ctx):
@@ -86,7 +88,8 @@ def _release_source_jar_impl(ctx):
     ctx.actions.run(
         executable = ctx.executable._jar_builder,
         arguments = [args],
-        inputs = source_jars + resource_files,
+        # Source-only consumers must still pass the owned Java checks.
+        inputs = source_jars + resource_files + _direct_java_class_jars(ctx.attr.java_targets),
         outputs = [out],
         mnemonic = "ReleaseSourceJar",
         progress_message = "Building release source jar %{output}",

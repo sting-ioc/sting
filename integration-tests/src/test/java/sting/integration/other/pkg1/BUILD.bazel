@@ -1,6 +1,6 @@
 load("//third_party/java:rules.bzl", "java_library")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:private"])
 
 java_library(
     name = "pkg1",
@@ -12,7 +12,11 @@ java_library(
         "package-info.java",
     ],
     plugins = [
-        "//:sting_processor_plugin",
+        "//:processor",
+    ],
+    visibility = [
+        "//integration-tests/src/test/java/sting/integration/other:__pkg__",
+        "//integration-tests/src/test/java/sting/integration/other/pkg2:__pkg__",
     ],
     deps = [
         "//:core",
