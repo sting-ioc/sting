@@ -104,48 +104,38 @@ compiler JVM.
 
 ## Configure Bazel
 
-The public targets `@sting//:core`, `@sting//:processor`, and `@sting//:server` import the binary and
-source JARs used for Maven Central releases. Core depends on JSpecify; server depends on core and Jakarta
-Transactions. The processor JAR bundles its runtime dependencies, including the formatter, and is used by
-`@sting//:sting_processor_plugin`.
+The Java libraries `@sting//:core` and `@sting//:server` import the binary and source JARs used for Maven
+Central releases. `@sting//:processor` is the annotation processor plugin, backed by the shaded Java library
+`@sting//:processor_runtime`. Use the runtime library only when code instantiates the processor or tooling
+needs its JAR.
 
-To use an unreleased checkout, copy Sting's `rules_java` patch into the consumer's root directory.
-Bazel requires override patches to belong to the root module:
+Browser applications use `@sting//:core-j2cl`, which shares one J2CL compilation of the checked core source
+archive, including the interceptor runtime. Depend on this target directly rather than recompiling Sting
+sources or importing its Java bytecode as annotations. Generated Wasm/Kotlin companions, source files,
+release artifacts and build macros are internal.
 
-```sh
-cp ../sting/third_party/bazel/patches/rules_java_exclude_build_data.patch .
-```
+The curated dependency labels `@sting//third_party:error_prone_core`, `@sting//third_party:nullaway`,
+`@sting//third_party:nullaway_plugin`, and `@sting//third_party:testng` support existing shared checker and
+test infrastructure.
 
-Then add this to the consumer's `MODULE.bazel`:
+Declare an unreleased checkout in the application's `MODULE.bazel`:
 
 ```starlark
 bazel_dep(name = "sting")
 local_path_override(module_name = "sting", path = "../sting")
-
-bazel_dep(name = "rules_java", version = "9.9.0")
-single_version_override(
-    module_name = "rules_java",
-    patch_strip = 1,
-    patches = ["//:rules_java_exclude_build_data.patch"],
-    version = "9.9.0",
-)
-
-git_override(
-    module_name = "proton_project",
-    commit = "6d50db451021b7880097d0880907aa036a30a689",
-    remote = "https://github.com/realityforge/proton.git",
-)
-
-archive_override(
-    module_name = "rules_palantir_java_format",
-    integrity = "sha256-4h/h0cVmPQ/7jkXnvW69rmABbfXOOzoXuBh3gMJDMk8=",
-    strip_prefix = "rules_palantir_java_format-0.1.1",
-    urls = ["https://github.com/realityforge/rules_palantir_java_format/releases/download/v0.1.1/rules_palantir_java_format-v0.1.1.tar.gz"],
-)
 ```
 
-Bazel only applies module overrides from the root module. These overrides select the pinned Proton
-revision, the formatter rule module, and Sting's patch to omit build metadata from Java deploy JARs.
+Bazel applies module overrides only from the root application. A fresh root must also configure the
+compiler dependencies and overrides in Sting's `MODULE.bazel`, including Proton, the formatter rules,
+J2CL, rules_java and rules_cc. Copy the referenced patches into the application root and adjust their
+labels there; Bazel requires override patches to belong to the root module. Copy `maven_install.json`
+when using Sting's locked browser compiler dependency configuration. These root requirements also apply
+to Java-only consumers because Bazel resolves the complete module graph.
+
+Keep an existing Arez or React4j application's shared compiler configuration. The checked configuration
+is maintained in [Sting's MODULE.bazel](https://github.com/sting-ioc/sting/blob/master/MODULE.bazel),
+rather than duplicated here. `tools/check_bazel_consumer.py` demonstrates a complete standalone root:
+it copies the compiler setup, Maven lock and patches, then adds Sting as an external dependency.
 
 Use Bazel 9.3.0 and configure the consumer's `.bazelrc` with Sting's Java toolchains; dependency
 repositories' `.bazelrc` files are not inherited:
@@ -165,17 +155,23 @@ load("@rules_java//java:defs.bzl", "java_library")
 java_library(
     name = "app",
     srcs = ["App.java"],
-    plugins = ["@sting//:sting_processor_plugin"],
+    plugins = ["@sting//:processor"],
     deps = ["@sting//:core"],
 )
 ```
 
 Add `@sting//:server` for transaction integrations. If application source imports JSpecify or Jakarta
-Transactions types directly, also add `@sting//third_party/java:jspecify` or
-`@sting//third_party/java:jakarta_transaction_api` to `deps` to satisfy Bazel's strict dependency checks.
+Transactions types directly, declare those dependencies in the application build as well. Sting's internal
+dependency labels are not public APIs.
+
+For J2CL, load `j2cl_library` from `@j2cl//build_defs:rules.bzl`, use the same processor plugin, and replace
+`@sting//:core` with `@sting//:core-j2cl` in `deps`. Select a J2CL toolchain compatible with the root build.
+Sting pins its compiler in `MODULE.bazel`; module overrides belong to the application root, so applications
+sharing a compiler with Arez or React4j must retain that root's J2CL configuration. The external consumer
+check in `tools/check_bazel_consumer.py` exercises both the Java and J2CL products.
 
 The source targets `//core`, `//processor`, `//processor:sting_processor_plugin`, and `//server` remain
-available for development inside Sting.
+available for development inside Sting with visibility restricted to their internal readers.
 
 ## Configure your IDE
 

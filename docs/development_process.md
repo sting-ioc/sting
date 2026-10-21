@@ -9,6 +9,11 @@ Use the Bazel version pinned in `.bazelversion` and JDK 21 or newer. Run the aff
     $ bazel test //:all_tests
     $ tools/check.sh
 
+The full check also runs `tools/check_bazel_consumer.py`. It verifies the public labels and rejected internal
+access from a separate module, then executes a generated injector and the interceptor runtime on the JVM
+and as optimized JavaScript. A copied checkout with invalid nullness verifies that J2CL requires the
+checked native compilation. Node.js must be available on `PATH` for the JavaScript execution.
+
 Format Java with `tools/java_format.sh write`, or run `tools/java_format_watch.sh` while editing. Format Bazel and Starlark files with `bazel run //tools/buildifier:buildifier`; use `bazel run //tools/buildifier:buildifier_check` to check formatting and lint.
 
 After deliberately changing generated output, regenerate the affected golden family:

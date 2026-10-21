@@ -30,7 +30,7 @@ java_testng(
         "ProviderInjectableAutoDiscoveryIntegrationTest.java",
         "TypedProviderMethodIntegrationTest.java",
     ],
-    plugins = ["//:sting_processor_plugin"],
+    plugins = ["//:processor"],
     test_classes = [
         "sting.integration.BasicIntegrationTest",
         "sting.integration.CollectionOutputCachedIntegrationTest",

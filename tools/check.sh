@@ -9,6 +9,7 @@ bazel run //tools/ahab:hermeticity.check
 tools/java_format.sh check
 bazel build //core //processor //server //doc-examples //tools/release:maven_artifacts
 python3 tools/release/check_artifacts.py
+python3 tools/check_bazel_consumer.py
 bazel test //:all_tests
 coverage_report="$(bazel info output_path)/_coverage/_coverage_report.dat"
 bazel coverage \

@@ -1,9 +1,13 @@
 load("//third_party/java:rules.bzl", "java_library", "java_plugin")
 
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//visibility:private"])
 
 java_library(
     name = "processor",
+    visibility = [
+        "//:__pkg__",
+        "//processor/src/test/java/sting/processor:__pkg__",
+    ],
     exports = ["//processor/src/main/java/sting/processor"],
 )
 
@@ -11,5 +15,9 @@ java_plugin(
     name = "sting_processor_plugin",
     generates_api = True,
     processor_class = "sting.processor.StingProcessor",
+    visibility = [
+        "//server/src/main/java/sting/server:__pkg__",
+        "//server/src/main/java/sting/server/interceptors:__pkg__",
+    ],
     deps = ["//processor/src/main/java/sting/processor"],
 )
