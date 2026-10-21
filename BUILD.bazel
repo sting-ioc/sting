@@ -1,5 +1,3 @@
-load("@j2cl//build_defs:rules.bzl", "j2cl_library")
-load("@rules_java//java:defs.bzl", "java_import", "java_plugin")
 load("@rules_palantir_java_format//:defs.bzl", "java_format_check")
 
 package(default_visibility = ["//visibility:private"])
@@ -9,38 +7,34 @@ exports_files(
     visibility = ["//tools/release:__pkg__"],
 )
 
-java_import(
+alias(
     name = "core",
-    jars = ["//tools/release:core_jar"],
-    srcjar = "//tools/release:core_sources",
-    visibility = ["//visibility:public"],
-    deps = ["//third_party/java:jspecify"],
-)
-
-java_import(
-    name = "processor_runtime",
-    jars = ["//tools/release:processor_jar"],
-    srcjar = "//tools/release:processor_sources",
+    actual = "//core:published",
     visibility = ["//visibility:public"],
 )
 
-java_import(
-    name = "server",
-    jars = ["//tools/release:server_jar"],
-    srcjar = "//tools/release:server_sources",
+alias(
+    name = "core-j2cl",
+    actual = "//core:_core_j2cl",
     visibility = ["//visibility:public"],
-    deps = [
-        ":core",
-        "//third_party/java:jakarta_transaction_api",
-    ],
 )
 
-java_plugin(
+alias(
     name = "processor",
-    generates_api = True,
-    processor_class = "sting.processor.StingProcessor",
+    actual = "//processor:published_plugin",
     visibility = ["//visibility:public"],
-    deps = [":processor_runtime"],
+)
+
+alias(
+    name = "processor_runtime",
+    actual = "//processor:published_runtime",
+    visibility = ["//visibility:public"],
+)
+
+alias(
+    name = "server",
+    actual = "//server:published",
+    visibility = ["//visibility:public"],
 )
 
 test_suite(
@@ -82,19 +76,4 @@ java_format_check(
         "//tools/release:maven_artifacts",
         "//tools/site:tool",
     ],
-)
-
-# Compile the checked release sources once for all browser consumers.
-j2cl_library(
-    name = "_core_j2cl",
-    srcs = ["//tools/release:core_sources"],
-    experimental_enable_jspecify_support_do_not_enable_without_jspecify_static_checking_or_you_might_cause_an_outage = True,
-    deps = ["//third_party/java:jspecify-j2cl"],
-)
-
-# Keep J2CL's generated Wasm/Kotlin companion targets private.
-alias(
-    name = "core-j2cl",
-    actual = ":_core_j2cl",
-    visibility = ["//visibility:public"],
 )

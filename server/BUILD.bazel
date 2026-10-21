@@ -1,3 +1,4 @@
+load("@rules_java//java:defs.bzl", "java_import")
 load("//third_party/java:rules.bzl", "java_library")
 
 package(default_visibility = ["//visibility:private"])
@@ -11,5 +12,16 @@ java_library(
     exports = [
         "//server/src/main/java/sting/server",
         "//server/src/main/java/sting/server/interceptors",
+    ],
+)
+
+java_import(
+    name = "published",
+    jars = ["//tools/release:server_jar"],
+    srcjar = "//tools/release:server_sources",
+    visibility = ["//:__pkg__"],
+    deps = [
+        "//:core",
+        "//third_party/java:jakarta_transaction_api",
     ],
 )

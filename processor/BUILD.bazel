@@ -1,3 +1,4 @@
+load("@rules_java//java:defs.bzl", "java_import", _java_plugin = "java_plugin")
 load("//third_party/java:rules.bzl", "java_library", "java_plugin")
 
 package(default_visibility = ["//visibility:private"])
@@ -20,4 +21,19 @@ java_plugin(
         "//server/src/main/java/sting/server/interceptors:__pkg__",
     ],
     deps = ["//processor/src/main/java/sting/processor"],
+)
+
+java_import(
+    name = "published_runtime",
+    jars = ["//tools/release:processor_jar"],
+    srcjar = "//tools/release:processor_sources",
+    visibility = ["//:__pkg__"],
+)
+
+_java_plugin(
+    name = "published_plugin",
+    generates_api = True,
+    processor_class = "sting.processor.StingProcessor",
+    visibility = ["//:__pkg__"],
+    deps = [":published_runtime"],
 )

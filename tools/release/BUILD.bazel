@@ -42,14 +42,14 @@ release_jar(
     java_targets = CORE,
     resource_entries = ["META-INF/LICENSE"],
     resource_files = ["//:LICENSE"],
-    visibility = ["//:__pkg__"],
+    visibility = ["//core:__pkg__"],
 )
 
 release_source_jar(
     name = "core_sources",
     out = "sting-core-sources.jar",
     java_targets = CORE,
-    visibility = ["//:__pkg__"],
+    visibility = ["//core:__pkg__"],
 )
 
 release_javadoc_jar(
@@ -95,14 +95,14 @@ release_jar(
     ],
     resource_entries = ["META-INF/LICENSE"],
     resource_files = ["//:LICENSE"],
-    visibility = ["//:__pkg__"],
+    visibility = ["//processor:__pkg__"],
 )
 
 release_source_jar(
     name = "processor_sources",
     out = "sting-processor-sources.jar",
     java_targets = PROCESSOR,
-    visibility = ["//:__pkg__"],
+    visibility = ["//processor:__pkg__"],
 )
 
 release_javadoc_jar(
@@ -130,14 +130,14 @@ release_jar(
     java_targets = SERVER,
     resource_entries = ["META-INF/LICENSE"],
     resource_files = ["//:LICENSE"],
-    visibility = ["//:__pkg__"],
+    visibility = ["//server:__pkg__"],
 )
 
 release_source_jar(
     name = "server_sources",
     out = "sting-server-sources.jar",
     java_targets = SERVER,
-    visibility = ["//:__pkg__"],
+    visibility = ["//server:__pkg__"],
 )
 
 release_javadoc_jar(

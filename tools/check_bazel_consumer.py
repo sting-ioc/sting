@@ -34,6 +34,11 @@ def check_inventory():
         visibility = target.find("list[@name='visibility']")
         labels = target.findall("visibility-label") if visibility is None else visibility
         if any(label.get("value", label.get("name")) == "//visibility:public" for label in labels):
+            if target.tag != "rule" or target.get("class") != "alias":
+                raise RuntimeError(f"Public label must alias its owning package: {target.get('name')}")
+            actual = target.find("label[@name='actual']").get("value")
+            if actual.split(":")[0] == target.get("name").split(":")[0]:
+                raise RuntimeError(f"Public alias must point to its owning package: {target.get('name')}")
             public.add(target.get("name"))
     if public != PUBLIC:
         raise RuntimeError(f"Public surface changed: extra={sorted(public - PUBLIC)}, missing={sorted(PUBLIC - public)}")
@@ -142,7 +147,9 @@ filegroup(name = "tooling", srcs = ["@sting//third_party:error_prone_core", "@st
             "//core/src/main/java/sting:Injector.java", "//tools/release:core_sources",
             "//tools/release:processor_jar", "//processor/src/test/fixtures:all",
             "//third_party/java:jspecify", "//third_party/java:jakarta_transaction_api",
-            "//:_core_j2cl", "//:_core_j2cl-j2wasm", "//:lib_core_j2cl.jar",
+            "//core:published", "//server:published", "//processor:published_plugin",
+            "//processor:published_runtime", "//core:_core_j2cl",
+            "//core:_core_j2cl-j2wasm", "//core:lib_core_j2cl.jar",
         ]
         for label in denied:
             (workspace / "BUILD.bazel").write_text(f'filegroup(name = "probe", srcs = ["@sting{label}"])\n')

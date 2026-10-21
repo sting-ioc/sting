@@ -51,7 +51,7 @@ _java_plugin(
 # DO NOT EDIT: Content is auto-generated from //third_party/java:dependencies.yml by https://github.com/realityforge/bazel-depgen version 0.26
 
 # SHA256 of the configuration content that generated this content
-_CONFIG_SHA256 = "AE8457DD9D397B28D7CA3FB8497F62729B63D033D5E2AC931606A2348B366B0E"
+_CONFIG_SHA256 = "35796A2FD59DD8F63313A54B275D6CBE031FD63EE638507579F54A7480173F96"
 
 exports_files(["dependencies.yml"])
 
@@ -258,7 +258,7 @@ _java_import(
     srcjar = "@jakarta_transaction_api__sources//file",
     tags = ["maven_coordinates=jakarta.transaction:jakarta.transaction-api:2.0.1"],
     visibility = [
-        "//:__pkg__",
+        "//server:__pkg__",
         "//server-integration-tests/src/test/java/sting/server/integration:__pkg__",
         "//server/src/main/java/sting/server/interceptors:__pkg__",
         "//server/src/test/java/sting/server/interceptors:__pkg__",
@@ -410,7 +410,7 @@ _java_import(
     srcjar = "@jspecify__sources//file",
     tags = ["maven_coordinates=org.jspecify:jspecify:1.0.1"],
     visibility = [
-        "//:__pkg__",
+        "//core:__pkg__",
         "//core/src/main/java/sting:__pkg__",
         "//core/src/main/java/sting/interceptors:__pkg__",
         "//doc-examples/src/main/java/sting/doc/examples/dependency_kinds:__pkg__",
@@ -500,5 +500,5 @@ _java_import(
 j2cl_import(
     name = "jspecify-j2cl",
     jar = ":jspecify",
-    visibility = ["//:__pkg__"],
+    visibility = ["//core:__pkg__"],
 )

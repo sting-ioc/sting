@@ -30,7 +30,7 @@ artifacts:
       - "//processor/src/test/java/sting/processor:__pkg__"
   - coord: jakarta.transaction:jakarta.transaction-api:2.0.1
     visibility:
-      - "//:__pkg__"
+      - "//server:__pkg__"
       - "//server-integration-tests/src/test/java/sting/server/integration:__pkg__"
       - "//server/src/main/java/sting/server/interceptors:__pkg__"
       - "//server/src/test/java/sting/server/interceptors:__pkg__"
@@ -45,7 +45,7 @@ artifacts:
       - "//tools/site/src/test/java/sting/site:__pkg__"
   - coord: org.jspecify:jspecify:1.0.1
     visibility:
-      - "//:__pkg__"
+      - "//core:__pkg__"
       - "//core/src/main/java/sting/interceptors:__pkg__"
       - "//core/src/main/java/sting:__pkg__"
       - "//doc-examples/src/main/java/sting/doc/examples/dependency_kinds:__pkg__"
