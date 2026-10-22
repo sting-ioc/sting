@@ -2,6 +2,7 @@
 
 ### Unreleased
 
+* Pin rules_closure to the upstream protobuf-rule migration, following version 0.17.0.
 * Define a limited public Bazel surface, share the core J2CL compilation, and expose the processor plugin as `//:processor` with its Java library at `//:processor_runtime`.
 * Upgrade JSpecify to version `1.0.1`.
 * Remove GWT support, including `@Injector.gwt`, the `Feature` enum, the module descriptor, compiler annotations, examples, and dependencies.

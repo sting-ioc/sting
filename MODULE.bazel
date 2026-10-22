@@ -26,6 +26,14 @@ bazel_dep(name = "j2cl", version = "20260918")
 bazel_dep(name = "rules_closure", version = "0.17.0")
 bazel_dep(name = "rules_jvm_external", version = "7.1")
 bazel_dep(name = "rules_cc", version = "0.2.25")
+
+archive_override(
+    module_name = "rules_closure",
+    integrity = "sha256-a+8E2hTyPhwYAPs2SM7Gc2T/iVtDXFiowXrU9JpS+Ew=",
+    strip_prefix = "rules_closure-5324b6eb9b37dc08bbe5996d67e042a9e4fd57eb",
+    urls = ["https://github.com/bazelbuild/rules_closure/archive/5324b6eb9b37dc08bbe5996d67e042a9e4fd57eb.tar.gz"],
+)
+
 single_version_override(
     module_name = "rules_cc",
     patch_strip = 1,
