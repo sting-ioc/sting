@@ -71,7 +71,7 @@ archive_override(
     urls = ["https://github.com/realityforge/j2cl/archive/260ec1abd929947c032714672d4124e47ff2aec2.tar.gz"],
 )
 
-bazel_dep(name = "rules_java")
+bazel_dep(name = "rules_java", version = "9.9.0")
 git_override(
     module_name = "rules_java",
     commit = "8f847aa0ea2221ede4625696551d62c42627cb3d",
