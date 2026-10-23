@@ -4,11 +4,6 @@ exports_files(
 )
 
 exports_files(
-    ["j2cl_use_canonical_maven_coordinate.patch"],
-    visibility = ["//:__pkg__"],
-)
-
-exports_files(
     ["rules_cc_allowlist_macos_sdk_root.patch"],
     visibility = ["//:__pkg__"],
 )

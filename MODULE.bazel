@@ -66,11 +66,9 @@ use_repo(browser_maven, "maven")
 
 archive_override(
     module_name = "j2cl",
-    integrity = "sha256-XEgoQZDNjT51rfGuc4rpVYamAYsQi+q44JT1W86AiD4=",
-    patch_strip = 1,
-    patches = ["//third_party/bazel/patches:j2cl_use_canonical_maven_coordinate.patch"],
-    strip_prefix = "j2cl-3995891275f54114e9dbfd5a8ceff97bf10030aa",
-    urls = ["https://github.com/google/j2cl/archive/3995891275f54114e9dbfd5a8ceff97bf10030aa.tar.gz"],
+    integrity = "sha256-jtx4qV2UC+xvgoDeV+6/TBNCs/GRPzeW07TTrIqm+pg=",
+    strip_prefix = "j2cl-260ec1abd929947c032714672d4124e47ff2aec2",
+    urls = ["https://github.com/realityforge/j2cl/archive/260ec1abd929947c032714672d4124e47ff2aec2.tar.gz"],
 )
 
 bazel_dep(name = "rules_java", version = "9.9.0")

@@ -2,6 +2,7 @@
 
 ### Unreleased
 
+* Pin the consolidated J2CL compiler and remove the local EscapeVelocity coordinate patch.
 * Pin rules_closure to the upstream protobuf-rule migration, following version 0.17.0.
 * Define a limited public Bazel surface, share the core J2CL compilation, and expose the processor plugin as `//:processor` with its Java library at `//:processor_runtime`.
 * Upgrade JSpecify to version `1.0.1`.
