@@ -22,12 +22,12 @@ def check_runtime_bytecode(path: Path) -> None:
     with zipfile.ZipFile(path) as jar:
         for name in jar.namelist():
             if name.endswith(".class") and name.startswith("sting/") and "/vendor/" not in name:
-                check_java_17_bytecode(jar.read(name), f"{path.name}: {name}")
+                check_java_21_bytecode(jar.read(name), f"{path.name}: {name}")
 
 
-def check_java_17_bytecode(data: bytes, name: str) -> None:
-    if data[:4] != b"\xca\xfe\xba\xbe" or int.from_bytes(data[6:8], "big") != 61:
-        raise SystemExit(f"Expected Java 17 bytecode: {name}")
+def check_java_21_bytecode(data: bytes, name: str) -> None:
+    if data[:4] != b"\xca\xfe\xba\xbe" or int.from_bytes(data[6:8], "big") != 65:
+        raise SystemExit(f"Expected Java 21 bytecode: {name}")
 
 
 def run(command: list[str], cwd: Path) -> str:
@@ -61,7 +61,7 @@ def check_packaged_consumer(workspace: Path, artifacts: Path) -> None:
             }
             """))
         classpath = os.pathsep.join(map(str, [artifacts / "sting-core.jar", jspecify, classes]))
-        common = [compiler, "--release", "17", "-Werror", "-Xlint:all,-processing", "-XDaddTypeAnnotationsToSymbol=true", "-classpath", classpath,
+        common = [compiler, "--release", "21", "-Werror", "-Xlint:all,-processing", "-XDaddTypeAnnotationsToSymbol=true", "-classpath", classpath,
                   "-d", str(classes)]
         run(common + ["-proc:none", str(parent)], workspace)
         consumer = work / "Consumer.java"
@@ -110,9 +110,9 @@ def check_packaged_consumer(workspace: Path, artifacts: Path) -> None:
         if "List<@Nullable String>" not in source or "@Nullable String @Nullable []" not in source:
             raise SystemExit("Packaged processor lost compiled inherited type-use nullness:\n" + source)
         for path in classes.rglob("*.class"):
-            check_java_17_bytecode(path.read_bytes(), str(path.relative_to(classes)))
+            check_java_21_bytecode(path.read_bytes(), str(path.relative_to(classes)))
         run([str(java_home / "bin" / "java"), "-ea", "-classpath", classpath, "packaged.Consumer"], workspace)
-    print("Compiled Java 17 consumer bytecode and ran it with an isolated shaded processorpath and compiled JSpecify contracts")
+    print("Compiled Java 21 consumer bytecode and ran it with an isolated shaded processorpath and compiled JSpecify contracts")
 
 
 def entries(path: Path) -> set[str]:

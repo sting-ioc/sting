@@ -45,8 +45,8 @@ compiler plugin from within the `pom.xml`:
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.5.1</version>
         <configuration>
-          <source>17</source>
-          <target>17</target>
+          <source>21</source>
+          <target>21</target>
           <compilerArgs>
             <arg>-XDaddTypeAnnotationsToSymbol=true</arg>
           </compilerArgs>
@@ -70,7 +70,7 @@ compiler plugin from within the `pom.xml`:
 
 The Sting processor requires Java 21 or newer. Use JDK 22+ or patched JDK 21.0.8+ when reading JSpecify
 contracts from compiled classes. The symbol flag in the example makes type-use annotations available to Sting
-on patched Java 21 compilers. Library and generated classes target Java 17. `sting-core` depends on
+on patched Java 21 compilers. Library and generated classes target Java 21. `sting-core` depends on
 `org.jspecify:jspecify:1.0.1`, which supplies the annotations on the compilation classpath. The shaded
 processor reads and generates canonical annotation names without bundling JSpecify on its isolated processorpath.
 
@@ -141,7 +141,7 @@ Use Bazel 9.3.0 and configure the consumer's `.bazelrc` with Sting's Java toolch
 repositories' `.bazelrc` files are not inherited:
 
 ```text
-common --java_language_version=17
+common --java_language_version=21
 common --java_runtime_version=remotejdk_21
 common --tool_java_language_version=25
 common --tool_java_runtime_version=remotejdk_25

@@ -37,7 +37,7 @@ visibility([
     "//tools/site/src/test/java/sting/site",
 ])
 
-_JAVA_RELEASE = "17"
+_JAVA_RELEASE = "21"
 _JSPECIFY = "//third_party/java:jspecify"
 _NULLAWAY_PLUGIN = "//third_party/java:nullaway_plugin"
 

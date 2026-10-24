@@ -42,7 +42,7 @@ When changing packaging or shading, build and check the release artifacts:
 - Mark owned packages or types with `@NullMarked` and use JSpecify's type-use `@Nullable` where needed.
 - Use the Java rule wrappers in `third_party/java/rules.bzl` to enable NullAway and Error Prone on owned source targets.
 - When generating types from `TypeMirror`, use Proton's `GeneratorUtil.getTypeName` to retain type-use annotations. Plain JavaPoet `TypeName.get` drops them.
-- Keep library and generated sources compatible with Java 17. Bazel supplies the compiler; for other builds, follow the [compiler requirements](project_setup.md#compiler-and-jspecify).
+- Keep library and generated sources compatible with Java 21. Bazel supplies the compiler; for other builds, follow the [compiler requirements](project_setup.md#compiler-and-jspecify).
 - After changing nullness handling or generation, run `bazel test //processor/src/test/java/sting/processor:nullability` and the affected golden targets. Keep deliberately invalid processor fixtures in the plain-javac diagnostics target.
 
 For NullAway builds outside these wrappers, add these compiler options:

@@ -76,7 +76,7 @@ import org.realityforge.proton.TypesUtil;
     Constants.ACT_AS_STING_PROVIDER_CLASSNAME,
     Constants.ACT_AS_STING_COMPONENT_CLASSNAME
 })
-@SupportedSourceVersion(SourceVersion.RELEASE_17)
+@SupportedSourceVersion(SourceVersion.RELEASE_21)
 @SupportedOptions("sting.emit_dot_reports")
 public final class StingProcessor extends AbstractStandardProcessor {
     private enum AnnotationUsageKind {
