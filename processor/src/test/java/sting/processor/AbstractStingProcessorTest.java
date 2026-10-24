@@ -44,7 +44,7 @@ public abstract class AbstractStingProcessorTest extends AbstractProcessorTest {
         if (!Boolean.getBoolean("sting.plain_javac")) {
             options.addAll(List.of(
                     "--release",
-                    "17",
+                    "21",
                     "-XDcompilePolicy=simple",
                     "-Xep:NullAway:ERROR",
                     "-Xep:JSpecifyUnrecognizedAnnotationLocation:ERROR",

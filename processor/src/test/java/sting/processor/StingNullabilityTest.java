@@ -33,7 +33,7 @@ public final class StingNullabilityTest extends AbstractStingProcessorTest {
 
             @Override
             public SourceVersion getSupportedSourceVersion() {
-                return SourceVersion.RELEASE_17;
+                return SourceVersion.RELEASE_21;
             }
 
             @Override
