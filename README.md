@@ -27,7 +27,7 @@ See [Bazel setup](docs/project_setup.md#configure-bazel) for module overrides an
 
 # Development
 
-Use Bazel 9.3.0 and JDK 21 or newer for the build, including the documentation site. Run
+Use Bazel 9.3.1 and JDK 21 or newer for the build, including the documentation site. Run
 `bazel test //:all_tests` for tests and `tools/check.sh` for the full check. See the
 [development process](docs/development_process.md) for focused processor tests, goldens, and releases.
 Run `bazel run //tools/ahab:hermeticity` for the hermeticity report; the full check guards its recorded baseline.

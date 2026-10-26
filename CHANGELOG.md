@@ -20,7 +20,7 @@
 * Make Bazel the sole build, split processor goldens into focused cached targets, and package the three Maven artifacts from Bazel.
 * Build the documentation site hermetically with Java and Bazel, preserve documentation URLs and source snippets, and serve all assets locally. Remove Docusaurus and Node/npm requirements and check API method fragments as well as file links.
 * Remove legacy API differences, performance reports, and downstream test harnesses.
-* Upgrade the Bazel build to version `9.3.0`.
+* Upgrade the Bazel build to version `9.3.1`.
 * Use Bazel's default workspace symlink and repository cache locations.
 
 ### [v0.40](https://github.com/sting-ioc/sting/tree/v0.40) (2026-07-07) · [Full Changelog](https://github.com/sting-ioc/sting/compare/v0.39...v0.40)

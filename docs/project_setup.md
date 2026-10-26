@@ -137,7 +137,7 @@ is maintained in [Sting's MODULE.bazel](https://github.com/sting-ioc/sting/blob/
 rather than duplicated here. `tools/check_bazel_consumer.py` demonstrates a complete standalone root:
 it copies the compiler setup, Maven lock and patches, then adds Sting as an external dependency.
 
-Use Bazel 9.3.0 and configure the consumer's `.bazelrc` with Sting's Java toolchains; dependency
+Use Bazel 9.3.1 and configure the consumer's `.bazelrc` with Sting's Java toolchains; dependency
 repositories' `.bazelrc` files are not inherited:
 
 ```text
