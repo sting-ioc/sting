@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * <p>Candidate factory methods must:</p>
  *
  * <ul>
- *   <li>return a concrete class type,</li>
+ *   <li>return a concrete class type, or a class/interface mapped to a concrete implementation by {@link StingProvider},</li>
  *   <li>not declare type parameters,</li>
  *   <li>not declare thrown exceptions, and</li>
  *   <li>have parameters whose names and types exactly match constructor parameters on the created type.</li>
@@ -40,6 +40,14 @@ import java.lang.annotation.Target;
  * interface. Constructor parameters omitted from the factory method are treated as Sting-managed dependencies
  * and are injected into the generated factory implementation. This makes it possible to combine services managed
  * by Sting with runtime values supplied by application code.</p>
+ *
+ * <p>If the return type has a framework annotation meta-annotated with {@link StingProvider}, the mapping
+ * always selects the class to construct, even when the declared return type is concrete. The mapped class must
+ * be concrete, assignable to the declared return type, and accessible from the factory interface. It need not
+ * be {@link Injectable}. Constructor matching uses the mapped class, including any parameters added by its
+ * generator. Sting waits for generated implementations in later processing rounds. Declared return types and
+ * implementation classes must not have type parameters. Compiled constructors must retain parameter names,
+ * for example through {@code javac -parameters}.</p>
  *
  * <h2>Injector Integration</h2>
  *

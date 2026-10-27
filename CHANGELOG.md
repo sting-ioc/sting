@@ -2,6 +2,9 @@
 
 ### Unreleased
 
+* Allow `@Factory` methods to construct implementations selected by `StingProvider` metadata while returning authored
+  classes or interfaces, including framework-generated implementations that are not injectable. Mappings now take
+  precedence on concrete factory return types too; invalid construction mappings are errors.
 * Breaking: require Java 21 for library and generated application sources. Align processor declarations, compiler checks and publication bytecode with the new baseline.
 * Pin the consolidated J2CL compiler and remove the local EscapeVelocity coordinate patch.
 * Pin rules_closure to the upstream protobuf-rule migration, following version 0.17.0.

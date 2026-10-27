@@ -2,25 +2,34 @@ package sting.processor;
 
 import static org.testng.Assert.*;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Processor;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.TypeElement;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
 import org.realityforge.proton.qa.Compilation;
+import org.realityforge.proton.qa.CompileTestUtil;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 public final class StingProcessorFactoryTest extends AbstractStingProcessorTest {
     private static final String PACKAGE = "com.example.factory.providers";
     private static final String IMPLEMENTATION = """
-        final class ComponentImpl extends Component {
+        @NullMarked final class ComponentImpl extends Component {
             private final Service service;
             private final int count;
-            private final String label;
+            private final @Nullable String label;
 
             ComponentImpl(Service service, int count, @Nullable String label) {
                 this.service = service;
@@ -30,7 +39,7 @@ public final class StingProcessorFactoryTest extends AbstractStingProcessorTest 
 
             public Service service() { return service; }
             public int count() { return count; }
-            public String label() { return label; }
+            public @Nullable String label() { return label; }
         }
         """;
 
@@ -46,6 +55,27 @@ public final class StingProcessorFactoryTest extends AbstractStingProcessorTest 
         final Compilation compilation = compile(sources);
         assertCompilationSuccessful(compilation);
         assertGeneratedConstruction(compilation);
+        runHarness(compilation);
+    }
+
+    @Test
+    public void preservesCapturedDependencyQualifier() throws Exception {
+        final List<JavaFileObject> sources = componentSources("abstract class");
+        sources.removeIf(s -> s.getName().endsWith("/Service.java"));
+        sources.add(source("Service", """
+            @NullMarked interface Service {}
+            @NullMarked @Injectable @Named("backend") @Typed(Service.class)
+            final class ServiceImpl implements Service {}
+            """));
+        sources.add(source(
+                "ComponentImpl",
+                IMPLEMENTATION
+                        .replace("final class ComponentImpl", "@Injectable final class ComponentImpl")
+                        .replace(
+                                "ComponentImpl(Service service,",
+                                "ComponentImpl(@Named(\"backend\") Service service,")));
+        final Compilation compilation = compile(sources);
+        assertCompilationSuccessful(compilation);
         runHarness(compilation);
     }
 
@@ -142,36 +172,181 @@ public final class StingProcessorFactoryTest extends AbstractStingProcessorTest 
         assertDiagnosticContaining(compilation, "return a class with type parameters");
     }
 
+    @DataProvider
+    public Object[][] generatorOrders() {
+        return new Object[][] {{true, false}, {false, false}, {true, true}, {false, true}};
+    }
+
+    @Test(dataProvider = "generatorOrders")
+    public void waitsForGeneratedImplementationAndConstructorTypes(
+            final boolean generatorFirst, final boolean delayedDependency) throws Exception {
+        final Processor generator = implementationGenerator(delayedDependency);
+        final List<Processor> processors =
+                generatorFirst ? List.of(generator, processor()) : List.of(processor(), generator);
+        final Compilation compilation = CompileTestUtil.compile(
+                javaCompiler(), componentSources("abstract class"), getOptions(), processors, List.of());
+        assertCompilationSuccessful(compilation);
+        assertGeneratedConstruction(compilation);
+        runHarness(compilation);
+        if (delayedDependency) {
+            compilation.assertJavaClassPresent(PACKAGE + ".GeneratedDependency");
+        }
+    }
+
+    @Test
+    public void reportsMissingImplementationAtEndOfProcessing() {
+        final Compilation compilation = compile(List.of(
+                framework("MissingImplementation"),
+                source("Component", "@Framework abstract class Component {}"),
+                source("ComponentFactory", "@Factory interface ComponentFactory { Component create(); }")));
+        assertFalse(compilation.success());
+        assertDiagnosticContaining(compilation, "@Factory method create returns " + PACKAGE + ".Component");
+        assertDiagnosticContaining(compilation, "expects implementation " + PACKAGE + ".MissingImplementation");
+        assertDiagnosticContaining(compilation, "no such class exists");
+    }
+
+    @Test
+    public void reportsMissingImplementationWhenDeferralDisabled() {
+        final var options = new ArrayList<>(getOptions());
+        options.add("-Asting.defer.unresolved=false");
+        final Compilation compilation = CompileTestUtil.compile(
+                javaCompiler(),
+                List.of(
+                        framework("MissingImplementation"),
+                        source("Component", "@Framework abstract class Component {}"),
+                        source("ComponentFactory", "@Factory interface ComponentFactory { Component create(); }")),
+                options,
+                processors(),
+                List.of());
+        assertFalse(compilation.success());
+        assertDiagnosticContaining(compilation, "expects implementation " + PACKAGE + ".MissingImplementation");
+    }
+
+    @Test
+    public void reportsUnresolvedImplementationTypesAtEndOfProcessing() {
+        final Compilation compilation = compile(List.of(
+                framework("ComponentImpl"),
+                source("Component", "@Framework abstract class Component {}"),
+                source("ComponentImpl", "class ComponentImpl extends Component { ComponentImpl(Missing value) {} }"),
+                source("ComponentFactory", "@Factory interface ComponentFactory { Component create(); }")));
+        assertFalse(compilation.success());
+        assertDiagnosticContaining(compilation, "expects implementation " + PACKAGE + ".ComponentImpl");
+        assertDiagnosticContaining(compilation, "its types could not be resolved");
+    }
+
+    @Test
+    public void resolvesSeparatelyCompiledImplementation() throws Exception {
+        final List<JavaFileObject> allSources = componentSources("interface");
+        final List<JavaFileObject> consumerSources = allSources.stream()
+                .filter(s -> s.getName().endsWith("/ComponentFactory.java")
+                        || s.getName().endsWith("/Harness.java"))
+                .toList();
+        final var componentSources = new ArrayList<>(allSources);
+        componentSources.removeAll(consumerSources);
+        componentSources.add(source("ComponentImpl", implementation("interface")));
+        final var options = new ArrayList<>(getOptions());
+        options.add("-parameters");
+        final Compilation componentCompilation =
+                CompileTestUtil.compile(javaCompiler(), componentSources, options, processors(), List.of());
+        assertCompilationSuccessful(componentCompilation);
+
+        final Compilation factoryCompilation = compile(
+                consumerSources,
+                buildClasspath(componentCompilation.classOutput().toFile()));
+        assertCompilationSuccessful(factoryCompilation);
+        assertGeneratedConstruction(factoryCompilation);
+        try (final var loader = new URLClassLoader(
+                new URL[] {
+                    factoryCompilation.classOutput().toUri().toURL(),
+                    componentCompilation.classOutput().toUri().toURL()
+                },
+                getClass().getClassLoader())) {
+            loader.loadClass(PACKAGE + ".Harness").getMethod("verify").invoke(null);
+        }
+    }
+
+    private Processor implementationGenerator(final boolean delayedDependency) {
+        return new AbstractProcessor() {
+            private int round;
+
+            @Override
+            public Set<String> getSupportedAnnotationTypes() {
+                return Set.of("*");
+            }
+
+            @Override
+            public SourceVersion getSupportedSourceVersion() {
+                return SourceVersion.RELEASE_21;
+            }
+
+            @Override
+            public boolean process(final Set<? extends TypeElement> annotations, final RoundEnvironment env) {
+                if (!env.processingOver()) {
+                    if (0 == round) {
+                        final String implementation = delayedDependency
+                                ? IMPLEMENTATION
+                                        .replace(
+                                                "ComponentImpl(Service service,",
+                                                "ComponentImpl(Service service, GeneratedDependency dependency,")
+                                        .replace(
+                                                "this.service = service;",
+                                                "this.service = dependency.service(service);")
+                                : IMPLEMENTATION;
+                        emit("ComponentImpl", implementation);
+                    } else if (1 == round && delayedDependency) {
+                        emit(
+                                "GeneratedDependency",
+                                "@NullMarked @Injectable final class GeneratedDependency { Service service(Service"
+                                        + " service) { return service; } }");
+                    }
+                    round++;
+                }
+                return false;
+            }
+
+            private void emit(final String name, final String content) {
+                try (final var writer = processingEnv
+                        .getFiler()
+                        .createSourceFile(PACKAGE + "." + name)
+                        .openWriter()) {
+                    writer.append(source(name, content).getCharContent(true));
+                } catch (final IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            }
+        };
+    }
+
     private List<JavaFileObject> componentSources(final String kind) {
         final String declaration = "interface".equals(kind)
                 ? """
-                @Framework public interface Component {
+                @NullMarked @Framework public interface Component {
                     Service service();
                     int count();
-                    String label();
+                    @Nullable String label();
                 }
                 """
-                : "@Framework public " + kind + " Component {\n"
-                        + "  public Service service() { return null; }\n"
+                : "@NullMarked @Framework public " + kind + " Component {\n"
+                        + "  public Service service() { throw new UnsupportedOperationException(); }\n"
                         + "  public int count() { return -1; }\n"
-                        + "  public String label() { return null; }\n"
+                        + "  public @Nullable String label() { return null; }\n"
                         + "}\n";
         return new ArrayList<>(List.of(
                 framework("[SimpleName]Impl"),
                 source("Component", declaration),
                 source("Service", """
-                    interface Service {}
-                    @Injectable @Typed(Service.class) final class ServiceImpl implements Service {}
+                    @NullMarked interface Service {}
+                    @NullMarked @Injectable @Typed(Service.class) final class ServiceImpl implements Service {}
                     """),
                 source("ComponentFactory", """
-                    @Factory public interface ComponentFactory {
+                    @NullMarked @Factory public interface ComponentFactory {
                         Component create(int count, @Nullable String label);
                     }
                     """),
                 source("Harness", """
-                    @sting.Injector(fragmentOnly = false, includes = {ComponentFactory.class, ServiceImpl.class})
+                    @NullMarked @sting.Injector(fragmentOnly = false, includes = {ComponentFactory.class, ServiceImpl.class})
                     interface MyInjector { ComponentFactory factory(); }
-                    public class Harness {
+                    @NullMarked public class Harness {
                         public static void verify() {
                             final var injector = new Sting_MyInjector();
                             final var factory = injector.factory();
@@ -179,7 +354,7 @@ public final class StingProcessorFactoryTest extends AbstractStingProcessorTest 
                             final var second = factory.create(42, "second");
                             if (first == second || first.count() != 23 || second.count() != 42
                                 || first.label() != null || !"second".equals(second.label())
-                                || first.service() == null || first.service() != second.service()
+                                || first.service() != second.service()
                                 || !first.getClass().getSimpleName().equals("ComponentImpl")) {
                                 throw new AssertionError("Incorrect factory construction");
                             }
@@ -206,7 +381,12 @@ public final class StingProcessorFactoryTest extends AbstractStingProcessorTest 
 
     private JavaFileObject source(final String name, final String content) {
         final String qualifiedName = PACKAGE + "." + name;
-        final String text = "package " + PACKAGE + ";\nimport sting.*;\nimport org.jspecify.annotations.Nullable;\n" + content;
+        final String text = "package " + PACKAGE
+                + ";\n"
+                + "import sting.*;\n"
+                + "import org.jspecify.annotations.Nullable;\n"
+                + "import org.jspecify.annotations.NullMarked;\n"
+                + content;
         return new SimpleJavaFileObject(
                 URI.create("string:///" + qualifiedName.replace('.', '/') + ".java"), JavaFileObject.Kind.SOURCE) {
             @Override

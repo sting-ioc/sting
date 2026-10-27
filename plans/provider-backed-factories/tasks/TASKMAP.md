@@ -1,8 +1,8 @@
 # Task map
 
 - Spec: [SPEC.md](../SPEC.md)
-- Status: planned
-- Current frontier: T02
+- Status: implementation-review
+- Current frontier: implementation review
 - Accepted scope and execution authority: SPEC.md Source; final interview confirmation and explicit implementation/PR/babysit instructions in this chat.
 - Planning reviewer: /root/planning_review — Findings: none in rounds 1 and 2/3; final confirmation unused. Round 2 verified current JDK 21/JSpecify harness, aggregate wiring, strengthened CI and evidence/cleanup ownership after the upstream update.
 - Plan checkpoint: automatic — unchanged accepted design and implementation authority, with passing planning re-review after the upstream update.
@@ -11,14 +11,14 @@
 ## Full-scope validation
 
 - Gate: tools/check.sh, plus the actual Arez compile/run proof in T02.
-- Evidence: pending against current upstream. Pre-rebase suites passed on 9081183c; those counts do not substitute for current validation.
+- Evidence: current tools/check.sh passed on the a586a1dc base: all 18 test targets, all 14 coverage targets (95.53% lines / 86.73% branches), package and external consumers, formatting/hermeticity, and site (2669 links, none broken). Focused factory scenarios: 25/25. Actual Arez 0.256 class/interface compile/run proof passed in both processor orders on JDK 21. T02 owns reproduction details and warning limits. Pre-rebase counts in T01 are historical only.
 
 ## Tasks
 
 | ID | Task | Status | Blocked by |
 | --- | --- | --- | --- |
 | T01 | [Resolve and validate factory construction mappings](T01-construction-mapping.md) | complete | None |
-| T02 | [Prove generated implementation integration and document delivery](T02-generated-integration.md) | in_progress | T01 |
+| T02 | [Prove generated implementation integration and document delivery](T02-generated-integration.md) | complete | T01 |
 
 ## Sequencing and review
 

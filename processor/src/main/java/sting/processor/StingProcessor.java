@@ -3094,7 +3094,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
             final String implementationName = deriveProviderQualifiedName(declaredType, provider.provider());
             final TypeElement implementation = processingEnv.getElementUtils().getTypeElement(implementationName);
             if (null == implementation || !SuperficialValidation.validateElement(processingEnv, implementation)) {
-                if (env.processingOver()) {
+                if (env.processingOver() || !shouldDeferUnresolved()) {
                     throw new ProcessorException(
                             description + " returns " + returnType + " whose @StingProvider expects implementation "
                                     + implementationName
