@@ -18,7 +18,7 @@ Provider-backed factories cooperate with another source generator across compile
 
 ## Validation
 
-- Existing processor suite with new generation/multistage scenarios; isolated actual-Arez javac compile/run with pinned release artifacts and no handwritten Arez implementation.
+- Current focused processor suite with JSpecify/NullAway-checked generation and multistage scenarios; isolated actual-Arez javac compile/run with pinned release artifacts and no handwritten Arez implementation.
 - tools/check.sh, git diff --check, source review and documentation link checks proportionate to changed docs.
 
 ## Evidence
