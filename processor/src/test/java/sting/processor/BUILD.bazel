@@ -21,6 +21,7 @@ java_library(
     testonly = True,
     srcs = [
         "StingNullabilityTest.java",
+        "StingProcessorFactoryTest.java",
         "StingProcessorMultiStageCompilesTest.java",
         "StingProcessorRuntimeDeriveTest.java",
         "StingProcessorTest.java",
@@ -51,6 +52,12 @@ processor_test(
         "packageAccessFragmentDependency",
         "publicAccessFragmentDependency",
     ],
+)
+
+processor_test(
+    name = "factory_providers",
+    data = [],
+    test_class = "sting.processor.StingProcessorFactoryTest",
 )
 
 processor_test(
@@ -184,6 +191,7 @@ test_suite(
     name = "all_tests",
     tests = [
         ":factory_goldens",
+        ":factory_providers",
         ":failed_compiles",
         ":formatter_failure",
         ":includes_goldens",

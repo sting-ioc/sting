@@ -67,12 +67,14 @@ final class FactoryGenerator {
 
     private static void emitConstructor(final FactoryDescriptor factory, final TypeSpec.Builder builder) {
         final MethodSpec.Builder ctor = MethodSpec.constructorBuilder();
+        final var annotations = new ArrayList<>(GeneratorUtil.ANNOTATION_WHITELIST);
+        annotations.add(Constants.NAMED_CLASSNAME);
         for (final FactoryDependencyDescriptor dependency : factory.getDependencies()) {
             final ServiceRequest serviceRequest = dependency.serviceRequest();
             final var parameterElement = (VariableElement) serviceRequest.getElement();
             final ParameterSpec.Builder parameter = ParameterSpec.builder(
                     StingGeneratorUtil.getServiceType(serviceRequest), dependency.parameterName(), Modifier.FINAL);
-            GeneratorUtil.copyWhitelistedAnnotations(parameterElement, parameter);
+            GeneratorUtil.copyWhitelistedAnnotations(parameterElement, parameter, annotations);
             ctor.addParameter(parameter.build());
             ctor.addStatement("$N = $N", dependency.fieldName(), dependency.parameterName());
         }

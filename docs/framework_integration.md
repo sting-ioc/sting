@@ -6,7 +6,7 @@ Sting integrates cleanly with other annotation‑based frameworks without requir
 depend on Sting directly. Integration relies on validation and provider-resolution meta-annotations
 that Sting detects by simple name and shape:
 
-- StingProvider: identifies a framework annotation that points to a provider type Sting should include.
+- StingProvider: identifies a framework annotation that points to a provider or factory construction type.
 - ActAsStingConsumer: marks a framework annotation whose annotated types may consume qualified Sting
   services via constructor parameters.
 - ActAsStingProvider: marks a framework annotation whose annotated types may carry Sting provider
@@ -24,8 +24,8 @@ Sting matches these meta‑annotations by simple name and shape (not FQN) so a f
 Using StingProvider
 
 - Apply a `@StingProvider` meta‑annotation to a framework’s component annotation. The `value()` defines a
-  naming pattern for the provider class that Sting should include. The provider class must exist, be in the same
-  package as the referenced type, and be annotated with `@Fragment` or `@Injectable`.
+  naming pattern for a type in the same package as the referenced type. Include resolution and service discovery
+  require that type to be annotated with `@Fragment` or `@Injectable`.
 - The meta-annotation does not itself create a Sting binding. Sting still processes the resolved provider type.
 - `@StingProvider` does not suppress validation errors for `@Named`, `@Typed`, or `@Eager` on the
   framework-managed type. Sting only observes those annotations on the resolved provider. Providers used only as
@@ -70,6 +70,13 @@ without an explicit include, Sting can auto-discover the provider-backed compone
 resolved provider publishes `Foo` with the default qualifier. This is the case where propagating
 `@Named`, `@Typed`, and `@Eager` from the framework-managed type onto the resolved provider usually
 matters.
+
+Factory construction is another consumer of the same metadata. A `@Factory` method may return a framework-managed
+abstract class or interface and construct the mapped implementation. The mapping is authoritative for concrete
+return declarations too. In this context, the mapped type must be a concrete class assignable to the return type,
+with one constructor accessible from the factory's package; it need not be a Sting binding. Arguments omitted from
+the factory method become factory dependencies. This does not make the created product injectable. See
+[factories](factories.md) for constructor matching and generated-type timing.
 
 ActAsStingConsumer
 

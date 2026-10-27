@@ -10,10 +10,10 @@ import java.lang.annotation.Target;
  * Annotation that indicates the class that provides the service.
  * This is an integration meta-annotation rather than a component-defining Sting annotation.
  *
- * <p>The class that provides the service may be either a {@link Fragment}-annotated type or an
- * {@link Injectable}-annotated type. This annotation is applied to another framework's annotation to
- * simplify integration with Sting. Sting consults it when the framework annotation is applied to a
- * type element that Sting attempts to include or discover.</p>
+ * <p>This annotation is applied to another framework's annotation to simplify integration with Sting.
+ * Sting consults it when the framework-managed type is included, discovered as a service, or returned by
+ * a {@link Factory} method. Include resolution and service discovery require a {@link Fragment}-annotated
+ * or {@link Injectable}-annotated provider.</p>
  *
  * <p>When used for explicit include aliasing, Sting resolves the framework-managed type in an
  * {@link Injector#includes()} annotation parameter or a {@link Fragment#includes()} annotation
@@ -25,6 +25,12 @@ import java.lang.annotation.Target;
  * framework-managed type to the provider type. In this case, the resolved provider must be
  * annotated with {@link Fragment} or {@link Injectable} and publish the framework-managed type
  * using the default qualifier.</p>
+ *
+ * <p>When used by a {@link Factory} method, the mapped type is the class to construct. The mapping is
+ * authoritative even when the declared return type is concrete. The implementation must be concrete,
+ * assignable to the declared return type, and constructible from the factory's package. It does not need
+ * {@link Injectable} or {@link Fragment}; this use does not register the product as a service. Factory
+ * arguments match the implementation constructor, and omitted arguments become factory dependencies.</p>
  *
  * <p>Frameworks that synthesize Sting providers should remember that Sting only observes
  * {@link Eager}, {@link Named}, and {@link Typed} on the resolved provider. Providers used only as

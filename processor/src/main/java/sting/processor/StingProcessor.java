@@ -176,7 +176,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
                 Constants.FACTORY_CLASSNAME,
                 _deferredFactoryTypes,
                 "Analyze Factory",
-                this::processFactory,
+                e -> processFactory(env, e),
                 _analyzeFactoryStopWatch);
 
         processTypeElements(
@@ -1419,7 +1419,7 @@ public final class StingProcessor extends AbstractStandardProcessor {
         _registry.registerFragment(new FragmentDescriptor(element, includes, localOnly, bindings.values()));
     }
 
-    private void processFactory(final TypeElement element) {
+    private void processFactory(final RoundEnvironment env, final TypeElement element) {
         debug(() -> "Processing Factory: " + element);
         MemberChecks.mustBeInterface(Constants.FACTORY_CLASSNAME, element);
         MemberChecks.mustNotHaveTypeParameters(Constants.FACTORY_CLASSNAME, element);
@@ -1437,7 +1437,13 @@ public final class StingProcessor extends AbstractStandardProcessor {
                 if (!method.getModifiers().contains(Modifier.DEFAULT)
                         && !method.getModifiers().contains(Modifier.STATIC)
                         && !method.getModifiers().contains(Modifier.PRIVATE)) {
-                    methods.add(processFactoryMethod(element, method, dependencies, usedFieldNames));
+                    final FactoryMethodDescriptor descriptor =
+                            processFactoryMethod(env, element, method, dependencies, usedFieldNames);
+                    if (null == descriptor) {
+                        _deferredFactoryTypes.deferElement(element);
+                        return;
+                    }
+                    methods.add(descriptor);
                 }
             }
         }
@@ -3033,7 +3039,9 @@ public final class StingProcessor extends AbstractStandardProcessor {
         _registry.registerInjectable(injectable);
     }
 
+    @Nullable
     private FactoryMethodDescriptor processFactoryMethod(
+            final RoundEnvironment env,
             final TypeElement factory,
             final ExecutableElement method,
             final List<FactoryDependencyDescriptor> dependencies,
@@ -3069,15 +3077,52 @@ public final class StingProcessor extends AbstractStandardProcessor {
                     method);
         }
 
-        final var producedType = (TypeElement) returnType.asElement();
+        final var declaredType = (TypeElement) returnType.asElement();
+        if (!declaredType.getTypeParameters().isEmpty()) {
+            throw new ProcessorException(
+                    MemberChecks.mustNot(
+                            Constants.FACTORY_CLASSNAME,
+                            "contain abstract methods that return a class with type parameters"),
+                    method);
+        }
+        final String description = "@Factory method " + method.getSimpleName();
+        final ProviderEntry provider = resolveSingleStingProvider(factory, description, declaredType);
+        final TypeElement producedType;
+        if (null == provider) {
+            producedType = declaredType;
+        } else {
+            final String implementationName = deriveProviderQualifiedName(declaredType, provider.provider());
+            final TypeElement implementation = processingEnv.getElementUtils().getTypeElement(implementationName);
+            if (null == implementation || !SuperficialValidation.validateElement(processingEnv, implementation)) {
+                if (env.processingOver() || !shouldDeferUnresolved()) {
+                    throw new ProcessorException(
+                            description + " returns " + returnType + " whose @StingProvider expects implementation "
+                                    + implementationName
+                                    + (null == implementation
+                                            ? " but no such class exists"
+                                            : " but its types could not be resolved"),
+                            method);
+                }
+                return null;
+            }
+            producedType = implementation;
+        }
         if (ElementKind.CLASS != producedType.getKind()) {
             throw new ProcessorException(
-                    MemberChecks.must(Constants.FACTORY_CLASSNAME, "contain abstract methods that return a class type"),
+                    MemberChecks.must(
+                            Constants.FACTORY_CLASSNAME,
+                            null == provider
+                                    ? "contain abstract methods that return a class type"
+                                    : "create a concrete class via @StingProvider"),
                     method);
         } else if (producedType.getModifiers().contains(Modifier.ABSTRACT)) {
             throw new ProcessorException(
-                    MemberChecks.mustNot(
-                            Constants.FACTORY_CLASSNAME, "contain abstract methods that return an abstract class"),
+                    null == provider
+                            ? MemberChecks.mustNot(
+                                    Constants.FACTORY_CLASSNAME,
+                                    "contain abstract methods that return an abstract class")
+                            : MemberChecks.must(
+                                    Constants.FACTORY_CLASSNAME, "create a concrete class via @StingProvider"),
                     method);
         } else if (ElementsUtil.isNonStaticNestedType(producedType)) {
             throw new ProcessorException(
@@ -3087,9 +3132,13 @@ public final class StingProcessor extends AbstractStandardProcessor {
                     method);
         } else if (!producedType.getTypeParameters().isEmpty()) {
             throw new ProcessorException(
-                    MemberChecks.mustNot(
-                            Constants.FACTORY_CLASSNAME,
-                            "contain abstract methods that return a class with type parameters"),
+                    MemberChecks.mustNot(Constants.FACTORY_CLASSNAME, "create a class with type parameters"), method);
+        }
+
+        if (!processingEnv.getTypeUtils().isAssignable(producedType.asType(), returnType)) {
+            throw new ProcessorException(
+                    description + " implementation " + producedType.getQualifiedName() + " is not assignable to "
+                            + returnType,
                     method);
         }
 
@@ -3100,7 +3149,8 @@ public final class StingProcessor extends AbstractStandardProcessor {
                     method);
         }
         final ExecutableElement constructor = constructors.get(0);
-        if (!ElementsUtil.isElementAccessibleFrom(factory, constructor)) {
+        if (!ElementsUtil.isElementAccessibleFrom(factory, producedType)
+                || !ElementsUtil.isElementAccessibleFrom(factory, constructor)) {
             throw new ProcessorException(
                     MemberChecks.must(
                             Constants.FACTORY_CLASSNAME,
