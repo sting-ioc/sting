@@ -8,7 +8,7 @@ import tempfile
 import urllib.request
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-BAZEL = ["bazel", "--output_base=/home/peter/.cache/bazel/sting-provider-factories"]
+BAZEL = ["bazel"]
 ARTIFACTS = [
     ("org.realityforge.arez", "arez-core", "0.256"),
     ("org.realityforge.arez", "arez-processor", "0.256"),
