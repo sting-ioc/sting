@@ -1,12 +1,12 @@
 # Task map
 
 - Spec: [SPEC.md](../SPEC.md)
-- Status: implementation-review
-- Current frontier: implementation review
+- Status: closeout
+- Current frontier: closeout
 - Accepted scope and execution authority: SPEC.md Source; final interview confirmation and explicit implementation/PR/babysit instructions in this chat.
 - Planning reviewer: /root/planning_review — Findings: none in rounds 1 and 2/3; final confirmation unused. Round 2 verified current JDK 21/JSpecify harness, aggregate wiring, strengthened CI and evidence/cleanup ownership after the upstream update.
 - Plan checkpoint: automatic — unchanged accepted design and implementation authority, with passing planning re-review after the upstream update.
-- Implementation reviewer: /root/implementation_review — round 1/5 found one P2: validation used host Bazel 9.3.0 instead of pinned 9.3.1. Corrected the temporary runner and reran full gate and actual-Arez proof with verified 9.3.1; both passed, no code changes. Round 2 confirmation pending. Four regular rounds and final confirmation remain.
+- Implementation reviewer: /root/implementation_review — round 1/5 found one P2: validation used host Bazel 9.3.0 instead of pinned 9.3.1. Corrected the temporary runner and reran full gate and actual-Arez proof with verified 9.3.1; both passed, no code changes. Round 2/5 passed with Findings: none after independent verification of binary/SHA256, pinned full gate, focused scenarios and both actual-Arez processor orders. Three regular rounds and final confirmation unused.
 
 ## Full-scope validation
 
@@ -31,3 +31,7 @@ Before publication, fetch revealed master had advanced from 9081183c to a586a1dc
 ## Promoted knowledge
 
 Not required: this repository has no docs/adr, docs/glossary, docs/specs or docs/deferred directories. Existing public API documentation owns the lasting contract.
+
+## Closeout gate
+
+All tasks and required current-toolchain validation passed. Implementation review passed in round 2/5; planning review passed in rounds 1 and 2/3. No domain-owner directories exist and no new durable conclusions require promotion beyond the public API/framework docs. Implementation and evidence commits are in history (f1320608, 7ea0bb46, 8b9be5e6). Cleanup removes exactly this active tree, including committed one-off proof and untracked wrapper/logs; the published PR links the evidence snapshot. Rose migration remains separate, and Merge remains a human action.
