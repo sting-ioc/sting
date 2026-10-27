@@ -1,8 +1,8 @@
 # Task map
 
 - Spec: [SPEC.md](../SPEC.md)
-- Status: planned
-- Current frontier: T01
+- Status: implementing
+- Current frontier: T02
 - Accepted scope and execution authority: SPEC.md Source; final interview confirmation and explicit implementation/PR/babysit instructions in this chat.
 - Planning reviewer: /root/planning_review — Findings: none, round 1/3; final confirmation unused. Reviewed full tree, scope, coverage, processor/test/build evidence and real Arez release POMs.
 - Plan checkpoint: automatic — explicit implementation authority, completed grill-me confirmation, and passing independent planning review; no human plan checkpoint requested.
@@ -17,7 +17,7 @@
 
 | ID | Task | Status | Blocked by |
 | --- | --- | --- | --- |
-| T01 | [Resolve and validate factory construction mappings](T01-construction-mapping.md) | pending | None |
+| T01 | [Resolve and validate factory construction mappings](T01-construction-mapping.md) | complete | None |
 | T02 | [Prove generated implementation integration and document delivery](T02-generated-integration.md) | pending | T01 |
 
 ## Sequencing and review

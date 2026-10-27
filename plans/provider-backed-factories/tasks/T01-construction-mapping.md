@@ -1,6 +1,6 @@
 # T01 — Resolve and validate factory construction mappings
 
-- Status: pending
+- Status: complete
 - Blocked by: None
 - Spec coverage: R1, R2, R4; AC1, AC2, AC4
 
@@ -10,9 +10,9 @@ Factory interfaces return authored classes/interfaces and construct the concrete
 
 ## Acceptance criteria
 
-- [ ] Abstract, interface and concrete declared return types resolve valid mappings, including a custom simple-name integration annotation and implementation-only caller parameters.
-- [ ] A mapped product without Injectable can be created repeatedly with captured services and caller values.
-- [ ] Invalid metadata/target/constructor/parameter cases are rejected; existing direct factory behavior remains covered.
+- [x] Abstract, interface and concrete declared return types resolve valid mappings, including a custom simple-name integration annotation and implementation-only caller parameters.
+- [x] A mapped product without Injectable can be created repeatedly with captured services and caller values.
+- [x] Invalid metadata/target/constructor/parameter cases are rejected; existing direct factory behavior remains covered.
 
 ## Validation
 
@@ -21,4 +21,4 @@ Factory interfaces return authored classes/interfaces and construct the concrete
 
 ## Evidence
 
-Pending.
+Processor suite: 568/568 passed; integration suite: 59/59 passed. Command: bazel --output_base=/home/peter/.cache/bazel/sting-provider-factories test //processor/src/test/java/sting/processor:all_tests //integration-tests/src/test/java/sting/integration:all_tests --test_output=errors. New mapping cases initially failed against the unmodified processor; mapped runtime scenarios now verify concrete implementation, caller values, nullable values, distinct products and shared injected interface binding. Formatting and git diff --check passed. Generated factory source retains the authored return type and invokes the mapped constructor.
