@@ -6,8 +6,8 @@
   classes or interfaces, including framework-generated implementations that are not injectable. Mappings now take
   precedence on concrete factory return types too; invalid construction mappings are errors.
 * Breaking: require Java 21 for library and generated application sources. Align processor declarations, compiler checks and publication bytecode with the new baseline.
-* Pin the consolidated J2CL compiler and remove the local EscapeVelocity coordinate patch.
-* Pin rules_closure to the upstream protobuf-rule migration, following version 0.17.0.
+* Pin refreshed J2CL and Closure integration snapshots; remove local EscapeVelocity/protobuf patches and the
+  retired browser-runner Maven contributor.
 * Define a limited public Bazel surface, share the core J2CL compilation, and expose the processor plugin as `//:processor` with its Java library at `//:processor_runtime`.
 * Upgrade JSpecify to version `1.0.1`.
 * Remove GWT support, including `@Injector.gwt`, the `Feature` enum, the module descriptor, compiler annotations, examples, and dependencies.

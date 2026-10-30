@@ -8,15 +8,17 @@
     "com.google.dagger:dagger-producers": 1903545965,
     "com.google.errorprone:error_prone_annotations": -1035138750,
     "com.google.escapevelocity:escapevelocity": -1340272002,
-    "com.google.guava:guava": 2017254637,
+    "com.google.guava:guava": 1943808618,
     "com.google.j2objc:j2objc-annotations": 204891114,
     "com.google.javascript:closure-compiler": 720270735,
     "com.google.jimfs:jimfs": 803072898,
-    "junit:junit": -744267592,
     "net.java.dev.javacc:javacc": 520686333,
     "org.jsoup:jsoup": -1040080959,
     "org.jspecify:jspecify": 2105307712,
     "org.seleniumhq.selenium:selenium-api": 1359790425,
+    "org.seleniumhq.selenium:selenium-chrome-driver": -697181640,
+    "org.seleniumhq.selenium:selenium-chromium-driver": 548310612,
+    "org.seleniumhq.selenium:selenium-json": 1402780483,
     "org.seleniumhq.selenium:selenium-remote-driver": -1144232444,
     "org.seleniumhq.selenium:selenium-support": 204710084,
     "repositories": 514854214
@@ -25,7 +27,7 @@
     "args4j:args4j": 745737397,
     "cglib:cglib-nodep": 1047464363,
     "com.google.auto.service:auto-service-annotations": -1142839511,
-    "com.google.closure-stylesheets:closure-stylesheets": 354087872,
+    "com.google.closure-stylesheets:closure-stylesheets": -557916240,
     "com.google.code.findbugs:jsr305": -1038659426,
     "com.google.code.gson:gson": -701618785,
     "com.google.dagger:dagger": -959655529,
@@ -55,19 +57,21 @@
     "io.opentelemetry:opentelemetry-sdk-metrics": -25162396,
     "io.opentelemetry:opentelemetry-sdk-trace": 1577847663,
     "javax.inject:javax.inject": -1284481446,
-    "junit:junit": 712711302,
+    "junit:junit": -728954534,
     "net.bytebuddy:byte-buddy": -989179208,
-    "net.java.dev.javacc:javacc": -1430570262,
+    "net.java.dev.javacc:javacc": -2047258342,
     "org.apache.commons:commons-exec": 1526707922,
     "org.checkerframework:checker-compat-qual": -991207090,
     "org.checkerframework:checker-qual": 1016760774,
     "org.easymock:easymock": 1239388377,
-    "org.hamcrest:hamcrest-core": 866476646,
+    "org.hamcrest:hamcrest-core": 1760808231,
     "org.jsoup:jsoup": 687370433,
     "org.jspecify:jspecify": -857182007,
-    "org.mockito:mockito-core": -911926592,
+    "org.mockito:mockito-core": 1627635737,
     "org.objenesis:objenesis": 104859887,
     "org.seleniumhq.selenium:selenium-api": 1856885217,
+    "org.seleniumhq.selenium:selenium-chrome-driver": 1025978422,
+    "org.seleniumhq.selenium:selenium-chromium-driver": -1002311581,
     "org.seleniumhq.selenium:selenium-http": -1479318771,
     "org.seleniumhq.selenium:selenium-json": 1768129386,
     "org.seleniumhq.selenium:selenium-manager": 281187930,
@@ -77,7 +81,7 @@
   },
   "conflict_resolution": {
     "com.google.errorprone:error_prone_annotations:2.5.1": "com.google.errorprone:error_prone_annotations:2.28.0",
-    "com.google.guava:guava:33.2.1-jre": "com.google.guava:guava:33.3.1-jre",
+    "com.google.guava:guava:32.0.1-jre": "com.google.guava:guava:33.3.1-jre",
     "com.google.j2objc:j2objc-annotations:1.3": "com.google.j2objc:j2objc-annotations:3.0.0",
     "com.google.j2objc:j2objc-annotations:2.8": "com.google.j2objc:j2objc-annotations:3.0.0"
   },
@@ -282,9 +286,9 @@
     },
     "junit:junit": {
       "shasums": {
-        "jar": "8e495b634469d64fb8acfa3495a065cbacc8a0fff55ce1e31007be4c16dc57d3"
+        "jar": "b58e459509e190bed737f3592bc1950485322846cf10e78ded1d065153012d70"
       },
-      "version": "4.13.2"
+      "version": "3.8.1"
     },
     "net.bytebuddy:byte-buddy": {
       "shasums": {
@@ -324,9 +328,9 @@
     },
     "org.hamcrest:hamcrest-core": {
       "shasums": {
-        "jar": "66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9"
+        "jar": "0361d1493ff0d94f861359efea91200720635072134792efb7217f6e09d5cffb"
       },
-      "version": "1.3"
+      "version": "1.1"
     },
     "org.jsoup:jsoup": {
       "shasums": {
@@ -355,6 +359,18 @@
     "org.seleniumhq.selenium:selenium-api": {
       "shasums": {
         "jar": "fccbabb0f81e15206296445ec8f9b481e5dd9269f34baed8017ead8a6be0c6ad"
+      },
+      "version": "4.27.0"
+    },
+    "org.seleniumhq.selenium:selenium-chrome-driver": {
+      "shasums": {
+        "jar": "ab0e52e9ed99b71750f9781bc294467ec108956eeaa5c8f3e58ca1927dc46039"
+      },
+      "version": "4.27.0"
+    },
+    "org.seleniumhq.selenium:selenium-chromium-driver": {
+      "shasums": {
+        "jar": "066e1c24cd40a5bc77f3162628750ee36ab615173651087b8e7b9605ca25c56b"
       },
       "version": "4.27.0"
     },
@@ -481,9 +497,6 @@
       "io.opentelemetry:opentelemetry-api-incubator",
       "io.opentelemetry:opentelemetry-sdk-common"
     ],
-    "junit:junit": [
-      "org.hamcrest:hamcrest-core"
-    ],
     "net.java.dev.javacc:javacc": [
       "junit:junit"
     ],
@@ -497,6 +510,19 @@
     ],
     "org.seleniumhq.selenium:selenium-api": [
       "org.jspecify:jspecify"
+    ],
+    "org.seleniumhq.selenium:selenium-chrome-driver": [
+      "com.google.auto.service:auto-service-annotations",
+      "org.seleniumhq.selenium:selenium-api",
+      "org.seleniumhq.selenium:selenium-chromium-driver",
+      "org.seleniumhq.selenium:selenium-json",
+      "org.seleniumhq.selenium:selenium-manager",
+      "org.seleniumhq.selenium:selenium-remote-driver"
+    ],
+    "org.seleniumhq.selenium:selenium-chromium-driver": [
+      "com.google.auto.service:auto-service-annotations",
+      "org.seleniumhq.selenium:selenium-json",
+      "org.seleniumhq.selenium:selenium-remote-driver"
     ],
     "org.seleniumhq.selenium:selenium-http": [
       "com.google.auto.service:auto-service-annotations",
@@ -894,38 +920,12 @@
       "javax.inject"
     ],
     "junit:junit": [
+      "junit.awtui",
       "junit.extensions",
       "junit.framework",
       "junit.runner",
-      "junit.textui",
-      "org.junit",
-      "org.junit.experimental",
-      "org.junit.experimental.categories",
-      "org.junit.experimental.max",
-      "org.junit.experimental.results",
-      "org.junit.experimental.runners",
-      "org.junit.experimental.theories",
-      "org.junit.experimental.theories.internal",
-      "org.junit.experimental.theories.suppliers",
-      "org.junit.function",
-      "org.junit.internal",
-      "org.junit.internal.builders",
-      "org.junit.internal.management",
-      "org.junit.internal.matchers",
-      "org.junit.internal.requests",
-      "org.junit.internal.runners",
-      "org.junit.internal.runners.model",
-      "org.junit.internal.runners.rules",
-      "org.junit.internal.runners.statements",
-      "org.junit.matchers",
-      "org.junit.rules",
-      "org.junit.runner",
-      "org.junit.runner.manipulation",
-      "org.junit.runner.notification",
-      "org.junit.runners",
-      "org.junit.runners.model",
-      "org.junit.runners.parameterized",
-      "org.junit.validator"
+      "junit.swingui",
+      "junit.textui"
     ],
     "net.bytebuddy:byte-buddy": [
       "net.bytebuddy",
@@ -1131,6 +1131,12 @@
       "org.openqa.selenium.print",
       "org.openqa.selenium.virtualauthenticator"
     ],
+    "org.seleniumhq.selenium:selenium-chrome-driver": [
+      "org.openqa.selenium.chrome"
+    ],
+    "org.seleniumhq.selenium:selenium-chromium-driver": [
+      "org.openqa.selenium.chromium"
+    ],
     "org.seleniumhq.selenium:selenium-http": [
       "org.openqa.selenium.remote.http",
       "org.openqa.selenium.remote.http.jdk"
@@ -1234,6 +1240,8 @@
       "org.mockito:mockito-core",
       "org.objenesis:objenesis",
       "org.seleniumhq.selenium:selenium-api",
+      "org.seleniumhq.selenium:selenium-chrome-driver",
+      "org.seleniumhq.selenium:selenium-chromium-driver",
       "org.seleniumhq.selenium:selenium-http",
       "org.seleniumhq.selenium:selenium-json",
       "org.seleniumhq.selenium:selenium-manager",
@@ -1270,6 +1278,34 @@
     "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure": {
       "io.opentelemetry.sdk.autoconfigure.spi.ResourceProvider": [
         "io.opentelemetry.sdk.autoconfigure.internal.EnvironmentResourceProvider"
+      ]
+    },
+    "org.seleniumhq.selenium:selenium-chrome-driver": {
+      "org.openqa.selenium.WebDriverInfo": [
+        "org.openqa.selenium.chrome.ChromeDriverInfo"
+      ],
+      "org.openqa.selenium.remote.AdditionalHttpCommands": [
+        "org.openqa.selenium.chrome.AddHasCasting",
+        "org.openqa.selenium.chrome.AddHasCdp"
+      ],
+      "org.openqa.selenium.remote.AugmenterProvider": [
+        "org.openqa.selenium.chrome.AddHasCasting",
+        "org.openqa.selenium.chrome.AddHasCdp"
+      ],
+      "org.openqa.selenium.remote.service.DriverService$Builder": [
+        "org.openqa.selenium.chrome.ChromeDriverService$Builder"
+      ]
+    },
+    "org.seleniumhq.selenium:selenium-chromium-driver": {
+      "org.openqa.selenium.remote.AdditionalHttpCommands": [
+        "org.openqa.selenium.chromium.AddHasLaunchApp",
+        "org.openqa.selenium.chromium.AddHasNetworkConditions",
+        "org.openqa.selenium.chromium.AddHasPermissions"
+      ],
+      "org.openqa.selenium.remote.AugmenterProvider": [
+        "org.openqa.selenium.chromium.AddHasLaunchApp",
+        "org.openqa.selenium.chromium.AddHasNetworkConditions",
+        "org.openqa.selenium.chromium.AddHasPermissions"
       ]
     },
     "org.seleniumhq.selenium:selenium-http": {

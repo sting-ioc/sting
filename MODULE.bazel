@@ -29,9 +29,9 @@ bazel_dep(name = "rules_cc", version = "0.2.25")
 
 archive_override(
     module_name = "rules_closure",
-    integrity = "sha256-a+8E2hTyPhwYAPs2SM7Gc2T/iVtDXFiowXrU9JpS+Ew=",
-    strip_prefix = "rules_closure-5324b6eb9b37dc08bbe5996d67e042a9e4fd57eb",
-    urls = ["https://github.com/bazelbuild/rules_closure/archive/5324b6eb9b37dc08bbe5996d67e042a9e4fd57eb.tar.gz"],
+    integrity = "sha256-XP2sXbeMW9SkWR1dSL2Itx9Iazgr7C6ZjhBQE7mEoCI=",
+    strip_prefix = "rules_closure-629a48ef792bf21d4bd4b73133af55b52d169e8f",
+    urls = ["https://github.com/realityforge/rules_closure/archive/629a48ef792bf21d4bd4b73133af55b52d169e8f.tar.gz"],
 )
 
 single_version_override(
@@ -57,7 +57,6 @@ browser_maven.install(
         "j2cl",
         "protobuf",
         "rules_closure",
-        "rules_web_testing_java",
     ],
     lock_file = "//:maven_install.json",
     repositories = ["https://repo.maven.apache.org/maven2"],
@@ -66,9 +65,9 @@ use_repo(browser_maven, "maven")
 
 archive_override(
     module_name = "j2cl",
-    integrity = "sha256-jtx4qV2UC+xvgoDeV+6/TBNCs/GRPzeW07TTrIqm+pg=",
-    strip_prefix = "j2cl-260ec1abd929947c032714672d4124e47ff2aec2",
-    urls = ["https://github.com/realityforge/j2cl/archive/260ec1abd929947c032714672d4124e47ff2aec2.tar.gz"],
+    integrity = "sha256-rk2Ngo3KEmKVfkcLMyP3NVIcLqeL18+BeFeagtComak=",
+    strip_prefix = "j2cl-32c0f19bfbe3631a46b608c18dd514ba128fa02e",
+    urls = ["https://github.com/realityforge/j2cl/archive/32c0f19bfbe3631a46b608c18dd514ba128fa02e.tar.gz"],
 )
 
 bazel_dep(name = "rules_java", version = "9.9.0")
